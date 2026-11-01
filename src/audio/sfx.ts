@@ -6,6 +6,8 @@ let ctx: AudioContext | null = null;
 let enabled = true;
 let volume = 0.6;
 
+export function audioContext(): AudioContext | null { return ctx; }
+
 export function configureAudio(opts: { enabled: boolean; volume: number }) {
   enabled = opts.enabled;
   volume = opts.volume;

@@ -136,3 +136,32 @@
 .mini-slot { position: relative; aspect-ratio: 3/4; border-radius: 10px; border: 1px dashed var(--line); display: grid; place-items: center; overflow: hidden; }
 .mini-slot .hero-card { position: absolute; inset: 0; aspect-ratio: auto; }
 .mini-slot .hero-card .name { font-size: 8.5px; }
+
+/* ─── Effets visuels (phase 5) ─── */
+.battle.flash::after { content: ''; position: absolute; inset: 0; z-index: 25; background: rgba(255,255,255,0.22); pointer-events: none; }
+.vfx { position: absolute; left: 0; right: 0; top: 0; aspect-ratio: 1 / 1.08; pointer-events: none; z-index: 4; border-radius: 10px; overflow: visible; }
+.vfx.slash::before, .vfx.slash::after { content: ''; position: absolute; left: -15%; right: -15%; top: 48%; height: 4px; border-radius: 4px;
+  background: linear-gradient(90deg, transparent, #fff, var(--vc), transparent); box-shadow: 0 0 12px var(--vc), 0 0 24px var(--vc); transform: rotate(-35deg) scaleX(0); animation: slash 0.38s ease-out forwards; }
+.vfx.slash::after { transform: rotate(30deg) scaleX(0); animation-delay: 0.08s; }
+.vfx.slash.crit::before, .vfx.slash.crit::after { height: 7px; }
+@keyframes slash { 0% { transform: rotate(var(--r, -35deg)) scaleX(0); opacity: 1; } 60% { opacity: 1; } 100% { transform: rotate(var(--r, -35deg)) scaleX(1.1); opacity: 0; } }
+.vfx.slash::after { --r: 30deg; }
+.vfx.healfx { background: radial-gradient(circle at 50% 80%, rgba(123,234,143,0.55), transparent 60%); animation: rise 0.7s ease-out forwards; }
+.vfx.healfx::before { content: '✚ ✚ ✚'; position: absolute; left: 0; right: 0; bottom: 10%; text-align: center; color: #b8ffc6; font-size: 14px; letter-spacing: 6px; text-shadow: 0 0 8px #7bea8f; animation: riseUp 0.7s ease-out forwards; }
+@keyframes riseUp { from { transform: translateY(10px); opacity: 0; } 30% { opacity: 1; } to { transform: translateY(-30px); opacity: 0; } }
+.vfx.shieldfx { border: 3px solid var(--vc); box-shadow: 0 0 16px var(--vc), inset 0 0 16px var(--vc); animation: shieldPop 0.7s ease-out forwards; }
+@keyframes shieldPop { from { transform: scale(0.7); opacity: 0; } 30% { opacity: 1; transform: scale(1.06); } to { opacity: 0; transform: scale(1.12); } }
+.vfx.bufffx { border-radius: 50%; border: 2px solid var(--vc); top: 10%; box-shadow: 0 0 14px var(--vc); animation: ring 0.7s ease-out forwards; }
+.vfx.cursefx { background: radial-gradient(circle, color-mix(in srgb, var(--vc) 45%, transparent), transparent 65%); animation: swirl 0.7s ease-out forwards; }
+@keyframes ring { from { transform: scale(0.4); opacity: 1; } to { transform: scale(1.3); opacity: 0; } }
+@keyframes swirl { from { transform: rotate(0) scale(0.6); opacity: 0; } 30% { opacity: 1; } to { transform: rotate(180deg) scale(1.2); opacity: 0; } }
+.vfx.revivefx { background: radial-gradient(circle, rgba(255,226,140,0.8), transparent 65%); animation: shieldPop 0.75s ease-out forwards; }
+.ult-overlay { position: absolute !important; inset: 0; z-index: 5 !important; pointer-events: none; background: radial-gradient(circle at 50% 50%, transparent 20%, rgba(0,0,0,0.75)); animation: fadeIn 0.2s; }
+.ult-overlay.ally { background: radial-gradient(circle at 50% 75%, rgba(255,210,120,0.18), rgba(0,0,0,0.78) 60%); }
+.ult-overlay.enemy { background: radial-gradient(circle at 50% 25%, rgba(255,60,90,0.2), rgba(0,0,0,0.78) 60%); }
+.skill-banner.ult { font-size: 26px; color: var(--gold-hi) !important; background: linear-gradient(90deg, transparent, rgba(90,60,10,0.95), transparent) !important; letter-spacing: 0.1em; z-index: 7 !important; }
+.field-wave { position: absolute !important; left: 0; right: 0; height: 40%; z-index: 4 !important; pointer-events: none;
+  background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--vc) 55%, transparent), transparent); animation: waveSweep 0.6s ease-out forwards; }
+.field-wave.enemy { top: 12%; }
+.field-wave.ally { bottom: 18%; }
+@keyframes waveSweep { from { transform: scaleY(0.1); opacity: 0; } 40% { opacity: 1; } to { transform: scaleY(1.2); opacity: 0; } }

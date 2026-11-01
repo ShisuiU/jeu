@@ -45,6 +45,17 @@
 - Réinitialisations quotidiennes et hebdomadaires fondées sur l'horloge de confiance
 - Sauvegarde v3 avec migration ; 70 tests unitaires + 5 parcours de bout en bout
 
-## Phase 5 — Finitions
+## ✅ Phase 5 — Finitions (terminée, version 1.0.0)
 
-- Illustrations définitives, animations, musique, optimisation, tests iPhone réels, déploiement
+- Performance : écrans chargés à la demande (code de démarrage divisé par deux : 127 → 64 Ko compressés), tout reste pré-caché pour le hors-ligne
+- Robustesse : filet de sécurité en cas d'erreur d'écran (retour à l'accueil, sauvegarde de secours copiable), alerte en cas d'échec d'écriture
+- Animations : entailles colorées par affinité, ondes des attaques de zone, effets de soin/bouclier/bonus/malus, flash critique, mise en scène des ultimes (respecte « Animations réduites »)
+- Musique d'ambiance procédurale (menu et combat), réglable, coupée en arrière-plan
+- Guide de démarrage au premier lancement (relançable), réglages de combat par défaut
+- Tests : sauvegarde de référence v1 migrée vers la version actuelle, 300 actions aléatoires sans corruption, manifeste d'installation, service worker, hors-ligne — 72 tests unitaires + 6 parcours de bout en bout
+
+## Suites possibles
+
+- **Illustrations définitives** des 15 héros et des ennemis (le pipeline est prêt : déposer les images dans `src/assets/heroes/<id>/`)
+- Chapitres 2 à 7 de la campagne (Sylvaran, Prisme, Akkar, Fosse, Ciel déchiré, Cœur d'Aeon) et nouveaux héros
+- Synchronisation cloud facultative (interface `SyncProvider` prête), classements, arène entre joueurs, guildes

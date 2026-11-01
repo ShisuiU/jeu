@@ -91,3 +91,11 @@
 .m-ic { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; background: rgba(255,255,255,0.04); border: 1px solid var(--line); flex-shrink: 0; }
 .m-title { font-weight: 700; font-size: 13.5px; }
 .event-card { padding: 14px; border-radius: 16px; border: 1px solid var(--mc); margin-bottom: 12px; background: radial-gradient(circle at 80% 0%, color-mix(in srgb, var(--mc) 30%, transparent), rgba(14,12,20,0.95) 70%); }
+
+/* ─── Guide ─── */
+.guide { text-align: center; }
+.guide-ic { width: 76px; height: 76px; margin: 4px auto 10px; border-radius: 50%; display: grid; place-items: center; color: var(--gold-hi);
+  background: radial-gradient(circle, rgba(217,179,106,0.25), rgba(20,16,28,0.9) 70%); border: 1px solid var(--line-strong); box-shadow: 0 0 30px rgba(217,179,106,0.25); }
+.guide-dots { display: flex; justify-content: center; gap: 6px; margin: 12px 0 14px; }
+.guide-dots span { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.15); }
+.guide-dots span.on { background: var(--gold-hi); width: 18px; border-radius: 4px; }

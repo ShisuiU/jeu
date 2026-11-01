@@ -60,6 +60,8 @@ export interface Settings {
   reducedMotion: boolean;
   battleSpeed: 1 | 2 | 3;
   autoBattleDefault: boolean;
+  music: boolean;
+  musicVolume: number;
 }
 
 export interface SaveData {
@@ -153,7 +155,7 @@ export function createNewSave(now: number = Date.now()): SaveData {
     daily: { lastLoginDay: null, cycleIndex: 0, totalLogins: 0 },
     progress: { campaign: {}, dungeons: {}, tower: { floor: 0 } },
     stats: { battlesWon: 0, battlesLost: 0, summons: 0 },
-    settings: { sound: true, volume: 0.6, reducedMotion: false, battleSpeed: 1, autoBattleDefault: false },
+    settings: { sound: true, volume: 0.6, reducedMotion: false, battleSpeed: 1, autoBattleDefault: false, music: true, musicVolume: 0.35 },
     flags: {},
     resets: { day: '', week: '' },
     missions: { daily: { counters: {}, claimed: [], bonus: false }, weekly: { counters: {}, claimed: [], bonus: false } },

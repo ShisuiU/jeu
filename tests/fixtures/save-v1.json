@@ -1,0 +1,207 @@
+{
+ "version": 1,
+ "saveId": "s_ed5201ab546d",
+ "createdAt": 1793565330588,
+ "updatedAt": 1793565330588,
+ "revision": 0,
+ "profile": {
+  "name": "Héritier",
+  "level": 1,
+  "xp": 0,
+  "avatarHeroId": "torvald"
+ },
+ "resources": {
+  "gold": 20000,
+  "crystals": 300,
+  "shardDim": 10,
+  "shardAeon": 3,
+  "shardPrimal": 0,
+  "shardEvent": 0,
+  "xpElixir": 10,
+  "skillTome": 0,
+  "rankSigil": 0,
+  "potionMinor": 0,
+  "potionGreater": 0,
+  "potionSupreme": 0,
+  "forgeOre": 0,
+  "awakenEssence": 0
+ },
+ "heroFragments": {},
+ "energy": {
+  "current": 120,
+  "lastTick": 1793565330588
+ },
+ "time": {
+  "highWater": 1793565330588,
+  "lastSeen": 1793565330588,
+  "rollbackCount": 0
+ },
+ "heroes": [
+  {
+   "uid": "h_69fbedb8a67c",
+   "heroId": "torvald",
+   "level": 9,
+   "xp": 0,
+   "rank": 1,
+   "ascension": 0,
+   "awaken": 0,
+   "skillLevels": {
+    "torvald_1": 1,
+    "torvald_2": 1
+   },
+   "equipment": {},
+   "locked": false,
+   "obtainedAt": 1793565330588
+  },
+  {
+   "uid": "h_fb72cc03eeab",
+   "heroId": "brann",
+   "level": 9,
+   "xp": 0,
+   "rank": 1,
+   "ascension": 0,
+   "awaken": 0,
+   "skillLevels": {
+    "brann_1": 1,
+    "brann_2": 1
+   },
+   "equipment": {},
+   "locked": false,
+   "obtainedAt": 1793565330588
+  },
+  {
+   "uid": "h_f5aaa8cd7e24",
+   "heroId": "corvin",
+   "level": 9,
+   "xp": 0,
+   "rank": 2,
+   "ascension": 0,
+   "awaken": 0,
+   "skillLevels": {
+    "corvin_1": 1,
+    "corvin_2": 1
+   },
+   "equipment": {},
+   "locked": false,
+   "obtainedAt": 1793565330588
+  },
+  {
+   "uid": "h_41048a9df340",
+   "heroId": "elowen",
+   "level": 9,
+   "xp": 0,
+   "rank": 3,
+   "ascension": 0,
+   "awaken": 0,
+   "skillLevels": {
+    "elowen_1": 1,
+    "elowen_2": 1,
+    "elowen_3": 1
+   },
+   "equipment": {},
+   "locked": false,
+   "obtainedAt": 1793565330588
+  }
+ ],
+ "teams": [
+  {
+   "id": "t_main",
+   "name": "Équipe principale",
+   "slots": [
+    "h_69fbedb8a67c",
+    "h_fb72cc03eeab",
+    "h_f5aaa8cd7e24",
+    "h_41048a9df340",
+    null
+   ],
+   "leader": "h_69fbedb8a67c"
+  },
+  {
+   "id": "t_2",
+   "name": "Équipe 2",
+   "slots": [
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "leader": null
+  },
+  {
+   "id": "t_3",
+   "name": "Équipe 3",
+   "slots": [
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "leader": null
+  }
+ ],
+ "activeTeamId": "t_main",
+ "daily": {
+  "lastLoginDay": "2099-01-01",
+  "cycleIndex": 0,
+  "totalLogins": 0
+ },
+ "progress": {
+  "campaign": {
+   "normal:1-1": {
+    "stars": 3,
+    "clears": 1
+   },
+   "normal:1-2": {
+    "stars": 3,
+    "clears": 1
+   },
+   "normal:1-3": {
+    "stars": 3,
+    "clears": 1
+   },
+   "normal:1-4": {
+    "stars": 3,
+    "clears": 1
+   },
+   "normal:1-5": {
+    "stars": 3,
+    "clears": 1
+   },
+   "normal:1-6": {
+    "stars": 3,
+    "clears": 1
+   },
+   "normal:1-7": {
+    "stars": 3,
+    "clears": 1
+   },
+   "normal:1-8": {
+    "stars": 3,
+    "clears": 1
+   },
+   "normal:1-9": {
+    "stars": 3,
+    "clears": 1
+   }
+  },
+  "dungeons": {},
+  "tower": {
+   "floor": 0
+  }
+ },
+ "stats": {
+  "battlesWon": 0,
+  "battlesLost": 0,
+  "summons": 0
+ },
+ "settings": {
+  "sound": true,
+  "volume": 0.6,
+  "reducedMotion": false,
+  "battleSpeed": 1,
+  "autoBattleDefault": false
+ },
+ "flags": {}
+}

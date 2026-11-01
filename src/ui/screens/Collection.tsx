@@ -1,3 +1,4 @@
+import { heroTotalStats } from '../../game/heroStats';
 import { useMemo, useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
@@ -6,7 +7,7 @@ import { FACTION_LIST } from '../../data/factions';
 import { RARITIES } from '../../data/rarities';
 import { ROLE_LIST } from '../../data/roles';
 import type { FactionId, RoleId } from '../../data/types';
-import { computeStats, powerOf } from '../../game/stats';
+import { powerOf } from '../../game/stats';
 import { Screen } from '../components/common';
 import { HeroCard } from '../components/HeroCard';
 import { FactionEmblem } from '../art/FactionEmblem';
@@ -23,7 +24,7 @@ export function Collection() {
 
   const owned = useMemo(() => {
     const list = save.heroes
-      .map((h) => ({ h, d: HERO_BY_ID[h.heroId], p: powerOf(computeStats(HERO_BY_ID[h.heroId], h)) }))
+      .map((h) => ({ h, d: HERO_BY_ID[h.heroId], p: powerOf(heroTotalStats(save, h).total) }))
       .filter((x) => (!faction || x.d.faction === faction) && (!role || x.d.role === role));
     const by: Record<Sort, (a: typeof list[0], b: typeof list[0]) => number> = {
       rarity: (a, b) => RARITIES[b.d.rarity].order - RARITIES[a.d.rarity].order || b.h.level - a.h.level,
@@ -72,7 +73,7 @@ export function Collection() {
           </button>
           {showCodex && (
             <div className="hero-grid" style={{ marginTop: 12 }}>
-              {missing.map((d) => <HeroCard key={d.id} heroId={d.id} owned={false} onClick={() => push({ name: 'hero', heroId: d.id })} />)}
+              {missing.map((d) => <HeroCard key={d.id} heroId={d.id} owned={false} badge={save.heroFragments[d.id] ? `${save.heroFragments[d.id]}/${RARITIES[d.rarity].fragmentsToSummon}` : undefined} onClick={() => push({ name: 'hero', heroId: d.id })} />)}
             </div>
           )}
         </>

@@ -3,12 +3,17 @@ import { comingSoon, useUI, type Route } from '../../state/ui';
 import { canClaimDaily } from '../../game/daily';
 import { Screen } from '../components/common';
 import { Icon } from '../art/Icons';
+import { unreadMail } from './Mail';
 
 export function Menu() {
   const push = useUI((s) => s.push);
   const daily = useGame((s) => canClaimDaily(s.save!, s.now));
+  const mail = useGame((s) => unreadMail(s.save!.flags));
   const entries: { label: string; sub: string; icon: keyof typeof Icon; route?: Route; soon?: [string, number]; dot?: boolean }[] = [
     { label: 'Récompense de connexion', sub: 'Une récompense par jour', icon: 'gift', route: { name: 'daily' }, dot: daily },
+    { label: 'Courrier', sub: 'Cadeaux et messages', icon: 'scroll', route: { name: 'mail' }, dot: mail },
+    { label: 'Invocation', sub: 'Obtenir de nouveaux héros', icon: 'portal', route: { name: 'summon' } },
+    { label: 'Équipement et forge', sub: 'Améliorer, démanteler', icon: 'forge', route: { name: 'gear' } },
     { label: 'Codex', sub: 'Histoire, factions, affinités', icon: 'book', route: { name: 'codex' } },
     { label: 'Sauvegarde', sub: 'Exporter, importer, restaurer', icon: 'save', route: { name: 'saves' } },
     { label: 'Paramètres', sub: 'Profil, son, animations', icon: 'gear', route: { name: 'settings' } },

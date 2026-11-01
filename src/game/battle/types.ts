@@ -68,6 +68,8 @@ export interface UnitSetup {
   /** Multiplicateurs spécifiques (boss, difficulté). */
   hpMult?: number;
   statMult?: number;
+  /** Bonus d'équipement (héros). */
+  gear?: import('../gear').GearBonus;
 }
 
 export interface BattleState {

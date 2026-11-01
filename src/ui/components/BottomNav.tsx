@@ -2,6 +2,7 @@ import { useUI, type Tab } from '../../state/ui';
 import { useGame } from '../../state/store';
 import { canClaimDaily } from '../../game/daily';
 import { Icon } from '../art/Icons';
+import { unreadMail } from '../screens/Mail';
 
 const ITEMS: { tab: Tab; label: string; icon: keyof typeof Icon }[] = [
   { tab: 'home', label: 'Accueil', icon: 'home' },
@@ -14,7 +15,7 @@ const ITEMS: { tab: Tab; label: string; icon: keyof typeof Icon }[] = [
 export function BottomNav() {
   const root = useUI((s) => s.stack[0].name);
   const tab = useUI((s) => s.tab);
-  const daily = useGame((s) => (s.save ? canClaimDaily(s.save, s.now) : false));
+  const daily = useGame((s) => (s.save ? canClaimDaily(s.save, s.now) || unreadMail(s.save.flags) : false));
   return (
     <nav className="bottom-nav">
       {ITEMS.map((it) => {

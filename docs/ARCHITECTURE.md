@@ -65,6 +65,14 @@ La campagne (`data/campaign.ts`) et les ennemis (`data/enemies.ts`) sont des don
 chapitre ou un ennemi ne demande aucune modification du moteur. La progression est enregistrée par
 difficulté (`normal:1-3`), prête pour les difficultés de la phase 4.
 
+## Progression (phase 3)
+
+- `game/summon.ts` — tirages, garanties, doublons → fragments.
+- `game/upgrade.ts` — élixirs, rang, ascension, éveil, compétences : chaque action a une fonction
+  `…Check()` (conditions + coût, utilisée par l'interface) et une fonction d'exécution.
+- `game/gear.ts` — génération, forge, ensembles, calcul des bonus ; `game/heroStats.ts` combine
+  progression et équipement. Le combat reçoit ces bonus via `teamSetups()`.
+
 ## Sauvegarde
 
 - **Format versionné** (`SAVE_VERSION` dans `save/schema.ts`). Toute évolution de structure ajoute

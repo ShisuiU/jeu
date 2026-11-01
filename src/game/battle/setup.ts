@@ -5,6 +5,7 @@ import type { SkillDef } from '../../data/types';
 import { computeStats } from '../stats';
 import type { Unit, UnitSetup } from './types';
 import { effectiveCooldown } from './skillMods';
+import { applyGearBonus } from '../gear';
 
 function initialCooldowns(skills: SkillDef[], levels: Record<string, number>): Record<string, number> {
   // Les ultimes commencent à mi-recharge : pas de déchaînement dès le premier tour.
@@ -15,11 +16,12 @@ export function buildUnit(setup: UnitSetup, side: 'ally' | 'enemy', idx: number)
   if (setup.kind === 'hero') {
     const d = HERO_BY_ID[setup.refId];
     const lv = setup.skillLevels ?? {};
-    const base = computeStats(d, { level: setup.level, rank: setup.rank ?? RARITIES[d.rarity].startRank, ascension: setup.ascension ?? 0, awaken: setup.awaken ?? 0 });
+    const raw = computeStats(d, { level: setup.level, rank: setup.rank ?? RARITIES[d.rarity].startRank, ascension: setup.ascension ?? 0, awaken: setup.awaken ?? 0 });
+    const base = setup.gear ? applyGearBonus(raw, setup.gear) : raw;
     return {
       id: `${side}${idx}`, side, slot: setup.slot, kind: 'hero', refId: d.id, heroUid: setup.heroUid, name: d.name, level: setup.level,
       affinity: d.affinity, role: d.role, faction: d.faction, isBoss: false, base, hp: base.hp, tm: 0,
-      cooldowns: initialCooldowns(d.skills, lv), statuses: [], skills: d.skills, skillLevels: lv, alive: true, flags: {},
+      cooldowns: initialCooldowns(d.skills, lv), statuses: [], skills: d.skills, skillLevels: lv, alive: true, flags: setup.gear?.lifesteal ? { leech: setup.gear.lifesteal } : {},
     };
   }
   const e = ENEMIES[setup.refId];

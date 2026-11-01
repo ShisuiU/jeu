@@ -6,9 +6,10 @@ import { RESOURCE_LIST } from '../data/resources';
 import { uid } from '../core/ids';
 import type { TimeState } from '../core/time';
 import type { EnergyState } from '../game/energy';
+import type { GearRarity, GearSlot, GearStat, SetId } from '../data/equipment';
 
 /** Version actuelle du format de sauvegarde. Toute modification de structure ⇒ +1 et une migration. */
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
 
 export interface HeroInstance {
   uid: string;
@@ -22,6 +23,26 @@ export interface HeroInstance {
   equipment: Partial<Record<string, string>>; // slot → uid d'équipement (phase 3)
   locked: boolean;
   obtainedAt: number;
+}
+
+export interface GearItem {
+  uid: string;
+  slot: GearSlot;
+  rarity: GearRarity;
+  set: SetId;
+  level: number;
+  main: GearStat;
+  subs: { stat: GearStat; value: number; rolls: number }[];
+  heroUid: string | null;
+  locked: boolean;
+  obtainedAt: number;
+}
+
+export interface SummonState {
+  /** Invocations depuis la dernière obtention garantie, par bannière. */
+  pity: Record<string, number>;
+  total: number;
+  history: { heroId: string; banner: string; at: number; duplicate: boolean }[];
 }
 
 export interface TeamPreset {
@@ -51,6 +72,8 @@ export interface SaveData {
   energy: EnergyState;
   time: TimeState;
   heroes: HeroInstance[];
+  equipment: GearItem[];
+  summons: SummonState;
   teams: TeamPreset[];
   activeTeamId: string;
   daily: { lastLoginDay: string | null; cycleIndex: number; totalLogins: number };
@@ -103,6 +126,8 @@ export function createNewSave(now: number = Date.now()): SaveData {
     energy: { current: BALANCE.energy.max, lastTick: now },
     time: { highWater: now, lastSeen: now, rollbackCount: 0 },
     heroes,
+    equipment: [],
+    summons: { pity: {}, total: 0, history: [] },
     teams: [
       { id: teamId, name: 'Équipe principale', slots: [...heroes.map((h) => h.uid), null], leader: heroes[0].uid },
       { id: 't_2', name: 'Équipe 2', slots: [null, null, null, null, null], leader: null },

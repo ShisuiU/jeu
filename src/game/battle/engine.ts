@@ -208,7 +208,7 @@ function dealDamage(s: BattleState, source: Unit, target: Unit, effect: Extract<
   s.events.push({ kind: 'damage', source: source.id, target: target.id, amount: dmg, crit, strong: aff > 1, weak: aff < 1, absorbed });
   if (target.isBoss && !target.flags.enraged && hpPct(target) < 0.5) target.flags.enraged = 1;
   if (target.hp <= 0) kill(s, target, source);
-  const ls = (effect.lifestealPct ?? 0) + mods.lifesteal;
+  const ls = (effect.lifestealPct ?? 0) + mods.lifesteal + (source.flags.leech ?? 0) / 100;
   if (ls > 0 && source.alive) heal(s, source, hpDmg * ls);
   return hpDmg;
 }

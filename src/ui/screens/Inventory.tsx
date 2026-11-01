@@ -3,6 +3,8 @@ import { RESOURCE_LIST } from '../../data/resources';
 import { BALANCE } from '../../data/balance';
 import { Panel, Screen, fmt } from '../components/common';
 import { Icon, ResourceIcon } from '../art/Icons';
+import { HERO_BY_ID } from '../../data/heroes';
+import { RARITIES } from '../../data/rarities';
 
 const GROUPS: { title: string; ids: string[] }[] = [
   { title: 'Monnaies', ids: ['gold', 'crystals'] },
@@ -23,6 +25,12 @@ export function Inventory() {
             <div className="faint">Sert à lancer les combats. +1 toutes les {BALANCE.energy.regenMs / 60000} minutes, même jeu fermé.</div>
           </div>
         </div>
+      </Panel>
+      <Panel title="Fragments de héros">
+        {Object.entries(save.heroFragments).filter(([, n]) => n > 0).length === 0 && <p className="faint">Aucun fragment. Les héros invoqués en double sont convertis en fragments.</p>}
+        {Object.entries(save.heroFragments).filter(([, n]) => n > 0).map(([id, n]) => (
+          <div key={id} className="stat-row"><span>{HERO_BY_ID[id]?.name ?? id}</span><b>{n}{!save.heroes.some((h) => h.heroId === id) ? ` / ${RARITIES[HERO_BY_ID[id].rarity].fragmentsToSummon}` : ''}</b></div>
+        ))}
       </Panel>
       {GROUPS.map((g) => (
         <Panel key={g.title} title={g.title}>

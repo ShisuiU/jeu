@@ -1,3 +1,4 @@
+import { heroTotalStats } from '../../game/heroStats';
 import { useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
@@ -7,7 +8,7 @@ import { HERO_BY_ID } from '../../data/heroes';
 import { AFFINITIES } from '../../data/affinities';
 import { ROLES } from '../../data/roles';
 import { payStage, stageProgress } from '../../game/campaign';
-import { computeStats, powerOf } from '../../game/stats';
+import { powerOf } from '../../game/stats';
 import { msToNextEnergy } from '../../game/energy';
 import { formatDuration } from '../../core/time';
 import { Panel, Screen, fmt } from '../components/common';
@@ -27,7 +28,7 @@ export function Stage({ stageId }: { stageId: string }) {
   const [teamId, setTeamId] = useState(save.activeTeamId);
   const team = save.teams.find((t) => t.id === teamId) ?? save.teams[0];
   const members = team.slots.map((u) => save.heroes.find((h) => h.uid === u));
-  const power = members.reduce((a, h) => a + (h ? powerOf(computeStats(HERO_BY_ID[h.heroId], h)) : 0), 0);
+  const power = members.reduce((a, h) => a + (h ? powerOf(heroTotalStats(save, h).total) : 0), 0);
   const count = members.filter(Boolean).length;
   const enough = save.energy.current >= stage.energy;
   const { heroes: newHeroes, ...firstReward } = stage.firstClear;

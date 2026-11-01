@@ -9,6 +9,7 @@ import '@fontsource/inter/700.css';
 import './styles/global.css';
 import './styles/home.css';
 import './styles/battle.css';
+import './styles/phase3.css';
 import App from './App';
 import { setupPWA } from './pwa';
 

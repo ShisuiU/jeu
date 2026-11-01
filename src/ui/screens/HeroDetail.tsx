@@ -12,6 +12,10 @@ import { HeroArt, hasRealArt } from '../art/HeroArt';
 import { FactionEmblem } from '../art/FactionEmblem';
 import { Icon } from '../art/Icons';
 import { heroXpToNext } from '../../game/progression';
+import { heroTotalStats } from '../../game/heroStats';
+import { summonWithFragments } from '../../game/summon';
+import { HeroUpgrade, HeroGear } from './HeroUpgrade';
+import { useState } from 'react';
 
 const SLOT_LABEL = { basic: 'Attaque de base', special: 'Compétence spéciale', ultimate: 'Ultime', passive: 'Passif' } as const;
 
@@ -20,11 +24,16 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
   const setProfile = useGame((s) => s.setProfile);
   const toggleLock = useGame((s) => s.toggleHeroLock);
   const toast = useUI((s) => s.toast);
+  const mutate = useGame((s) => s.mutate);
+  const [tab, setTab] = useState<'info' | 'upgrade' | 'gear'>('info');
   const d = HERO_BY_ID[heroId];
   const inst = uid ? save.heroes.find((h) => h.uid === uid) : undefined;
   const rar = RARITIES[d.rarity];
   const progress = inst ?? { level: 1, rank: rar.startRank, ascension: 0, awaken: 0 };
-  const stats = computeStats(d, progress);
+  const full = inst ? heroTotalStats(save, inst) : null;
+  const stats = full ? full.total : computeStats(d, progress);
+  const fragments = save.heroFragments[d.id] ?? 0;
+  const fragNeed = rar.fragmentsToSummon;
   const f = FACTIONS[d.faction];
   const aff = AFFINITIES[d.affinity];
   const maxLv = maxLevelForRank(progress.rank);
@@ -52,25 +61,44 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
         <p className="quote">{d.quote}</p>
       </div>
 
+      {inst && (
+        <div className="seg" style={{ margin: '4px 0 12px' }}>
+          <button className={tab === 'info' ? 'on' : ''} onClick={() => setTab('info')}>Infos</button>
+          <button className={tab === 'upgrade' ? 'on' : ''} onClick={() => setTab('upgrade')}>Améliorer</button>
+          <button className={tab === 'gear' ? 'on' : ''} onClick={() => setTab('gear')}>Équipement</button>
+        </div>
+      )}
+      {!inst && (
+        <Panel title="Fragments">
+          <div className="row between"><span>{fragments} / {fragNeed} fragments</span><span className="faint">Doublons d’invocation</span></div>
+          <div className="progress" style={{ margin: '6px 0 10px' }}><div style={{ width: `${Math.min(100, (fragments / fragNeed) * 100)}%` }} /></div>
+          <button className="btn block" disabled={fragments < fragNeed} onClick={() => { let ok = false; mutate((st) => { ok = summonWithFragments(st, d.id, Date.now()); }); if (ok) toast(`${d.name} rejoint vos Héritiers !`, 'ok'); }}>Invoquer avec les fragments</button>
+          <p className="faint">Ce héros s’obtient aussi par les invocations ({rar.name}).</p>
+        </Panel>
+      )}
+      {inst && tab === 'upgrade' && <HeroUpgrade h={inst} />}
+      {inst && tab === 'gear' && <HeroGear h={inst} />}
+      {(tab === 'info' || !inst) && <>
+
       <Panel title={inst ? 'Progression' : 'Non obtenu — statistiques de base'}>
         <div className="row between" style={{ marginBottom: 8 }}>
           <span>Niveau <b style={{ color: 'var(--gold-hi)' }}>{progress.level}</b> / {maxLv}</span>
           <span className="muted">Puissance <b style={{ color: 'var(--gold-hi)' }}>{fmt(powerOf(stats))}</b></span>
         </div>
         <div className="progress"><div style={{ width: `${inst && progress.level < maxLv ? (inst.xp / heroXpToNext(inst.level)) * 100 : 100}%` }} /></div>
-        {inst && <div className="faint" style={{ marginTop: 4 }}>{progress.level < maxLv ? `XP ${inst.xp} / ${heroXpToNext(inst.level)}` : 'Niveau maximum du rang atteint — augmentez le rang pour continuer (phase 3).'}</div>}
+        {inst && <div className="faint" style={{ marginTop: 4 }}>{progress.level < maxLv ? `XP ${inst.xp} / ${heroXpToNext(inst.level)}` : 'Niveau maximum du rang atteint — augmentez le rang (onglet Améliorer).'}</div>}
         <div className="row between wrap" style={{ marginTop: 10, fontSize: 13 }}>
           <span>Rang <b>{progress.rank}</b>/{BALANCE.hero.maxRank}</span>
           <span>Ascension <b>{progress.ascension}</b>/{BALANCE.hero.maxAscension}</span>
           <span>Éveil <b>{progress.awaken}</b>/{BALANCE.hero.maxAwaken}</span>
         </div>
-        {inst && <p className="faint" style={{ marginTop: 10 }}>Le héros gagne de l’expérience en combattant. Rang, ascension, éveil, compétences et équipement : phase 3.</p>}
+        {inst && <p className="faint" style={{ marginTop: 10 }}>Le héros gagne de l’expérience en combattant ou avec des élixirs (onglet Améliorer). Fragments : {fragments}.</p>}
       </Panel>
 
       <Panel title="Statistiques">
         <div className="stat-grid">
           {STAT_ORDER.map((k) => (
-            <div key={k} className="stat-row"><span className="muted">{STAT_LABELS[k].long}</span><b>{fmt(stats[k])}{STAT_LABELS[k].pct ? ' %' : ''}</b></div>
+            <div key={k} className="stat-row"><span className="muted">{STAT_LABELS[k].long}</span><b>{fmt(stats[k])}{STAT_LABELS[k].pct ? ' %' : ''}{full && stats[k] !== full.base[k] && <small style={{ color: '#7bea8f', marginLeft: 4 }}>(+{fmt(Math.round((stats[k] - full.base[k]) * 10) / 10)})</small>}</b></div>
           ))}
         </div>
       </Panel>
@@ -110,6 +138,7 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
           {save.profile.avatarHeroId === d.id ? 'Avatar actuel' : 'Choisir comme avatar'}
         </button>
       )}
+      </>}
     </Screen>
   );
 }

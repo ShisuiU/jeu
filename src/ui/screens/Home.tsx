@@ -3,7 +3,8 @@ import { comingSoon, useUI } from '../../state/ui';
 import { HERO_BY_ID } from '../../data/heroes';
 import { FACTIONS } from '../../data/factions';
 import { canClaimDaily } from '../../game/daily';
-import { CHAPTERS_PLANNED } from '../../data/lore';
+import { CHAPTERS } from '../../data/campaign';
+import { chapterStars, isStageUnlocked, stageProgress } from '../../game/campaign';
 import { WorldScene, Particles } from '../art/Scene';
 import { HeroArt } from '../art/HeroArt';
 import { Icon } from '../art/Icons';
@@ -20,6 +21,9 @@ export function Home() {
   const def = leader ? HERO_BY_ID[leader.heroId] : null;
   const daily = canClaimDaily(save, now);
   const reduced = save.settings.reducedMotion;
+  const allStages = CHAPTERS.flatMap((c) => c.stages);
+  const nextStage = allStages.find((st) => isStageUnlocked(save, 'normal', st) && stageProgress(save, 'normal', st.id).clears === 0);
+  const stars = chapterStars(save, 'normal', 1);
 
   return (
     <div className="home screen">
@@ -60,13 +64,13 @@ export function Home() {
       </div>
 
       <div className="home-bottom">
-        <button className="campaign-cta" onClick={() => comingSoon(`Campagne — Chapitre 1 : ${CHAPTERS_PLANNED[0].name}`, 2)}>
+        <button className="campaign-cta" onClick={() => push({ name: 'campaign' })}>
           <Icon.sword size={34} />
           <div className="grow">
             <div className="big">CAMPAGNE</div>
-            <div className="sub">Chapitre 1 · {CHAPTERS_PLANNED[0].name}</div>
+            <div className="sub">{nextStage ? `${nextStage.id} · ${nextStage.name}` : `Chapitre ${CHAPTERS[0].n} terminé`}</div>
           </div>
-          <span className="lock-tag" style={{ position: 'static' }}>PHASE 2</span>
+          <span className="chip" style={{ flexShrink: 0 }}><Icon.star size={13} /> {stars.stars}/{stars.max}</span>
         </button>
         <div className="mode-grid">
           <button className="mode-tile locked-tile" onClick={() => comingSoon('Invocations', 3)}><Icon.portal />Invoquer<span className="lock-tag">P3</span></button>

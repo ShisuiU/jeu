@@ -87,7 +87,7 @@ export function Team() {
           Rôles présents : {roles.size}/6. {!members.some((h) => h && HERO_BY_ID[h.heroId].role === 'healer') && 'Aucun soigneur : les combats longs seront difficiles. '}
           {!members.some((h) => h && HERO_BY_ID[h.heroId].role === 'defender') && 'Aucun défenseur en première ligne.'}
         </div>
-        <p className="faint" style={{ marginTop: 8 }}>Les bonus de synergie s’appliqueront en combat (phase 2).</p>
+        <p className="faint" style={{ marginTop: 8 }}>Les synergies de faction et l’aura du chef sont appliquées automatiquement en combat. Première ligne : exposée. Seconde ligne : subit 15 % de dégâts en moins tant que la première ligne tient.</p>
       </Panel>
     </Screen>
   );

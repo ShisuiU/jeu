@@ -17,6 +17,9 @@ import { Daily } from './ui/screens/Daily';
 import { Settings } from './ui/screens/Settings';
 import { Saves } from './ui/screens/Saves';
 import { Codex } from './ui/screens/Codex';
+import { Campaign } from './ui/screens/Campaign';
+import { Stage } from './ui/screens/Stage';
+import { Battle } from './ui/screens/Battle';
 
 function renderRoute(r: Route) {
   switch (r.name) {
@@ -30,6 +33,9 @@ function renderRoute(r: Route) {
     case 'settings': return <Settings />;
     case 'saves': return <Saves />;
     case 'codex': return <Codex />;
+    case 'campaign': return <Campaign />;
+    case 'stage': return <Stage key={r.stageId} stageId={r.stageId} />;
+    case 'battle': return <Battle key={r.seed} stageId={r.stageId} teamId={r.teamId} difficulty={r.difficulty} seed={r.seed} />;
   }
 }
 
@@ -74,7 +80,7 @@ export default function App() {
       ) : (
         <>
           <div key={`${depth}-${route.name}`} style={{ position: 'absolute', inset: 0 }}>{renderRoute(route)}</div>
-          <BottomNav />
+          {route.name !== 'battle' && <BottomNav />}
         </>
       )}
       <Toasts />

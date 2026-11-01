@@ -11,6 +11,7 @@ import { Panel, RarityTag, Screen, Stars, fmt } from '../components/common';
 import { HeroArt, hasRealArt } from '../art/HeroArt';
 import { FactionEmblem } from '../art/FactionEmblem';
 import { Icon } from '../art/Icons';
+import { heroXpToNext } from '../../game/progression';
 
 const SLOT_LABEL = { basic: 'Attaque de base', special: 'Compétence spéciale', ultimate: 'Ultime', passive: 'Passif' } as const;
 
@@ -56,13 +57,14 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
           <span>Niveau <b style={{ color: 'var(--gold-hi)' }}>{progress.level}</b> / {maxLv}</span>
           <span className="muted">Puissance <b style={{ color: 'var(--gold-hi)' }}>{fmt(powerOf(stats))}</b></span>
         </div>
-        <div className="progress"><div style={{ width: `${(progress.level / maxLv) * 100}%` }} /></div>
+        <div className="progress"><div style={{ width: `${inst && progress.level < maxLv ? (inst.xp / heroXpToNext(inst.level)) * 100 : 100}%` }} /></div>
+        {inst && <div className="faint" style={{ marginTop: 4 }}>{progress.level < maxLv ? `XP ${inst.xp} / ${heroXpToNext(inst.level)}` : 'Niveau maximum du rang atteint — augmentez le rang pour continuer (phase 3).'}</div>}
         <div className="row between wrap" style={{ marginTop: 10, fontSize: 13 }}>
           <span>Rang <b>{progress.rank}</b>/{BALANCE.hero.maxRank}</span>
           <span>Ascension <b>{progress.ascension}</b>/{BALANCE.hero.maxAscension}</span>
           <span>Éveil <b>{progress.awaken}</b>/{BALANCE.hero.maxAwaken}</span>
         </div>
-        {inst && <p className="faint" style={{ marginTop: 10 }}>Montée de niveau, rang, ascension, éveil et équipement : phase 3 du développement.</p>}
+        {inst && <p className="faint" style={{ marginTop: 10 }}>Le héros gagne de l’expérience en combattant. Rang, ascension, éveil, compétences et équipement : phase 3.</p>}
       </Panel>
 
       <Panel title="Statistiques">

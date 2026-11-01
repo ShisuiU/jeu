@@ -10,13 +10,15 @@
 - Écrans fonctionnels : titre, accueil, collection (filtres, tri, héros à découvrir), fiche héros (stats calculées, compétences, histoire), équipe et formation (3 équipes, chef, synergies), sac (ressources), connexion quotidienne (28 jours), codex, paramètres, sauvegarde
 - Tests : 22 tests unitaires + test de bout en bout sur dimensions iPhone (persistance, export/import, hors ligne)
 
-## Phase 2 — Premier contenu jouable
+## ✅ Phase 2 — Premier contenu jouable (terminée)
 
-- Moteur de combat au tour par tour (jauge de vitesse, effets, affinités, IA du mode auto, vitesses ×1/×2/×3)
-- Écran de combat portrait avec animations et effets
-- Ennemis (Effacés) et premier boss
-- Chapitre 1 de la campagne (10 niveaux, dialogues, étoiles, récompenses, coût en énergie)
-- Expérience de combat → montée de niveau des héros et du compte
+- Moteur de combat au tour par tour (`src/game/battle/`) : jauge de vitesse, dégâts (ATQ/DÉF/PV, critiques, affinités, ignorance de DÉF), 13 effets (poison, brûlure, gel, étourdissement, baisses/hausses ATQ/DÉF/VIT, bouclier, régénération, provocation, purification, jauge de tour, résurrection, vol de vie), recharges, niveaux de compétences, passifs (Varkhaal, Hesper, Azhar, Kaedra, Sulfura), aura du chef, 6 synergies de faction, formation (seconde ligne protégée), vagues, boss (immunités, furie)
+- IA du mode automatique (utilisée aussi par les ennemis), combat manuel avec choix de compétence et de cible, vitesses ×1/×2/×3 mémorisées
+- 7 types d'Effacés + le boss « Le Héraut Effacé »
+- Chapitre 1 « Les Remparts de Cendre » : 10 niveaux, dialogues avant/après, étoiles (★★★ sans K.O.), récompenses de première victoire et de rejeu, coût en énergie, déblocage d'Aldric en battant le boss
+- Expérience des héros (niveau limité par le rang) et niveau de compte (or + énergie à chaque niveau)
+- Équilibrage vérifié par simulation automatique (tests/balance.test.ts)
+- 38 tests unitaires + tests de bout en bout (combat manuel, auto, boss, résultats, persistance)
 
 ## Phase 3 — Collection et progression
 

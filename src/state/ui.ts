@@ -13,6 +13,9 @@ export type Route =
   | { name: 'saves' }
   | { name: 'codex' }
   | { name: 'campaign' }
+  | { name: 'summon' }
+  | { name: 'mail' }
+  | { name: 'gear' }
   | { name: 'stage'; stageId: string }
   | { name: 'battle'; stageId: string; teamId: string; difficulty: 'normal' | 'hard' | 'expert' | 'nightmare'; seed: number };
 

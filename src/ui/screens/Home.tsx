@@ -9,6 +9,7 @@ import { WorldScene, Particles } from '../art/Scene';
 import { HeroArt } from '../art/HeroArt';
 import { Icon } from '../art/Icons';
 import { TopBar } from '../components/TopBar';
+import { unreadMail } from './Mail';
 
 export function Home() {
   const save = useGame((s) => s.save)!;
@@ -24,6 +25,7 @@ export function Home() {
   const allStages = CHAPTERS.flatMap((c) => c.stages);
   const nextStage = allStages.find((st) => isStageUnlocked(save, 'normal', st) && stageProgress(save, 'normal', st.id).clears === 0);
   const stars = chapterStars(save, 'normal', 1);
+  const summonDot = save.resources.shardAeon > 0 || save.resources.shardPrimal > 0 || !save.flags.gift_event_ash;
 
   return (
     <div className="home screen">
@@ -47,6 +49,9 @@ export function Home() {
         <button className="side-btn" onClick={() => push({ name: 'daily' })}>
           <span className="ic"><Icon.gift /></span>Connexion{daily && <span className="badge-dot" />}
         </button>
+        <button className="side-btn" onClick={() => push({ name: 'mail' })}>
+          <span className="ic"><Icon.scroll /></span>Courrier{unreadMail(save.flags) && <span className="badge-dot" />}
+        </button>
         <button className="side-btn locked" onClick={() => comingSoon('Missions journalières et hebdomadaires', 4)}>
           <span className="ic"><Icon.scroll /></span>Missions
         </button>
@@ -57,6 +62,9 @@ export function Home() {
       <div className="home-side right">
         <button className="side-btn locked" onClick={() => comingSoon('Événements temporaires', 4)}>
           <span className="ic"><Icon.portal /></span>Événements
+        </button>
+        <button className="side-btn" onClick={() => push({ name: 'gear' })}>
+          <span className="ic"><Icon.forge /></span>Forge
         </button>
         <button className="side-btn" onClick={() => push({ name: 'saves' })}>
           <span className="ic"><Icon.save /></span>Sauvegarde
@@ -73,7 +81,7 @@ export function Home() {
           <span className="chip" style={{ flexShrink: 0 }}><Icon.star size={13} /> {stars.stars}/{stars.max}</span>
         </button>
         <div className="mode-grid">
-          <button className="mode-tile locked-tile" onClick={() => comingSoon('Invocations', 3)}><Icon.portal />Invoquer<span className="lock-tag">P3</span></button>
+          <button className="mode-tile" onClick={() => push({ name: 'summon' })}><Icon.portal />Invoquer{summonDot && <span className="badge-dot" style={{ top: 6, right: 8 }} />}</button>
           <button className="mode-tile locked-tile" onClick={() => comingSoon('Donjons', 4)}><Icon.dungeon />Donjons<span className="lock-tag">P4</span></button>
           <button className="mode-tile locked-tile" onClick={() => comingSoon('Tour de progression', 4)}><Icon.tower />Tour<span className="lock-tag">P4</span></button>
           <button className="mode-tile" onClick={() => tab('collection')}><Icon.heroes />Héros</button>

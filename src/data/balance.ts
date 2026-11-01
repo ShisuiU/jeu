@@ -30,6 +30,28 @@ export const BALANCE = {
     awakenBonus: 0.05,
     maxAwaken: 5,
   },
+  upgrades: {
+    /** Expérience donnée par un élixir, et or dépensé par élixir (× niveau du héros). */
+    elixirXp: 400,
+    elixirGoldPerLevel: 120,
+    /** Rang r → r+1 : sceaux de rang = r, or = rankGold × r. Le héros doit être au niveau max de son rang. */
+    rankGold: 6000,
+    /** Ascension a → a+1 : potion et quantités par palier, or, niveau requis. */
+    ascension: [
+      { potion: 'potionMinor', amount: 4, gold: 8000, minLevel: 10 },
+      { potion: 'potionMinor', amount: 10, gold: 16000, minLevel: 20 },
+      { potion: 'potionGreater', amount: 6, gold: 30000, minLevel: 30 },
+      { potion: 'potionGreater', amount: 14, gold: 50000, minLevel: 40 },
+      { potion: 'potionSupreme', amount: 8, gold: 80000, minLevel: 50 },
+      { potion: 'potionSupreme', amount: 18, gold: 120000, minLevel: 60 },
+    ],
+    /** Éveil e → e+1 : réservé aux héros avancés (ascension >= e + 2), coûte fragments du héros + essence d'éveil. */
+    awaken: { fragmentsBase: 10, essenceBase: 3, gold: 40000 },
+    /** Compétence niveau n → n+1 : grimoires = n, or = skillGold × n. */
+    skillGold: 4000,
+    /** Chance d'obtenir un équipement après une victoire de campagne. */
+    gearDropChance: 0.65,
+  },
   starter: {
     gold: 20000,
     crystals: 300,

@@ -1,10 +1,11 @@
+import { heroTotalStats } from '../../game/heroStats';
 import { useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
 import { HERO_BY_ID } from '../../data/heroes';
 import { FACTIONS } from '../../data/factions';
 import { RARITIES } from '../../data/rarities';
-import { computeStats, powerOf } from '../../game/stats';
+import { powerOf } from '../../game/stats';
 import { Panel, Screen, fmt } from '../components/common';
 import { HeroCard } from '../components/HeroCard';
 
@@ -19,7 +20,7 @@ export function Team() {
   const team = save.teams.find((t) => t.id === teamId) ?? save.teams[0];
   const byUid = Object.fromEntries(save.heroes.map((h) => [h.uid, h]));
   const members = team.slots.map((u) => (u ? byUid[u] : undefined));
-  const power = members.reduce((acc, h) => acc + (h ? powerOf(computeStats(HERO_BY_ID[h.heroId], h)) : 0), 0);
+  const power = members.reduce((acc, h) => acc + (h ? powerOf(heroTotalStats(save, h).total) : 0), 0);
   const leaderDef = team.leader && byUid[team.leader] ? HERO_BY_ID[byUid[team.leader].heroId] : null;
 
   const factionCount: Record<string, number> = {};

@@ -20,6 +20,9 @@ import { Codex } from './ui/screens/Codex';
 import { Campaign } from './ui/screens/Campaign';
 import { Stage } from './ui/screens/Stage';
 import { Battle } from './ui/screens/Battle';
+import { Summon } from './ui/screens/Summon';
+import { Gear } from './ui/screens/Gear';
+import { Mail } from './ui/screens/Mail';
 
 function renderRoute(r: Route) {
   switch (r.name) {
@@ -34,6 +37,9 @@ function renderRoute(r: Route) {
     case 'saves': return <Saves />;
     case 'codex': return <Codex />;
     case 'campaign': return <Campaign />;
+    case 'summon': return <Summon />;
+    case 'gear': return <Gear />;
+    case 'mail': return <Mail />;
     case 'stage': return <Stage key={r.stageId} stageId={r.stageId} />;
     case 'battle': return <Battle key={r.seed} stageId={r.stageId} teamId={r.teamId} difficulty={r.difficulty} seed={r.seed} />;
   }

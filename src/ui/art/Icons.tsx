@@ -25,6 +25,13 @@ export const Icon = {
   tower: (p: P) => <S {...p}><path d="M7 21V8l-2-2V3h3v2h2V3h4v2h2V3h3v3l-2 2v13" /><path d="M10 21v-4h4v4M4 21h16M10 11h4" /></S>,
   arena: (p: P) => <S {...p}><path d="m4 4 7 7M20 4l-7 7M4 4v4M4 4h4M20 4v4M20 4h-4" /><path d="m9 14-5 5 1 1 5-5M15 14l5 5-1 1-5-5" /></S>,
   skull: (p: P) => <S {...p}><path d="M12 2a8 8 0 0 0-8 8c0 3 1.5 5 3 6v3h10v-3c1.5-1 3-3 3-6a8 8 0 0 0-8-8z" /><circle cx="9" cy="10" r="1.6" /><circle cx="15" cy="10" r="1.6" /><path d="M10 19v2M14 19v2" /></S>,
+  helmet: (p: P) => <S {...p}><path d="M4 14a8 8 0 0 1 16 0v4h-6v-4h-4v4H4z" /><path d="M12 6V3" /></S>,
+  armor: (p: P) => <S {...p}><path d="M8 3 4 6v6l2 1v8h12v-8l2-1V6l-4-3-4 3z" /><path d="M12 6v15" /></S>,
+  gloves: (p: P) => <S {...p}><path d="M7 21v-6L5 10V6a1.5 1.5 0 0 1 3 0v3V4a1.5 1.5 0 0 1 3 0v5V3.5a1.5 1.5 0 0 1 3 0V9V5a1.5 1.5 0 0 1 3 0v8l-2 2v6z" /></S>,
+  boots: (p: P) => <S {...p}><path d="M7 3h6v10l6 3a2 2 0 0 1 1 2v3H5v-6l2-2z" /><path d="M5 18h15" /></S>,
+  ring: (p: P) => <S {...p}><circle cx="12" cy="15" r="6" /><path d="m9 6 3-3 3 3-3 3z" /></S>,
+  gem: (p: P) => <S {...p}><path d="M6 3h12l4 6-10 12L2 9z" /><path d="M2 9h20M12 21 8 9l4-6 4 6z" /></S>,
+  forge: (p: P) => <S {...p}><path d="M3 10h13l2-3h3v4l-3 2H6z" /><path d="M8 13v3l-3 5h14l-3-5v-3" /></S>,
   star: ({ size = 12, color = '#ffd36b' }: P) => <svg viewBox="0 0 24 24" width={size} height={size}><path d="m12 2 2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 20.9l1.6-7L2 9.2l7.1-.6z" fill={color} stroke="#3a2a0a" strokeWidth="1" /></svg>,
   // ─── Ressources (en couleur) ───
   energy: ({ size = 22 }: P) => <svg viewBox="0 0 24 24" width={size} height={size}><path d="M13 2 4 14h7l-1 8 9-12h-7z" fill="#5fe0ff" stroke="#0b4d63" strokeWidth="1.2" strokeLinejoin="round" /></svg>,

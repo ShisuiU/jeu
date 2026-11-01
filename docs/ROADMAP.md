@@ -20,11 +20,17 @@
 - Équilibrage vérifié par simulation automatique (tests/balance.test.ts)
 - 38 tests unitaires + tests de bout en bout (combat manuel, auto, boss, résultats, persistance)
 
-## Phase 3 — Collection et progression
+## ✅ Phase 3 — Collection et progression (terminée)
 
-- Invocations (5 types, taux affichés, ×1/×10, garantie, animations légendaire/mythique), fragments
-- Montée de niveau, rang, ascension, éveil, amélioration des compétences
-- Équipement (7 emplacements, raretés, stats principales/secondaires, ensembles, forge)
+- Invocations : 5 bannières (standard, rare, épique, légendaire, événement « Faille de Cendre » avec héros en vedette), taux affichés, ×1 / ×10, garanties (pitié par bannière, Épique garanti dans un ×10 rare), animation de portail et animation spéciale Légendaire/Mythique, historique
+- Doublons → fragments ; obtenir un héros manquant avec ses fragments
+- Amélioration des héros : élixirs d'expérience, rang (niveau max +10), ascension (6 paliers, potions), éveil (5 niveaux, fragments + essence), compétences (grimoires) — coûts centralisés dans `data/balance.ts`
+- Équipement : 7 emplacements, 5 raretés, stat principale + jusqu'à 4 secondaires, 7 ensembles (dont Célérité et Sang-vif), forge jusqu'à +15 (secondaires aux niveaux 4/8/12), verrou, démantèlement (unitaire et groupé), butin de campagne
+- Équipement et bonus d'ensemble appliqués en combat
+- Butin aléatoire de campagne (élixirs, minerai, potions, grimoires, sceaux, essence)
+- Courrier (récompenses uniques pilotées par les données), cadeau de mise à jour
+- Sauvegarde v2 avec migration automatique depuis la v1
+- 57 tests unitaires + tests de bout en bout (invocation, amélioration, équipement)
 
 ## Phase 4 — Contenu avancé
 

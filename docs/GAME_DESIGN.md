@@ -70,8 +70,17 @@ Difficultés : Normal, Difficile, Expert, Cauchemar (ennemis plus forts, nouveau
   d'ascension (3 tailles), minerai de forge, essence d'éveil. Constantes dans `data/balance.ts`.
 - **Quotidien** : cycle de connexion de 28 jours sans pénalité en cas d'absence ; missions, défis
   et événements en phase 4.
-- **Invocations** (phase 3) : taux affichés, invocations ×1 / ×10, garantie (pitié) pour les
-  légendaires et mythiques, animation spéciale.
+- **Invocations** : données dans `data/summons.ts`.
+
+  | Bannière | Coût | Taux | Garantie |
+  |---|---|---|---|
+  | Standard | 1 éclat terne | Commun 60 %, Peu commun 32 %, Rare 8 % | — |
+  | Rare | 1 éclat d'Aeon | Rare 80,5 %, Épique 17 %, Légendaire 2,3 %, Mythique 0,2 % | Légendaire en 60 ; Épique dans chaque ×10 |
+  | Épique | 300 cristaux | Épique 86 %, Légendaire 12,5 %, Mythique 1,5 % | Légendaire en 20 |
+  | Légendaire | 1 éclat primordial | Légendaire 92 %, Mythique 8 % | Mythique en 12 |
+  | Événement | 1 éclat de faille | Rare 70 %, Épique 22 %, Légendaire 7 %, Mythique 1 % (vedette 50 %) | Légendaire en 40 |
+
+  Doublon → fragments (Commun 4 … Mythique 40). Fragments : éveil, ou obtention d'un héros manquant.
 
 ## Les 15 premiers héros
 

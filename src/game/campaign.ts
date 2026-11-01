@@ -7,6 +7,21 @@ import type { UnitSetup } from './battle/types';
 import { spendEnergy } from './energy';
 import { applyReward } from './rewards';
 import { addAccountXp, addHeroXp } from './progression';
+import { gearBonus, rollCampaignGear, seededRand, pickWeighted } from './gear';
+import { BALANCE } from '../data/balance';
+import { GEAR_INVENTORY_CAP } from '../data/equipment';
+import type { GearItem } from '../save/schema';
+
+/** Butin bonus d'une victoire de campagne (un tirage). Les donjons (phase 4) en donneront davantage. */
+export const CAMPAIGN_LOOT: { resource: keyof Reward; amount: number; weight: number }[] = [
+  { resource: 'xpElixir', amount: 2, weight: 30 },
+  { resource: 'forgeOre', amount: 12, weight: 25 },
+  { resource: 'potionMinor', amount: 2, weight: 20 },
+  { resource: 'skillTome', amount: 1, weight: 9 },
+  { resource: 'potionGreater', amount: 1, weight: 7 },
+  { resource: 'rankSigil', amount: 1, weight: 6 },
+  { resource: 'awakenEssence', amount: 1, weight: 3 },
+];
 
 export function stageProgress(s: SaveData, diff: DifficultyId, stageId: string) {
   return s.progress.campaign[progressKey(diff, stageId)] ?? { stars: 0, clears: 0 };
@@ -32,7 +47,8 @@ export function teamSetups(s: SaveData, team: TeamPreset): UnitSetup[] {
   team.slots.forEach((uid, slot) => {
     const h = uid ? s.heroes.find((x) => x.uid === uid) : undefined;
     if (!h) return;
-    out.push({ kind: 'hero', refId: h.heroId, slot, level: h.level, rank: h.rank, ascension: h.ascension, awaken: h.awaken, skillLevels: h.skillLevels, heroUid: h.uid });
+    const gear = gearBonus(s.equipment.filter((g) => g.heroUid === h.uid));
+    out.push({ kind: 'hero', refId: h.heroId, slot, level: h.level, rank: h.rank, ascension: h.ascension, awaken: h.awaken, skillLevels: h.skillLevels, heroUid: h.uid, gear });
   });
   return out;
 }
@@ -60,6 +76,8 @@ export interface BattleResult {
   firstClear: boolean;
   reward: Reward;
   newHeroes: string[];
+  gear: GearItem[];
+  loot: Reward;
   heroXp: { uid: string; heroId: string; xp: number; levelsGained: number; capped: boolean; level: number }[];
   accountLevelsGained: number;
 }
@@ -69,7 +87,7 @@ export function applyStageResult(s: SaveData, stageId: string, diff: DifficultyI
   const stage = STAGE_BY_ID[stageId];
   const key = progressKey(diff, stageId);
   const prog = s.progress.campaign[key] ?? { stars: 0, clears: 0 };
-  const result: BattleResult = { won, stars: 0, firstClear: false, reward: {}, newHeroes: [], heroXp: [], accountLevelsGained: 0 };
+  const result: BattleResult = { won, stars: 0, firstClear: false, reward: {}, newHeroes: [], gear: [], loot: {}, heroXp: [], accountLevelsGained: 0 };
   result.accountLevelsGained = addAccountXp(s, stage.energy * (won ? 10 : 3));
   if (!won) { s.stats.battlesLost += 1; return result; }
 
@@ -89,6 +107,19 @@ export function applyStageResult(s: SaveData, stageId: string, diff: DifficultyI
     else { s.heroes.push(createHeroInstance(id, now)); result.newHeroes.push(id); }
   }
   s.progress.campaign[key] = { stars: Math.max(prog.stars, stars), clears: prog.clears + 1 };
+
+  // Butin aléatoire : équipement et matériaux d'amélioration.
+  const r = seededRand(now ^ (prog.clears * 7919) ^ stage.index);
+  if (r() < BALANCE.upgrades.gearDropChance || stage.boss) {
+    if (s.equipment.length < GEAR_INVENTORY_CAP) {
+      const g = rollCampaignGear(r, stage.index, !!stage.boss, now);
+      s.equipment.push(g);
+      result.gear.push(g);
+    }
+  }
+  const [lootKey, lootAmount] = pickWeighted(r, CAMPAIGN_LOOT.map((l) => [[l.resource, l.amount] as [keyof Reward, number], l.weight]));
+  result.loot = { [lootKey]: Math.round(lootAmount * mult) };
+  applyReward(s, result.loot);
 
   const xp = Math.round(stage.heroXp * mult);
   for (const uid of participantUids) {

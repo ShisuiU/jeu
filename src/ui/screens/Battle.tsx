@@ -18,6 +18,7 @@ import { Dialogue } from '../components/Dialogue';
 import { Modal } from '../components/common';
 import { RewardView } from '../components/RewardView';
 import { HeroCard } from '../components/HeroCard';
+import { GearCard } from '../components/GearCard';
 
 type Phase = 'intro' | 'fight' | 'outro' | 'result';
 interface Popup { id: number; text: string; cls: string }
@@ -267,7 +268,13 @@ export function Battle({ stageId, teamId, difficulty, seed }: { stageId: string;
                     <div><div className="faint">NOUVEL HÉRITIER</div><b style={{ fontSize: 17 }}>{HERO_BY_ID[id].name}</b><div className="muted">rejoint votre collection ! Ajoutez-le à une équipe dans l’écran Équipe.</div></div>
                   </div>
                 ))}
-                <RewardView reward={result.reward} />
+                <RewardView reward={{ ...result.reward, ...Object.fromEntries(Object.entries(result.loot).map(([k, v]) => [k, (result.reward[k as keyof typeof result.reward] ?? 0) + (v ?? 0)])) }} />
+                {result.gear.length > 0 && (
+                  <div className="row" style={{ justifyContent: 'center', gap: 10, marginTop: 10 }}>
+                    {result.gear.map((g) => <div key={g.uid} style={{ width: 70 }}><GearCard g={g} /></div>)}
+                    <span className="faint">Nouvel équipement !</span>
+                  </div>
+                )}
                 <div className="xp-list">
                   {result.heroXp.map((h) => {
                     const inst = useGame.getState().save!.heroes.find((x) => x.uid === h.uid);

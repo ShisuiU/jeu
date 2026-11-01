@@ -4,7 +4,7 @@ RPG mobile de collection de héros au tour par tour, univers original mêlant fa
 science-fiction et civilisations antiques. Conçu pour iPhone, jouable **hors ligne**, **gratuit**,
 sans App Store ni serveur : c'est une application web progressive (PWA) qu'on installe depuis Safari.
 
-> État : **Phase 2 terminée** — combats et chapitre 1 jouables. Voir [docs/ROADMAP.md](docs/ROADMAP.md).
+> État : **Phase 3 terminée** — combats, chapitre 1, invocations, améliorations et équipement. Voir [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## Jouer sur iPhone
 

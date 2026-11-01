@@ -7,7 +7,8 @@ import { createNewSave, SAVE_VERSION, type SaveData } from './schema';
 // Exemple pour la future v2 :  2: (s) => ({ ...s, inventory: { equipment: [] } }),
 type Migration = (s: any) => any;
 export const MIGRATIONS: Record<number, Migration> = {
-  // 2: (s) => { ... return s; },
+  // v2 (phase 3) : inventaire d'équipement et compteurs d'invocation.
+  2: (s) => ({ ...s, equipment: Array.isArray(s.equipment) ? s.equipment : [], summons: s.summons ?? { pity: {}, total: 0, history: [] } }),
 };
 
 export class SaveFormatError extends Error {}
@@ -42,6 +43,7 @@ export function migrateSave(raw: unknown): SaveData {
   const defaults = createNewSave(typeof s.createdAt === 'number' ? s.createdAt : Date.now());
   // Les listes « métier » ne sont pas remplacées par les valeurs par défaut :
   const merged: SaveData = fillDefaults({ ...s, heroes: s.heroes, teams: s.teams ?? defaults.teams }, defaults);
+  merged.equipment = (merged.equipment ?? []).map((g) => (g.heroUid && !s.heroes.some((h: { uid: string }) => h.uid === g.heroUid) ? { ...g, heroUid: null } : g));
   // Nettoyage : héros dont la définition n'existe plus (contenu retiré) et équipes pointant vers des héros absents.
   merged.heroes = merged.heroes.filter((h) => h && HERO_BY_ID[h.heroId]);
   const uids = new Set(merged.heroes.map((h) => h.uid));

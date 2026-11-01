@@ -1,1 +1,43 @@
-# jeu
+# Aeonfall — Les Héritiers de la Fracture
+
+RPG mobile de collection de héros au tour par tour, univers original mêlant fantasy médiévale,
+science-fiction et civilisations antiques. Conçu pour iPhone, jouable **hors ligne**, **gratuit**,
+sans App Store ni serveur : c'est une application web progressive (PWA) qu'on installe depuis Safari.
+
+> État : **Phase 1 terminée** (fondations). Voir [docs/ROADMAP.md](docs/ROADMAP.md).
+
+## Jouer sur iPhone
+
+1. Ouvrir l'adresse du jeu dans **Safari** (voir « Publier » ci-dessous).
+2. Toucher **Partager** → **Sur l'écran d'accueil**.
+3. Lancer le jeu depuis l'icône : plein écran, hors ligne, sauvegarde persistante.
+
+⚠️ Installez le jeu sur l'écran d'accueil : Safari peut effacer les données des sites non installés
+après 7 jours sans visite. Exportez régulièrement votre sauvegarde (Menu → Sauvegarde).
+
+## Publier gratuitement (GitHub Pages)
+
+1. Fusionner le travail dans la branche `main`.
+2. Sur GitHub : **Settings → Pages → Source : GitHub Actions**.
+3. Chaque push sur `main` lance les tests, compile et publie le jeu à
+   `https://<votre-compte>.github.io/<nom-du-dépôt>/`.
+
+Alternative : Cloudflare Pages (commande de build `npm run build`, dossier `dist`).
+
+## Développement
+
+```bash
+npm install
+npm run dev       # serveur local (accessible depuis l'iPhone sur le même Wi-Fi)
+npm test          # tests unitaires (sauvegarde, horloge, énergie, statistiques…)
+npm run build     # version de production dans dist/
+npm run preview   # tester la version de production
+npm run icons     # régénérer les icônes PNG depuis public/icons/icon.svg
+```
+
+## Documentation
+
+- [docs/GAME_DESIGN.md](docs/GAME_DESIGN.md) — univers, histoire, factions, héros, systèmes de jeu
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — choix techniques, dossiers, sauvegarde, hors ligne
+- [docs/ART_DIRECTION.md](docs/ART_DIRECTION.md) — direction artistique et intégration des illustrations
+- [docs/ROADMAP.md](docs/ROADMAP.md) — phases de développement et avancement

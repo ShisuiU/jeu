@@ -1,0 +1,58 @@
+import type { ReactNode } from 'react';
+import { useUI } from '../../state/ui';
+import { Icon } from '../art/Icons';
+import { RARITIES } from '../../data/rarities';
+import type { RarityId } from '../../data/types';
+
+export function Screen({ title, children, right, noBack }: { title: string; children: ReactNode; right?: ReactNode; noBack?: boolean }) {
+  const back = useUI((s) => s.back);
+  const depth = useUI((s) => s.stack.length);
+  return (
+    <div className="screen">
+      <div className="bg-ambient" />
+      <header className="screen-header">
+        {!noBack && depth > 1 && <button className="back-btn" onClick={back} aria-label="Retour"><Icon.back /></button>}
+        <h1>{title}</h1>
+        {right}
+      </header>
+      <div className="screen-scroll">{children}</div>
+    </div>
+  );
+}
+
+export function Panel({ title, children, className = '' }: { title?: string; children: ReactNode; className?: string }) {
+  return (
+    <section className={`panel ${className}`}>
+      {title && <div className="panel-title">{title}</div>}
+      {children}
+    </section>
+  );
+}
+
+export function Stars({ rarity }: { rarity: RarityId }) {
+  const r = RARITIES[rarity];
+  return <span className="stars">{Array.from({ length: r.order }, (_, i) => <Icon.star key={i} size={10} color={r.color} />)}</span>;
+}
+
+export function RarityTag({ rarity }: { rarity: RarityId }) {
+  const r = RARITIES[rarity];
+  return <span className="chip" style={{ color: r.glow, borderColor: r.color + '88', background: r.color + '22' }}>{r.name}</span>;
+}
+
+export function Toggle({ on, onChange, label }: { on: boolean; onChange: (v: boolean) => void; label: string }) {
+  return <button role="switch" aria-checked={on} aria-label={label} className={`toggle ${on ? 'on' : ''}`} onClick={() => onChange(!on)} />;
+}
+
+export function Modal({ children, onClose }: { children: ReactNode; onClose?: () => void }) {
+  return (
+    <div className="modal-backdrop" onClick={(e) => { if (e.target === e.currentTarget) onClose?.(); }}>
+      <div className="modal">{children}</div>
+    </div>
+  );
+}
+
+export function fmt(n: number): string {
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(n >= 10_000_000 ? 0 : 1).replace('.', ',') + ' M';
+  if (n >= 100_000) return Math.floor(n / 1000) + ' k';
+  return n.toLocaleString('fr-FR');
+}

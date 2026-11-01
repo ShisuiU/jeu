@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { play } from '../audio/sfx';
+import type { BattleSpec } from '../game/modes';
 
 export type Route =
   | { name: 'home' }
@@ -17,7 +18,15 @@ export type Route =
   | { name: 'mail' }
   | { name: 'gear' }
   | { name: 'stage'; stageId: string }
-  | { name: 'battle'; stageId: string; teamId: string; difficulty: 'normal' | 'hard' | 'expert' | 'nightmare'; seed: number };
+  | { name: 'prep'; spec: BattleSpec }
+  | { name: 'battle'; spec: BattleSpec; teamId: string; seed: number }
+  | { name: 'dungeons' }
+  | { name: 'dungeon'; dungeonId: string }
+  | { name: 'tower' }
+  | { name: 'worldboss' }
+  | { name: 'arena' }
+  | { name: 'missions' }
+  | { name: 'events' };
 
 export type Tab = 'home' | 'collection' | 'team' | 'inventory' | 'menu';
 

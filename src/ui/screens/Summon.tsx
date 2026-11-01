@@ -8,6 +8,7 @@ import { RESOURCES } from '../../data/resources';
 import type { RarityId } from '../../data/types';
 import { canAfford, summon, type SummonResult } from '../../game/summon';
 import { applyReward } from '../../game/rewards';
+import { bannerAvailable } from '../../game/events';
 import { play } from '../../audio/sfx';
 import { Modal, Panel, Screen, fmt } from '../components/common';
 import { HeroCard } from '../components/HeroCard';
@@ -19,6 +20,7 @@ export function Summon() {
   const mutate = useGame((s) => s.mutate);
   const toast = useUI((s) => s.toast);
   const push = useUI((s) => s.push);
+  const now = useGame((s) => s.now);
   const [bannerId, setBannerId] = useState('aeon');
   const [rates, setRates] = useState(false);
   const [reveal, setReveal] = useState<{ results: SummonResult[]; banner: string; count: 1 | 10 } | null>(null);
@@ -39,7 +41,7 @@ export function Summon() {
   return (
     <Screen title="Invocation">
       <div className="chips" style={{ marginBottom: 10 }}>
-        {BANNERS.map((x) => (
+        {BANNERS.filter((x) => bannerAvailable(x.id, now)).map((x) => (
           <button key={x.id} className={`chip ${x.id === bannerId ? 'active' : ''}`} style={x.id === bannerId ? { borderColor: x.color, color: x.glow } : undefined} onClick={() => setBannerId(x.id)}>
             <ResourceIcon icon={RESOURCES[x.cost.resource].icon} color={RESOURCES[x.cost.resource].color} size={14} />{x.name.replace('Invocation ', '')}
           </button>

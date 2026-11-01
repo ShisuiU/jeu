@@ -45,7 +45,7 @@ export const DUNGEONS: DungeonDef[] = [
 
 export const DUNGEON_BY_ID: Record<string, DungeonDef> = Object.fromEntries(DUNGEONS.map((d) => [d.id, d]));
 
-export function dungeonLevel(floor: number) { return 3 + (floor - 1) * 4; }
+export function dungeonLevel(floor: number) { return 2 + (floor - 1) * 4; }
 export function dungeonEnergy(floor: number) { return 6 + Math.floor(floor / 2); }
 
 export function dungeonWaves(d: DungeonDef, floor: number): WaveEnemy[][] {

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useGame } from './state/store';
 import { useUI, type Route } from './state/ui';
 import { initSaveSystem } from './save/saveManager';
+import { loadEvents } from './game/events';
 import { configureAudio, play, unlockAudio } from './audio/sfx';
 import { canClaimDaily } from './game/daily';
 import { BottomNav } from './ui/components/BottomNav';
@@ -18,11 +19,13 @@ import { Settings } from './ui/screens/Settings';
 import { Saves } from './ui/screens/Saves';
 import { Codex } from './ui/screens/Codex';
 import { Campaign } from './ui/screens/Campaign';
-import { Stage } from './ui/screens/Stage';
+import { Stage, Prep } from './ui/screens/Stage';
 import { Battle } from './ui/screens/Battle';
 import { Summon } from './ui/screens/Summon';
 import { Gear } from './ui/screens/Gear';
 import { Mail } from './ui/screens/Mail';
+import { Dungeons, Dungeon, Tower, WorldBoss, Arena } from './ui/screens/Modes';
+import { Missions, Events } from './ui/screens/Missions';
 
 function renderRoute(r: Route) {
   switch (r.name) {
@@ -40,8 +43,16 @@ function renderRoute(r: Route) {
     case 'summon': return <Summon />;
     case 'gear': return <Gear />;
     case 'mail': return <Mail />;
+    case 'dungeons': return <Dungeons />;
+    case 'dungeon': return <Dungeon key={r.dungeonId} dungeonId={r.dungeonId} />;
+    case 'tower': return <Tower />;
+    case 'worldboss': return <WorldBoss />;
+    case 'arena': return <Arena />;
+    case 'missions': return <Missions />;
+    case 'events': return <Events />;
     case 'stage': return <Stage key={r.stageId} stageId={r.stageId} />;
-    case 'battle': return <Battle key={r.seed} stageId={r.stageId} teamId={r.teamId} difficulty={r.difficulty} seed={r.seed} />;
+    case 'prep': return <Prep key={JSON.stringify(r.spec)} spec={r.spec} />;
+    case 'battle': return <Battle key={r.seed} spec={r.spec} teamId={r.teamId} seed={r.seed} />;
   }
 }
 
@@ -59,6 +70,7 @@ export default function App() {
     booted.current = true;
     initSaveSystem()
       .then(() => setReady(true))
+      .then(() => loadEvents(import.meta.env.BASE_URL))
       .catch((e) => setError(`Impossible d’accéder au stockage : ${e instanceof Error ? e.message : e}. Désactivez la navigation privée.`));
   }, []);
 

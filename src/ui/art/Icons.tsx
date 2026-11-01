@@ -31,6 +31,7 @@ export const Icon = {
   boots: (p: P) => <S {...p}><path d="M7 3h6v10l6 3a2 2 0 0 1 1 2v3H5v-6l2-2z" /><path d="M5 18h15" /></S>,
   ring: (p: P) => <S {...p}><circle cx="12" cy="15" r="6" /><path d="m9 6 3-3 3 3-3 3z" /></S>,
   gem: (p: P) => <S {...p}><path d="M6 3h12l4 6-10 12L2 9z" /><path d="M2 9h20M12 21 8 9l4-6 4 6z" /></S>,
+  mail: (p: P) => <S {...p}><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 7 9 6 9-6" /></S>,
   forge: (p: P) => <S {...p}><path d="M3 10h13l2-3h3v4l-3 2H6z" /><path d="M8 13v3l-3 5h14l-3-5v-3" /></S>,
   star: ({ size = 12, color = '#ffd36b' }: P) => <svg viewBox="0 0 24 24" width={size} height={size}><path d="m12 2 2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 20.9l1.6-7L2 9.2l7.1-.6z" fill={color} stroke="#3a2a0a" strokeWidth="1" /></svg>,
   // ─── Ressources (en couleur) ───

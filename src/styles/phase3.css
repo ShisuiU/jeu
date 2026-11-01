@@ -64,3 +64,30 @@
 @keyframes flipIn { from { transform: rotateY(90deg) scale(0.8); opacity: 0; } }
 .rg-tag { display: block; text-align: center; font-size: 8.5px; font-weight: 800; margin-top: 2px; color: var(--text-dim); }
 .rg-tag.new { color: #7bea8f; }
+
+/* ─── Phase 4 : modes ─── */
+.mode-card { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--mc) 50%, transparent); background: linear-gradient(90deg, color-mix(in srgb, var(--mc) 18%, transparent), rgba(14,12,20,0.9) 60%); }
+.mode-card:active { transform: scale(0.98); }
+.mc-art { width: 64px; height: 64px; border-radius: 12px; overflow: hidden; border: 1px solid var(--mc); flex-shrink: 0; }
+.mc-name { font-family: var(--font-title); font-weight: 800; font-size: 16px; color: var(--mc); }
+.mode-hero { position: relative; height: 170px; border-radius: 16px; overflow: hidden; border: 1px solid var(--mc); margin-bottom: 12px; box-shadow: 0 0 30px color-mix(in srgb, var(--mc) 25%, transparent); }
+.mode-hero .mh-art { position: absolute; inset: 0; }
+.mode-hero .mh-info { position: absolute; left: 0; right: 0; bottom: 0; padding: 12px; background: linear-gradient(180deg, transparent, rgba(5,4,8,0.95)); }
+.mode-hero.boss { height: 220px; }
+.tower { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+.tower-floor { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; background: rgba(18,15,26,0.85); border: 1px solid var(--line); }
+.tower-floor .tf-n { width: 34px; height: 34px; border-radius: 8px; display: grid; place-items: center; font-family: var(--font-title); font-weight: 800; background: rgba(255,255,255,0.05); }
+.tower-floor.done { opacity: 0.55; }
+.tower-floor.next { border-color: var(--gold-hi); box-shadow: 0 0 16px rgba(255,210,120,0.3); }
+.tower-floor.next .tf-n { background: linear-gradient(180deg, #e2b866, #8a6a33); color: #1d1408; }
+.tower-floor.boss { border-color: rgba(185,140,255,0.5); }
+.tower-floor.future { opacity: 0.8; }
+.chests { display: flex; gap: 4px; margin: 8px 0; }
+.chests span { flex: 1; text-align: center; font-size: 10px; font-weight: 800; padding: 4px 0; border-radius: 6px; background: rgba(255,255,255,0.05); color: var(--text-faint); }
+.chests span.on { background: linear-gradient(180deg, #e2b866, #8a6a33); color: #1d1408; }
+.mission { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.mission:last-child { border: 0; }
+.mission.claimed { opacity: 0.5; }
+.m-ic { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center; background: rgba(255,255,255,0.04); border: 1px solid var(--line); flex-shrink: 0; }
+.m-title { font-weight: 700; font-size: 13.5px; }
+.event-card { padding: 14px; border-radius: 16px; border: 1px solid var(--mc); margin-bottom: 12px; background: radial-gradient(circle at 80% 0%, color-mix(in srgb, var(--mc) 30%, transparent), rgba(14,12,20,0.95) 70%); }

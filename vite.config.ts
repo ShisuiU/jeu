@@ -36,6 +36,8 @@ export default defineConfig({
       workbox: {
         // Tout le jeu (code, polices, illustrations) est pré-caché : jouable hors ligne après le 1er chargement.
         globPatterns: ['**/*.{js,css,html,woff2,png,webp,svg,json}'],
+        // Les événements sont téléchargés frais à chaque lancement (repli : dernière version mémorisée).
+        globIgnores: ['events.json'],
         maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
         navigateFallback: 'index.html',
         cleanupOutdatedCaches: true,

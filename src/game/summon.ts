@@ -5,6 +5,7 @@ import type { RarityId } from '../data/types';
 import { createHeroInstance, type SaveData } from '../save/schema';
 import { pickWeighted, type Rand } from './gear';
 import { track } from './missions';
+import { bannerAvailable } from './events';
 
 export interface SummonResult { heroId: string; rarity: RarityId; duplicate: boolean; fragments: number; guaranteed: boolean }
 
@@ -34,6 +35,7 @@ export function canAfford(s: SaveData, bannerId: string, count: number): boolean
 export function summon(s: SaveData, bannerId: string, count: 1 | 10, r: Rand, now: number): { ok: boolean; reason?: string; results: SummonResult[] } {
   const b = BANNER_BY_ID[bannerId];
   if (!b) return { ok: false, reason: 'Invocation inconnue.', results: [] };
+  if (!bannerAvailable(b.id, s.time.highWater)) return { ok: false, reason: 'Cette invocation n’est pas ouverte actuellement.', results: [] };
   if (!canAfford(s, bannerId, count)) return { ok: false, reason: 'Ressources insuffisantes.', results: [] };
   s.resources[b.cost.resource] -= b.cost.amount * count;
 

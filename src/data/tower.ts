@@ -5,16 +5,17 @@ import type { WaveEnemy } from './campaign';
 export const TOWER_FLOORS = 50;
 const POOL = ['hollow_soldier', 'hollow_archer', 'hollow_shield', 'hollow_cantor', 'rift_hound', 'hollow_knight'];
 
-export function towerLevel(floor: number) { return 2 + Math.round(floor * 1.15); }
+export function towerLevel(floor: number) { return 1 + floor; }
 
 export function towerWaves(floor: number): WaveEnemy[][] {
   const lv = towerLevel(floor);
   const pick = (i: number) => POOL[(floor * 7 + i * 3) % POOL.length];
+  const size = 3 + Math.min(2, Math.floor(floor / 10));
+  const wave = (offset: number, n: number): WaveEnemy[] => Array.from({ length: n }, (_, i) => ({ enemy: pick(i + offset), level: lv, slot: [0, 1, 2, 3, 4][i] }));
   if (floor % 10 === 0) {
-    return [[{ enemy: 'tower_sentinel', level: lv + 2, slot: 1, hpMult: 3 + floor / 10 }, { enemy: pick(1), level: lv, slot: 3 }, { enemy: pick(2), level: lv, slot: 4 }]];
+    return [wave(0, 3), [{ enemy: 'tower_sentinel', level: lv, slot: 1, hpMult: 1.6 + floor / 50 }, { enemy: pick(1), level: lv, slot: 3 }, { enemy: pick(2), level: lv, slot: 4 }]];
   }
-  const size = 2 + Math.min(3, Math.floor(floor / 8));
-  return [Array.from({ length: size }, (_, i) => ({ enemy: pick(i), level: lv, slot: [0, 1, 2, 3, 4][i] }))];
+  return floor >= 4 ? [wave(0, size), wave(2, size)] : [wave(0, size)];
 }
 
 export function towerReward(floor: number): Reward {

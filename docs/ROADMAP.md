@@ -32,11 +32,18 @@
 - Sauvegarde v2 avec migration automatique depuis la v1
 - 57 tests unitaires + tests de bout en bout (invocation, amélioration, équipement)
 
-## Phase 4 — Contenu avancé
+## ✅ Phase 4 — Contenu avancé (terminée)
 
-- Donjons (équipement, expérience, potions, compétences), tour de progression, boss mondial
-- Missions journalières/hebdomadaires, récompenses de progression, événements (fichier JSON distant)
-- Difficultés Difficile / Expert / Cauchemar, arène contre l'IA
+- Écran de combat et écran de préparation communs à tous les modes (`game/modes.ts`)
+- 4 donjons de 10 étages (Forge Engloutie : équipement garanti ; Grotte d'Ambre : élixirs ; Laboratoire Brisé : potions ; Archives Effacées : grimoires, sceaux, essence), chacun avec son gardien
+- Tour des Âges : 50 étages générés, sans énergie, Sentinelle tous les 10 étages
+- Boss mondial (Colosse de Bronze) : 4 niveaux, 45 actions par combat, récompenses selon 6 paliers de dégâts, 3 clés par jour
+- Arène contre l'ordinateur : adversaires calibrés sur la puissance du joueur, classement, 5 ligues, 5 tickets par jour
+- Missions journalières (7 + coffre) et hebdomadaires (7 + coffre), 19 récompenses de progression
+- Événements téléchargés depuis `public/events.json` (objectifs, défi spécial, bannière, bonus de donjon) — voir [EVENTS.md](EVENTS.md)
+- Difficultés Difficile / Expert / Cauchemar pour la campagne
+- Réinitialisations quotidiennes et hebdomadaires fondées sur l'horloge de confiance
+- Sauvegarde v3 avec migration ; 70 tests unitaires + 5 parcours de bout en bout
 
 ## Phase 5 — Finitions
 

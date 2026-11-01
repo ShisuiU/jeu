@@ -34,6 +34,7 @@ export async function loadEvents(baseUrl: string): Promise<'network' | 'cache' |
     const cached = localStorage.getItem(LS_KEY);
     if (cached) { const list = JSON.parse(cached); if (Array.isArray(list)) { setEvents(list); source = 'cache'; } }
   } catch { /* */ }
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) return source;
   try {
     const res = await fetch(`${baseUrl}events.json?t=${Date.now()}`, { cache: 'no-store' });
     if (res.ok) {

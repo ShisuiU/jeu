@@ -81,7 +81,9 @@ export interface BattleState {
   actionCount: number;
   activeId: string | null;
   extraTurn: string | null;
-  outcome: 'running' | 'won' | 'lost';
+  outcome: 'running' | 'won' | 'lost' | 'timeout';
+  /** Nombre maximal d'actions (boss mondial). */
+  turnLimit?: number;
   events: BattleEvent[];
   statusSeq: number;
   /** Synergies d'équipe actives (côté joueur). */

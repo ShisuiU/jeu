@@ -19,7 +19,7 @@ export interface EnemyDef {
   look: string;
   palette: [string, string];
   /** Forme de la silhouette provisoire. */
-  shape: 'soldier' | 'archer' | 'shield' | 'cantor' | 'hound' | 'knight' | 'herald';
+  shape: 'soldier' | 'archer' | 'shield' | 'cantor' | 'hound' | 'knight' | 'herald' | 'golem' | 'wyrm' | 'alchemist' | 'archivist' | 'sentinel' | 'colossus';
 }
 
 const s = (id: string, name: string, slot: SkillDef['slot'], cooldown: number, description: string, effects: SkillDef['effects']): SkillDef =>
@@ -82,6 +82,65 @@ export const ENEMIES: Record<string, EnemyDef> = {
       s('he_1', 'Glas', 'basic', 0, 'Frappe un ennemi et réduit sa DÉF (30 %, 2 tours).', [{ kind: 'damage', target: 'enemy', mult: 3.0 }, { kind: 'status', target: 'enemy', status: 'defDown', chance: 0.3, turns: 2, value: 0.3 }]),
       s('he_2', 'Silence de cendre', 'special', 3, 'Attaque tous les ennemis, 30 % d’étourdir.', [{ kind: 'damage', target: 'allEnemies', mult: 1.6 }, { kind: 'status', target: 'allEnemies', status: 'stun', chance: 0.3, turns: 1 }]),
       s('he_3', 'Effacement', 'ultimate', 5, 'Énormes dégâts à tous et réduit leur ATQ (2 tours).', [{ kind: 'damage', target: 'allEnemies', mult: 2.5 }, { kind: 'status', target: 'allEnemies', status: 'atkDown', chance: 0.6, turns: 2, value: 0.25 }]),
+    ],
+  },
+  // ─── Gardiens des donjons ───
+  forge_golem: {
+    id: 'forge_golem', name: 'Gardien de la Forge', role: 'defender', affinity: 'telluric', mult: 0.95, baseSpd: 88, boss: true, shape: 'golem',
+    bias: { hp: 1.3, def: 1.2 },
+    look: 'Golem de bronze et d’enclumes, cœur de forge incandescent, marteaux à la place des mains.', palette: ['#6b4a2a', '#ff9a3c'],
+    skills: [
+      s('fg_1', 'Marteau d’enclume', 'basic', 0, 'Frappe (DÉF) et réduit la DÉF (40 %).', [{ kind: 'damage', target: 'enemy', mult: 1.8, scaling: 'def' }, { kind: 'status', target: 'enemy', status: 'defDown', chance: 0.4, turns: 2, value: 0.3 }]),
+      s('fg_2', 'Coulée de bronze', 'special', 3, 'Attaque tous les ennemis et les brûle (35 %).', [{ kind: 'damage', target: 'allEnemies', mult: 1.0, scaling: 'def' }, { kind: 'status', target: 'allEnemies', status: 'burn', chance: 0.35, turns: 2 }]),
+      s('fg_3', 'Trempe', 'ultimate', 5, 'Bouclier de 25 % et DÉF +50 % sur lui-même.', [{ kind: 'shield', target: 'self', pctMaxHp: 0.25, turns: 2 }, { kind: 'status', target: 'self', status: 'defUp', chance: 1, turns: 2, value: 0.5 }]),
+    ],
+  },
+  amber_wyrm: {
+    id: 'amber_wyrm', name: 'Wyrm d’ambre', role: 'attacker', affinity: 'solar', mult: 0.9, baseSpd: 104, boss: true, shape: 'wyrm',
+    bias: { hp: 1.2 },
+    look: 'Serpent ailé aux écailles d’ambre translucide, gorge pleine d’élixir doré.', palette: ['#6b4a10', '#ffcf5a'],
+    skills: [
+      s('aw_1', 'Croc d’ambre', 'basic', 0, 'Frappe un ennemi.', [{ kind: 'damage', target: 'enemy', mult: 3.4 }]),
+      s('aw_2', 'Souffle doré', 'special', 3, 'Attaque tous les ennemis et les brûle (40 %).', [{ kind: 'damage', target: 'allEnemies', mult: 1.6 }, { kind: 'status', target: 'allEnemies', status: 'burn', chance: 0.4, turns: 2 }]),
+    ],
+  },
+  rogue_alchemist: {
+    id: 'rogue_alchemist', name: 'Alchimiste dévoyé', role: 'controller', affinity: 'lunar', mult: 0.9, baseSpd: 106, boss: true, shape: 'alchemist',
+    bias: { hp: 1.2 },
+    look: 'Savant de l’Ordre du Prisme rongé par ses propres potions, fioles bouillonnantes à la ceinture.', palette: ['#203a4a', '#7fe7ff'],
+    skills: [
+      s('ra_1', 'Fiole corrosive', 'basic', 0, 'Frappe et empoisonne (50 %).', [{ kind: 'damage', target: 'enemy', mult: 2.8 }, { kind: 'status', target: 'enemy', status: 'poison', chance: 0.5, turns: 2 }]),
+      s('ra_2', 'Brume gelante', 'special', 4, 'Attaque tous les ennemis, 30 % de gel.', [{ kind: 'damage', target: 'allEnemies', mult: 1.4 }, { kind: 'status', target: 'allEnemies', status: 'freeze', chance: 0.3, turns: 1 }]),
+      s('ra_3', 'Élixir interdit', 'ultimate', 5, 'Soigne ses alliés de 25 %.', [{ kind: 'heal', target: 'allAllies', pctMaxHp: 0.25 }]),
+    ],
+  },
+  mute_archivist: {
+    id: 'mute_archivist', name: 'Archiviste Muet', role: 'controller', affinity: 'void', mult: 0.9, baseSpd: 102, boss: true, shape: 'archivist',
+    bias: { hp: 1.2 },
+    look: 'Gardien d’une bibliothèque effacée, pages vierges tourbillonnant autour de lui.', palette: ['#3a3050', '#d6b8ff'],
+    skills: [
+      s('ma_1', 'Page blanche', 'basic', 0, 'Frappe et réduit l’ATQ (40 %).', [{ kind: 'damage', target: 'enemy', mult: 2.9 }, { kind: 'status', target: 'enemy', status: 'atkDown', chance: 0.4, turns: 2, value: 0.25 }]),
+      s('ma_2', 'Oubli', 'special', 3, 'Vide la jauge de tour de tous les ennemis (25 %) et les étourdit (25 %).', [{ kind: 'damage', target: 'allEnemies', mult: 1.3 }, { kind: 'turnMeter', target: 'allEnemies', delta: -0.25 }, { kind: 'status', target: 'allEnemies', status: 'stun', chance: 0.25, turns: 1 }]),
+    ],
+  },
+  tower_sentinel: {
+    id: 'tower_sentinel', name: 'Sentinelle de la Tour', role: 'defender', affinity: 'void', mult: 1.0, baseSpd: 98, boss: true, shape: 'sentinel',
+    bias: { hp: 1.4 },
+    look: 'Statue de cristal noir animée, gardienne d’un étage de la Tour des Âges.', palette: ['#2a2a3a', '#b98cff'],
+    skills: [
+      s('ts_1', 'Lame de cristal', 'basic', 0, 'Frappe, 25 % d’étourdir.', [{ kind: 'damage', target: 'enemy', mult: 3.0 }, { kind: 'status', target: 'enemy', status: 'stun', chance: 0.25, turns: 1 }]),
+      s('ts_2', 'Écho des âges', 'special', 3, 'Attaque tous les ennemis et réduit leur VIT (40 %).', [{ kind: 'damage', target: 'allEnemies', mult: 1.5 }, { kind: 'status', target: 'allEnemies', status: 'spdDown', chance: 0.4, turns: 2, value: 0.25 }]),
+      s('ts_3', 'Rempart des âges', 'ultimate', 5, 'Bouclier de 20 % sur tous ses alliés.', [{ kind: 'shield', target: 'allAllies', pctMaxHp: 0.2, turns: 2 }]),
+    ],
+  },
+  // ─── Boss mondial ───
+  bronze_colossus: {
+    id: 'bronze_colossus', name: 'Le Colosse de Bronze', role: 'controller', affinity: 'void', mult: 1.0, baseSpd: 95, boss: true, shape: 'colossus',
+    look: 'Statue de guerre de la cité d’Ur-Akkar, haute comme une tour, réveillée par la Fracture ; ses fissures laissent passer un soleil noir.', palette: ['#5a3a18', '#ffcc66'],
+    skills: [
+      s('bc_1', 'Poing de bronze', 'basic', 0, 'Frappe et réduit la DÉF (40 %).', [{ kind: 'damage', target: 'enemy', mult: 3.0 }, { kind: 'status', target: 'enemy', status: 'defDown', chance: 0.4, turns: 2, value: 0.3 }]),
+      s('bc_2', 'Séisme', 'special', 3, 'Attaque tous les ennemis, 30 % d’étourdir.', [{ kind: 'damage', target: 'allEnemies', mult: 1.6 }, { kind: 'status', target: 'allEnemies', status: 'stun', chance: 0.3, turns: 1 }]),
+      s('bc_3', 'Soleil noir', 'ultimate', 4, 'Énormes dégâts à tous et brûlure (60 %).', [{ kind: 'damage', target: 'allEnemies', mult: 2.4 }, { kind: 'status', target: 'allEnemies', status: 'burn', chance: 0.6, turns: 2 }]),
     ],
   },
 };

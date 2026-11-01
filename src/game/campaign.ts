@@ -1,4 +1,5 @@
-import { CHAPTERS, DIFFICULTIES, progressKey, STAGE_BY_ID, type DifficultyId, type StageDef } from '../data/campaign';
+import { CHAPTERS, DIFFICULTIES, DIFFICULTY_ORDER, progressKey, STAGE_BY_ID, type DifficultyId, type StageDef } from '../data/campaign';
+import { track } from './missions';
 import type { Reward } from '../data/resources';
 import { HERO_BY_ID } from '../data/heroes';
 import type { SaveData, TeamPreset } from '../save/schema';
@@ -32,6 +33,12 @@ export function isStageUnlocked(s: SaveData, diff: DifficultyId, stage: StageDef
   const chapter = CHAPTERS.find((c) => c.n === stage.chapter)!;
   const i = chapter.stages.indexOf(stage);
   if (i > 0) return stageProgress(s, diff, chapter.stages[i - 1].id).clears > 0;
+  const di = DIFFICULTY_ORDER.indexOf(diff);
+  if (di > 0) {
+    // Une difficulté s'ouvre quand le même chapitre est terminé dans la difficulté précédente.
+    const prevDiff = DIFFICULTY_ORDER[di - 1];
+    if (stageProgress(s, prevDiff, chapter.stages[chapter.stages.length - 1].id).clears === 0) return false;
+  }
   if (stage.chapter === 1) return true;
   const prev = CHAPTERS.find((c) => c.n === stage.chapter - 1);
   return !!prev && stageProgress(s, diff, prev.stages[prev.stages.length - 1].id).clears > 0;
@@ -59,11 +66,20 @@ export function stageWaves(stage: StageDef, diff: DifficultyId): UnitSetup[][] {
 }
 
 /** Dépense l'énergie d'un niveau. Retourne false si impossible. (mutation) */
-export function payStage(s: SaveData, stage: StageDef, now: number): boolean {
-  const e = spendEnergy(s.energy, stage.energy, now);
+export function stageEnergy(stage: StageDef, diff: DifficultyId = 'normal'): number {
+  return stage.energy + DIFFICULTY_ORDER.indexOf(diff);
+}
+
+export function payEnergy(s: SaveData, amount: number, now: number): boolean {
+  const e = spendEnergy(s.energy, amount, now);
   if (!e) return false;
   s.energy = e;
+  track(s, 'energySpent', amount);
   return true;
+}
+
+export function payStage(s: SaveData, stage: StageDef, now: number, diff: DifficultyId = 'normal'): boolean {
+  return payEnergy(s, stageEnergy(stage, diff), now);
 }
 
 export function starsFor(alliesDead: number): number {
@@ -88,10 +104,12 @@ export function applyStageResult(s: SaveData, stageId: string, diff: DifficultyI
   const key = progressKey(diff, stageId);
   const prog = s.progress.campaign[key] ?? { stars: 0, clears: 0 };
   const result: BattleResult = { won, stars: 0, firstClear: false, reward: {}, newHeroes: [], gear: [], loot: {}, heroXp: [], accountLevelsGained: 0 };
-  result.accountLevelsGained = addAccountXp(s, stage.energy * (won ? 10 : 3));
+  result.accountLevelsGained = addAccountXp(s, stageEnergy(stage, diff) * (won ? 10 : 3));
   if (!won) { s.stats.battlesLost += 1; return result; }
 
   s.stats.battlesWon += 1;
+  track(s, 'battleWin');
+  track(s, 'campaignWin');
   const stars = starsFor(alliesDead);
   result.stars = stars;
   result.firstClear = prog.clears === 0;

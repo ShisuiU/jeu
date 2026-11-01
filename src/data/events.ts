@@ -1,0 +1,49 @@
+import type { Reward } from './resources';
+import type { TrackKey } from './missions';
+import type { WaveEnemy } from './campaign';
+
+// ÉVÉNEMENTS — décrits en JSON. Le jeu télécharge public/events.json au démarrage (sans passer par le
+// cache), le mémorise pour le hors-ligne, et retombe sur cette liste intégrée si rien n'est disponible.
+// Pour lancer un nouvel événement : modifier uniquement public/events.json, sans toucher au code.
+
+export interface EventTask { id: string; key: TrackKey; target: number; title: string; reward: Reward }
+export interface EventChallenge { id: string; name: string; description: string; waves: WaveEnemy[][]; reward: Reward }
+export interface GameEvent {
+  id: string;
+  name: string;
+  description: string;
+  start: string; // ISO
+  end: string;   // ISO
+  /** Bannières d'invocation ouvertes pendant l'événement. */
+  banners?: string[];
+  tasks?: EventTask[];
+  challenge?: EventChallenge;
+  /** Bonus de butin des donjons (multiplicateur). */
+  dungeonBonus?: number;
+  color?: string;
+}
+
+export const BUNDLED_EVENTS: GameEvent[] = [
+  {
+    id: 'ev_ash_2026', name: 'La Faille de Cendre', color: '#ff3d6e',
+    description: 'Une faille s’ouvre sur la Fosse : Mère Sulfura répond plus souvent à l’appel. Remplissez les objectifs pour gagner des éclats de faille.',
+    start: '2026-11-01T00:00:00Z', end: '2027-01-31T23:59:59Z',
+    banners: ['event_ash'],
+    dungeonBonus: 1.5,
+    tasks: [
+      { id: 'e1', key: 'battleWin', target: 15, title: 'Remporter 15 combats', reward: { shardEvent: 3 } },
+      { id: 'e2', key: 'dungeonWin', target: 10, title: 'Vaincre 10 étages de donjon', reward: { shardEvent: 4 } },
+      { id: 'e3', key: 'worldBoss', target: 5, title: 'Affronter 5 fois le boss mondial', reward: { shardEvent: 3 } },
+      { id: 'e4', key: 'summon', target: 20, title: 'Invoquer 20 héros', reward: { shardEvent: 5, crystals: 200 } },
+    ],
+    challenge: {
+      id: 'c_ash', name: 'Défi : les Braises de la Fosse',
+      description: 'Une meute de molosses de faille garde la brèche. Défi unique.',
+      waves: [
+        [{ enemy: 'rift_hound', level: 12, slot: 0 }, { enemy: 'rift_hound', level: 12, slot: 1 }, { enemy: 'rift_hound', level: 12, slot: 2 }],
+        [{ enemy: 'hollow_cantor', level: 13, slot: 3 }, { enemy: 'hollow_knight', level: 14, slot: 1 }, { enemy: 'hollow_cantor', level: 13, slot: 4 }],
+      ],
+      reward: { shardEvent: 5, crystals: 150 },
+    },
+  },
+];

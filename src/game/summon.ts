@@ -4,6 +4,7 @@ import { RARITIES } from '../data/rarities';
 import type { RarityId } from '../data/types';
 import { createHeroInstance, type SaveData } from '../save/schema';
 import { pickWeighted, type Rand } from './gear';
+import { track } from './missions';
 
 export interface SummonResult { heroId: string; rarity: RarityId; duplicate: boolean; fragments: number; guaranteed: boolean }
 
@@ -65,6 +66,7 @@ export function summon(s: SaveData, bannerId: string, count: 1 | 10, r: Rand, no
   s.summons.history = s.summons.history.slice(0, 50);
   s.summons.total += count;
   s.stats.summons += count;
+  track(s, 'summon', count);
   return { ok: true, results };
 }
 

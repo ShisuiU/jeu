@@ -4,6 +4,7 @@ import type { ResourceId } from '../data/resources';
 import type { HeroInstance, SaveData } from '../save/schema';
 import { addHeroXp, heroXpToNext } from './progression';
 import { maxLevelForRank } from './stats';
+import { track } from './missions';
 
 // AMÉLIORATION DES HÉROS — chaque action vérifie ses conditions et ses coûts, puis modifie la sauvegarde.
 // Tous les coûts viennent de data/balance.ts.
@@ -69,7 +70,7 @@ export function rankUpCheck(s: SaveData, h: HeroInstance): Check {
 export function rankUp(s: SaveData, heroUid: string): Check {
   const h = find(s, heroUid)!;
   const c = rankUpCheck(s, h);
-  if (c.ok) { pay(s, h, c.cost); h.rank += 1; }
+  if (c.ok) { pay(s, h, c.cost); h.rank += 1; track(s, 'heroUpgrade'); }
   return c;
 }
 
@@ -85,7 +86,7 @@ export function ascendCheck(s: SaveData, h: HeroInstance): Check {
 export function ascend(s: SaveData, heroUid: string): Check {
   const h = find(s, heroUid)!;
   const c = ascendCheck(s, h);
-  if (c.ok) { pay(s, h, c.cost); h.ascension += 1; }
+  if (c.ok) { pay(s, h, c.cost); h.ascension += 1; track(s, 'heroUpgrade'); }
   return c;
 }
 
@@ -101,7 +102,7 @@ export function awakenCheck(s: SaveData, h: HeroInstance): Check {
 export function awaken(s: SaveData, heroUid: string): Check {
   const h = find(s, heroUid)!;
   const c = awakenCheck(s, h);
-  if (c.ok) { pay(s, h, c.cost); h.awaken += 1; }
+  if (c.ok) { pay(s, h, c.cost); h.awaken += 1; track(s, 'heroUpgrade'); }
   return c;
 }
 
@@ -117,6 +118,6 @@ export function skillCheck(s: SaveData, h: HeroInstance, skillId: string): Check
 export function upgradeSkill(s: SaveData, heroUid: string, skillId: string): Check {
   const h = find(s, heroUid)!;
   const c = skillCheck(s, h, skillId);
-  if (c.ok) { pay(s, h, c.cost); h.skillLevels[skillId] = (h.skillLevels[skillId] ?? 1) + 1; }
+  if (c.ok) { pay(s, h, c.cost); h.skillLevels[skillId] = (h.skillLevels[skillId] ?? 1) + 1; track(s, 'heroUpgrade'); }
   return c;
 }

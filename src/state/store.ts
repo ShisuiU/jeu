@@ -3,6 +3,8 @@ import { produce } from 'immer';
 import { observeTime } from '../core/time';
 import { regenEnergy } from '../game/energy';
 import { claimDaily as claimDailyRule } from '../game/daily';
+import { applyResets } from '../game/missions';
+import { dayKey, weekKey } from '../core/time';
 import type { DailyRewardDef } from '../data/dailyRewards';
 import { createNewSave, type SaveData, type Settings } from '../save/schema';
 
@@ -52,13 +54,15 @@ export const useGame = create<GameState>((set, get) => ({
     const energyChanged = energy.current !== save.energy.current;
     const hwAdvanced = obs.time.highWater - save.time.highWater > 60_000;
     const rollbackChanged = obs.time.rollbackCount !== save.time.rollbackCount;
-    if (energyChanged || hwAdvanced || rollbackChanged) {
+    const resetDue = save.resets.day !== dayKey(obs.trusted) || save.resets.week !== weekKey(obs.trusted);
+    if (energyChanged || hwAdvanced || rollbackChanged || resetDue) {
       set({
         now: obs.trusted,
         clockRollback: obs.rollback,
         save: produce(save, (d) => {
           d.time = obs.time;
           d.energy = energy;
+          applyResets(d, obs.trusted);
           bump(d, obs.trusted);
         }),
       });

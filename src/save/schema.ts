@@ -9,7 +9,7 @@ import type { EnergyState } from '../game/energy';
 import type { GearRarity, GearSlot, GearStat, SetId } from '../data/equipment';
 
 /** Version actuelle du format de sauvegarde. Toute modification de structure ⇒ +1 et une migration. */
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 
 export interface HeroInstance {
   uid: string;
@@ -44,6 +44,8 @@ export interface SummonState {
   total: number;
   history: { heroId: string; banner: string; at: number; duplicate: boolean }[];
 }
+
+export interface MissionProgress { counters: Record<string, number>; claimed: string[]; bonus: boolean }
 
 export interface TeamPreset {
   id: string;
@@ -85,6 +87,20 @@ export interface SaveData {
   stats: { battlesWon: number; battlesLost: number; summons: number };
   settings: Settings;
   flags: Record<string, boolean>;
+  /** Réinitialisations périodiques (clés de jour/semaine de l'horloge de confiance). */
+  resets: { day: string; week: string };
+  missions: { daily: MissionProgress; weekly: MissionProgress };
+  achievements: string[];
+  arena: { rating: number; wins: number; losses: number; ticketsUsed: number; opponents: ArenaOpponent[] };
+  worldBoss: { keysUsed: number; best: Record<string, number> };
+  events: Record<string, { counters: Record<string, number>; claimed: string[]; challengeDone: boolean }>;
+}
+
+export interface ArenaOpponent {
+  id: string;
+  name: string;
+  heroes: { heroId: string; level: number; slot: number }[];
+  power: number;
 }
 
 export function createHeroInstance(heroId: string, now: number): HeroInstance {
@@ -139,5 +155,11 @@ export function createNewSave(now: number = Date.now()): SaveData {
     stats: { battlesWon: 0, battlesLost: 0, summons: 0 },
     settings: { sound: true, volume: 0.6, reducedMotion: false, battleSpeed: 1, autoBattleDefault: false },
     flags: {},
+    resets: { day: '', week: '' },
+    missions: { daily: { counters: {}, claimed: [], bonus: false }, weekly: { counters: {}, claimed: [], bonus: false } },
+    achievements: [],
+    arena: { rating: 1000, wins: 0, losses: 0, ticketsUsed: 0, opponents: [] },
+    worldBoss: { keysUsed: 0, best: {} },
+    events: {},
   };
 }

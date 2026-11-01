@@ -11,7 +11,10 @@ export type Route =
   | { name: 'daily' }
   | { name: 'settings' }
   | { name: 'saves' }
-  | { name: 'codex' };
+  | { name: 'codex' }
+  | { name: 'campaign' }
+  | { name: 'stage'; stageId: string }
+  | { name: 'battle'; stageId: string; teamId: string; difficulty: 'normal' | 'hard' | 'expert' | 'nightmare'; seed: number };
 
 export type Tab = 'home' | 'collection' | 'team' | 'inventory' | 'menu';
 
@@ -22,6 +25,8 @@ interface UIState {
   toasts: Toast[];
   push: (r: Route) => void;
   back: () => void;
+  replace: (r: Route) => void;
+  popTo: (name: Route['name']) => void;
   tab: (t: Tab) => void;
   toast: (text: string, kind?: Toast['kind'], action?: Toast['action'], ms?: number) => void;
   dismiss: (id: number) => void;
@@ -33,6 +38,12 @@ export const useUI = create<UIState>((set, get) => ({
   toasts: [],
   push: (r) => { play('open'); set({ stack: [...get().stack, r] }); },
   back: () => { play('back'); const s = get().stack; if (s.length > 1) set({ stack: s.slice(0, -1) }); },
+  replace: (r) => set({ stack: [...get().stack.slice(0, -1), r] }),
+  popTo: (name) => {
+    const s = get().stack;
+    const i = s.map((r) => r.name).lastIndexOf(name);
+    set({ stack: i >= 0 ? s.slice(0, i + 1) : [s[0]] });
+  },
   tab: (t) => { play('tap'); set({ stack: [{ name: t } as Route] }); },
   toast: (text, kind = 'info', action, ms = 2800) => {
     const id = ++tid;

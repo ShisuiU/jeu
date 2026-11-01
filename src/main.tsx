@@ -8,6 +8,7 @@ import '@fontsource/inter/600.css';
 import '@fontsource/inter/700.css';
 import './styles/global.css';
 import './styles/home.css';
+import './styles/battle.css';
 import App from './App';
 import { setupPWA } from './pwa';
 

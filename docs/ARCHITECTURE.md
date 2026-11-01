@@ -46,6 +46,25 @@ Règle : `data/` et `game/` ne dépendent jamais de l'interface. Le moteur de co
 dans `game/battle/`, testable sans navigateur, ce qui permettra plus tard de le faire tourner
 côté serveur (arène entre joueurs) sans réécriture.
 
+## Moteur de combat
+
+`src/game/battle/` — TypeScript pur, aucune dépendance à l'interface, **déterministe** (graine aléatoire) :
+
+- `engine.ts` : création du combat (aura du chef, synergies), jauge de tour, résolution des effets,
+  dégâts, statuts, vagues, fin de combat. `beginTurn()` avance jusqu'à la prochaine unité capable
+  d'agir ; `performAction()` exécute une compétence. Chaque étape produit des **événements**
+  (dégâts, soins, statuts…) que l'interface anime.
+- `ai.ts` : choix de compétence et de cible (mode auto et ennemis).
+- `skillMods.ts` : traduit les textes d'amélioration (« +10 % dégâts », « Recharge -1 ») en chiffres.
+- `simulate.ts` : joue un combat entier ; sert aux tests d'équilibrage et servira à l'arène.
+
+Formules : dégâts = stat × multiplicateur × 600 / (600 + DÉF cible) × affinité × critique × ±5 %.
+Chance d'effet néfaste = chance de la compétence, puis résistance = (RÉS − PRÉ) / 200 (max 80 %).
+
+La campagne (`data/campaign.ts`) et les ennemis (`data/enemies.ts`) sont des données : ajouter un
+chapitre ou un ennemi ne demande aucune modification du moteur. La progression est enregistrée par
+difficulté (`normal:1-3`), prête pour les difficultés de la phase 4.
+
 ## Sauvegarde
 
 - **Format versionné** (`SAVE_VERSION` dans `save/schema.ts`). Toute évolution de structure ajoute

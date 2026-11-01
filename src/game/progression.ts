@@ -1,0 +1,41 @@
+import { maxLevelForRank } from './stats';
+import type { HeroInstance, SaveData } from '../save/schema';
+import { BALANCE } from '../data/balance';
+import { addEnergy } from './energy';
+
+/** Expérience nécessaire pour passer du niveau L au niveau L+1. */
+export function heroXpToNext(level: number): number {
+  return Math.round(80 + 40 * level + 6 * level * level);
+}
+
+/** Ajoute de l'expérience à un héros (mutation). Au niveau maximum du rang, l'expérience excédentaire est perdue. */
+export function addHeroXp(h: HeroInstance, amount: number): { gained: number; capped: boolean } {
+  const cap = maxLevelForRank(h.rank);
+  const start = h.level;
+  if (h.level >= cap) { h.xp = 0; return { gained: 0, capped: true }; }
+  h.xp += amount;
+  while (h.level < cap && h.xp >= heroXpToNext(h.level)) {
+    h.xp -= heroXpToNext(h.level);
+    h.level += 1;
+  }
+  if (h.level >= cap) h.xp = 0;
+  return { gained: h.level - start, capped: h.level >= cap };
+}
+
+export function accountXpToNext(level: number): number {
+  return 100 + 60 * level;
+}
+
+/** Expérience de compte (gagnée en dépensant de l'énergie). Chaque niveau donne de l'or et de l'énergie. */
+export function addAccountXp(s: SaveData, amount: number): number {
+  let ups = 0;
+  s.profile.xp += amount;
+  while (s.profile.xp >= accountXpToNext(s.profile.level)) {
+    s.profile.xp -= accountXpToNext(s.profile.level);
+    s.profile.level += 1;
+    ups += 1;
+    s.resources.gold += 2000;
+    s.energy = addEnergy(s.energy, Math.min(BALANCE.energy.max, 30));
+  }
+  return ups;
+}

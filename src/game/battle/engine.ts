@@ -52,6 +52,7 @@ export const shieldOf = (u: Unit) => u.statuses.filter((x) => x.status === 'shie
 export interface BattleOptions {
   leaderUid?: string | null;
   seed?: number;
+  turnLimit?: number;
 }
 
 export function createBattle(allies: UnitSetup[], waves: UnitSetup[][], opts: BattleOptions = {}): BattleState {
@@ -86,6 +87,7 @@ export function createBattle(allies: UnitSetup[], waves: UnitSetup[][], opts: Ba
     statusSeq: 0,
     synergy: { ash: count('ash') > 0, sylvaran: count('sylvaran') > 0, astral: count('astral') > 0, akkar: count('akkar') > 0 },
     enemyLevelMult: 1,
+    turnLimit: opts.turnLimit,
   };
   spawnWave(s, waves[0]);
   // Petite dispersion initiale des jauges pour éviter les égalités parfaites.
@@ -264,6 +266,7 @@ function endCheck(s: BattleState) {
       s.events.push({ kind: 'wave', wave: s.wave });
     } else { s.outcome = 'won'; s.activeId = null; }
   }
+  if (s.outcome === 'running' && s.turnLimit && s.actionCount >= s.turnLimit) { s.outcome = 'timeout'; s.activeId = null; }
   if (s.actionCount > MAX_ACTIONS && s.outcome === 'running') { s.outcome = 'lost'; s.activeId = null; }
 }
 

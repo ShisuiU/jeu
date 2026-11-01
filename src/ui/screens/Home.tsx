@@ -1,5 +1,5 @@
 import { useGame } from '../../state/store';
-import { comingSoon, useUI } from '../../state/ui';
+import { useUI } from '../../state/ui';
 import { HERO_BY_ID } from '../../data/heroes';
 import { FACTIONS } from '../../data/factions';
 import { canClaimDaily } from '../../game/daily';
@@ -9,13 +9,16 @@ import { WorldScene, Particles } from '../art/Scene';
 import { HeroArt } from '../art/HeroArt';
 import { Icon } from '../art/Icons';
 import { TopBar } from '../components/TopBar';
+import { claimableCount } from '../../game/missions';
+import { activeEvents } from '../../game/events';
+import { WORLD_BOSS } from '../../data/worldBoss';
+import { ARENA } from '../../data/arena';
 import { unreadMail } from './Mail';
 
 export function Home() {
   const save = useGame((s) => s.save)!;
   const now = useGame((s) => s.now);
   const push = useUI((s) => s.push);
-  const tab = useUI((s) => s.tab);
   const team = save.teams.find((t) => t.id === save.activeTeamId) ?? save.teams[0];
   const leaderUid = team.leader ?? team.slots.find(Boolean);
   const leader = save.heroes.find((h) => h.uid === leaderUid) ?? save.heroes[0];
@@ -25,6 +28,10 @@ export function Home() {
   const allStages = CHAPTERS.flatMap((c) => c.stages);
   const nextStage = allStages.find((st) => isStageUnlocked(save, 'normal', st) && stageProgress(save, 'normal', st.id).clears === 0);
   const stars = chapterStars(save, 'normal', 1);
+  const missionDot = claimableCount(save) > 0;
+  const eventCount = activeEvents(now).length;
+  const bossKeys = WORLD_BOSS.keysPerDay - save.worldBoss.keysUsed;
+  const arenaTickets = ARENA.ticketsPerDay - save.arena.ticketsUsed;
   const summonDot = save.resources.shardAeon > 0 || save.resources.shardPrimal > 0 || !save.flags.gift_event_ash;
 
   return (
@@ -50,18 +57,21 @@ export function Home() {
           <span className="ic"><Icon.gift /></span>Connexion{daily && <span className="badge-dot" />}
         </button>
         <button className="side-btn" onClick={() => push({ name: 'mail' })}>
-          <span className="ic"><Icon.scroll /></span>Courrier{unreadMail(save.flags) && <span className="badge-dot" />}
+          <span className="ic"><Icon.mail /></span>Courrier{unreadMail(save.flags) && <span className="badge-dot" />}
         </button>
-        <button className="side-btn locked" onClick={() => comingSoon('Missions journalières et hebdomadaires', 4)}>
-          <span className="ic"><Icon.scroll /></span>Missions
+        <button className="side-btn" onClick={() => push({ name: 'missions' })}>
+          <span className="ic"><Icon.scroll /></span>Missions{missionDot && <span className="badge-dot" />}
         </button>
         <button className="side-btn" onClick={() => push({ name: 'codex' })}>
           <span className="ic"><Icon.book /></span>Codex
         </button>
       </div>
       <div className="home-side right">
-        <button className="side-btn locked" onClick={() => comingSoon('Événements temporaires', 4)}>
-          <span className="ic"><Icon.portal /></span>Événements
+        <button className="side-btn" onClick={() => push({ name: 'events' })}>
+          <span className="ic"><Icon.portal /></span>Événements{eventCount > 0 && <span className="badge-dot" />}
+        </button>
+        <button className="side-btn" onClick={() => push({ name: 'worldboss' })}>
+          <span className="ic"><Icon.skull /></span>Boss{bossKeys > 0 && <span className="badge-dot" />}
         </button>
         <button className="side-btn" onClick={() => push({ name: 'gear' })}>
           <span className="ic"><Icon.forge /></span>Forge
@@ -82,9 +92,9 @@ export function Home() {
         </button>
         <div className="mode-grid">
           <button className="mode-tile" onClick={() => push({ name: 'summon' })}><Icon.portal />Invoquer{summonDot && <span className="badge-dot" style={{ top: 6, right: 8 }} />}</button>
-          <button className="mode-tile locked-tile" onClick={() => comingSoon('Donjons', 4)}><Icon.dungeon />Donjons<span className="lock-tag">P4</span></button>
-          <button className="mode-tile locked-tile" onClick={() => comingSoon('Tour de progression', 4)}><Icon.tower />Tour<span className="lock-tag">P4</span></button>
-          <button className="mode-tile" onClick={() => tab('collection')}><Icon.heroes />Héros</button>
+          <button className="mode-tile" onClick={() => push({ name: 'dungeons' })}><Icon.dungeon />Donjons</button>
+          <button className="mode-tile" onClick={() => push({ name: 'tower' })}><Icon.tower />Tour</button>
+          <button className="mode-tile" onClick={() => push({ name: 'arena' })}><Icon.arena />Arène{arenaTickets > 0 && <span className="badge-dot" style={{ top: 6, right: 8 }} />}</button>
         </div>
       </div>
     </div>

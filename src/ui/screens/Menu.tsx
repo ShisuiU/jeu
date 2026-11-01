@@ -4,22 +4,27 @@ import { canClaimDaily } from '../../game/daily';
 import { Screen } from '../components/common';
 import { Icon } from '../art/Icons';
 import { unreadMail } from './Mail';
+import { claimableCount } from '../../game/missions';
 
 export function Menu() {
   const push = useUI((s) => s.push);
   const daily = useGame((s) => canClaimDaily(s.save!, s.now));
   const mail = useGame((s) => unreadMail(s.save!.flags));
+  const missions = useGame((s) => claimableCount(s.save!) > 0);
   const entries: { label: string; sub: string; icon: keyof typeof Icon; route?: Route; soon?: [string, number]; dot?: boolean }[] = [
     { label: 'Récompense de connexion', sub: 'Une récompense par jour', icon: 'gift', route: { name: 'daily' }, dot: daily },
-    { label: 'Courrier', sub: 'Cadeaux et messages', icon: 'scroll', route: { name: 'mail' }, dot: mail },
+    { label: 'Courrier', sub: 'Cadeaux et messages', icon: 'mail', route: { name: 'mail' }, dot: mail },
     { label: 'Invocation', sub: 'Obtenir de nouveaux héros', icon: 'portal', route: { name: 'summon' } },
     { label: 'Équipement et forge', sub: 'Améliorer, démanteler', icon: 'forge', route: { name: 'gear' } },
     { label: 'Codex', sub: 'Histoire, factions, affinités', icon: 'book', route: { name: 'codex' } },
     { label: 'Sauvegarde', sub: 'Exporter, importer, restaurer', icon: 'save', route: { name: 'saves' } },
     { label: 'Paramètres', sub: 'Profil, son, animations', icon: 'gear', route: { name: 'settings' } },
-    { label: 'Missions', sub: 'Journalières et hebdomadaires', icon: 'scroll', soon: ['Missions', 4] },
-    { label: 'Arène', sub: 'Contre des équipes de l’IA', icon: 'arena', soon: ['Arène', 4] },
-    { label: 'Boss mondial', sub: 'Plusieurs niveaux de difficulté', icon: 'skull', soon: ['Boss mondial', 4] },
+    { label: 'Missions', sub: 'Journalières, hebdomadaires, progression', icon: 'scroll', route: { name: 'missions' }, dot: missions },
+    { label: 'Événements', sub: 'Objectifs et défis temporaires', icon: 'portal', route: { name: 'events' } },
+    { label: 'Donjons', sub: 'Équipement, expérience, potions, compétences', icon: 'dungeon', route: { name: 'dungeons' } },
+    { label: 'Tour des Âges', sub: '50 étages', icon: 'tower', route: { name: 'tower' } },
+    { label: 'Boss mondial', sub: 'Le Colosse de Bronze', icon: 'skull', route: { name: 'worldboss' } },
+    { label: 'Arène', sub: 'Contre des équipes de l’ordinateur', icon: 'arena', route: { name: 'arena' } },
   ];
   return (
     <Screen title="Menu">

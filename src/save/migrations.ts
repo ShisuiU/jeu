@@ -9,6 +9,8 @@ type Migration = (s: any) => any;
 export const MIGRATIONS: Record<number, Migration> = {
   // v2 (phase 3) : inventaire d'équipement et compteurs d'invocation.
   2: (s) => ({ ...s, equipment: Array.isArray(s.equipment) ? s.equipment : [], summons: s.summons ?? { pity: {}, total: 0, history: [] } }),
+  // v3 (phase 4) : missions, arène, boss mondial, événements. Les valeurs par défaut sont complétées ensuite.
+  3: (s) => ({ ...s, achievements: Array.isArray(s.achievements) ? s.achievements : [] }),
 };
 
 export class SaveFormatError extends Error {}

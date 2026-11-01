@@ -6,6 +6,7 @@ import {
 } from '../data/equipment';
 import type { Stats } from '../data/types';
 import type { GearItem, SaveData } from '../save/schema';
+import { track } from './missions';
 
 export type Rand = () => number;
 export function seededRand(seed: number): Rand {
@@ -57,6 +58,7 @@ export function upgradeGear(s: SaveData, gearUid: string, r: Rand): { ok: boolea
   s.resources.gold -= cost.gold;
   s.resources.forgeOre -= cost.forgeOre;
   g.level += 1;
+  track(s, 'gearUpgrade');
   let boosted: GearStat | undefined;
   if (g.level % 4 === 0) {
     if (g.subs.length < 4) {

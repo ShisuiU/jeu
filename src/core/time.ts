@@ -58,3 +58,18 @@ export function formatDuration(ms: number): string {
   if (m > 0) return `${m} min ${String(sec).padStart(2, '0')}`;
   return `${sec} s`;
 }
+
+/** Clé de semaine de jeu (lundi de la semaine, au renouvellement quotidien). */
+export function weekKey(ms: number, resetHour: number = BALANCE.time.dailyResetHour): string {
+  const d = new Date(ms - resetHour * 3600 * 1000);
+  const day = (d.getDay() + 6) % 7; // lundi = 0
+  d.setDate(d.getDate() - day);
+  return dayKey(d.getTime() + resetHour * 3600 * 1000, resetHour);
+}
+
+/** Millisecondes avant le prochain lundi (renouvellement hebdomadaire). */
+export function msUntilWeekReset(ms: number, resetHour: number = BALANCE.time.dailyResetHour): number {
+  let t = msUntilReset(ms, resetHour);
+  while (weekKey(ms + t + 1000, resetHour) === weekKey(ms, resetHour)) t += 24 * 3600 * 1000;
+  return t;
+}

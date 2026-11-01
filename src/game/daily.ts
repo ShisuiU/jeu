@@ -2,6 +2,7 @@ import { dayKey } from '../core/time';
 import { DAILY_REWARDS } from '../data/dailyRewards';
 import type { SaveData } from '../save/schema';
 import { applyReward } from './rewards';
+import { track } from './missions';
 
 export function canClaimDaily(s: SaveData, trustedNow: number): boolean {
   return s.daily.lastLoginDay !== dayKey(trustedNow);
@@ -19,5 +20,6 @@ export function claimDaily(s: SaveData, trustedNow: number) {
   s.daily.lastLoginDay = dayKey(trustedNow);
   s.daily.cycleIndex = (s.daily.cycleIndex + 1) % DAILY_REWARDS.length;
   s.daily.totalLogins += 1;
+  track(s, 'login');
   return def;
 }

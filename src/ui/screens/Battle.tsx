@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
 import { useGame } from '../../state/store';
-import { useUI } from '../../state/ui';
-import { STAGE_BY_ID, CHAPTERS, type DifficultyId } from '../../data/campaign';
+import { useUI, type Route } from '../../state/ui';
 import { HERO_BY_ID } from '../../data/heroes';
 import { createBattle, beginTurn, performAction, unitById, availableSkills, targetKind, validTargets, hpPct, shieldOf, predictOrder } from '../../game/battle/engine';
 import { chooseAction } from '../../game/battle/ai';
 import { STATUS_INFO, type Action, type BattleState, type Unit } from '../../game/battle/types';
 import { effectiveCooldown } from '../../game/battle/skillMods';
-import { applyStageResult, stageProgress, stageWaves, teamSetups, payStage, type BattleResult } from '../../game/campaign';
+import { teamSetups } from '../../game/campaign';
+import { applyMode, nextSpec, payMode, resolveMode, type BattleSpec, type ModeResult } from '../../game/modes';
 import { heroXpToNext } from '../../game/progression';
 import { play } from '../../audio/sfx';
 import { HeroArt } from '../art/HeroArt';
@@ -25,9 +25,7 @@ interface Popup { id: number; text: string; cls: string }
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 let popSeq = 0;
 
-export function Battle({ stageId, teamId, difficulty, seed }: { stageId: string; teamId: string; difficulty: DifficultyId; seed: number }) {
-  const stage = STAGE_BY_ID[stageId];
-  const chapter = CHAPTERS.find((c) => c.n === stage.chapter)!;
+export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: string; seed: number }) {
   const save = useGame((s) => s.save)!;
   const mutate = useGame((s) => s.mutate);
   const updateSettings = useGame((s) => s.updateSettings);
@@ -36,13 +34,13 @@ export function Battle({ stageId, teamId, difficulty, seed }: { stageId: string;
   const [initial] = useState(() => {
     const team = save.teams.find((t) => t.id === teamId) ?? save.teams[0];
     const allies = teamSetups(save, team);
-    const firstTime = stageProgress(save, difficulty, stageId).clears === 0;
-    return { team, allies, firstTime, battle: createBattle(allies, stageWaves(stage, difficulty), { seed, leaderUid: team.leader }) };
+    const info = resolveMode(save, spec);
+    return { team, allies, info, battle: createBattle(allies, info.waves, { seed, leaderUid: team.leader, turnLimit: info.turnLimit }) };
   });
   const sRef = useRef<BattleState>(initial.battle);
   const s = sRef.current;
   const [, force] = useReducer((x: number) => x + 1, 0);
-  const [phase, setPhase] = useState<Phase>(initial.firstTime && stage.before?.length ? 'intro' : 'fight');
+  const [phase, setPhase] = useState<Phase>(initial.info.before?.length ? 'intro' : 'fight');
   const [auto, setAuto] = useState(save.settings.autoBattleDefault);
   const [speed, setSpeed] = useState<1 | 2 | 3>(save.settings.battleSpeed);
   const [awaiting, setAwaiting] = useState(false);
@@ -51,7 +49,7 @@ export function Battle({ stageId, teamId, difficulty, seed }: { stageId: string;
   const [acting, setActing] = useState<string | null>(null);
   const [hits, setHits] = useState<Set<string>>(new Set());
   const [popups, setPopups] = useState<Record<string, Popup[]>>({});
-  const [result, setResult] = useState<BattleResult | null>(null);
+  const [result, setResult] = useState<ModeResult | null>(null);
   const [quit, setQuit] = useState(false);
   const autoRef = useRef(auto); autoRef.current = auto;
   const speedRef = useRef(speed); speedRef.current = speed;
@@ -114,12 +112,16 @@ export function Battle({ stageId, teamId, difficulty, seed }: { stageId: string;
     finished.current = true;
     const won = s.outcome === 'won';
     const dead = s.units.filter((u) => u.side === 'ally' && !u.alive).length;
-    let res: BattleResult | null = null;
-    mutate((d) => { res = applyStageResult(d, stageId, difficulty, won, dead, initial.allies.map((a) => a.heroUid!), Date.now()); });
+    const boss = s.units.find((u) => u.side === 'enemy' && u.isBoss);
+    let res: ModeResult | null = null;
+    mutate((d) => {
+      res = applyMode(d, spec, { won, alliesDead: dead, participants: initial.allies.map((a) => a.heroUid!), bossDamage: boss ? { dealt: boss.base.hp - Math.max(0, boss.hp), max: boss.base.hp } : undefined }, Date.now());
+    });
     setResult(res);
-    play(won ? 'claim' : 'error');
-    setPhase(won && initial.firstTime && stage.after?.length ? 'outro' : 'result');
-  }, [s, mutate, stageId, difficulty, initial, stage.after]);
+    const ok = (res as ModeResult | null)?.won;
+    play(ok ? 'claim' : 'error');
+    setPhase(ok && initial.info.after?.length ? 'outro' : 'result');
+  }, [s, mutate, spec, initial]);
 
   const run = useCallback(async () => {
     if (busy.current) return;
@@ -167,12 +169,14 @@ export function Battle({ stageId, teamId, difficulty, seed }: { stageId: string;
   const doQuit = () => { setQuit(false); s.outcome = 'lost'; s.activeId = null; alive.current = false; finish(); };
 
   const retry = () => {
-    let ok = false;
-    mutate((d) => { ok = payStage(d, stage, useGame.getState().now); });
-    if (!ok) { toast('Énergie insuffisante.', 'error'); return; }
-    replace({ name: 'battle', stageId, teamId, difficulty, seed: Date.now() });
+    let r: { ok: boolean; reason?: string } = { ok: false };
+    mutate((d) => { r = payMode(d, spec, useGame.getState().now); });
+    if (!r.ok) { toast(r.reason ?? 'Impossible.', 'error'); return; }
+    replace({ name: 'battle', spec, teamId, seed: Date.now() });
   };
-  const nextStage = chapter.stages[chapter.stages.indexOf(stage) + 1];
+  const next = result?.won ? nextSpec(useGame.getState().save!, spec) : null;
+  const backTo = (): Route['name'] => ({ campaign: 'campaign', dungeon: 'dungeons', tower: 'tower', worldboss: 'worldboss', arena: 'arena', challenge: 'events' } as const)[spec.mode];
+  const cost = initial.info.cost;
 
   const order = s.outcome === 'running' ? predictOrder(s, 7) : [];
   const side = (sd: 'ally' | 'enemy') => s.units.filter((u) => u.side === sd);
@@ -185,12 +189,12 @@ export function Battle({ stageId, teamId, difficulty, seed }: { stageId: string;
 
   return (
     <div className="battle">
-      <BattleBackdrop region={chapter.backdrop} />
+      <BattleBackdrop region={initial.info.region} />
       <div className="battle-top">
         <div className="row between">
           <div>
-            <div className="battle-stage">{stage.id} · {stage.name}</div>
-            <div className="faint">Vague {s.wave} / {s.totalWaves}</div>
+            <div className="battle-stage">{initial.info.title}</div>
+            <div className="faint">Vague {s.wave} / {s.totalWaves}{s.turnLimit ? ` · Actions ${Math.min(s.actionCount, s.turnLimit)}/${s.turnLimit}` : ''}</div>
           </div>
           <button className="back-btn" aria-label="Abandonner" onClick={() => setQuit(true)}><Icon.menu /></button>
         </div>
@@ -247,13 +251,14 @@ export function Battle({ stageId, teamId, difficulty, seed }: { stageId: string;
         </div>
       </div>
 
-      {phase === 'intro' && <Dialogue lines={stage.before!} onDone={() => setPhase('fight')} />}
-      {phase === 'outro' && <Dialogue lines={stage.after!} onDone={() => setPhase('result')} />}
+      {phase === 'intro' && <Dialogue lines={initial.info.before!} onDone={() => setPhase('fight')} />}
+      {phase === 'outro' && <Dialogue lines={initial.info.after!} onDone={() => setPhase('result')} />}
 
       {phase === 'result' && result && (
         <div className="result-overlay">
-          <div className={`result-title ${result.won ? 'win' : 'lose'}`}>{result.won ? 'VICTOIRE' : 'DÉFAITE'}</div>
-          {result.won && (
+          <div className={`result-title ${result.won ? 'win' : 'lose'}`}>{spec.mode === 'worldboss' ? 'COMBAT TERMINÉ' : result.won ? 'VICTOIRE' : 'DÉFAITE'}</div>
+          {result.lines.map((l, i) => <div key={i} className="chip active" style={{ margin: '6px auto', display: 'flex', width: 'fit-content', textAlign: 'center' }}>{l}</div>)}
+          {result.won && spec.mode === 'campaign' && (
             <div className="result-stars">
               {[1, 2, 3].map((n) => <span key={n} className={n <= result.stars ? 'on' : ''} style={{ animationDelay: `${0.3 + n * 0.2}s` }}><Icon.star size={46} color={n <= result.stars ? '#ffd36b' : '#3a3442'} /></span>)}
             </div>
@@ -293,15 +298,20 @@ export function Battle({ stageId, teamId, difficulty, seed }: { stageId: string;
               </>
             ) : (
               <div className="hint">
-                Les Effacés l’emportent cette fois. Pistes : rejouez les niveaux précédents pour gagner de l’expérience, placez un défenseur en première ligne et un soigneur en seconde ligne, ou jouez en manuel pour cibler le Chantre en priorité.
+                {spec.mode === 'arena' ? 'L’équipe adverse l’emporte cette fois. Choisissez un adversaire plus accessible ou renforcez vos héros (niveau, équipement, rang).'
+                  : spec.mode === 'worldboss' ? 'Aucun palier de dégâts atteint. Renforcez vos héros pour infliger plus de dégâts avant la fin du temps imparti.'
+                  : 'Les ennemis l’emportent cette fois. Pistes : rejouez des combats plus simples pour gagner de l’expérience, utilisez les élixirs et l’équipement, placez un défenseur en première ligne et un soigneur en seconde ligne.'}
               </div>
             )}
             {result.accountLevelsGained > 0 && <div className="chip active" style={{ margin: '10px auto 0', display: 'flex', width: 'fit-content' }}>Niveau de compte {useGame.getState().save!.profile.level} ! +2 000 or, +30 énergie</div>}
           </div>
           <div className="result-actions">
-            <button className="btn secondary grow" onClick={() => popTo('campaign')}>Campagne</button>
-            <button className="btn secondary grow" onClick={retry}>{result.won ? 'Rejouer' : 'Réessayer'} <Icon.energy size={16} />{stage.energy}</button>
-            {result.won && nextStage && <button className="btn grow" onClick={() => replace({ name: 'stage', stageId: nextStage.id })}>Suivant</button>}
+            <button className="btn secondary grow" onClick={() => popTo(backTo())}>Retour</button>
+            {spec.mode !== 'tower' && spec.mode !== 'challenge' && (
+              <button className="btn secondary grow" onClick={retry}>{result.won ? 'Rejouer' : 'Réessayer'} {cost.kind === 'energy' && <><Icon.energy size={16} />{cost.amount}</>}{cost.kind === 'key' && ' (1 clé)'}{cost.kind === 'ticket' && ' (1 ticket)'}</button>
+            )}
+            {spec.mode === 'tower' && !result.won && <button className="btn secondary grow" onClick={retry}>Réessayer</button>}
+            {next && <button className="btn grow" onClick={() => replace({ name: 'prep', spec: next })}>Suivant</button>}
           </div>
         </div>
       )}

@@ -29,6 +29,22 @@ export function Settings() {
             onChange={(e) => update({ volume: Number(e.target.value) })} onPointerUp={() => play('tap')} />
         </div>
         <div className="setting-row">
+          <div className="grow"><b>Musique d’ambiance</b><div className="faint">Générée en direct, fonctionne hors ligne</div></div>
+          <Toggle label="Musique" on={st.music} onChange={(v) => update({ music: v })} />
+        </div>
+        <div className="setting-row">
+          <div className="grow"><b>Volume de la musique</b></div>
+          <input type="range" min={0} max={1} step={0.05} value={st.musicVolume} disabled={!st.music} style={{ width: 140, accentColor: '#d9b36a' }} onChange={(e) => update({ musicVolume: Number(e.target.value) })} />
+        </div>
+        <div className="setting-row">
+          <div className="grow"><b>Vitesse de combat par défaut</b></div>
+          <div className="seg" style={{ width: 140 }}>{([1, 2, 3] as const).map((v) => <button key={v} className={st.battleSpeed === v ? 'on' : ''} onClick={() => update({ battleSpeed: v })}>×{v}</button>)}</div>
+        </div>
+        <div className="setting-row">
+          <div className="grow"><b>Combat automatique par défaut</b></div>
+          <Toggle label="Combat automatique" on={st.autoBattleDefault} onChange={(v) => update({ autoBattleDefault: v })} />
+        </div>
+        <div className="setting-row">
           <div className="grow"><b>Animations réduites</b><div className="faint">Économise la batterie, réduit les mouvements</div></div>
           <Toggle label="Animations réduites" on={st.reducedMotion} onChange={(v) => update({ reducedMotion: v })} />
         </div>
@@ -43,6 +59,10 @@ export function Settings() {
         <div className="setting-row">
           <div className="grow"><b>Version</b><div className="faint">{__APP_VERSION__} · sauvegarde v{save.version}</div></div>
           <button className="btn secondary small" onClick={async () => toast((await checkForUpdate()) ? 'Recherche de mise à jour lancée.' : 'Mises à jour indisponibles (hors ligne ou mode développement).')}>Mettre à jour</button>
+        </div>
+        <div className="setting-row">
+          <div className="grow"><b>Guide de démarrage</b><div className="faint">Revoir les explications du début</div></div>
+          <button className="btn secondary small" onClick={() => { useGame.getState().mutate((s) => { s.flags.guide_done = false; }); useUI.getState().tab('home'); }}>Revoir</button>
         </div>
         {save.time.rollbackCount > 0 && <div className="faint">Reculs d’horloge détectés : {save.time.rollbackCount}</div>}
       </Panel>

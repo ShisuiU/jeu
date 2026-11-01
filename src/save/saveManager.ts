@@ -1,5 +1,6 @@
 import { BALANCE } from '../data/balance';
 import { useGame } from '../state/store';
+import { useUI } from '../state/ui';
 import { listBackups, readMain, requestPersistence, unpack, wipeMain, writeBackup, writeMain, type StoredSave } from './db';
 import { migrateSave } from './migrations';
 import { createNewSave, type SaveData } from './schema';
@@ -58,7 +59,9 @@ export async function flushSave(): Promise<void> {
     }
     provider.push(s).catch(() => {});
   } catch (e) {
+    const first = !saveStatus.error;
     saveStatus.error = e instanceof Error ? e.message : String(e);
+    if (first) useUI.getState().toast('Échec de la sauvegarde automatique. Exportez votre partie (Menu → Sauvegarde).', 'error');
   }
 }
 

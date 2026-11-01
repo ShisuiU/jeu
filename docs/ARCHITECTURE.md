@@ -98,6 +98,16 @@ avancer l'heure pour récolter puis revenir en arrière ne fait qu'emprunter sur
 et récompenses quotidiennes restent gelées jusqu'à ce que le temps réel rattrape. L'énergie ne
 s'accumule jamais au-delà du maximum, donc avancer l'heure ne rapporte pas plus qu'attendre.
 
+## Performance
+
+- Écrans chargés à la demande (`React.lazy`) : l'écran titre et l'accueil s'affichent avec ~64 Ko
+  de code compressé ; les autres écrans sont pré-cachés par le service worker et s'ouvrent
+  instantanément, même hors ligne.
+- Animations en CSS (accélérées par le GPU), illustrations vectorielles légères, sons et musique
+  synthétisés (aucun fichier audio).
+- L'horloge du jeu tourne une fois par seconde mais n'écrit la sauvegarde que lorsqu'une valeur
+  change réellement (énergie, réinitialisations).
+
 ## Hors ligne et mises à jour
 
 Le service worker pré-cache tout le jeu au premier chargement. Une nouvelle version publiée est

@@ -16,6 +16,7 @@ import { Icon } from '../art/Icons';
 import { BattleBackdrop } from '../art/BattleBackdrop';
 import { Dialogue } from '../components/Dialogue';
 import { Modal } from '../components/common';
+import { AFFINITIES } from '../../data/affinities';
 import { RewardView } from '../components/RewardView';
 import { HeroCard } from '../components/HeroCard';
 import { GearCard } from '../components/GearCard';
@@ -49,6 +50,10 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
   const [acting, setActing] = useState<string | null>(null);
   const [hits, setHits] = useState<Set<string>>(new Set());
   const [popups, setPopups] = useState<Record<string, Popup[]>>({});
+  const [vfx, setVfx] = useState<Record<string, { id: number; cls: string; color: string }>>({});
+  const [flash, setFlash] = useState(false);
+  const [ult, setUlt] = useState<string | null>(null);
+  const [wave, setWave] = useState<{ side: 'ally' | 'enemy'; color: string; id: number } | null>(null);
   const [result, setResult] = useState<ModeResult | null>(null);
   const [quit, setQuit] = useState(false);
   const autoRef = useRef(auto); autoRef.current = auto;
@@ -65,23 +70,32 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
     setTimeout(() => setPopups((p) => ({ ...p, [unitId]: (p[unitId] ?? []).filter((x) => x.id !== id) })), 1200);
   };
 
+  const addVfx = (unitId: string, cls: string, color: string) => {
+    if (useGame.getState().save?.settings.reducedMotion) return;
+    const id = ++popSeq;
+    setVfx((v) => ({ ...v, [unitId]: { id, cls, color } }));
+    setTimeout(() => setVfx((v) => (v[unitId]?.id === id ? (({ [unitId]: _, ...rest }) => rest)(v) : v)), 750);
+  };
+
   const playEvents = async () => {
     const ev = s.events;
+    const damaged = new Set(ev.filter((x) => x.kind === 'damage').map((x) => (x as { target: string }).target));
+    const vfxBusy = (id: string) => damaged.has(id);
     s.events = [];
     if (!ev.length) return;
     const hit = new Set<string>();
     let pause = false;
     for (const e of ev) {
       switch (e.kind) {
-        case 'damage': hit.add(e.target); addPopup(e.target, `${e.crit ? 'CRIT ' : ''}-${e.amount}`, `dmg ${e.crit ? 'crit' : ''} ${e.strong ? 'strong' : ''} ${e.weak ? 'weak' : ''}`); pause = true; break;
+        case 'damage': addVfx(e.target, e.crit ? 'slash crit' : 'slash', AFFINITIES[unitById(s, e.source).affinity].color); if (e.crit) { setFlash(true); setTimeout(() => setFlash(false), 140); } hit.add(e.target); addPopup(e.target, `${e.crit ? 'CRIT ' : ''}-${e.amount}`, `dmg ${e.crit ? 'crit' : ''} ${e.strong ? 'strong' : ''} ${e.weak ? 'weak' : ''}`); pause = true; break;
         case 'dot': hit.add(e.target); addPopup(e.target, `-${e.amount}`, e.status === 'poison' ? 'poison' : 'burn'); pause = true; break;
-        case 'heal': if (e.amount > 0) addPopup(e.target, `+${e.amount}`, 'heal'); pause = true; break;
-        case 'shield': addPopup(e.target, `+${e.amount}`, 'shieldp'); break;
-        case 'status': addPopup(e.target, STATUS_INFO[e.status].name, STATUS_INFO[e.status].debuff ? 'debuff' : 'buff'); break;
+        case 'heal': if (e.amount > 0) { addPopup(e.target, `+${e.amount}`, 'heal'); addVfx(e.target, 'healfx', '#7bea8f'); } pause = true; break;
+        case 'shield': addPopup(e.target, `+${e.amount}`, 'shieldp'); addVfx(e.target, 'shieldfx', '#aad7ff'); break;
+        case 'status': addPopup(e.target, STATUS_INFO[e.status].name, STATUS_INFO[e.status].debuff ? 'debuff' : 'buff'); if (!vfxBusy(e.target)) addVfx(e.target, STATUS_INFO[e.status].debuff ? 'cursefx' : 'bufffx', STATUS_INFO[e.status].color); break;
         case 'resist': addPopup(e.target, e.immune ? 'Immunisé' : 'Résisté', 'resist'); break;
         case 'skip': addPopup(e.target, STATUS_INFO[e.status].name, 'debuff'); pause = true; break;
         case 'death': addPopup(e.target, 'K.O.', 'death'); pause = true; break;
-        case 'revive': addPopup(e.target, 'Ressuscité !', 'heal'); play('rare'); pause = true; break;
+        case 'revive': addVfx(e.target, 'revivefx', '#ffd36b'); addPopup(e.target, 'Ressuscité !', 'heal'); play('rare'); pause = true; break;
         case 'undying': addPopup(e.target, 'Ce qui ne meurt pas', 'buff'); break;
         case 'extraTurn': addPopup(e.target, 'Tour bonus !', 'buff'); break;
         case 'cleanse': addPopup(e.target, 'Purifié', 'buff'); break;
@@ -99,8 +113,12 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
     const sk = actor.skills.find((x) => x.id === a.skillId)!;
     setBanner({ text: sk.name, side: actor.side });
     setActing(actor.id);
+    const reduced = useGame.getState().save?.settings.reducedMotion;
+    if (sk.slot === 'ultimate' && !reduced) { setUlt(actor.side); play('rare'); }
     force();
-    await wait(400 / speedRef.current);
+    await wait((sk.slot === 'ultimate' && !reduced ? 900 : 400) / speedRef.current);
+    setUlt(null);
+    if (!reduced && sk.effects.some((x) => x.kind === 'damage' && x.target === 'allEnemies')) setWave({ side: actor.side === 'ally' ? 'enemy' : 'ally', color: AFFINITIES[actor.affinity].color, id: ++popSeq });
     performAction(s, a);
     await playEvents();
     setActing(null);
@@ -183,12 +201,12 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
   const row = (sd: 'ally' | 'enemy', back: boolean) => side(sd).filter((u) => (back ? u.slot >= 3 : u.slot < 3)).sort((a, b) => a.slot - b.slot);
 
   const renderUnit = (u: Unit) => (
-    <UnitView key={u.id} u={u} active={s.activeId === u.id} acting={acting === u.id} hit={hits.has(u.id)}
+    <UnitView key={u.id} u={u} vfx={vfx[u.id]} active={s.activeId === u.id} acting={acting === u.id} hit={hits.has(u.id)}
       targetable={targetable.has(u.id)} popups={popups[u.id] ?? []} onClick={() => onUnit(u)} />
   );
 
   return (
-    <div className="battle">
+    <div className={`battle ${flash ? 'flash' : ''}`}>
       <BattleBackdrop region={initial.info.region} />
       <div className="battle-top">
         <div className="row between">
@@ -212,7 +230,9 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
         <div className="frow">{row('enemy', false).map(renderUnit)}</div>
       </div>
 
-      {banner && <div className={`skill-banner ${banner.side}`} key={banner.text + banner.side}>{banner.text}</div>}
+      {ult && <div className={`ult-overlay ${ult}`} />}
+      {wave && <div key={wave.id} className={`field-wave ${wave.side}`} style={{ ['--vc' as string]: wave.color }} onAnimationEnd={() => setWave(null)} />}
+      {banner && <div className={`skill-banner ${banner.side} ${ult ? 'ult' : ''}`} key={banner.text + banner.side}>{banner.text}</div>}
 
       <div className="field ally-field">
         <div className="frow">{row('ally', false).map(renderUnit)}</div>
@@ -332,7 +352,7 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
 
 const shortName = (n: string) => n.replace(/^(Le|La|Les|L’|L')\s*/i, '').split(' ')[0];
 
-function UnitView({ u, active, acting, hit, targetable, popups, onClick }: { u: Unit; active: boolean; acting: boolean; hit: boolean; targetable: boolean; popups: Popup[]; onClick: () => void }) {
+function UnitView({ u, vfx, active, acting, hit, targetable, popups, onClick }: { u: Unit; vfx?: { id: number; cls: string; color: string }; active: boolean; acting: boolean; hit: boolean; targetable: boolean; popups: Popup[]; onClick: () => void }) {
   const sh = Math.min(1, shieldOf(u) / u.base.hp);
   return (
     <button className={`unit ${u.side} ${u.alive ? '' : 'dead'} ${active ? 'active' : ''} ${acting ? 'acting' : ''} ${hit ? 'hit' : ''} ${targetable ? 'targetable' : ''} ${u.isBoss ? 'boss' : ''}`} onClick={onClick}>
@@ -344,6 +364,7 @@ function UnitView({ u, active, acting, hit, targetable, popups, onClick }: { u: 
       <div className="u-status">
         {u.statuses.slice(0, 4).map((st) => <span key={st.uid} style={{ color: STATUS_INFO[st.status].color, borderColor: STATUS_INFO[st.status].color + '66' }}>{STATUS_INFO[st.status].short}{st.status !== 'shield' ? st.turns : ''}</span>)}
       </div>
+      {vfx && <span key={vfx.id} className={`vfx ${vfx.cls}`} style={{ ['--vc' as string]: vfx.color }} />}
       {popups.map((p) => <span key={p.id} className={`popup ${p.cls}`}>{p.text}</span>)}
     </button>
   );

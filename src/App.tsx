@@ -1,31 +1,43 @@
-import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { ErrorBoundary } from './ui/components/ErrorBoundary';
+import { Guide } from './ui/components/Guide';
 import { useGame } from './state/store';
 import { useUI, type Route } from './state/ui';
 import { initSaveSystem } from './save/saveManager';
 import { loadEvents } from './game/events';
 import { configureAudio, play, unlockAudio } from './audio/sfx';
+import { configureMusic, playMusic, stopMusic } from './audio/music';
 import { canClaimDaily } from './game/daily';
 import { BottomNav } from './ui/components/BottomNav';
 import { Toasts } from './ui/components/Toasts';
 import { Title } from './ui/screens/Title';
 import { Home } from './ui/screens/Home';
-import { Collection } from './ui/screens/Collection';
-import { HeroDetail } from './ui/screens/HeroDetail';
-import { Team } from './ui/screens/Team';
-import { Inventory } from './ui/screens/Inventory';
-import { Menu } from './ui/screens/Menu';
-import { Daily } from './ui/screens/Daily';
-import { Settings } from './ui/screens/Settings';
-import { Saves } from './ui/screens/Saves';
-import { Codex } from './ui/screens/Codex';
-import { Campaign } from './ui/screens/Campaign';
-import { Stage, Prep } from './ui/screens/Stage';
-import { Battle } from './ui/screens/Battle';
-import { Summon } from './ui/screens/Summon';
-import { Gear } from './ui/screens/Gear';
-import { Mail } from './ui/screens/Mail';
-import { Dungeons, Dungeon, Tower, WorldBoss, Arena } from './ui/screens/Modes';
-import { Missions, Events } from './ui/screens/Missions';
+
+// Écrans chargés à la demande (tous pré-cachés pour le hors-ligne) : démarrage plus rapide.
+const L = <K extends string>(load: () => Promise<Record<K, React.ComponentType<any>>>, key: K) => lazy(() => load().then((m) => ({ default: m[key] })));
+const Collection = L(() => import('./ui/screens/Collection'), 'Collection');
+const HeroDetail = L(() => import('./ui/screens/HeroDetail'), 'HeroDetail');
+const Team = L(() => import('./ui/screens/Team'), 'Team');
+const Inventory = L(() => import('./ui/screens/Inventory'), 'Inventory');
+const Menu = L(() => import('./ui/screens/Menu'), 'Menu');
+const Daily = L(() => import('./ui/screens/Daily'), 'Daily');
+const Settings = L(() => import('./ui/screens/Settings'), 'Settings');
+const Saves = L(() => import('./ui/screens/Saves'), 'Saves');
+const Codex = L(() => import('./ui/screens/Codex'), 'Codex');
+const Campaign = L(() => import('./ui/screens/Campaign'), 'Campaign');
+const Battle = L(() => import('./ui/screens/Battle'), 'Battle');
+const Summon = L(() => import('./ui/screens/Summon'), 'Summon');
+const Gear = L(() => import('./ui/screens/Gear'), 'Gear');
+const Mail = L(() => import('./ui/screens/Mail'), 'Mail');
+const Stage = L(() => import('./ui/screens/Stage'), 'Stage');
+const Prep = L(() => import('./ui/screens/Stage'), 'Prep');
+const Dungeons = L(() => import('./ui/screens/Modes'), 'Dungeons');
+const Dungeon = L(() => import('./ui/screens/Modes'), 'Dungeon');
+const Tower = L(() => import('./ui/screens/Modes'), 'Tower');
+const WorldBoss = L(() => import('./ui/screens/Modes'), 'WorldBoss');
+const Arena = L(() => import('./ui/screens/Modes'), 'Arena');
+const Missions = L(() => import('./ui/screens/Missions'), 'Missions');
+const Events = L(() => import('./ui/screens/Missions'), 'Events');
 
 function renderRoute(r: Route) {
   switch (r.name) {
@@ -82,6 +94,14 @@ export default function App() {
   }, [ready]);
 
   useEffect(() => { if (save) configureAudio({ enabled: save.settings.sound, volume: save.settings.volume }); }, [save?.settings.sound, save?.settings.volume]);
+  useEffect(() => { if (save) configureMusic({ enabled: save.settings.music, volume: save.settings.musicVolume }); }, [save?.settings.music, save?.settings.musicVolume]);
+  // Musique : ambiance au menu, pulsation en combat ; coupée quand l'app passe en arrière-plan.
+  useEffect(() => { if (started && save?.settings.music) playMusic(route.name === 'battle' ? 'battle' : 'menu'); }, [started, route.name, save?.settings.music]);
+  useEffect(() => {
+    const onVis = () => { if (document.visibilityState === 'hidden') stopMusic(); else if (started && useGame.getState().save?.settings.music) playMusic(useUI.getState().stack.at(-1)?.name === 'battle' ? 'battle' : 'menu'); };
+    document.addEventListener('visibilitychange', onVis);
+    return () => document.removeEventListener('visibilitychange', onVis);
+  }, [started]);
 
   const start = () => {
     unlockAudio();
@@ -97,8 +117,13 @@ export default function App() {
         <Title ready={ready && !!save} onStart={start} error={error} />
       ) : (
         <>
-          <div key={`${depth}-${route.name}`} style={{ position: 'absolute', inset: 0 }}>{renderRoute(route)}</div>
+          <div key={`${depth}-${route.name}`} style={{ position: 'absolute', inset: 0 }}>
+            <ErrorBoundary resetKey={`${depth}-${route.name}`}>
+              <Suspense fallback={<div className="screen"><div className="bg-ambient" /></div>}>{renderRoute(route)}</Suspense>
+            </ErrorBoundary>
+          </div>
           {route.name !== 'battle' && <BottomNav />}
+          {route.name === 'home' && !save.flags.guide_done && <Guide />}
         </>
       )}
       <Toasts />

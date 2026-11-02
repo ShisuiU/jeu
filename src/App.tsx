@@ -8,6 +8,7 @@ import { loadEvents } from './game/events';
 import { configureAudio, play, unlockAudio } from './audio/sfx';
 import { configureMusic, playMusic, stopMusic } from './audio/music';
 import { canClaimDaily } from './game/daily';
+import { claimableCount } from './game/missions';
 import { BottomNav } from './ui/components/BottomNav';
 import { Toasts } from './ui/components/Toasts';
 import { Title } from './ui/screens/Title';
@@ -105,6 +106,27 @@ export default function App() {
     const onVis = () => { if (document.visibilityState === 'hidden') stopMusic(); else if (started && useGame.getState().save?.settings.music) playMusic(useUI.getState().stack.at(-1)?.name === 'battle' ? 'battle' : 'menu'); };
     document.addEventListener('visibilitychange', onVis);
     return () => document.removeEventListener('visibilitychange', onVis);
+  }, [started]);
+
+  // Notification « mission accomplie » : dès qu'une nouvelle récompense devient réclamable.
+  useEffect(() => {
+    if (!started) return;
+    let prev = useGame.getState().save ? claimableCount(useGame.getState().save!) : 0;
+    let lastSave = useGame.getState().save;
+    const unsub = useGame.subscribe((st) => {
+      if (!st.save || st.save === lastSave) return;
+      lastSave = st.save;
+      const n = claimableCount(st.save);
+      if (n > prev) {
+        const ui = useUI.getState();
+        ui.toast(n - prev > 1 ? `${n - prev} missions accomplies : récompenses à réclamer.` : 'Mission accomplie : récompense à réclamer.', 'ok',
+          { label: 'Voir', run: () => useUI.getState().push({ name: 'missions' }) }, 4500);
+      }
+      prev = n;
+      const nav = navigator as Navigator & { setAppBadge?: (n: number) => Promise<void>; clearAppBadge?: () => Promise<void> };
+      try { if (n > 0) void nav.setAppBadge?.(n)?.catch(() => {}); else void nav.clearAppBadge?.()?.catch(() => {}); } catch { /* non pris en charge */ }
+    });
+    return unsub;
   }, [started]);
 
   // Retour par glissement depuis le bord gauche (comme les apps iPhone), sauf en combat.

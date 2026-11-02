@@ -3,7 +3,7 @@ import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
 import { DAILY_BONUS, DAILY_MISSIONS, WEEKLY_BONUS, WEEKLY_MISSIONS } from '../../data/missions';
 import { ACHIEVEMENTS } from '../../data/achievements';
-import { bonusAvailable, claimAchievement, claimBonus, claimMission, missionState, type MissionKind, claimEventTask, eventTaskState } from '../../game/missions';
+import { bonusAvailable, claimableByTab, claimAchievement, claimBonus, claimMission, missionState, type MissionKind, claimEventTask, eventTaskState } from '../../game/missions';
 import { activeEvents, bannerAvailable } from '../../game/events';
 import { canStart } from '../../game/modes';
 import { formatDuration, msUntilReset, msUntilWeekReset } from '../../core/time';
@@ -36,12 +36,15 @@ export function Missions() {
   const claim = (fn: (s: typeof save) => boolean) => { let ok = false; mutate((s) => { ok = fn(s); }); if (ok) { play('claim'); toast('Récompense obtenue !', 'ok'); } };
   const kind = tab as MissionKind;
   const list = tab === 'daily' ? DAILY_MISSIONS : WEEKLY_MISSIONS;
+  const counts = claimableByTab(save);
   return (
     <Screen title="Missions">
       <div className="seg" style={{ marginBottom: 12 }}>
-        <button className={tab === 'daily' ? 'on' : ''} onClick={() => setTab('daily')}>Journalières</button>
-        <button className={tab === 'weekly' ? 'on' : ''} onClick={() => setTab('weekly')}>Hebdo</button>
-        <button className={tab === 'progress' ? 'on' : ''} onClick={() => setTab('progress')}>Progression</button>
+        {([['daily', 'Journalières'], ['weekly', 'Hebdo'], ['progress', 'Progression']] as const).map(([id, label]) => (
+          <button key={id} className={tab === id ? 'on' : ''} onClick={() => setTab(id)}>
+            {label}{counts[id] > 0 && <span className="seg-count">{counts[id]}</span>}
+          </button>
+        ))}
       </div>
       {tab !== 'progress' && (
         <>

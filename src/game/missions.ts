@@ -103,3 +103,9 @@ export function claimEventTask(s: SaveData, eventId: string, taskId: string): bo
   applyReward(s, st.def.reward);
   return true;
 }
+
+/** Nombre de récompenses à réclamer par onglet (journalières, hebdomadaires, progression). */
+export function claimableByTab(s: SaveData): { daily: number; weekly: number; progress: number } {
+  const per = (kind: MissionKind) => DEFS[kind].filter((m) => { const st = missionState(s, kind, m.id); return st.done && !st.claimed; }).length + (bonusAvailable(s, kind) ? 1 : 0);
+  return { daily: per('daily'), weekly: per('weekly'), progress: ACHIEVEMENTS.filter((a) => achievementDone(s, a.id) && !s.achievements.includes(a.id)).length };
+}

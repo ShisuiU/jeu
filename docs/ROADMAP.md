@@ -68,8 +68,13 @@
 - « Équiper le meilleur » sur la fiche d'un héros (n'emprunte jamais l'équipement d'un autre héros)
 - « Composer l'équipe recommandée » (défenseur devant, soigneur derrière, meilleure aura de chef)
 
+## ✅ Version 1.3.0 — Illustrations des héros
+
+- Les 21 héros ont leur illustration définitive (portrait + illustration complète), générées avec Figma à partir des fiches visuelles
+- Intégration automatique via `scripts/import-art.py` ; ~5 Mo, mis en cache pour le hors-ligne
+
 ## Suites possibles
 
-- **Illustrations définitives** des 15 héros et des ennemis (le pipeline est prêt : déposer les images dans `src/assets/heroes/<id>/`)
+- **Illustrations des ennemis** (même pipeline : `src/assets/enemies/<id>/`)
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale
 - Synchronisation cloud facultative (interface `SyncProvider` prête), classements, arène entre joueurs, guildes

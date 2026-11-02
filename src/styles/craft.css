@@ -204,3 +204,14 @@
 
 /* iPhone : iOS réserve déjà le bas de l'écran → pas de marge supplémentaire (voir viewport.ts). */
 :root.ios-bottom-reserved { --sab: 0px; }
+
+/* ─── Sections repliables (fiche du héros) ─── */
+.disclosure { padding: 0; }
+.disclosure + .panel, .panel + .disclosure, .disclosure + .disclosure { margin-top: 10px; }
+.dc-head { width: 100%; display: flex; align-items: center; gap: 10px; padding: 13px 14px; text-align: left; }
+.dc-title { font-family: var(--font-title); font-size: 15px; color: var(--gold-hi); letter-spacing: 0.04em; }
+.dc-sum { flex: 1; min-width: 0; font-size: 12px; color: var(--text-faint); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dc-chev { margin-left: auto; color: var(--brass); transition: transform 0.2s; }
+.disclosure.open .dc-chev { transform: rotate(180deg); }
+.disclosure.open .dc-head { border-bottom: 1px solid var(--edge); }
+.dc-body { padding: 12px 14px 14px; animation: fadeIn 0.2s; }

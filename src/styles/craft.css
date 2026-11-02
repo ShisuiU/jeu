@@ -242,3 +242,36 @@
 /* ─── Bouton d'aide « i » ─── */
 .info-btn { width: 20px; height: 20px; flex-shrink: 0; border-radius: 50%; display: inline-grid; place-items: center; font: italic 700 12px/1 Georgia, serif; color: var(--brass); border: 1px solid rgba(184,149,90,0.55); background: rgba(184,149,90,0.08); }
 .info-modal .info-text { font-size: 14px; line-height: 1.5; color: var(--text-dim); margin-bottom: 14px; }
+
+/* ─── Identité : affinité, rôle, rareté, famille ─── */
+.aff-icon { flex-shrink: 0; display: inline-block; vertical-align: -3px; }
+.aff-icon.disc { border-radius: 50%; background: radial-gradient(circle, rgba(0,0,0,0.75) 55%, rgba(0,0,0,0.35)); box-shadow: 0 0 0 1px color-mix(in srgb, var(--ac) 60%, transparent), 0 0 6px color-mix(in srgb, var(--ac) 45%, transparent); padding: 2px; box-sizing: content-box; }
+.role-icon { flex-shrink: 0; vertical-align: -3px; }
+
+.identity { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; margin-top: 8px; }
+.id-item { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 7px 2px 6px; border-radius: 3px; background: rgba(10,9,14,0.7); border: 1px solid color-mix(in srgb, var(--ic) 35%, var(--edge)); }
+.id-item:active { transform: scale(0.96); }
+.id-ic { height: 22px; display: grid; place-items: center; color: var(--ic); }
+.id-stars { font-size: 11px; letter-spacing: -1px; text-shadow: 0 0 6px currentColor; }
+.id-lb { font-size: 11px; font-weight: 700; color: var(--ic); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+
+/* Cartes de héros : affinité + rôle en haut à droite, famille à côté des étoiles */
+.hero-card .hc-id { position: absolute; top: 4px; right: 4px; display: flex; flex-direction: column; align-items: center; gap: 2px; z-index: 2; }
+.hero-card .hc-role { width: 18px; height: 18px; display: grid; place-items: center; border-radius: 50%; background: rgba(0,0,0,0.72); color: #e8dcc2; box-shadow: 0 0 0 1px rgba(255,255,255,0.18); }
+.hero-card .hc-line { display: flex; align-items: center; gap: 3px; }
+.hero-card .hc-line svg { filter: drop-shadow(0 1px 1px #000); }
+
+/* Combat : logo d'affinité sur la carte, statuts à gauche, avantage au ciblage */
+.u-aff { position: absolute; right: 2px; top: 2px; z-index: 3; line-height: 0; }
+.u-status { right: auto !important; left: 3px; top: 19px !important; }
+.u-edge { position: absolute; left: 50%; top: -15px; transform: translateX(-50%); z-index: 6; padding: 0 5px; height: 15px; line-height: 15px; border-radius: 2px; font-size: 9.5px; font-weight: 800; white-space: nowrap; pointer-events: none; }
+.u-edge.up { background: #ffd36b; color: #2a1c05; box-shadow: 0 0 8px rgba(255,211,107,0.7); animation: edgePulse 1s ease-in-out infinite alternate; }
+.u-edge.down { background: rgba(30,28,36,0.95); color: #b9b3c4; border: 1px solid #5a5466; }
+@keyframes edgePulse { to { transform: translateX(-50%) translateY(-2px); } }
+.ui-aff { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--text-dim); margin-top: 6px; }
+
+/* Préparation : conseil d'affinité, rôle des ennemis */
+.aff-advice { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: 12.5px; color: var(--text-dim); margin: 0 0 10px; padding: 8px 10px; border-radius: var(--radius); background: rgba(14,12,20,0.6); border: 1px solid rgba(255,255,255,0.05); }
+.aff-advice > span { display: inline-flex; align-items: center; gap: 4px; }
+.ec-role { display: inline-flex; align-items: center; gap: 3px; justify-content: center; }
+.enemy-chip .ec-art .u-aff { right: 2px; top: 2px; }

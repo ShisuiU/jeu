@@ -4,7 +4,7 @@ RPG mobile de collection de héros au tour par tour, univers original mêlant fa
 science-fiction et civilisations antiques. Conçu pour iPhone, jouable **hors ligne**, **gratuit**,
 sans App Store ni serveur : c'est une application web progressive (PWA) qu'on installe depuis Safari.
 
-> État : **version 1.15.0** (fiches et textes allégés) — histoire complète en 7 chapitres (70 niveaux, 4 difficultés), 21 héros, invocations, améliorations, équipement, donjons, tour, boss mondial, arène, missions, événements.
+> État : **version 1.16.0** (affinités et identités mises en avant) — histoire complète en 7 chapitres (70 niveaux, 4 difficultés), 21 héros, invocations, améliorations, équipement, donjons, tour, boss mondial, arène, missions, événements.
 
 **Jouer : https://shisuiu.github.io/jeu/** Voir [docs/ROADMAP.md](docs/ROADMAP.md).
 

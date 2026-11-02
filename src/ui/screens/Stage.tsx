@@ -1,3 +1,5 @@
+import { AffinityIcon, RoleIcon } from '../art/Identity';
+import type { AffinityId } from '../../data/types';
 import { useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
@@ -64,6 +66,7 @@ export function Prep({ spec }: { spec: BattleSpec }) {
     <Screen title={info.title}>
       <p className="muted" style={{ marginTop: 0 }}>{info.subtitle}</p>
       {boss && spec.mode !== 'arena' && <div className="hint warn" style={{ marginBottom: 12 }}><b>Boss.</b> Immunisé à l’étourdissement et au gel, furieux sous 50 % de PV.</div>}
+      <AffinityAdvice waves={info.waves} />
       {info.waves.map((w, i) => (
         <Panel key={i} title={spec.mode === 'arena' ? 'Équipe adverse' : `Vague ${i + 1}`}>
           <div className="enemy-row">
@@ -74,9 +77,9 @@ export function Prep({ spec }: { spec: BattleSpec }) {
               const aff = isHero ? HERO_BY_ID[e.refId].affinity : ENEMIES[e.refId].affinity;
               return (
                 <div key={j} className={`enemy-chip ${!isHero && ENEMIES[e.refId].boss ? 'boss' : ''}`}>
-                  <div className="ec-art">{isHero ? <HeroArt heroId={e.refId} /> : <EnemyArt enemyId={e.refId} />}<span className="u-lvl">{e.level}</span></div>
+                  <div className="ec-art">{isHero ? <HeroArt heroId={e.refId} /> : <EnemyArt enemyId={e.refId} />}<span className="u-lvl">{e.level}</span><span className="u-aff"><AffinityIcon id={aff} size={15} /></span></div>
                   <div className="ec-name">{name}</div>
-                  <div className="faint" style={{ color: AFFINITIES[aff].color }}>{ROLES[role].name}</div>
+                  <div className="faint ec-role"><RoleIcon id={role} size={11} />{ROLES[role].name}</div>
                 </div>
               );
             })}
@@ -143,4 +146,22 @@ export function Prep({ spec }: { spec: BattleSpec }) {
 /** Ancienne route « stage » (campagne Normal). */
 export function Stage({ stageId }: { stageId: string }) {
   return <Prep spec={{ mode: 'campaign', stageId, difficulty: 'normal' }} />;
+}
+
+/** Conseil d'affinité : l'affinité ennemie la plus présente, et celle qui la bat. */
+function AffinityAdvice({ waves }: { waves: { kind: string; refId: string }[][] }) {
+  const count: Partial<Record<AffinityId, number>> = {};
+  for (const w of waves) for (const e of w) {
+    const a = (e.kind === 'hero' ? HERO_BY_ID[e.refId].affinity : ENEMIES[e.refId].affinity) as AffinityId;
+    count[a] = (count[a] ?? 0) + 1;
+  }
+  const main = (Object.entries(count) as [AffinityId, number][]).filter(([a]) => a !== 'void').sort((a, b) => b[1] - a[1])[0]?.[0];
+  if (!main) return null;
+  const counter = (Object.values(AFFINITIES).find((x) => x.strongAgainst === main))?.id as AffinityId | undefined;
+  return (
+    <div className="aff-advice">
+      <span>Ennemis surtout <AffinityIcon id={main} size={16} /> <b style={{ color: AFFINITIES[main].color }}>{AFFINITIES[main].name}</b></span>
+      {counter && <span>· conseillé <AffinityIcon id={counter} size={16} /> <b style={{ color: AFFINITIES[counter].color }}>{AFFINITIES[counter].name}</b></span>}
+    </div>
+  );
 }

@@ -2,6 +2,7 @@ import { HERO_BY_ID } from '../../data/heroes';
 import { RARITIES } from '../../data/rarities';
 import { HeroArt } from '../art/HeroArt';
 import { FactionEmblem } from '../art/FactionEmblem';
+import { AffinityIcon, RoleIcon } from '../art/Identity';
 import { Stars } from './common';
 
 export function HeroCard({ heroId, level, owned = true, selected, onClick, badge }: {
@@ -16,9 +17,9 @@ export function HeroCard({ heroId, level, owned = true, selected, onClick, badge
       <div className="shade" />
       {level !== undefined && owned && <span className="lvl">Nv {level}</span>}
       {badge && <span className="lvl" style={{ left: 'auto', right: 5, top: 30 }}>{badge}</span>}
-      <span className="fac"><FactionEmblem id={d.faction} size={22} /></span>
+      <span className="hc-id"><AffinityIcon id={d.affinity} size={18} /><span className="hc-role"><RoleIcon id={d.role} size={12} /></span></span>
       <div className="meta">
-        <Stars rarity={d.rarity} />
+        <div className="hc-line"><FactionEmblem id={d.faction} size={13} /><Stars rarity={d.rarity} /></div>
         <div className="name">{d.name}</div>
       </div>
     </Tag>

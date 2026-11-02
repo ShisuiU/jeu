@@ -1,0 +1,94 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   AUTEL DES FAILLES — écran d'invocation et révélation (voir Summon.tsx)
+   ───────────────────────────────────────────────────────────────────────────── */
+.altar-bg { position: absolute; inset: 0; z-index: -1; overflow: hidden; background: #06050a; }
+.altar-bg img { width: 100%; height: 100%; object-fit: cover; object-position: center 62%; filter: blur(5px) brightness(0.3) saturate(1.1); transform: scale(1.05); }
+
+/* Choix de l'éclat */
+.shard-tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
+.shard-tab { display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 6px 2px 5px; border-radius: 3px; background: rgba(10,8,14,0.82); border: 1px solid var(--edge); color: var(--text-dim); font-size: 10.5px; }
+.shard-tab span { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.shard-tab b { font-size: 11px; color: var(--text); font-variant-numeric: tabular-nums; }
+.shard-tab .crystal { filter: drop-shadow(0 0 4px var(--bc)); }
+.shard-tab.on { border-color: var(--bc); color: var(--bg2); background: color-mix(in srgb, var(--bc) 14%, rgba(10,8,14,0.9)); }
+
+/* Scène : l'autel, la faille et l'éclat posé au-dessus du piédestal */
+.altar-stage { position: relative; height: min(50vh, 430px); margin: 8px -16px 0; overflow: hidden; background: #000; }
+.altar-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 62%; }
+.altar-stage::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(6,5,10,0.55), transparent 22%, transparent 60%, rgba(6,5,10,0.95)); }
+.altar-rift { position: absolute; left: 50%; top: 0; width: 34%; height: 62%; transform: translateX(-50%); pointer-events: none; mix-blend-mode: screen;
+  background: radial-gradient(ellipse 18% 60% at 50% 40%, color-mix(in srgb, var(--bc) 85%, #fff) 0, color-mix(in srgb, var(--bc) 40%, transparent) 40%, transparent 75%); animation: altarRift 3.2s ease-in-out infinite; }
+@keyframes altarRift { 0%, 100% { opacity: 0.55; transform: translateX(-50%) scaleX(0.9); } 50% { opacity: 0.95; transform: translateX(-50%) scaleX(1.12); } }
+.altar-shard { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 2; animation: shardFloat 3.6s ease-in-out infinite, shardIn 0.5s cubic-bezier(.2,1.3,.4,1); }
+.altar-shard .crystal { filter: drop-shadow(0 0 14px var(--bc)) drop-shadow(0 0 30px color-mix(in srgb, var(--bc) 60%, transparent)); }
+@keyframes shardFloat { 0%, 100% { transform: translate(-50%, -50%); } 50% { transform: translate(-50%, calc(-50% - 9px)); } }
+@keyframes shardIn { from { opacity: 0; transform: translate(-50%, -30%) scale(0.6); } }
+.altar-caption { position: absolute; z-index: 2; left: 16px; right: 16px; bottom: 10px; }
+.altar-caption h2 { font-size: 21px; color: var(--bg2); text-shadow: 0 2px 10px #000, 0 0 18px color-mix(in srgb, var(--bc) 60%, transparent); }
+.altar-caption p { margin: 2px 0 0; font-size: 12.5px; color: var(--text-dim); text-shadow: 0 1px 4px #000; }
+.altar-featured { position: absolute; z-index: 2; right: 12px; top: 12px; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.af-art { width: 62px; aspect-ratio: 3 / 4; border-radius: 3px; overflow: hidden; border: 1px solid var(--bc); box-shadow: 0 0 14px color-mix(in srgb, var(--bc) 60%, transparent); }
+.altar-featured span { font-size: 9.5px; font-weight: 700; color: var(--bg2); text-shadow: 0 1px 3px #000; max-width: 110px; text-align: center; }
+
+/* Garantie : « fissure du Cœur » */
+.pity { margin-top: 10px; }
+.pity-label { display: flex; justify-content: space-between; gap: 8px; font-size: 11.5px; color: var(--text-dim); margin-bottom: 4px; }
+.pity-label b { color: var(--gold-hi); }
+.pity-bar { height: 5px; border-radius: 1px; background: rgba(255,255,255,0.07); overflow: hidden; box-shadow: inset 0 0 0 1px var(--edge); }
+.pity-bar > div { height: 100%; transition: width 0.4s; box-shadow: 0 0 8px currentColor; }
+.summon-btn small { font-weight: 700; opacity: 0.9; }
+.altar-links { display: flex; justify-content: center; gap: 10px; margin-top: 12px; font-size: 12.5px; color: var(--text-faint); }
+.altar-links button { color: var(--text-dim); text-decoration: underline; text-underline-offset: 3px; }
+
+/* ─── Révélation ─── */
+.rift-reveal { position: fixed; inset: 0; z-index: 70; overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center; padding: calc(var(--sat) + 16px) 14px calc(var(--sab) + 16px); }
+.rr-bg { position: absolute; inset: 0; }
+.rr-bg img { width: 100%; height: 100%; object-fit: cover; object-position: center 62%; filter: brightness(0.55); transition: filter 0.8s; }
+.st-rift .rr-bg img, .st-emerge .rr-bg img { filter: brightness(0.28) saturate(0.8); }
+
+/* L'éclat monte au-dessus de l'autel en vibrant de plus en plus */
+.rr-shard { position: absolute; left: 50%; top: 46%; transform: translate(-50%, -50%); animation: rrRise 1.15s cubic-bezier(.3,.7,.3,1) forwards; }
+.rr-shard .crystal { filter: drop-shadow(0 0 16px var(--bc)) drop-shadow(0 0 36px var(--bc)); animation: rrJitter 0.09s linear infinite; }
+@keyframes rrRise { from { top: 60%; transform: translate(-50%, -50%) scale(0.7); } to { top: 44%; transform: translate(-50%, -50%) scale(1.1); } }
+@keyframes rrJitter { 0% { transform: translate(0, 0); } 25% { transform: translate(-1.5px, 1px); } 50% { transform: translate(1.5px, -1px); } 75% { transform: translate(-1px, -1px); } 100% { transform: translate(0, 0); } }
+.st-shatter .rr-shard { animation: none; top: 44%; transform: translate(-50%, -50%) scale(1.4); opacity: 0; transition: opacity 0.12s, transform 0.12s; }
+
+/* L'éclat vole en morceaux */
+.rr-pieces { position: absolute; left: 50%; top: 44%; width: 0; height: 0; }
+.rr-pieces i { position: absolute; left: -7px; top: -9px; width: 14px; height: 18px; clip-path: polygon(50% 0, 100% 60%, 40% 100%, 0 45%); box-shadow: 0 0 8px #fff; animation: rrPiece 0.7s cubic-bezier(.15,.7,.3,1) forwards; }
+@keyframes rrPiece { from { transform: rotate(var(--a)) translateX(0) rotate(0) scale(var(--s)); opacity: 1; } to { transform: rotate(var(--a)) translateX(var(--d)) rotate(var(--r)) scale(calc(var(--s) * 0.6)); opacity: 0; } }
+.rr-flash { position: absolute; inset: 0; background: radial-gradient(circle at 50% 44%, #fff, color-mix(in srgb, var(--bc) 60%, transparent) 30%, transparent 65%); animation: rrFlash 0.45s ease-out forwards; }
+@keyframes rrFlash { from { opacity: 1; } to { opacity: 0; } }
+
+/* La faille se déchire du ciel jusqu'à l'autel, à la couleur de la rareté */
+.rr-rift { position: absolute; left: 50%; top: -2%; width: 190px; height: 72%; transform: translateX(-50%) scaleY(0); transform-origin: 50% 0; opacity: 0; pointer-events: none; }
+.rr-rift i { position: absolute; inset: 0; }
+.rr-rift i:first-child { left: -80px; right: -80px; background: radial-gradient(ellipse 40% 55% at 50% 55%, color-mix(in srgb, var(--rc) 90%, #fff 10%), transparent 72%); filter: blur(8px); }
+.rr-rift i:last-child { left: 50px; right: 50px; background: linear-gradient(90deg, transparent, var(--rg) 30%, #fff 50%, var(--rg) 70%, transparent);
+  clip-path: polygon(46% 0, 58% 8%, 50% 18%, 62% 30%, 52% 42%, 66% 55%, 54% 68%, 62% 82%, 50% 100%, 40% 84%, 47% 70%, 34% 56%, 46% 44%, 36% 30%, 48% 19%, 40% 8%); box-shadow: 0 0 20px var(--rc); }
+.st-rift .rr-rift, .st-emerge .rr-rift { opacity: 1; animation: rrTear 0.6s cubic-bezier(.2,.8,.2,1) forwards, rrBreath 1.6s ease-in-out 0.6s infinite; }
+.st-emerge .rr-rift { opacity: 0.22; }
+@keyframes rrTear { from { transform: translateX(-50%) scaleY(0) scaleX(0.4); } to { transform: translateX(-50%) scaleY(1) scaleX(1); } }
+@keyframes rrBreath { 0%, 100% { transform: translateX(-50%) scaleY(1) scaleX(1); } 50% { transform: translateX(-50%) scaleY(1) scaleX(1.25); } }
+.legend.st-rift .rr-rift { width: 280px; }
+.legend.st-rift { animation: rrShake 0.5s 2 0.4s; }
+@keyframes rrShake { 25% { transform: translate(-6px, 3px); } 50% { transform: translate(5px, -4px); } 75% { transform: translate(-3px, -2px); } }
+.rr-title { position: absolute; left: 0; right: 0; top: 62%; text-align: center; font-family: var(--font-title); font-weight: 900; font-size: 40px; letter-spacing: 0.12em; color: #fff;
+  text-shadow: 0 0 18px var(--rc), 0 0 44px var(--rc), 0 4px 10px #000; animation: logoIn 0.8s cubic-bezier(.2,.8,.2,1) 0.4s both; }
+.rr-skip { position: absolute; bottom: calc(var(--sab) + 26px); left: 0; right: 0; text-align: center; }
+
+/* L'Héritier sort de la faille : d'abord une silhouette, puis la lumière */
+.rr-result { position: relative; z-index: 2; width: 100%; max-width: 440px; max-height: 100%; overflow-y: auto; }
+.rr-single { text-align: center; }
+.rr-hero { width: min(62vw, 250px); aspect-ratio: 3 / 4; margin: 0 auto 10px; border-radius: 3px; overflow: hidden; border: 2px solid; box-shadow: 0 0 30px var(--rc), 0 0 70px color-mix(in srgb, var(--rc) 40%, transparent); animation: rrEmerge 1s cubic-bezier(.2,.7,.2,1) both; }
+@keyframes rrEmerge { 0% { transform: translateY(-40px) scale(0.75); filter: brightness(0) blur(2px); opacity: 0; } 35% { opacity: 1; filter: brightness(0); } 100% { transform: none; filter: brightness(1); } }
+.rr-rar { font-family: var(--font-title); font-weight: 900; letter-spacing: 0.16em; font-size: 12.5px; animation: fadeIn 0.6s 0.7s both; }
+.rr-single h2 { font-size: 26px; margin-top: 2px; animation: fadeIn 0.6s 0.8s both; }
+.rr-single .muted, .rr-single .chip { animation: fadeIn 0.6s 0.9s both; }
+.rr-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.rr-card { position: relative; animation: rrCardOut 0.55s cubic-bezier(.2,.9,.3,1.1) both; }
+.rr-card .hero-card { box-shadow: 0 0 12px color-mix(in srgb, var(--rc) 70%, transparent); }
+.rr-card .hero-card .name { font-size: 8px; }
+@keyframes rrCardOut { from { transform: translate(var(--fx), var(--fy)) scale(0.15); opacity: 0; filter: brightness(3); } 60% { opacity: 1; } to { transform: none; filter: none; } }
+
+.reduced-motion .rift-reveal * { animation-duration: 0.001s !important; }

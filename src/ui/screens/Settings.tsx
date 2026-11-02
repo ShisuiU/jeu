@@ -1,3 +1,4 @@
+import { viewportInfo } from '../../viewport';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
 import { Panel, Screen, Toggle } from '../components/common';
@@ -65,6 +66,9 @@ export function Settings() {
           <button className="btn secondary small" onClick={() => { useGame.getState().mutate((s) => { s.flags.guide_done = false; }); useUI.getState().tab('home'); }}>Revoir</button>
         </div>
         {save.time.rollbackCount > 0 && <div className="faint">Reculs d’horloge détectés : {save.time.rollbackCount}</div>}
+        <div className="faint" style={{ marginTop: 8 }}>
+          {(() => { const v = viewportInfo(); return `Écran ${v.screenH} · zone ${v.innerH} · haut ${v.top} · bas ${v.bottom} · ${v.app ? 'app' : 'navigateur'}${v.reserved ? ' · bas réservé' : ''}`; })()}
+        </div>
       </Panel>
     </Screen>
   );

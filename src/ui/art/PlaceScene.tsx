@@ -12,6 +12,9 @@ for (const [path, url] of Object.entries(files)) {
 
 export type PlaceId = 'sanctuary' | 'forge';
 
+/** Illustration d'un lieu (sanctuary, forge, altar…), si elle existe. */
+export function placeArt(id: string): string | undefined { return PLACE_ART[id]; }
+
 const FOCUS: Record<PlaceId, string> = { sanctuary: '50% 55%', forge: '55% 62%' };
 
 export const PlaceScene = memo(function PlaceScene({ place }: { place: PlaceId }) {

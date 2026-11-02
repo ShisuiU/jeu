@@ -35,7 +35,7 @@ Le script produit `full.webp` (768×1152) et `portrait.webp` (recadrage buste 3:
 `src/assets/<heroes|enemies>/<id>/`. Format source conseillé : vertical 2:3 (1024×1536), tête dans
 le tiers supérieur. Illustrations générées dans le fichier Figma « Aeonfall — Illustrations des héros ».
 
-**Avancement :** les 21 héros ✓ (générés avec Figma, modèle gpt-image). Ennemis : silhouettes provisoires (à faire).
+**Avancement :** les 21 héros ✓ et les 36 ennemis ✓ (dont 13 boss), générés avec Figma (modèle gpt-image). Les ennemis n'utilisent que `portrait.webp`.
 
 ## Modèle de prompt de génération
 

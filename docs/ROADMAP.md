@@ -73,8 +73,12 @@
 - Les 21 héros ont leur illustration définitive (portrait + illustration complète), générées avec Figma à partir des fiches visuelles
 - Intégration automatique via `scripts/import-art.py` ; ~5 Mo, mis en cache pour le hors-ligne
 
+## ✅ Version 1.4.0 — Illustrations des ennemis
+
+- Les 36 ennemis illustrés (Effacés, créatures des six régions, 7 boss de chapitre, 4 gardiens de donjon, Sentinelle de la Tour, Colosse du boss mondial)
+- Plus aucune silhouette provisoire dans le jeu
+
 ## Suites possibles
 
-- **Illustrations des ennemis** (même pipeline : `src/assets/enemies/<id>/`)
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale
 - Synchronisation cloud facultative (interface `SyncProvider` prête), classements, arène entre joueurs, guildes

@@ -16,7 +16,8 @@ export type Route =
   | { name: 'campaign' }
   | { name: 'summon' }
   | { name: 'mail' }
-  | { name: 'gear' }
+  | { name: 'gear'; gearUid?: string }
+  | { name: 'sanctuary'; uid?: string }
   | { name: 'stage'; stageId: string }
   | { name: 'prep'; spec: BattleSpec }
   | { name: 'battle'; spec: BattleSpec; teamId: string; seed: number }

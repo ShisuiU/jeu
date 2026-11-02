@@ -121,3 +121,10 @@ export function upgradeSkill(s: SaveData, heroUid: string, skillId: string): Che
   if (c.ok) { pay(s, h, c.cost); h.skillLevels[skillId] = (h.skillLevels[skillId] ?? 1) + 1; track(s, 'heroUpgrade'); }
   return c;
 }
+
+/** Une amélioration « marquante » (rang, ascension, éveil, compétence) est-elle possible tout de suite ? */
+export function canImprove(s: SaveData, h: HeroInstance): boolean {
+  if (rankUpCheck(s, h).ok || ascendCheck(s, h).ok || awakenCheck(s, h).ok) return true;
+  const d = HERO_BY_ID[h.heroId];
+  return !!d && d.skills.some((sk) => skillCheck(s, h, sk.id).ok);
+}

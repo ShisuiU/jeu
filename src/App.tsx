@@ -28,6 +28,7 @@ const Campaign = L(() => import('./ui/screens/Campaign'), 'Campaign');
 const Battle = L(() => import('./ui/screens/Battle'), 'Battle');
 const Summon = L(() => import('./ui/screens/Summon'), 'Summon');
 const Gear = L(() => import('./ui/screens/Gear'), 'Gear');
+const Sanctuary = L(() => import('./ui/screens/Sanctuary'), 'Sanctuary');
 const Mail = L(() => import('./ui/screens/Mail'), 'Mail');
 const Stage = L(() => import('./ui/screens/Stage'), 'Stage');
 const Prep = L(() => import('./ui/screens/Stage'), 'Prep');
@@ -54,7 +55,8 @@ function renderRoute(r: Route) {
     case 'codex': return <Codex />;
     case 'campaign': return <Campaign />;
     case 'summon': return <Summon />;
-    case 'gear': return <Gear />;
+    case 'gear': return <Gear gearUid={r.gearUid} />;
+    case 'sanctuary': return <Sanctuary uid={r.uid} />;
     case 'mail': return <Mail />;
     case 'dungeons': return <Dungeons />;
     case 'dungeon': return <Dungeon key={r.dungeonId} dungeonId={r.dungeonId} />;

@@ -9,7 +9,7 @@ import { heroTotalStats } from '../../game/heroStats';
 import { canImprove } from '../../game/upgrade';
 import { Screen, fmt } from '../components/common';
 import { HeroArt } from '../art/HeroArt';
-import { PlaceBanner } from '../art/PlaceScene';
+import { PlaceAmbient, PlaceBanner } from '../art/PlaceScene';
 import { HeroUpgrade, type UpgradeSection } from './HeroUpgrade';
 
 // SANCTUAIRE — le lieu où l'on fait progresser les héros :
@@ -34,7 +34,7 @@ export function Sanctuary({ uid }: { uid?: string }) {
   const power = powerOf(heroTotalStats(save, h).total);
 
   return (
-    <Screen title="Sanctuaire">
+    <Screen title="Sanctuaire" bg={<PlaceAmbient place="sanctuary" />}>
       <PlaceBanner place="sanctuary" title="Sanctuaire des Héritiers" subtitle="Faites grandir vos héros" />
 
       <div className="sanct-strip" role="listbox" aria-label="Choisir un héros">

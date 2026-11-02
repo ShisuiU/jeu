@@ -8,7 +8,7 @@ import { Modal, Panel, Screen, fmt } from '../components/common';
 import { GearCard, SLOT_ICON } from '../components/GearCard';
 import { GearDetail } from '../components/GearDetail';
 import { Icon, ResourceIcon } from '../art/Icons';
-import { PlaceBanner } from '../art/PlaceScene';
+import { PlaceAmbient, PlaceBanner } from '../art/PlaceScene';
 
 // FORGE — le lieu de l'équipement : on y renforce et on y démantèle les objets.
 // (On les équipe depuis la fiche du héros.)
@@ -31,7 +31,7 @@ export function Gear({ gearUid }: { gearUid?: string }) {
   const bulkTargets = bulk ? save.equipment.filter((g) => g.rarity === bulk && !g.locked && !g.heroUid) : [];
 
   return (
-    <Screen title="Forge">
+    <Screen title="Forge" bg={<PlaceAmbient place="forge" />}>
       <PlaceBanner place="forge" title="La Forge" subtitle="Renforcez votre équipement" />
       <div className="forge-res">
         <span className="row" style={{ gap: 6 }}><ResourceIcon icon="ore" color="#c08a5a" size={20} /> <b>{fmt(save.resources.forgeOre)}</b> <span className="faint">minerai</span></span>

@@ -167,5 +167,4 @@
 .ui-st .neg { color: #ff8f8f; font-size: 11.5px; }
 .ui-st .pos { color: #8fe3a0; font-size: 11.5px; }
 
-/* Correctif iPhone : l'application descend jusqu'au bas réel de l'écran (voir viewport.ts). */
-.app, .title-screen { bottom: calc(-1 * var(--vgap, 0px)); }
+.over-cap { color: #8fe3a0; }

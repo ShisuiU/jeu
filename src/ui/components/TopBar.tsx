@@ -30,7 +30,7 @@ export function TopBar() {
         </div>
       </button>
       <button className="pill" onClick={() => setOpen(true)}>
-        <Icon.energy size={20} /> {e.current}<small>/{BALANCE.energy.max}</small>
+        <Icon.energy size={20} /> <span className={e.current > BALANCE.energy.max ? 'over-cap' : ''}>{e.current}</span><small>/{BALANCE.energy.max}</small>
       </button>
       <button className="pill" onClick={() => push({ name: 'inventory' })}><Icon.coin size={20} />{fmt(save.resources.gold)}</button>
       <button className="pill" onClick={() => push({ name: 'inventory' })}><Icon.crystal size={20} />{fmt(save.resources.crystals)}</button>
@@ -38,7 +38,7 @@ export function TopBar() {
         <Modal onClose={() => setOpen(false)}>
           <h2>Énergie</h2>
           <div style={{ textAlign: 'center', fontSize: 30, fontWeight: 800 }}><Icon.energy size={30} /> {e.current}<span className="faint" style={{ fontSize: 16 }}> / {BALANCE.energy.max}</span></div>
-          <p className="faint" style={{ textAlign: 'center' }}>{e.current >= BALANCE.energy.max ? 'Énergie au maximum (la régénération est en pause).' : `+1 dans ${formatDuration(next)} · 1 point toutes les ${BALANCE.energy.regenMs / 60000} min, même jeu fermé.`}</p>
+          <p className="faint" style={{ textAlign: 'center' }}>{e.current > BALANCE.energy.max ? 'Bonus au-delà du maximum grâce aux récompenses (la régénération reprend sous le maximum).' : e.current >= BALANCE.energy.max ? 'Énergie au maximum (la régénération est en pause).' : `+1 dans ${formatDuration(next)} · 1 point toutes les ${BALANCE.energy.regenMs / 60000} min, même jeu fermé.`}</p>
           <div className="panel" style={{ marginTop: 8 }}>
             <div className="row between"><b>Recharge +{BALANCE.energyRefill.amount}</b><span className="faint">{BALANCE.energyRefill.costs.length - save.shop.energyRefills} / {BALANCE.energyRefill.costs.length} aujourd’hui</span></div>
             <button className="btn block" style={{ marginTop: 10 }} disabled={cost === null || save.resources.crystals < (cost ?? 0)} onClick={() => { let r = { ok: false } as { ok: boolean; reason?: string }; mutate((d) => { r = refillEnergy(d); }); if (r.ok) { play('claim'); toast(`+${BALANCE.energyRefill.amount} énergie !`, 'ok'); } else toast(r.reason ?? 'Impossible.', 'error'); }}>

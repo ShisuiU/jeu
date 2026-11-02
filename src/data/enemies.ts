@@ -19,7 +19,7 @@ export interface EnemyDef {
   look: string;
   palette: [string, string];
   /** Forme de la silhouette provisoire. */
-  shape: 'soldier' | 'archer' | 'shield' | 'cantor' | 'hound' | 'knight' | 'herald' | 'golem' | 'wyrm' | 'alchemist' | 'archivist' | 'sentinel' | 'colossus';
+  shape: 'soldier' | 'archer' | 'shield' | 'cantor' | 'hound' | 'knight' | 'herald' | 'golem' | 'wyrm' | 'alchemist' | 'archivist' | 'sentinel' | 'colossus' | 'tree' | 'void';
 }
 
 const s = (id: string, name: string, slot: SkillDef['slot'], cooldown: number, description: string, effects: SkillDef['effects']): SkillDef =>
@@ -144,6 +144,9 @@ export const ENEMIES: Record<string, EnemyDef> = {
     ],
   },
 };
+
+import { REGION_ENEMIES } from './enemiesRegions';
+Object.assign(ENEMIES, REGION_ENEMIES);
 
 /** Statistiques d'un ennemi à un niveau donné (même formule de croissance que les héros). */
 export function enemyStats(def: EnemyDef, level: number, statMult = 1, hpMult = 1): Stats {

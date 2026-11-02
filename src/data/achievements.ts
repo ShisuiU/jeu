@@ -5,7 +5,7 @@ import { CHAPTERS, progressKey } from './campaign';
 // RÉCOMPENSES DE PROGRESSION — objectifs à long terme, une seule fois chacun.
 export interface AchievementDef { id: string; title: string; reward: Reward; progress: (s: SaveData) => [number, number] }
 
-const chapterClears = (s: SaveData, diff: string) => CHAPTERS[0].stages.filter((st) => (s.progress.campaign[progressKey(diff as 'normal', st.id)]?.clears ?? 0) > 0).length;
+const chapterClears = (s: SaveData, diff: string, n = 1) => CHAPTERS[n - 1].stages.filter((st) => (s.progress.campaign[progressKey(diff as 'normal', st.id)]?.clears ?? 0) > 0).length;
 const chapterStars = (s: SaveData) => CHAPTERS[0].stages.reduce((a, st) => a + (s.progress.campaign[progressKey('normal', st.id)]?.stars ?? 0), 0);
 const bestDungeon = (s: SaveData) => Math.max(0, ...Object.values(s.progress.dungeons).map((d) => d.bestFloor));
 
@@ -17,7 +17,13 @@ export const ACHIEVEMENTS: AchievementDef[] = [
   { id: 'a_ch1_night', title: 'Terminer le chapitre 1 (Cauchemar)', reward: { shardPrimal: 2 }, progress: (s) => [chapterClears(s, 'nightmare'), 10] },
   { id: 'a_heroes8', title: 'Posséder 8 héros', reward: { crystals: 150 }, progress: (s) => [s.heroes.length, 8] },
   { id: 'a_heroes12', title: 'Posséder 12 héros', reward: { shardAeon: 1 }, progress: (s) => [s.heroes.length, 12] },
-  { id: 'a_heroes15', title: 'Posséder les 15 héros', reward: { shardPrimal: 1 }, progress: (s) => [s.heroes.length, 15] },
+  { id: 'a_heroes15', title: 'Posséder 15 héros', reward: { shardPrimal: 1 }, progress: (s) => [s.heroes.length, 15] },
+  { id: 'a_heroes21', title: 'Posséder les 21 héros', reward: { shardPrimal: 2 }, progress: (s) => [s.heroes.length, 21] },
+  ...[2, 3, 4, 5, 6, 7].map((n): AchievementDef => ({
+    id: `a_ch${n}`, title: `Terminer le chapitre ${n} (Normal)`,
+    reward: n === 7 ? { shardPrimal: 2, crystals: 500 } : { crystals: 200 + n * 50, shardAeon: 1 },
+    progress: (s) => [chapterClears(s, 'normal', n), 10],
+  })),
   { id: 'a_lvl5', title: 'Niveau de compte 5', reward: { gold: 20000 }, progress: (s) => [s.profile.level, 5] },
   { id: 'a_lvl10', title: 'Niveau de compte 10', reward: { crystals: 250 }, progress: (s) => [s.profile.level, 10] },
   { id: 'a_lvl20', title: 'Niveau de compte 20', reward: { shardAeon: 2 }, progress: (s) => [s.profile.level, 20] },

@@ -47,12 +47,3 @@ export const LORE: LoreEntry[] = [
   },
 ];
 
-export const CHAPTERS_PLANNED = [
-  { n: 1, name: 'Les Remparts de Cendre', region: 'Marches de Valcrest' },
-  { n: 2, name: 'La Forêt qui Crie', region: 'Sylves de Sylvaran' },
-  { n: 3, name: 'Verre et Poussière', region: 'Citadelle du Prisme' },
-  { n: 4, name: 'Les Dunes Rouges', region: "Terres Dévastées d'Akkar" },
-  { n: 5, name: 'Sous la Fosse', region: 'Abîme de la Légion' },
-  { n: 6, name: 'Le Ciel Déchiré', region: 'Observatoire du Concordat' },
-  { n: 7, name: 'Le Cœur d’Aeon', region: 'Le Cœur du Monde Cousu' },
-];

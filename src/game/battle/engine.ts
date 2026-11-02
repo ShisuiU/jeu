@@ -193,7 +193,7 @@ function dealDamage(s: BattleState, source: Unit, target: Unit, effect: Extract<
   // Formation : la seconde ligne est protégée tant qu'un allié tient la première ligne.
   if (single && target.slot >= 3 && alliesOf(s, target).some((a) => a.slot < 3)) dmg *= 0.85;
   if (source.faction === 'ash' && source.side === 'ally' && s.synergy.ash) dmg *= 1 + 0.3 * (1 - hpPct(source));
-  if (skill.id === 'sulfura_3' && hasStatus(target, 'burn')) dmg *= 1.5;
+  if ((skill.id === 'sulfura_3' || skill.id === 'nerissa_3') && hasStatus(target, 'burn')) dmg *= 1.5;
   dmg = Math.max(1, Math.round(dmg));
 
   // Bouclier

@@ -27,7 +27,7 @@ export function Home() {
   const reduced = save.settings.reducedMotion;
   const allStages = CHAPTERS.flatMap((c) => c.stages);
   const nextStage = allStages.find((st) => isStageUnlocked(save, 'normal', st) && stageProgress(save, 'normal', st.id).clears === 0);
-  const stars = chapterStars(save, 'normal', 1);
+  const stars = chapterStars(save, 'normal', nextStage?.chapter ?? CHAPTERS.length);
   const missionDot = claimableCount(save) > 0;
   const eventCount = activeEvents(now).length;
   const bossKeys = WORLD_BOSS.keysPerDay - save.worldBoss.keysUsed;
@@ -86,7 +86,7 @@ export function Home() {
           <Icon.sword size={34} />
           <div className="grow">
             <div className="big">CAMPAGNE</div>
-            <div className="sub">{nextStage ? `${nextStage.id} · ${nextStage.name}` : `Chapitre ${CHAPTERS[0].n} terminé`}</div>
+            <div className="sub">{nextStage ? `${nextStage.id} · ${nextStage.name}` : 'Histoire terminée — essayez les difficultés supérieures'}</div>
           </div>
           <span className="chip" style={{ flexShrink: 0 }}><Icon.star size={13} /> {stars.stars}/{stars.max}</span>
         </button>

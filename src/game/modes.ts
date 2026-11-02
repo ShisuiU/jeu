@@ -31,7 +31,7 @@ export type CostKind = 'energy' | 'key' | 'ticket' | 'free';
 export interface ModeInfo {
   title: string;
   subtitle: string;
-  region: 'valcrest';
+  region: string;
   waves: UnitSetup[][];
   cost: { kind: CostKind; amount: number };
   before?: DialogueLine[];
@@ -66,7 +66,7 @@ export function resolveMode(s: SaveData, spec: BattleSpec): ModeInfo {
       const { heroes: _h, ...fc } = st.firstClear;
       void _h;
       return {
-        title: `${st.id} · ${st.name}`, subtitle: `Chapitre ${st.chapter}`, region: 'valcrest', waves: stageWaves(st, spec.difficulty),
+        title: `${st.id} · ${st.name}`, subtitle: `Chapitre ${st.chapter} · ${CHAPTERS.find((c) => c.n === st.chapter)!.name}`, region: CHAPTERS.find((c) => c.n === st.chapter)!.backdrop, waves: stageWaves(st, spec.difficulty),
         cost: { kind: 'energy', amount: stageEnergy(st, spec.difficulty) }, before: first && spec.difficulty === 'normal' ? st.before : undefined,
         after: first && spec.difficulty === 'normal' ? st.after : undefined, rewardPreview: first ? fc : st.repeat, rewardLabel: first ? 'Première victoire' : 'Récompenses',
         notes: [`+${st.heroXp} XP par héros`, '★★★ si aucun héros n’est mis K.O.'], firstTime: first,
@@ -76,20 +76,20 @@ export function resolveMode(s: SaveData, spec: BattleSpec): ModeInfo {
       const d = DUNGEON_BY_ID[spec.dungeonId];
       const bonus = dungeonBonus(s.time.highWater);
       return {
-        title: `${d.name} · Étage ${spec.floor}`, subtitle: d.description, region: 'valcrest', waves: toSetups(dungeonWaves(d, spec.floor)),
+        title: `${d.name} · Étage ${spec.floor}`, subtitle: d.description, region: ({ forge: 'ash', amber: 'akkar', alchemy: 'prism', archive: 'astral' } as Record<string, string>)[d.id] ?? 'valcrest', waves: toSetups(dungeonWaves(d, spec.floor)),
         cost: { kind: 'energy', amount: dungeonEnergy(spec.floor) }, rewardPreview: scaleReward(d.reward(spec.floor), bonus), rewardLabel: bonus > 1 ? `Récompenses (bonus d’événement ×${bonus})` : 'Récompenses',
         notes: [d.gear ? 'Équipement garanti à chaque victoire' : '', `Étage suivant débloqué en cas de victoire`].filter(Boolean), firstTime: (s.progress.dungeons[d.id]?.bestFloor ?? 0) < spec.floor,
       };
     }
     case 'tower':
       return {
-        title: `Tour des Âges · Étage ${spec.floor}`, subtitle: spec.floor % 10 === 0 ? 'Étage gardé par une Sentinelle' : 'Ascension', region: 'valcrest', waves: toSetups(towerWaves(spec.floor)),
+        title: `Tour des Âges · Étage ${spec.floor}`, subtitle: spec.floor % 10 === 0 ? 'Étage gardé par une Sentinelle' : 'Ascension', region: 'heart', waves: toSetups(towerWaves(spec.floor)),
         cost: { kind: 'free', amount: 0 }, rewardPreview: towerReward(spec.floor), rewardLabel: 'Récompense de l’étage', notes: ['Sans énergie', 'Une victoire = étage suivant'], firstTime: true,
       };
     case 'worldboss': {
       const t = BOSS_TIERS.find((x) => x.id === spec.tier)!;
       return {
-        title: `${WORLD_BOSS.name} · ${t.name}`, subtitle: `Combat limité à ${WORLD_BOSS.turnLimit} actions`, region: 'valcrest',
+        title: `${WORLD_BOSS.name} · ${t.name}`, subtitle: `Combat limité à ${WORLD_BOSS.turnLimit} actions`, region: 'akkar',
         waves: [[{ kind: 'enemy', refId: WORLD_BOSS.enemy, slot: 1, level: t.level, hpMult: t.hpMult }]], turnLimit: WORLD_BOSS.turnLimit,
         cost: { kind: 'key', amount: 1 }, rewardPreview: t.reward, rewardLabel: 'Récompense maximale (100 % des PV)',
         notes: [`Paliers de dégâts : ${DAMAGE_CHESTS.join(' / ')} %`, `Meilleur score : ${Math.round(s.worldBoss.best[t.id] ?? 0)} %`], firstTime: false,
@@ -109,7 +109,7 @@ export function resolveMode(s: SaveData, spec: BattleSpec): ModeInfo {
       const e = activeEvents(s.time.highWater).find((x) => x.id === spec.eventId);
       const c = e?.challenge;
       return {
-        title: c?.name ?? 'Défi', subtitle: e?.name ?? '', region: 'valcrest', waves: c ? toSetups(c.waves) : [[]],
+        title: c?.name ?? 'Défi', subtitle: e?.name ?? '', region: 'ash', waves: c ? toSetups(c.waves) : [[]],
         cost: { kind: 'free', amount: 0 }, rewardPreview: c?.reward ?? {}, rewardLabel: 'Récompense unique', notes: [c?.description ?? ''], firstTime: true,
       };
     }

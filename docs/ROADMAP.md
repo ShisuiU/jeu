@@ -54,8 +54,15 @@
 - Guide de démarrage au premier lancement (relançable), réglages de combat par défaut
 - Tests : sauvegarde de référence v1 migrée vers la version actuelle, 300 actions aléatoires sans corruption, manifeste d'installation, service worker, hors-ligne — 72 tests unitaires + 6 parcours de bout en bout
 
+## ✅ Version 1.1.0 — Chapitres 2 à 7
+
+- 6 nouveaux chapitres (60 niveaux) : Sylvaran, Prisme, Akkar, la Fosse, le Ciel déchiré, le Cœur d'Aeon — fin de l'histoire principale
+- 24 nouveaux ennemis (dont 6 boss), 6 nouveaux héros obtenus en battant chaque boss (dont Solenne, Mythique)
+- Un décor par région (combat, donjons, tour, boss mondial), sélecteur de chapitre
+- Récompenses de progression par chapitre ; puissance des ennemis calibrée par simulation et testée
+
 ## Suites possibles
 
 - **Illustrations définitives** des 15 héros et des ennemis (le pipeline est prêt : déposer les images dans `src/assets/heroes/<id>/`)
-- Chapitres 2 à 7 de la campagne (Sylvaran, Prisme, Akkar, Fosse, Ciel déchiré, Cœur d'Aeon) et nouveaux héros
+- Nouveaux arcs narratifs et héros après la fin de l'histoire principale
 - Synchronisation cloud facultative (interface `SyncProvider` prête), classements, arène entre joueurs, guildes

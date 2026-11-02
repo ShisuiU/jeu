@@ -6,7 +6,7 @@ import { canClaimDaily } from '../../game/daily';
 import { CHAPTERS } from '../../data/campaign';
 import { chapterStars, isStageUnlocked, stageProgress } from '../../game/campaign';
 import { WorldScene, Particles } from '../art/Scene';
-import { HeroArt } from '../art/HeroArt';
+import { HeroArt, hasRealArt } from '../art/HeroArt';
 import { Icon } from '../art/Icons';
 import { TopBar } from '../components/TopBar';
 import { claimableCount } from '../../game/missions';
@@ -44,7 +44,7 @@ export function Home() {
 
       {def && (
         <button className="home-hero" onClick={() => push({ name: 'hero', uid: leader.uid, heroId: leader.heroId })}>
-          <div className="art-wrap"><HeroArt heroId={def.id} kind="full" /></div>
+          <div className={`art-wrap ${hasRealArt(def.id) ? 'real' : ''}`}><HeroArt heroId={def.id} kind="full" position="center top" /></div>
           <div className="hero-label">
             <div className="t">{FACTIONS[def.faction].short} · Chef d’équipe</div>
             <div className="n">{def.name}</div>

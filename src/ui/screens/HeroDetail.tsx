@@ -7,7 +7,7 @@ import { AFFINITIES } from '../../data/affinities';
 import { RARITIES } from '../../data/rarities';
 import { BALANCE } from '../../data/balance';
 import { computeStats, maxLevelForRank, powerOf, STAT_LABELS, STAT_ORDER } from '../../game/stats';
-import { Panel, RarityTag, Screen, Stars, fmt } from '../components/common';
+import { Disclosure, Panel, RarityTag, Screen, Stars, fmt } from '../components/common';
 import { HeroArt, hasRealArt } from '../art/HeroArt';
 import { FactionEmblem } from '../art/FactionEmblem';
 import { Icon } from '../art/Icons';
@@ -108,7 +108,7 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
         </div>
       </Panel>
 
-      <Panel title="Compétences">
+      <Disclosure title="Compétences" summary={`${d.skills.length} compétences${d.leaderSkill ? ' · aura de chef' : ''}`}>
         {d.skills.map((s, i) => (
           <div key={s.id} className="skill">
             <div className="skill-icon" style={{ ['--sc' as string]: s.slot === 'ultimate' ? rar.color : s.slot === 'passive' ? '#3b3350' : f.colors.primary }}>{s.slot === 'passive' ? 'P' : i + 1}</div>
@@ -126,16 +126,16 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
         {d.leaderSkill && (
           <div className="hint" style={{ marginTop: 10 }}><b style={{ color: 'var(--gold-hi)' }}>Aura de chef :</b> {d.leaderSkill.description}</div>
         )}
-      </Panel>
+      </Disclosure>
 
-      <Panel title="Histoire">
+      <Disclosure title="Histoire" summary={`${f.short} · faction et apparence`}>
         <div className="lore"><p>{d.lore}</p></div>
         <div className="panel-title" style={{ marginTop: 14 }}>Faction</div>
         <div className="lore"><p><b>{f.name}</b> : {f.synergy}</p></div>
         <div className="panel-title" style={{ marginTop: 14 }}>Apparence</div>
         <div className="lore"><p className="muted">{d.look}</p></div>
         {!hasRealArt(d.id) && <p className="faint">Illustration définitive en cours de création, portrait provisoire affiché.</p>}
-      </Panel>
+      </Disclosure>
 
       {inst && (
         <button className="btn secondary block" style={{ marginTop: 14 }} disabled={save.profile.avatarHeroId === d.id}

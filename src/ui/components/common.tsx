@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, type ReactNode } from 'react';
+import { useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { useUI } from '../../state/ui';
 import { Icon } from '../art/Icons';
 import { RARITIES } from '../../data/rarities';
@@ -34,6 +34,21 @@ export function Panel({ title, children, className = '' }: { title?: string; chi
     <section className={`panel ${className}`}>
       {title && <div className="panel-title">{title}</div>}
       {children}
+    </section>
+  );
+}
+
+/** Section repliable : seul le titre (et un résumé) est visible tant qu'on ne la demande pas. */
+export function Disclosure({ title, summary, children, defaultOpen = false }: { title: string; summary?: ReactNode; children: ReactNode; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <section className={`panel disclosure ${open ? 'open' : ''}`}>
+      <button className="dc-head" aria-expanded={open} onClick={() => setOpen(!open)}>
+        <span className="dc-title">{title}</span>
+        {!open && summary && <span className="dc-sum">{summary}</span>}
+        <span className="dc-chev" aria-hidden>▾</span>
+      </button>
+      {open && <div className="dc-body">{children}</div>}
     </section>
   );
 }

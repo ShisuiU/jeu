@@ -11,13 +11,14 @@ import { teamSetups } from '../../game/campaign';
 import { applyMode, nextSpec, payMode, resolveMode, type BattleSpec, type ModeResult } from '../../game/modes';
 import { heroXpToNext } from '../../game/progression';
 import { play } from '../../audio/sfx';
+import { playCast, playDeath, playDot, playHeal, playImpact, playRevive, playShield, playStatus } from '../../audio/battleSfx';
+import { skillFx, type SkillFx } from '../fx/skillFx';
 import { HeroArt } from '../art/HeroArt';
 import { EnemyArt } from '../art/EnemyArt';
 import { Icon } from '../art/Icons';
 import { BattleBackdrop } from '../art/BattleBackdrop';
 import { Dialogue } from '../components/Dialogue';
 import { Modal } from '../components/common';
-import { AFFINITIES } from '../../data/affinities';
 import { RewardView } from '../components/RewardView';
 import { HeroCard } from '../components/HeroCard';
 import { GearCard } from '../components/GearCard';
@@ -58,6 +59,7 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
   const [result, setResult] = useState<ModeResult | null>(null);
   const [quit, setQuit] = useState(false);
   const [infoId, setInfoId] = useState<string | null>(null);
+  const [heavyHits, setHeavyHits] = useState<Set<string>>(new Set());
   const measureRef = useRef<HTMLDivElement>(null);
   const [infoH, setInfoH] = useState(64);
   useLayoutEffect(() => {
@@ -89,51 +91,103 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
     setTimeout(() => setVfx((v) => (v[unitId]?.id === id ? (({ [unitId]: _, ...rest }) => rest)(v) : v)), 750);
   };
 
-  const playEvents = async () => {
+  // ─── Couche d'effets (projectiles, pluies, rayons) positionnée sur les cartes ───
+  const battleRef = useRef<HTMLDivElement>(null);
+  const [fxItems, setFxItems] = useState<FxItem[]>([]);
+  const posOf = (id: string) => {
+    const host = battleRef.current?.getBoundingClientRect();
+    const el = battleRef.current?.querySelector(`[data-uid="${id}"] .u-art`)?.getBoundingClientRect();
+    if (!host || !el) return null;
+    return { x: el.left - host.left + el.width / 2, y: el.top - host.top + el.height / 2, w: el.width, top: el.top - host.top };
+  };
+  const spawn = (item: Omit<FxItem, 'id'>) => {
+    const id = ++popSeq;
+    setFxItems((l) => [...l, { ...item, id }]);
+    setTimeout(() => setFxItems((l) => l.filter((x) => x.id !== id)), item.dur + 60);
+  };
+  const fxFor = (unitId: string): SkillFx => { const u = unitById(s, unitId); const sk = u.skills.find((x) => x.slot === 'basic') ?? u.skills[0]; return skillFx(sk, u.affinity); };
+
+  const playEvents = async (fx?: SkillFx, actorId?: string) => {
     const ev = s.events;
     const damaged = new Set(ev.filter((x) => x.kind === 'damage').map((x) => (x as { target: string }).target));
     const vfxBusy = (id: string) => damaged.has(id);
     s.events = [];
     if (!ev.length) return;
     const hit = new Set<string>();
+    const heavy = new Set<string>();
+    const soundOnce = new Set<string>();
     let pause = false;
     for (const e of ev) {
       switch (e.kind) {
-        case 'damage': addVfx(e.target, e.crit ? 'slash crit' : 'slash', AFFINITIES[unitById(s, e.source).affinity].color); if (e.crit) { setFlash(true); setTimeout(() => setFlash(false), 140); } hit.add(e.target); addPopup(e.target, `${e.crit ? 'CRIT ' : ''}-${e.amount}`, `dmg ${e.crit ? 'crit' : ''} ${e.strong ? 'strong' : ''} ${e.weak ? 'weak' : ''}`); pause = true; break;
-        case 'dot': hit.add(e.target); addPopup(e.target, `-${e.amount}`, e.status === 'poison' ? 'poison' : 'burn'); pause = true; break;
-        case 'heal': if (e.amount > 0) { addPopup(e.target, `+${e.amount}`, 'heal'); addVfx(e.target, 'healfx', '#7bea8f'); } pause = true; break;
-        case 'shield': addPopup(e.target, `+${e.amount}`, 'shieldp'); addVfx(e.target, 'shieldfx', '#aad7ff'); break;
+        case 'damage': {
+          const f = fx && e.source === actorId ? fx : fxFor(e.source);
+          addVfx(e.target, `impact w-${f.weapon} e-${f.element}${e.crit ? ' crit' : ''}`, f.color);
+          if (e.crit) { setFlash(true); setTimeout(() => setFlash(false), 140); }
+          if (!soundOnce.has('hit:' + e.source)) { soundOnce.add('hit:' + e.source); playImpact(f, { crit: ev.some((x) => x.kind === 'damage' && x.source === e.source && x.crit), many: ev.filter((x) => x.kind === 'damage' && x.source === e.source).length > 1 }); }
+          if (f.weapon === 'blunt' || e.crit) heavy.add(e.target);
+          hit.add(e.target); addPopup(e.target, `${e.crit ? 'CRIT ' : ''}-${e.amount}`, `dmg ${e.crit ? 'crit' : ''} ${e.strong ? 'strong' : ''} ${e.weak ? 'weak' : ''}`); pause = true; break;
+        }
+        case 'dot': hit.add(e.target); addPopup(e.target, `-${e.amount}`, e.status === 'poison' ? 'poison' : 'burn'); addVfx(e.target, `impact w-none e-${e.status === 'poison' ? 'poison' : 'fire'} small`, e.status === 'poison' ? '#8be04e' : '#ff8a3a'); if (!soundOnce.has('dot' + e.status)) { soundOnce.add('dot' + e.status); playDot(e.status); } pause = true; break;
+        case 'heal': if (e.amount > 0) { addPopup(e.target, `+${e.amount}`, 'heal'); addVfx(e.target, 'healfx', '#7bea8f'); if (!soundOnce.has('heal')) { soundOnce.add('heal'); playHeal(); } } pause = true; break;
+        case 'shield': addPopup(e.target, `+${e.amount}`, 'shieldp'); addVfx(e.target, 'shieldfx', '#aad7ff'); if (!soundOnce.has('shield')) { soundOnce.add('shield'); playShield(); } break;
         // Effets : seuls les malus importants s'affichent en texte ; les bonus n'ont qu'un halo (les pastilles suffisent).
-        case 'status': if (['stun', 'freeze', 'taunt'].includes(e.status)) addPopup(e.target, STATUS_INFO[e.status].name, 'debuff'); if (!vfxBusy(e.target)) addVfx(e.target, STATUS_INFO[e.status].debuff ? 'cursefx' : 'bufffx', STATUS_INFO[e.status].color); break;
+        case 'status': if (['stun', 'freeze', 'taunt'].includes(e.status)) addPopup(e.target, STATUS_INFO[e.status].name, 'debuff'); if (!vfxBusy(e.target)) addVfx(e.target, STATUS_INFO[e.status].debuff ? 'cursefx' : 'bufffx', STATUS_INFO[e.status].color); if (!soundOnce.has('st:' + e.status)) { soundOnce.add('st:' + e.status); playStatus(e.status, STATUS_INFO[e.status].debuff); } break;
         case 'resist': if (e.immune) addPopup(e.target, 'Immunisé', 'resist'); break;
         case 'skip': addPopup(e.target, STATUS_INFO[e.status].name, 'debuff'); pause = true; break;
-        case 'death': addPopup(e.target, 'K.O.', 'death'); pause = true; break;
-        case 'revive': addVfx(e.target, 'revivefx', '#ffd36b'); addPopup(e.target, 'Ressuscité !', 'heal'); play('rare'); pause = true; break;
+        case 'death': addPopup(e.target, 'K.O.', 'death'); playDeath(); pause = true; break;
+        case 'revive': addVfx(e.target, 'revivefx', '#ffd36b'); addPopup(e.target, 'Ressuscité !', 'heal'); playRevive(); pause = true; break;
         case 'undying': addPopup(e.target, 'Ce qui ne meurt pas', 'buff'); break;
         case 'extraTurn': addPopup(e.target, 'Tour bonus !', 'buff'); break;
         case 'cleanse': break;
         case 'wave': setBanner({ text: `Vague ${e.wave} / ${s.totalWaves}`, side: 'wave' }); play('open'); force(); await wait(1100 / speedRef.current); setBanner(null); break;
       }
     }
-    if (hit.size) { setHits(hit); play('tap'); }
+    if (hit.size) { setHits(hit); setHeavyHits(heavy); }
     force();
     if (pause) await wait(620 / speedRef.current);
     setHits(new Set());
+    setHeavyHits(new Set());
   };
 
   const doAction = async (a: Action) => {
     const actor = unitById(s, s.activeId!);
     const sk = actor.skills.find((x) => x.id === a.skillId)!;
+    const fx = skillFx(sk, actor.affinity);
     setBanner({ text: sk.name, side: actor.side });
     setActing(actor.id);
     const reduced = useGame.getState().save?.settings.reducedMotion;
     if (sk.slot === 'ultimate' && !reduced) { setUlt(actor.side); play('rare'); }
     force();
-    await wait((sk.slot === 'ultimate' && !reduced ? 900 : 400) / speedRef.current);
+    await wait((sk.slot === 'ultimate' && !reduced ? 850 : 300) / speedRef.current);
     setUlt(null);
-    if (!reduced && sk.effects.some((x) => x.kind === 'damage' && x.target === 'allEnemies')) setWave({ side: actor.side === 'ally' ? 'enemy' : 'ally', color: AFFINITIES[actor.affinity].color, id: ++popSeq });
+    // Lancement : son + trajet jusqu'aux cibles (projectile, pluie, vague, rayon de soutien).
+    playCast(fx);
+    let travel = fx.motion === 'melee' ? 120 : 0;
+    if (!reduced) {
+      const from = posOf(actor.id);
+      const targets = previewTargets(s, actor, sk, a.targetId);
+      const spd = speedRef.current;
+      if (fx.motion === 'projectile' && from) {
+        for (const t of targets) { const to = posOf(t.id); if (to) spawn({ kind: 'proj', fx, x0: from.x, y0: from.y, x1: to.x, y1: to.y, dur: 320 / spd }); }
+        travel = 320;
+      } else if (fx.motion === 'rain') {
+        for (const t of targets) { const to = posOf(t.id); if (to) spawn({ kind: 'rain', fx, x0: to.x, y0: to.y - 140, x1: to.x, y1: to.y, dur: 420 / spd }); }
+        travel = 380;
+      } else if (fx.motion === 'aoe') {
+        setWave({ side: actor.side === 'ally' ? 'enemy' : 'ally', color: fx.color, id: ++popSeq });
+        for (const t of targets) { const to = posOf(t.id); if (to) spawn({ kind: 'burst', fx, x0: to.x, y0: to.y, x1: to.x, y1: to.y, dur: 380 / spd }); }
+        travel = 300;
+      } else if (fx.motion === 'support') {
+        for (const t of targets) { const to = posOf(t.id); if (to) spawn({ kind: 'beam', fx, x0: to.x, y0: to.y, x1: to.x, y1: to.y, w: to.w, dur: 520 / spd }); }
+        travel = 260;
+      } else if (fx.motion === 'self' && from) {
+        spawn({ kind: 'aura', fx, x0: from.x, y0: from.y, x1: from.x, y1: from.y, w: from.w, dur: 600 / spd });
+        travel = 280;
+      }
+    }
+    await wait(travel / speedRef.current);
     performAction(s, a);
-    await playEvents();
+    await playEvents(fx, actor.id);
     setActing(null);
     setBanner(null);
   };
@@ -214,12 +268,12 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
   const row = (sd: 'ally' | 'enemy', back: boolean) => side(sd).filter((u) => (back ? u.slot >= 3 : u.slot < 3)).sort((a, b) => a.slot - b.slot);
 
   const renderUnit = (u: Unit) => (
-    <UnitView key={u.id} u={u} vfx={vfx[u.id]} active={s.activeId === u.id} acting={acting === u.id} hit={hits.has(u.id)}
+    <UnitView key={u.id} u={u} vfx={vfx[u.id]} active={s.activeId === u.id} acting={acting === u.id} hit={hits.has(u.id)} heavy={heavyHits.has(u.id)}
       targetable={targetable.has(u.id)} popups={popups[u.id] ?? []} onClick={() => onUnit(u)} onInfo={() => setInfoId(u.id)} />
   );
 
   return (
-    <div className={`battle ${flash ? 'flash' : ''}`}>
+    <div ref={battleRef} className={`battle ${flash ? 'flash' : ''}`}>
       <BattleBackdrop region={initial.info.region} />
       <div className="battle-top">
         <div className="row between">
@@ -261,6 +315,8 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
       {ult && <div className={`ult-overlay ${ult}`} />}
       {wave && <div key={wave.id} className={`field-wave ${wave.side}`} style={{ ['--vc' as string]: wave.color }} onAnimationEnd={() => setWave(null)} />}
       {banner && <div className={`skill-banner ${banner.side} ${ult ? 'ult' : ''}`} key={banner.text + banner.side}>{banner.text}</div>}
+
+      <FxLayer items={fxItems} />
 
       <div className="battle-controls">
         {/* Hauteur de l'aide = plus longue description de l'équipe (mesurée une fois) : texte complet, sans saut d'écran. */}
@@ -400,6 +456,42 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
   );
 }
 
+type FxItem = { id: number; kind: 'proj' | 'rain' | 'burst' | 'beam' | 'aura'; fx: SkillFx; x0: number; y0: number; x1: number; y1: number; w?: number; dur: number };
+
+/** Cibles prévues d'une compétence, pour lancer l'animation avant le calcul (sans tirage aléatoire). */
+function previewTargets(s: BattleState, actor: Unit, sk: SkillDef, targetId?: string): Unit[] {
+  const main = sk.effects.find((e) => e.kind === 'damage') ?? sk.effects.find((e) => e.kind === 'heal' || e.kind === 'shield' || e.kind === 'revive') ?? sk.effects[0];
+  if (!main) return [actor];
+  const foes = s.units.filter((u) => u.alive && u.side !== actor.side);
+  const friends = s.units.filter((u) => u.alive && u.side === actor.side);
+  const picked = targetId ? s.units.find((u) => u.id === targetId && u.alive) : undefined;
+  switch (main.target) {
+    case 'enemy': return [picked && picked.side !== actor.side ? picked : foes[0]].filter(Boolean) as Unit[];
+    case 'allEnemies': return foes;
+    case 'randomEnemies': return foes.slice(0, 1);
+    case 'ally': return [picked && picked.side === actor.side ? picked : actor];
+    case 'allAllies': return friends;
+    case 'lowestAlly': return [...friends].sort((a, b) => a.hp / a.base.hp - b.hp / b.base.hp).slice(0, 1);
+    default: return [actor];
+  }
+}
+
+function FxLayer({ items }: { items: FxItem[] }) {
+  return (
+    <div className="fx-layer" aria-hidden>
+      {items.map((it) => {
+        const dx = it.x1 - it.x0, dy = it.y1 - it.y0;
+        const ang = Math.atan2(dy, dx) * 180 / Math.PI;
+        const style = { left: it.x0, top: it.y0, ['--dx' as string]: `${dx}px`, ['--dy' as string]: `${dy}px`, ['--ang' as string]: `${ang}deg`,
+          ['--len' as string]: `${Math.hypot(dx, dy)}px`, ['--c' as string]: it.fx.color, ['--w' as string]: `${it.w ?? 70}px`, animationDuration: `${it.dur}ms` } as React.CSSProperties;
+        const cls = `fx-${it.kind} w-${it.fx.weapon} e-${it.fx.element}`;
+        if (it.kind === 'rain') return <span key={it.id} className={cls} style={style}>{[0, 1, 2, 3].map((i) => <i key={i} style={{ animationDuration: `${it.dur}ms`, animationDelay: `${i * it.dur * 0.12}ms`, left: `${(i - 1.5) * 12}px` }} />)}</span>;
+        return <span key={it.id} className={cls} style={style}><i /></span>;
+      })}
+    </div>
+  );
+}
+
 const SLOT_TAG = { basic: 'Base', special: 'Spéciale', ultimate: 'Ultime', passive: 'Passif' } as const;
 
 function SkillInfoBody({ unit, sk, onLaunch }: { unit: Unit; sk: SkillDef; onLaunch?: () => void }) {
@@ -419,19 +511,23 @@ function SkillInfoBody({ unit, sk, onLaunch }: { unit: Unit; sk: SkillDef; onLau
 
 const shortName = (n: string) => n.replace(/^(Le|La|Les|L’|L')\s*/i, '').split(' ')[0];
 
-function UnitView({ u, vfx, active, acting, hit, targetable, popups, onClick, onInfo }: { u: Unit; vfx?: { id: number; cls: string; color: string }; active: boolean; acting: boolean; hit: boolean; targetable: boolean; popups: Popup[]; onClick: () => void; onInfo: () => void }) {
+function UnitView({ u, vfx, active, acting, hit, heavy, targetable, popups, onClick, onInfo }: { u: Unit; vfx?: { id: number; cls: string; color: string }; active: boolean; acting: boolean; hit: boolean; heavy?: boolean; targetable: boolean; popups: Popup[]; onClick: () => void; onInfo: () => void }) {
   const sh = Math.min(1, shieldOf(u) / u.base.hp);
   // Appui long (0,45 s) : fiche de l'unité ; le toucher simple garde son rôle (cibler).
   const timer = useRef<number | undefined>(undefined);
   const longDone = useRef(false);
   const startPress = () => { longDone.current = false; window.clearTimeout(timer.current); timer.current = window.setTimeout(() => { longDone.current = true; onInfo(); }, 450); };
   const endPress = () => window.clearTimeout(timer.current);
+  // États visibles en permanence sur la carte (givre, braises, poison, étourdissement, bouclier, provocation).
+  const has = (id: string) => u.alive && u.statuses.some((x) => x.status === id);
+  const stCls = [has('freeze') && 'st-freeze', has('burn') && 'st-burn', has('poison') && 'st-poison', has('stun') && 'st-stun', has('taunt') && 'st-taunt', u.alive && sh > 0 && 'st-shield'].filter(Boolean).join(' ');
   return (
-    <button className={`unit ${u.side} ${u.alive ? '' : 'dead'} ${active ? 'active' : ''} ${acting ? 'acting' : ''} ${hit ? 'hit' : ''} ${targetable ? 'targetable' : ''} ${u.isBoss ? 'boss' : ''}`}
+    <button className={`unit ${u.side} ${u.alive ? '' : 'dead'} ${active ? 'active' : ''} ${acting ? 'acting' : ''} ${hit ? 'hit' : ''} ${targetable ? 'targetable' : ''} ${u.isBoss ? 'boss' : ''} ${heavy ? 'heavy' : ''} ${stCls}`} data-uid={u.id}
       onClick={() => { if (longDone.current) { longDone.current = false; return; } onClick(); }}
       onPointerDown={startPress} onPointerUp={endPress} onPointerLeave={endPress} onPointerCancel={endPress}
       onContextMenu={(e) => { e.preventDefault(); }}>
       <div className="u-art">{u.kind === 'hero' ? <HeroArt heroId={u.refId} /> : <EnemyArt enemyId={u.refId} />}<span className="u-lvl">{u.level}</span><span className="u-name">{shortName(u.name)}</span>
+        {stCls && <span className="u-stfx" aria-hidden><i /><i /><i /></span>}
         <div className="u-status">
           {[...new Map(u.statuses.map((st) => [st.status, st])).values()].slice(0, 3).map((st) => <span key={st.uid} title={STATUS_INFO[st.status].name} style={{ background: STATUS_INFO[st.status].color }} />)}{new Set(u.statuses.map((x) => x.status)).size > 3 && <em>+</em>}
         </div>
@@ -440,7 +536,8 @@ function UnitView({ u, vfx, active, acting, hit, targetable, popups, onClick, on
         <div className="u-hp"><div style={{ width: `${hpPct(u) * 100}%` }} />{sh > 0 && <div className="u-sh" style={{ width: `${sh * 100}%` }} />}</div>
         <div className="u-tm"><div style={{ width: `${Math.min(100, u.tm / 10)}%` }} /></div>
       </div>
-      {vfx && <span key={vfx.id} className={`vfx ${vfx.cls}`} style={{ ['--vc' as string]: vfx.color }} />}
+      {stCls.includes('st-stun') && <span className="u-stars" aria-hidden>✦ ✦ ✦</span>}
+      {vfx && <span key={vfx.id} className={`vfx ${vfx.cls}`} style={{ ['--vc' as string]: vfx.color }}><i /><i /><i /></span>}
       {popups.map((p) => <span key={p.id} className={`popup ${p.cls}`}>{p.text}</span>)}
     </button>
   );

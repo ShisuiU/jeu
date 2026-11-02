@@ -7,6 +7,8 @@ let enabled = true;
 let volume = 0.6;
 
 export function audioContext(): AudioContext | null { return ctx; }
+/** Contexte prêt à jouer et volume des effets, ou null si le son est coupé. */
+export function sfxOut(): { ctx: AudioContext; volume: number } | null { return enabled && ctx && ctx.state === 'running' ? { ctx, volume } : null; }
 
 export function configureAudio(opts: { enabled: boolean; volume: number }) {
   enabled = opts.enabled;

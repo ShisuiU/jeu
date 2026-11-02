@@ -40,17 +40,15 @@ export function Collection() {
     .sort((a, b) => RARITIES[b.rarity].order - RARITIES[a.rarity].order);
 
   return (
-    <Screen title={`Héros  ${ownedIds.size}/${HEROES.length}`}>
-      <div className="chips" style={{ marginBottom: 8 }}>
-        <button className={`chip ${!faction ? 'active' : ''}`} onClick={() => setFaction(null)}>Toutes</button>
+    <Screen title={`Héros  ${ownedIds.size}/${HEROES.length}`} right={<button className="btn secondary small" onClick={() => push({ name: 'team' })}>Équipes</button>}>
+      <div className="chips" style={{ marginBottom: 10 }}>
+        <button className={`chip ${!faction && !role ? 'active' : ''}`} onClick={() => { setFaction(null); setRole(null); }}>Tous</button>
         {FACTION_LIST.map((f) => (
-          <button key={f.id} className={`chip ${faction === f.id ? 'active' : ''}`} onClick={() => setFaction(faction === f.id ? null : f.id)}>
-            <FactionEmblem id={f.id} size={14} />{f.short}
+          <button key={f.id} className={`chip icon-chip ${faction === f.id ? 'active' : ''}`} aria-label={f.name} onClick={() => setFaction(faction === f.id ? null : f.id)}>
+            <FactionEmblem id={f.id} size={18} />
           </button>
         ))}
-      </div>
-      <div className="chips" style={{ marginBottom: 8 }}>
-        <button className={`chip ${!role ? 'active' : ''}`} onClick={() => setRole(null)}>Tous rôles</button>
+        <span className="chip-sep" />
         {ROLE_LIST.map((r) => <button key={r.id} className={`chip ${role === r.id ? 'active' : ''}`} onClick={() => setRole(role === r.id ? null : r.id)}>{r.name}</button>)}
       </div>
       <div className="row between" style={{ marginBottom: 12 }}>

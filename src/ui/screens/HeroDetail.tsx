@@ -58,7 +58,7 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
           <span className="chip">{ROLES[d.role].name}</span>
           <span className="chip" style={{ color: aff.color }}>{aff.name}</span>
         </div>
-        <p className="quote">{d.quote}</p>
+        <p className="quote">{d.quote.replace(/« /g, '«\u00a0').replace(/ »/g, '\u00a0»')}</p>
       </div>
 
       {inst && (

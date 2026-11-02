@@ -43,7 +43,7 @@ export function Summon() {
       <div className="chips" style={{ marginBottom: 10 }}>
         {BANNERS.filter((x) => bannerAvailable(x.id, now)).map((x) => (
           <button key={x.id} className={`chip ${x.id === bannerId ? 'active' : ''}`} style={x.id === bannerId ? { borderColor: x.color, color: x.glow } : undefined} onClick={() => setBannerId(x.id)}>
-            <ResourceIcon icon={RESOURCES[x.cost.resource].icon} color={RESOURCES[x.cost.resource].color} size={14} />{x.name.replace('Invocation ', '')}
+            <ResourceIcon icon={RESOURCES[x.cost.resource].icon} color={RESOURCES[x.cost.resource].color} size={14} />{(() => { const n = x.name.replace('Invocation ', ''); return n.charAt(0).toUpperCase() + n.slice(1); })()}
           </button>
         ))}
       </div>

@@ -91,14 +91,15 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
         case 'dot': hit.add(e.target); addPopup(e.target, `-${e.amount}`, e.status === 'poison' ? 'poison' : 'burn'); pause = true; break;
         case 'heal': if (e.amount > 0) { addPopup(e.target, `+${e.amount}`, 'heal'); addVfx(e.target, 'healfx', '#7bea8f'); } pause = true; break;
         case 'shield': addPopup(e.target, `+${e.amount}`, 'shieldp'); addVfx(e.target, 'shieldfx', '#aad7ff'); break;
-        case 'status': addPopup(e.target, STATUS_INFO[e.status].name, STATUS_INFO[e.status].debuff ? 'debuff' : 'buff'); if (!vfxBusy(e.target)) addVfx(e.target, STATUS_INFO[e.status].debuff ? 'cursefx' : 'bufffx', STATUS_INFO[e.status].color); break;
-        case 'resist': addPopup(e.target, e.immune ? 'Immunisé' : 'Résisté', 'resist'); break;
+        // Effets : seuls les malus importants s'affichent en texte ; les bonus n'ont qu'un halo (les pastilles suffisent).
+        case 'status': if (['stun', 'freeze', 'taunt'].includes(e.status)) addPopup(e.target, STATUS_INFO[e.status].name, 'debuff'); if (!vfxBusy(e.target)) addVfx(e.target, STATUS_INFO[e.status].debuff ? 'cursefx' : 'bufffx', STATUS_INFO[e.status].color); break;
+        case 'resist': if (e.immune) addPopup(e.target, 'Immunisé', 'resist'); break;
         case 'skip': addPopup(e.target, STATUS_INFO[e.status].name, 'debuff'); pause = true; break;
         case 'death': addPopup(e.target, 'K.O.', 'death'); pause = true; break;
         case 'revive': addVfx(e.target, 'revivefx', '#ffd36b'); addPopup(e.target, 'Ressuscité !', 'heal'); play('rare'); pause = true; break;
         case 'undying': addPopup(e.target, 'Ce qui ne meurt pas', 'buff'); break;
         case 'extraTurn': addPopup(e.target, 'Tour bonus !', 'buff'); break;
-        case 'cleanse': addPopup(e.target, 'Purifié', 'buff'); break;
+        case 'cleanse': break;
         case 'wave': setBanner({ text: `Vague ${e.wave} / ${s.totalWaves}`, side: 'wave' }); play('open'); force(); await wait(1100 / speedRef.current); setBanner(null); break;
       }
     }
@@ -214,7 +215,7 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
             <div className="battle-stage">{initial.info.title}</div>
             <div className="faint">Vague {s.wave} / {s.totalWaves}{s.turnLimit ? ` · Actions ${Math.min(s.actionCount, s.turnLimit)}/${s.turnLimit}` : ''}</div>
           </div>
-          <button className="back-btn" aria-label="Abandonner" onClick={() => setQuit(true)}><Icon.menu /></button>
+          {phase === 'fight' && <button className="back-btn" aria-label="Abandonner" onClick={() => setQuit(true)}><Icon.menu /></button>}
         </div>
         <div className="turn-order">
           {order.map((id, i) => {
@@ -250,9 +251,7 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
             </div>
             <div className="desc">{selSkill.description}</div>
           </div>
-        ) : (
-          <div className="skill-info idle">{s.outcome !== 'running' ? 'Combat terminé' : auto ? 'Combat automatique — touchez AUTO pour reprendre la main' : active?.side === 'enemy' || !active ? 'Tour de l’ennemi…' : '…'}</div>
-        )}
+        ) : <div className="skill-info empty" aria-hidden />}
         <div className="row" style={{ gap: 8 }}>
           <button className={`ctrl ${auto ? 'on' : ''}`} onClick={toggleAuto}>AUTO</button>
           <button className="ctrl" onClick={cycleSpeed}>×{speed}</button>
@@ -362,7 +361,7 @@ function UnitView({ u, vfx, active, acting, hit, targetable, popups, onClick }: 
         <div className="u-tm"><div style={{ width: `${Math.min(100, u.tm / 10)}%` }} /></div>
       </div>
       <div className="u-status">
-        {u.statuses.slice(0, 4).map((st) => <span key={st.uid} style={{ color: STATUS_INFO[st.status].color, borderColor: STATUS_INFO[st.status].color + '66' }}>{STATUS_INFO[st.status].short}{st.status !== 'shield' ? st.turns : ''}</span>)}
+        {[...new Map(u.statuses.map((st) => [st.status, st])).values()].slice(0, 3).map((st) => <span key={st.uid} title={STATUS_INFO[st.status].name} style={{ background: STATUS_INFO[st.status].color }} />)}{new Set(u.statuses.map((x) => x.status)).size > 3 && <em>+</em>}
       </div>
       {vfx && <span key={vfx.id} className={`vfx ${vfx.cls}`} style={{ ['--vc' as string]: vfx.color }} />}
       {popups.map((p) => <span key={p.id} className={`popup ${p.cls}`}>{p.text}</span>)}

@@ -1,10 +1,19 @@
 import { GAME_SUBTITLE, GAME_TITLE } from '../../data/lore';
 import { WorldScene, Particles } from '../art/Scene';
+import { heroArtUrl } from '../art/HeroArt';
+import { PaintedBackdrop } from '../art/BattleBackdrop';
+
+const KEY_ART = ['aldric', 'vaelshira', 'azhar', 'solenne', 'idris'];
 
 export function Title({ ready, onStart, error }: { ready: boolean; onStart: () => void; error?: string | null }) {
+  const art = heroArtUrl(KEY_ART[new Date().getDate() % KEY_ART.length], 'full');
   return (
     <button className="title-screen" onClick={() => ready && onStart()} aria-label="Commencer">
-      <div className="home-scene"><WorldScene /><Particles count={24} /></div>
+      <div className="home-scene">
+        {art ? <PaintedBackdrop src={art} blur={0} dim={0.55} position="center top" /> : <WorldScene />}
+        <Particles count={18} />
+        <div className="title-shade" />
+      </div>
       <div className="logo">
         <div className="name">{GAME_TITLE.toUpperCase()}</div>
         <div className="sub">{GAME_SUBTITLE}</div>

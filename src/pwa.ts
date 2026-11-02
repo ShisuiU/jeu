@@ -17,6 +17,10 @@ export function setupPWA() {
       });
     },
     onOfflineReady() {
+      try {
+        if (localStorage.getItem('aeonfall.offlineToast')) return;
+        localStorage.setItem('aeonfall.offlineToast', '1');
+      } catch { /* */ }
       useUI.getState().toast('Jeu prêt à fonctionner hors ligne.', 'ok');
     },
     onRegisteredSW(_url, reg) {

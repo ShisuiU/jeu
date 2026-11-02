@@ -2,19 +2,19 @@ import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
 import { HERO_BY_ID } from '../../data/heroes';
 import { FACTIONS } from '../../data/factions';
-import { canClaimDaily } from '../../game/daily';
 import { CHAPTERS } from '../../data/campaign';
 import { chapterStars, isStageUnlocked, stageProgress } from '../../game/campaign';
-import { WorldScene, Particles } from '../art/Scene';
-import { HeroArt, hasRealArt } from '../art/HeroArt';
-import { Icon } from '../art/Icons';
-import { TopBar } from '../components/TopBar';
 import { claimableCount } from '../../game/missions';
 import { activeEvents } from '../../game/events';
-import { WORLD_BOSS } from '../../data/worldBoss';
-import { ARENA } from '../../data/arena';
+import { canClaimDaily } from '../../game/daily';
+import { HeroArt, hasRealArt } from '../art/HeroArt';
+import { WorldScene, Particles } from '../art/Scene';
+import { Icon } from '../art/Icons';
+import { TopBar } from '../components/TopBar';
 import { unreadMail } from './Mail';
 
+// ACCUEIL — l'illustration du chef d'équipe en plein écran, trois raccourcis, la campagne.
+// Tout le reste est accessible par la barre du bas (Héros, Invoquer, Combats, Menu).
 export function Home() {
   const save = useGame((s) => s.save)!;
   const now = useGame((s) => s.now);
@@ -23,79 +23,52 @@ export function Home() {
   const leaderUid = team.leader ?? team.slots.find(Boolean);
   const leader = save.heroes.find((h) => h.uid === leaderUid) ?? save.heroes[0];
   const def = leader ? HERO_BY_ID[leader.heroId] : null;
-  const daily = canClaimDaily(save, now);
-  const reduced = save.settings.reducedMotion;
-  const allStages = CHAPTERS.flatMap((c) => c.stages);
-  const nextStage = allStages.find((st) => isStageUnlocked(save, 'normal', st) && stageProgress(save, 'normal', st.id).clears === 0);
+  const real = def ? hasRealArt(def.id) : false;
+  const nextStage = CHAPTERS.flatMap((c) => c.stages).find((st) => isStageUnlocked(save, 'normal', st) && stageProgress(save, 'normal', st.id).clears === 0);
   const stars = chapterStars(save, 'normal', nextStage?.chapter ?? CHAPTERS.length);
-  const missionDot = claimableCount(save) > 0;
-  const eventCount = activeEvents(now).length;
-  const bossKeys = WORLD_BOSS.keysPerDay - save.worldBoss.keysUsed;
-  const arenaTickets = ARENA.ticketsPerDay - save.arena.ticketsUsed;
-  const summonDot = save.resources.shardAeon > 0 || save.resources.shardPrimal > 0 || !save.flags.gift_event_ash;
+  const shortcuts = [
+    { label: 'Missions', icon: Icon.scroll, dot: claimableCount(save) > 0, go: () => push({ name: 'missions' }) },
+    { label: 'Événements', icon: Icon.calendar, dot: activeEvents(now).length > 0, go: () => push({ name: 'events' }) },
+    { label: 'Courrier', icon: Icon.mail, dot: unreadMail(save.flags) || canClaimDaily(save, now), go: () => push({ name: unreadMail(save.flags) ? 'mail' : 'daily' }) },
+  ];
 
   return (
     <div className="home screen">
       <div className="home-scene">
-        <WorldScene />
-        {!reduced && <Particles />}
+        {real && def ? (
+          <div className="home-art"><HeroArt heroId={def.id} kind="full" position="center top" /></div>
+        ) : (
+          <><WorldScene />{!save.settings.reducedMotion && <Particles />}</>
+        )}
+        <div className="home-shade" />
       </div>
       <TopBar />
 
-      {def && (
-        <button className="home-hero" onClick={() => push({ name: 'hero', uid: leader.uid, heroId: leader.heroId })}>
-          <div className={`art-wrap ${hasRealArt(def.id) ? 'real' : ''}`}><HeroArt heroId={def.id} kind="full" position="center top" /></div>
-          <div className="hero-label">
-            <div className="t">{FACTIONS[def.faction].short} · Chef d’équipe</div>
-            <div className="n">{def.name}</div>
-          </div>
-        </button>
-      )}
-
-      <div className="home-side left">
-        <button className="side-btn" onClick={() => push({ name: 'daily' })}>
-          <span className="ic"><Icon.gift /></span>Connexion{daily && <span className="badge-dot" />}
-        </button>
-        <button className="side-btn" onClick={() => push({ name: 'mail' })}>
-          <span className="ic"><Icon.mail /></span>Courrier{unreadMail(save.flags) && <span className="badge-dot" />}
-        </button>
-        <button className="side-btn" onClick={() => push({ name: 'missions' })}>
-          <span className="ic"><Icon.scroll /></span>Missions{missionDot && <span className="badge-dot" />}
-        </button>
-        <button className="side-btn" onClick={() => push({ name: 'codex' })}>
-          <span className="ic"><Icon.book /></span>Codex
-        </button>
-      </div>
-      <div className="home-side right">
-        <button className="side-btn" onClick={() => push({ name: 'events' })}>
-          <span className="ic"><Icon.portal /></span>Événements{eventCount > 0 && <span className="badge-dot" />}
-        </button>
-        <button className="side-btn" onClick={() => push({ name: 'worldboss' })}>
-          <span className="ic"><Icon.skull /></span>Boss{bossKeys > 0 && <span className="badge-dot" />}
-        </button>
-        <button className="side-btn" onClick={() => push({ name: 'gear' })}>
-          <span className="ic"><Icon.forge /></span>Forge
-        </button>
-        <button className="side-btn" onClick={() => push({ name: 'saves' })}>
-          <span className="ic"><Icon.save /></span>Sauvegarde
-        </button>
+      <div className="home-shortcuts">
+        {shortcuts.map((s) => (
+          <button key={s.label} className="sc-btn" onClick={s.go} aria-label={s.label}>
+            <s.icon size={22} />
+            {s.dot && <span className="badge-dot" />}
+            <span className="sc-label">{s.label}</span>
+          </button>
+        ))}
       </div>
 
       <div className="home-bottom">
+        {def && (
+          <button className="home-leader" onClick={() => push({ name: 'hero', uid: leader.uid, heroId: leader.heroId })}>
+            <span className="hl-t">{FACTIONS[def.faction].short} · Chef d’équipe</span>
+            <span className="hl-n">{def.name}</span>
+          </button>
+        )}
         <button className="campaign-cta" onClick={() => push({ name: 'campaign' })}>
-          <Icon.sword size={34} />
+          <Icon.sword size={30} />
           <div className="grow">
             <div className="big">CAMPAGNE</div>
-            <div className="sub">{nextStage ? `${nextStage.id} · ${nextStage.name}` : 'Histoire terminée — essayez les difficultés supérieures'}</div>
+            <div className="sub">{nextStage ? `${nextStage.id} · ${nextStage.name}` : 'Histoire terminée'}</div>
           </div>
           <span className="chip" style={{ flexShrink: 0 }}><Icon.star size={13} /> {stars.stars}/{stars.max}</span>
         </button>
-        <div className="mode-grid">
-          <button className="mode-tile" onClick={() => push({ name: 'summon' })}><Icon.portal />Invoquer{summonDot && <span className="badge-dot" style={{ top: 6, right: 8 }} />}</button>
-          <button className="mode-tile" onClick={() => push({ name: 'dungeons' })}><Icon.dungeon />Donjons</button>
-          <button className="mode-tile" onClick={() => push({ name: 'tower' })}><Icon.tower />Tour</button>
-          <button className="mode-tile" onClick={() => push({ name: 'arena' })}><Icon.arena />Arène{arenaTickets > 0 && <span className="badge-dot" style={{ top: 6, right: 8 }} />}</button>
-        </div>
       </div>
     </div>
   );

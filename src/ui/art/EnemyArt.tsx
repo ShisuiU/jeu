@@ -49,6 +49,8 @@ function Procedural({ def }: { def: EnemyDef }) {
   );
 }
 
+export function enemyArtUrl(id: string): string | undefined { return ART[id]; }
+
 export const EnemyArt = memo(function EnemyArt({ enemyId }: { enemyId: string }) {
   const def = ENEMIES[enemyId];
   if (!def) return null;

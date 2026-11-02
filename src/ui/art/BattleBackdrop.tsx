@@ -1,4 +1,6 @@
 import { memo } from 'react';
+import { enemyArtUrl } from './EnemyArt';
+import { heroArtUrl } from './HeroArt';
 
 // DÉCORS DE COMBAT — un ciel, une ligne d'horizon et un sol par région du Monde Cousu.
 type Region = 'valcrest' | 'sylvaran' | 'prism' | 'akkar' | 'ash' | 'astral' | 'heart';
@@ -32,8 +34,30 @@ function Skyline({ region, p }: { region: Region; p: typeof PALETTES[Region] }) 
   }
 }
 
+/** Illustration peinte utilisée comme décor de chaque région (floutée et assombrie). */
+const REGION_ART: Record<Region, () => string | undefined> = {
+  valcrest: () => enemyArtUrl('herald') ?? heroArtUrl('aldric', 'full'),
+  sylvaran: () => enemyArtUrl('mother_tree'),
+  prism: () => enemyArtUrl('mother_ai'),
+  akkar: () => enemyArtUrl('bronze_colossus'),
+  ash: () => enemyArtUrl('ash_lord'),
+  astral: () => enemyArtUrl('dead_constellation'),
+  heart: () => enemyArtUrl('voice_of_void'),
+};
+
+export function PaintedBackdrop({ src, blur = 8, dim = 0.6, position = 'center' }: { src: string; blur?: number; dim?: number; position?: string }) {
+  return (
+    <div className="painted-bg" aria-hidden>
+      <img src={src} alt="" draggable={false} style={{ objectPosition: position, filter: `blur(${blur}px) brightness(${dim}) saturate(1.15)` }} />
+      <div className="painted-vignette" />
+    </div>
+  );
+}
+
 export const BattleBackdrop = memo(function BattleBackdrop({ region = 'valcrest' }: { region?: string }) {
   const r = (region in PALETTES ? region : 'valcrest') as Region;
+  const art = REGION_ART[r]();
+  if (art) return <PaintedBackdrop src={art} />;
   const p = PALETTES[r];
   const id = `bb_${r}`;
   return (

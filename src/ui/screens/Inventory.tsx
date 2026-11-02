@@ -1,4 +1,5 @@
 import { useGame } from '../../state/store';
+import { useUI } from '../../state/ui';
 import { RESOURCE_LIST } from '../../data/resources';
 import { BALANCE } from '../../data/balance';
 import { Panel, Screen, fmt } from '../components/common';
@@ -15,6 +16,7 @@ const GROUPS: { title: string; ids: string[] }[] = [
 
 export function Inventory() {
   const save = useGame((s) => s.save)!;
+  const toast = useUI((s) => s.toast);
   return (
     <Screen title="Sac">
       <Panel title="Énergie">
@@ -22,11 +24,11 @@ export function Inventory() {
           <Icon.energy size={34} />
           <div className="grow">
             <b style={{ fontSize: 18 }}>{save.energy.current}</b> <span className="muted">/ {BALANCE.energy.max}</span>
-            <div className="faint">Sert à lancer les combats. +1 toutes les {BALANCE.energy.regenMs / 60000} minutes, même jeu fermé.</div>
+            <div className="faint">+1 toutes les {BALANCE.energy.regenMs / 60000} min, même jeu fermé.</div>
           </div>
         </div>
       </Panel>
-      <Panel title="Fragments de héros">
+      <Panel title="Fragments de héros" className={Object.values(save.heroFragments).some((n) => n > 0) ? '' : 'hidden-empty'}>
         {Object.entries(save.heroFragments).filter(([, n]) => n > 0).length === 0 && <p className="faint">Aucun fragment. Les héros invoqués en double sont convertis en fragments.</p>}
         {Object.entries(save.heroFragments).filter(([, n]) => n > 0).map(([id, n]) => (
           <div key={id} className="stat-row"><span>{HERO_BY_ID[id]?.name ?? id}</span><b>{n}{!save.heroes.some((h) => h.heroId === id) ? ` / ${RARITIES[HERO_BY_ID[id].rarity].fragmentsToSummon}` : ''}</b></div>
@@ -36,17 +38,14 @@ export function Inventory() {
         <Panel key={g.title} title={g.title}>
           <div className="res-grid">
             {RESOURCE_LIST.filter((r) => g.ids.includes(r.id)).map((r) => (
-              <div key={r.id} className="res-cell">
+              <button key={r.id} className="res-cell" onClick={() => toast(`${r.name} : ${r.description}`)}>
                 <ResourceIcon icon={r.icon} color={r.color} size={30} />
                 <div className="grow">
                   <b>{fmt(save.resources[r.id])}</b>
                   <div className="faint" style={{ lineHeight: 1.25 }}>{r.name}</div>
                 </div>
-              </div>
+              </button>
             ))}
-          </div>
-          <div className="faint" style={{ marginTop: 8 }}>
-            {RESOURCE_LIST.filter((r) => g.ids.includes(r.id)).map((r) => <div key={r.id}>• <b>{r.name}</b> : {r.description}</div>)}
           </div>
         </Panel>
       ))}

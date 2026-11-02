@@ -58,7 +58,7 @@ export function Dungeon({ dungeonId }: { dungeonId: string }) {
     <Screen title={d.name}>
       <div className="mode-hero" style={{ ['--mc' as string]: d.color }}>
         <div className="mh-art"><EnemyArt enemyId={d.boss} /></div>
-        <div className="mh-info"><div className="faint">GARDIEN</div><b>{d.description}</b></div>
+        <div className="mh-info"><b>{d.description}</b></div>
       </div>
       <div className="stage-path">
         {Array.from({ length: DUNGEON_FLOORS }, (_, i) => i + 1).map((f) => {

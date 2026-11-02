@@ -36,6 +36,7 @@ const Dungeon = L(() => import('./ui/screens/Modes'), 'Dungeon');
 const Tower = L(() => import('./ui/screens/Modes'), 'Tower');
 const WorldBoss = L(() => import('./ui/screens/Modes'), 'WorldBoss');
 const Arena = L(() => import('./ui/screens/Modes'), 'Arena');
+const Combats = L(() => import('./ui/screens/Combats'), 'Combats');
 const Missions = L(() => import('./ui/screens/Missions'), 'Missions');
 const Events = L(() => import('./ui/screens/Missions'), 'Events');
 
@@ -62,6 +63,7 @@ function renderRoute(r: Route) {
     case 'arena': return <Arena />;
     case 'missions': return <Missions />;
     case 'events': return <Events />;
+    case 'combats': return <Combats />;
     case 'stage': return <Stage key={r.stageId} stageId={r.stageId} />;
     case 'prep': return <Prep key={JSON.stringify(r.spec)} spec={r.spec} />;
     case 'battle': return <Battle key={r.seed} spec={r.spec} teamId={r.teamId} seed={r.seed} />;

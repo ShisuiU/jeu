@@ -28,9 +28,9 @@ export function Daily() {
   return (
     <Screen title="Connexion quotidienne">
       <Panel>
-        <div className="row between" style={{ marginBottom: 10 }}>
-          <span className="muted">Jours de connexion : <b style={{ color: 'var(--gold-hi)' }}>{save.daily.totalLogins}</b></span>
-          <span className="faint">Renouvellement dans {formatDuration(msUntilReset(now))}</span>
+        <div className="row between" style={{ marginBottom: 10, alignItems: 'baseline' }}>
+          <span className="muted" style={{ whiteSpace: 'nowrap' }}><b style={{ color: 'var(--gold-hi)', fontSize: 18 }}>{save.daily.totalLogins}</b> jour(s)</span>
+          <span className="faint" style={{ whiteSpace: 'nowrap' }}>Prochain dans {formatDuration(msUntilReset(now))}</span>
         </div>
         <div className="daily-grid">
           {DAILY_REWARDS.map((d, i) => (
@@ -41,7 +41,7 @@ export function Daily() {
             </div>
           ))}
         </div>
-        <p className="faint" style={{ marginTop: 10 }}>Le cycle avance d’un jour à chaque connexion — manquer un jour ne fait rien perdre. Jours 7, 14, 21 et 28 : récompenses majeures.</p>
+        <p className="faint" style={{ marginTop: 10, marginBottom: 0 }}>Manquer un jour ne fait rien perdre. Grosses récompenses les jours 7, 14, 21 et 28.</p>
       </Panel>
       {rollback && <div className="hint warn" style={{ marginTop: 12 }}>L’horloge de l’appareil semble avoir reculé. Les récompenses temporelles reprendront quand l’heure aura rattrapé la dernière heure connue.</div>}
       <Panel title={can ? `Récompense du jour ${DAILY_REWARDS[idx].day}` : 'Prochaine récompense'}>

@@ -20,9 +20,9 @@ function Row({ title, value, target, reward, claimed, onClaim }: { title: string
       <div className="grow">
         <div className="m-title">{title}</div>
         <div className="progress" style={{ margin: '5px 0 3px' }}><div style={{ width: `${Math.min(100, (value / target) * 100)}%` }} /></div>
-        <div className="faint">{Math.min(value, target)} / {target} · {Object.entries(reward).map(([k, v]) => `+${v} ${k === 'energy' ? 'énergie' : RESOURCES[k as keyof typeof RESOURCES]?.name ?? k}`).join(' · ')}</div>
+        <div className="faint">{Object.entries(reward).map(([k, v]) => `+${v} ${k === 'energy' ? 'énergie' : RESOURCES[k as keyof typeof RESOURCES]?.name ?? k}`).join(' · ')}</div>
       </div>
-      {claimed ? <span className="chip">Reçu</span> : <button className="btn small" disabled={!done} onClick={onClaim}>{done ? 'Réclamer' : 'En cours'}</button>}
+      {claimed ? <span className="m-done">✓</span> : done ? <button className="btn small" onClick={onClaim}>Réclamer</button> : <span className="m-count">{Math.min(value, target)}/{target}</span>}
     </div>
   );
 }

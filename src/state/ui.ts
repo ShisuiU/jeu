@@ -26,9 +26,10 @@ export type Route =
   | { name: 'worldboss' }
   | { name: 'arena' }
   | { name: 'missions' }
-  | { name: 'events' };
+  | { name: 'events' }
+  | { name: 'combats' };
 
-export type Tab = 'home' | 'collection' | 'team' | 'inventory' | 'menu';
+export type Tab = 'home' | 'collection' | 'summon' | 'combats' | 'menu';
 
 export interface Toast { id: number; text: string; kind?: 'info' | 'error' | 'ok'; action?: { label: string; run: () => void } }
 

@@ -24,6 +24,19 @@ Déposer le fichier suffit : il est détecté à la compilation et mis en cache 
 l'absence d'illustration, un portrait vectoriel provisoire (silhouette, emblème, accessoire du
 rôle aux couleurs du héros) est affiché.
 
+## Intégrer une illustration
+
+```bash
+python3 scripts/import-art.py chemin/vers/image.png aldric          # héros
+python3 scripts/import-art.py chemin/vers/image.png herald enemies  # ennemi
+```
+
+Le script produit `full.webp` (768×1152) et `portrait.webp` (recadrage buste 3:4, 600×800) dans
+`src/assets/<heroes|enemies>/<id>/`. Format source conseillé : vertical 2:3 (1024×1536), tête dans
+le tiers supérieur. Illustrations générées dans le fichier Figma « Aeonfall — Illustrations des héros ».
+
+**Avancement :** Aldric Vaunt ✓ — 20 héros restants.
+
 ## Modèle de prompt de génération
 
 > Digital painting, premium mobile RPG character art, realistic human proportions, detailed face,

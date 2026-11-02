@@ -76,3 +76,6 @@
 .formation .slot.picking { border-style: solid; border-color: var(--gold-hi); box-shadow: 0 0 16px rgba(217,179,106,0.4); }
 .formation .slot .hero-card { position: absolute; inset: 0; aspect-ratio: auto; border-radius: 10px; }
 .leader-crown { position: absolute; z-index: 3; top: 4px; left: 50%; transform: translateX(-50%); font-size: 9px; font-weight: 900; letter-spacing: 0.1em; padding: 1px 6px; border-radius: 5px; background: linear-gradient(180deg, #ffe7ad, #b4863d); color: #23180a; }
+
+/* Illustration réelle : cadrage par le haut, fondu uniquement en bas et sur les côtés. */
+.home-hero .art-wrap.real { -webkit-mask-image: linear-gradient(180deg, #000 72%, transparent), linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); mask-image: linear-gradient(180deg, #000 72%, transparent); }

@@ -56,6 +56,10 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
   const [wave, setWave] = useState<{ side: 'ally' | 'enemy'; color: string; id: number } | null>(null);
   const [result, setResult] = useState<ModeResult | null>(null);
   const [quit, setQuit] = useState(false);
+  const [infoId, setInfoId] = useState<string | null>(null);
+  useEffect(() => {
+    try { if (!localStorage.getItem('aeonfall.tip.unitInfo')) { localStorage.setItem('aeonfall.tip.unitInfo', '1'); setTimeout(() => useUI.getState().toast('Astuce : maintenez le doigt sur une carte pour voir ses effets.'), 1500); } } catch { /* ignoré */ }
+  }, []);
   const autoRef = useRef(auto); autoRef.current = auto;
   const speedRef = useRef(speed); speedRef.current = speed;
   const alive = useRef(true);
@@ -203,7 +207,7 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
 
   const renderUnit = (u: Unit) => (
     <UnitView key={u.id} u={u} vfx={vfx[u.id]} active={s.activeId === u.id} acting={acting === u.id} hit={hits.has(u.id)}
-      targetable={targetable.has(u.id)} popups={popups[u.id] ?? []} onClick={() => onUnit(u)} />
+      targetable={targetable.has(u.id)} popups={popups[u.id] ?? []} onClick={() => onUnit(u)} onInfo={() => setInfoId(u.id)} />
   );
 
   return (
@@ -345,6 +349,34 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
         </div>
       )}
 
+      {infoId && (() => {
+        const u = s.units.find((x) => x.id === infoId);
+        if (!u) return null;
+        const list = [...u.statuses].sort((a, b) => Number(STATUS_INFO[b.status].debuff) - Number(STATUS_INFO[a.status].debuff));
+        return (
+          <div className="unit-info-backdrop" onClick={() => setInfoId(null)}>
+            <div className={`unit-info ${u.side}`} role="dialog" aria-label={u.name}>
+              <div className="ui-head"><b>{u.name}</b><span className="faint">Niv. {u.level}</span></div>
+              <div className="ui-hp"><span>PV</span><b>{Math.max(0, Math.round(u.hp))} / {Math.round(u.base.hp)}</b></div>
+              <div className="ui-stats"><span>ATQ <b>{Math.round(u.base.atk)}</b></span><span>DÉF <b>{Math.round(u.base.def)}</b></span><span>VIT <b>{Math.round(u.base.spd)}</b></span></div>
+              {list.length === 0 ? <p className="faint" style={{ margin: '8px 0 0' }}>Aucun effet en cours.</p> : (
+                <div className="ui-status">
+                  {list.map((st) => (
+                    <div key={st.uid} className="ui-st">
+                      <span className="ui-dot" style={{ background: STATUS_INFO[st.status].color }} />
+                      <span className="grow">{STATUS_INFO[st.status].name}</span>
+                      <span className={STATUS_INFO[st.status].debuff ? 'neg' : 'pos'}>{STATUS_INFO[st.status].debuff ? 'Négatif' : 'Positif'}</span>
+                      <span className="faint">{st.turns} tour{st.turns > 1 ? 's' : ''}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <p className="faint" style={{ margin: '10px 0 0', textAlign: 'center' }}>Touchez pour fermer</p>
+            </div>
+          </div>
+        );
+      })()}
+
       {quit && (
         <Modal onClose={() => setQuit(false)}>
           <h2>Abandonner ?</h2>
@@ -361,10 +393,18 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
 
 const shortName = (n: string) => n.replace(/^(Le|La|Les|L’|L')\s*/i, '').split(' ')[0];
 
-function UnitView({ u, vfx, active, acting, hit, targetable, popups, onClick }: { u: Unit; vfx?: { id: number; cls: string; color: string }; active: boolean; acting: boolean; hit: boolean; targetable: boolean; popups: Popup[]; onClick: () => void }) {
+function UnitView({ u, vfx, active, acting, hit, targetable, popups, onClick, onInfo }: { u: Unit; vfx?: { id: number; cls: string; color: string }; active: boolean; acting: boolean; hit: boolean; targetable: boolean; popups: Popup[]; onClick: () => void; onInfo: () => void }) {
   const sh = Math.min(1, shieldOf(u) / u.base.hp);
+  // Appui long (0,45 s) : fiche de l'unité ; le toucher simple garde son rôle (cibler).
+  const timer = useRef<number | undefined>(undefined);
+  const longDone = useRef(false);
+  const startPress = () => { longDone.current = false; window.clearTimeout(timer.current); timer.current = window.setTimeout(() => { longDone.current = true; onInfo(); }, 450); };
+  const endPress = () => window.clearTimeout(timer.current);
   return (
-    <button className={`unit ${u.side} ${u.alive ? '' : 'dead'} ${active ? 'active' : ''} ${acting ? 'acting' : ''} ${hit ? 'hit' : ''} ${targetable ? 'targetable' : ''} ${u.isBoss ? 'boss' : ''}`} onClick={onClick}>
+    <button className={`unit ${u.side} ${u.alive ? '' : 'dead'} ${active ? 'active' : ''} ${acting ? 'acting' : ''} ${hit ? 'hit' : ''} ${targetable ? 'targetable' : ''} ${u.isBoss ? 'boss' : ''}`}
+      onClick={() => { if (longDone.current) { longDone.current = false; return; } onClick(); }}
+      onPointerDown={startPress} onPointerUp={endPress} onPointerLeave={endPress} onPointerCancel={endPress}
+      onContextMenu={(e) => { e.preventDefault(); }}>
       <div className="u-art">{u.kind === 'hero' ? <HeroArt heroId={u.refId} /> : <EnemyArt enemyId={u.refId} />}<span className="u-lvl">{u.level}</span><span className="u-name">{shortName(u.name)}</span>
         <div className="u-status">
           {[...new Map(u.statuses.map((st) => [st.status, st])).values()].slice(0, 3).map((st) => <span key={st.uid} title={STATUS_INFO[st.status].name} style={{ background: STATUS_INFO[st.status].color }} />)}{new Set(u.statuses.map((x) => x.status)).size > 3 && <em>+</em>}

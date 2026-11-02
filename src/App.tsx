@@ -107,6 +107,19 @@ export default function App() {
     return () => document.removeEventListener('visibilitychange', onVis);
   }, [started]);
 
+  // Retour par glissement depuis le bord gauche (comme les apps iPhone), sauf en combat.
+  const swipe = useRef<{ x: number; y: number } | null>(null);
+  const onTouchStart = (e: React.TouchEvent) => {
+    const t = e.touches[0];
+    swipe.current = t.clientX < 24 && depth > 1 && route.name !== 'battle' ? { x: t.clientX, y: t.clientY } : null;
+  };
+  const onTouchEnd = (e: React.TouchEvent) => {
+    const st = swipe.current; swipe.current = null;
+    if (!st || document.querySelector('.modal-backdrop, .sheet-backdrop')) return;
+    const t = e.changedTouches[0];
+    if (t.clientX - st.x > 70 && Math.abs(t.clientY - st.y) < 60) useUI.getState().back();
+  };
+
   const start = () => {
     unlockAudio();
     setStarted(true);
@@ -116,7 +129,7 @@ export default function App() {
   };
 
   return (
-    <div className={`app ${save?.settings.reducedMotion ? 'reduced-motion' : ''}`} onPointerDown={unlockAudio}>
+    <div className={`app ${save?.settings.reducedMotion ? 'reduced-motion' : ''}`} onPointerDown={unlockAudio} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
       {!started || !save ? (
         <Title ready={ready && !!save} onStart={start} error={error} />
       ) : (

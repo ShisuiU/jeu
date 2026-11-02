@@ -9,6 +9,8 @@ import { powerOf } from '../../game/stats';
 import { Panel, Screen, fmt } from '../components/common';
 import { HeroCard } from '../components/HeroCard';
 import { recommendTeam } from '../../game/comfort';
+import { ListControls, usePersisted, type Filters } from '../components/ListControls';
+import { HERO_GROUPS, HERO_SORTS, heroMatches, sortHeroes } from '../components/heroFilters';
 
 // Formation : 3 héros en première ligne (exposés), 2 en seconde ligne (protégés).
 // Le moteur de combat (phase 2) utilisera ces positions pour le ciblage.
@@ -18,6 +20,7 @@ export function Team() {
   const toast = useUI((s) => s.toast);
   const [teamId, setTeamId] = useState(save.activeTeamId);
   const [picking, setPicking] = useState<number | null>(null);
+  const [prefs, setPrefs] = usePersisted<{ sort: string; filters: Filters }>('teampick', { sort: 'power', filters: {} });
   const team = save.teams.find((t) => t.id === teamId) ?? save.teams[0];
   const byUid = Object.fromEntries(save.heroes.map((h) => [h.uid, h]));
   const members = team.slots.map((u) => (u ? byUid[u] : undefined));
@@ -66,8 +69,11 @@ export function Team() {
 
       {picking !== null && (
         <Panel title={`Emplacement ${picking + 1} : choisir un héros`}>
+          <ListControls sortOptions={HERO_SORTS} sort={prefs.sort} onSort={(x) => setPrefs({ ...prefs, sort: x })}
+            groups={HERO_GROUPS} filters={prefs.filters} onFilters={(f) => setPrefs({ ...prefs, filters: f })}
+            count={(f) => save.heroes.filter((h) => heroMatches(f, HERO_BY_ID[h.heroId])).length} />
           <div className="hero-grid">
-            {save.heroes.map((h) => (
+            {sortHeroes(save, save.heroes, prefs.filters, prefs.sort).map(({ h }) => (
               <HeroCard key={h.uid} heroId={h.heroId} level={h.level} selected={team.slots[picking] === h.uid}
                 badge={team.slots.includes(h.uid) ? `Pos. ${team.slots.indexOf(h.uid) + 1}` : undefined} onClick={() => pick(h.uid)} />
             ))}

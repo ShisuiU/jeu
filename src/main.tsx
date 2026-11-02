@@ -13,6 +13,9 @@ import './styles/phase3.css';
 import './styles/craft.css';
 import App from './App';
 import { setupPWA } from './pwa';
+import { fixViewport } from './viewport';
+
+fixViewport();
 
 createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);
 setupPWA();

@@ -114,6 +114,15 @@
 - Blocs refaits : coins presque droits, boutons en plaques biseautées, matière granuleuse, équerres dorées aux coins, onglets soulignés ; plus de pilules, de halos ni de reflets animés
 - Textes : suppression des tirets cadratins au milieu des phrases (histoire, dialogues, fiches, aide)
 
+## ✅ Version 1.11.0 — Tri, filtres et confort
+
+- Tri par menu déroulant et filtres dans un panneau qui monte du bas (Héros, choix d'un héros pour une équipe, Forge) ; filtres actifs affichés en étiquettes retirables ; choix mémorisés
+- Héros : filtres Faction, Rôle, Rareté, Affinité ; tri Puissance, Rareté, Niveau, Nom. Objets : Emplacement, Rareté, Ensemble
+- Retour en arrière par glissement depuis le bord gauche ; position dans les listes retrouvée au retour
+- Combat : appui long sur une carte pour voir ses PV, ses statistiques et ses effets en cours
+- Plus de voile flou en haut des écrans ; logo de l'écran d'ouverture animé sans à-coups
+- Correctif iPhone : suppression de la bande vide sous la barre du bas
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

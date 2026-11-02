@@ -19,7 +19,8 @@
   --font-title: 'Cinzel', 'Times New Roman', serif;
   --font-body: 'Inter', -apple-system, system-ui, sans-serif;
   --sat: env(safe-area-inset-top, 0px);
-  --sab: env(safe-area-inset-bottom, 0px);
+  /* Plafonnée : la barre d'accueil de l'iPhone ne dépasse pas 34 px ; certaines versions d'iOS annoncent plus. */
+  --sab: min(env(safe-area-inset-bottom, 0px), 34px);
   --sal: env(safe-area-inset-left, 0px);
   --sar: env(safe-area-inset-right, 0px);
   --nav-h: 64px;

@@ -20,13 +20,15 @@ const SHAPES: Record<EnemyDef['shape'], (c: string) => JSX.Element> = {
   archivist: (c) => (<g>{[0, 1, 2, 3, 4].map((i) => <rect key={i} x={40 + i * 50} y={40 + (i % 2) * 40} width="34" height="44" fill="#f0eadc" opacity="0.25" stroke={c} transform={`rotate(${i * 17 - 30} ${57 + i * 50} ${62 + (i % 2) * 40})`} />)}</g>),
   sentinel: (c) => (<g><path d="M150 40 L196 96 L180 180 H120 L104 96 Z" fill="#1d1d2a" stroke={c} strokeWidth="2.5" /><path d="M150 40 L150 180 M104 96 H196" stroke={c} strokeWidth="1.2" opacity="0.7" /><path d="M250 90 L262 96 L200 380 L188 376 Z" fill="#2a2a3a" stroke={c} strokeWidth="1.5" /></g>),
   colossus: (c) => (<g><path d="M80 30 H220 L236 120 L64 120 Z" fill="#4a3018" stroke={c} strokeWidth="3" /><circle cx="150" cy="84" r="20" fill="#000" stroke={c} strokeWidth="3" /><circle cx="150" cy="84" r="8" fill={c} /><path d="M120 150 L140 230 L118 300 M190 160 L170 240" stroke={c} strokeWidth="3" fill="none" /></g>),
+  tree: (c) => (<g><path d="M130 400 L140 230 C80 230 40 170 70 120 C60 70 120 40 150 60 C180 30 250 60 240 120 C270 170 230 230 160 230 L170 400 Z" fill="#1a2410" stroke={c} strokeWidth="3" /><ellipse cx="150" cy="300" rx="14" ry="34" fill="#b98cff" opacity="0.8" /><path d="M140 300 L100 400 M160 300 L210 400 M150 330 L150 400" stroke={c} strokeWidth="3" /></g>),
+  void: (c) => (<g>{[[150, 60], [90, 120], [210, 120], [70, 220], [230, 220], [120, 300], [180, 300]].map(([x, y], i) => <circle key={i} cx={x} cy={y} r={i === 0 ? 14 : 9} fill={c} opacity="0.9" />)}<path d="M150 60 L90 120 L70 220 L120 300 L180 300 L230 220 L210 120 Z" fill="none" stroke={c} strokeWidth="1.5" opacity="0.6" /><circle cx="150" cy="180" r="40" fill="#000" stroke={c} strokeWidth="2" /></g>),
   herald: (c) => (<g><circle cx="150" cy="104" r="78" fill="none" stroke={c} strokeWidth="2" strokeDasharray="10 6" opacity="0.8" /><path d="M110 50 L120 26 L136 46 L150 18 L164 46 L180 26 L190 50" stroke={c} strokeWidth="3" fill="none" /><path d="M222 200 C222 170 262 170 262 200 L270 250 H214 Z" fill="#6b5330" stroke="#e3b06a" strokeWidth="2" /><circle cx="242" cy="258" r="6" fill="#e3b06a" /></g>),
 };
 
 function Procedural({ def }: { def: EnemyDef }) {
   const [p0, p1] = def.palette;
   const g = `en_${def.id}`;
-  const humanoid = def.shape !== 'hound';
+  const humanoid = !['hound', 'tree', 'void', 'wyrm'].includes(def.shape);
   return (
     <svg viewBox="0 0 300 400" preserveAspectRatio="xMidYMid slice" width="100%" height="100%" style={{ display: 'block' }}>
       <defs>

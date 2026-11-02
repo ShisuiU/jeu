@@ -1,11 +1,12 @@
 import type { HeroDef } from './types';
+import { CHAPTER_HEROES } from './heroesChapters';
 
 // Première collection : 15 héros. Pour en ajouter, il suffit d'ajouter une entrée ici
 // (et, optionnellement, ses illustrations dans public/assets/heroes/<id>/).
 
 const up = (...u: string[]) => u;
 
-export const HEROES: HeroDef[] = [
+const BASE_HEROES: HeroDef[] = [
   // ───────────── EMPIRE DE VALCREST ─────────────
   {
     id: 'aldric', name: 'Aldric Vaunt', title: 'Capitaine du Mur Blanc',
@@ -260,6 +261,8 @@ export const HEROES: HeroDef[] = [
     palette: ['#2b1a0c', '#ffcc66', '#9a4dff'],
   },
 ];
+
+export const HEROES: HeroDef[] = [...BASE_HEROES, ...CHAPTER_HEROES];
 
 export const HERO_BY_ID: Record<string, HeroDef> = Object.fromEntries(HEROES.map((h) => [h.id, h]));
 

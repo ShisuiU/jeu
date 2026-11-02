@@ -62,7 +62,8 @@ export function teamSetups(s: SaveData, team: TeamPreset): UnitSetup[] {
 
 export function stageWaves(stage: StageDef, diff: DifficultyId): UnitSetup[][] {
   const d = DIFFICULTIES[diff];
-  return stage.waves.map((w) => w.map((e) => ({ kind: 'enemy', refId: e.enemy, slot: e.slot, level: e.level + d.levelAdd, statMult: d.statMult, hpMult: e.hpMult })));
+  // Plafond de niveau 70 : les difficultés élevées des derniers chapitres restent exigeantes grâce au multiplicateur de stats.
+  return stage.waves.map((w) => w.map((e) => ({ kind: 'enemy', refId: e.enemy, slot: e.slot, level: Math.min(70, e.level + d.levelAdd), statMult: d.statMult * (stage.statMult ?? 1), hpMult: e.hpMult })));
 }
 
 /** Dépense l'énergie d'un niveau. Retourne false si impossible. (mutation) */

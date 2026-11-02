@@ -23,17 +23,23 @@ la Fracture.*
 Pourquoi des civilisations ennemies combattent ensemble : face au Néant, aucune faction ne survit
 seule, et seuls les Héritiers — quelle que soit leur origine — résistent à l'Effacement.
 
-### Campagne prévue (7 chapitres × 10 niveaux × 4 difficultés)
+### Campagne (7 chapitres × 10 niveaux × 4 difficultés)
 
-| # | Chapitre | Région | Boss envisagé |
-|---|---|---|---|
-| 1 | Les Remparts de Cendre | Marches de Valcrest | Le Héraut Effacé |
-| 2 | La Forêt qui Crie | Sylves de Sylvaran | L'Arbre-Mère corrompu |
-| 3 | Verre et Poussière | Citadelle du Prisme | L'Intelligence Mère dévoyée |
-| 4 | Les Dunes Rouges | Terres Dévastées d'Akkar | Le Colosse de bronze |
-| 5 | Sous la Fosse | Abîme de la Légion | Un Seigneur de Cendre |
-| 6 | Le Ciel Déchiré | Observatoire du Concordat | La Constellation Éteinte |
-| 7 | Le Cœur d'Aeon | Le Cœur du Monde Cousu | La Voix du Néant |
+| # | Chapitre | Région | Niveaux | Boss | Héros obtenu |
+|---|---|---|---|---|---|
+| 1 | Les Remparts de Cendre | Marches de Valcrest | 1-10 | Le Héraut Effacé | Aldric Vaunt |
+| 2 | La Forêt qui Crie | Sylves de Sylvaran | 11-19 | L'Arbre-Mère corrompu | Ysolde Ronce-d'Argent |
+| 3 | Verre et Poussière | Citadelle du Prisme | 19-27 | MÈRE-PRISME | Orin Vale |
+| 4 | Les Dunes Rouges | Terres Dévastées d'Akkar | 27-35 | Le Roi-Scorpion d'Ur | Tamsin Sable-Rouge |
+| 5 | Sous la Fosse | Abîme de la Légion | 35-43 | Morvath, Seigneur de Cendre | Nerissa Cœur-de-Braise |
+| 6 | Le Ciel Déchiré | Observatoire du Concordat | 43-51 | La Constellation Éteinte | Caelum |
+| 7 | Le Cœur d'Aeon | Le Cœur du Monde Cousu | 51-60 | La Voix du Néant | Solenne (Mythique) |
+
+Fil rouge : chaque chapitre libère un éclat du Cœur d'Aeon. Au chapitre 4, Azhar-Kesh avoue que son
+rituel antique a brisé le Cœur ; au chapitre 7, le Néant prend la voix d'un Lien d'une boucle
+temporelle perdue, et Solenne, l'Éclat Premier, permet de faire battre à nouveau le Cœur.
+Chapitres 2-7 : `src/data/campaignChapters.ts` (vagues générées par règles, histoire écrite à la main,
+puissance des ennemis calibrée par simulation et vérifiée par `tests/balance.chapters.test.ts`).
 
 Difficultés : Normal, Difficile, Expert, Cauchemar (ennemis plus forts, nouveaux effets, meilleures récompenses).
 
@@ -82,7 +88,7 @@ Difficultés : Normal, Difficile, Expert, Cauchemar (ennemis plus forts, nouveau
 
   Doublon → fragments (Commun 4 … Mythique 40). Fragments : éveil, ou obtention d'un héros manquant.
 
-## Les 15 premiers héros
+## Les 21 héros
 
 | Héros | Faction | Rareté | Rôle | Affinité |
 |---|---|---|---|---|
@@ -101,6 +107,12 @@ Difficultés : Normal, Difficile, Expert, Cauchemar (ennemis plus forts, nouveau
 | **Brann** — Pillard des Dunes Rouges | Akkar | Commun | Attaquant | Solaire |
 | **Kaedra Hurlecendre** — Lame du Simoun | Akkar | Épique | Assassin | Solaire |
 | **Azhar-Kesh** — Roi-Soleil Déchu d’Ur-Akkar | Akkar | Mythique | Contrôleur | Néant |
+| **Ysolde Ronce-d’Argent** — Gardienne des Racines | Sylvaran | Épique | Contrôleur | Tellurique |
+| **Orin Vale** — Nano-médecin du Prisme | Prisme | Épique | Soigneur | Lunaire |
+| **Tamsin Sable-Rouge** — Tambour de guerre d’Akkar | Akkar | Épique | Support | Solaire |
+| **Nerissa Cœur-de-Braise** — la Damnée qui a dit non | Cendre | Légendaire | Assassin | Néant |
+| **Caelum** — l’Astronome Exilé | Astral | Épique | Attaquant | Lunaire |
+| **Solenne** — l’Éclat Premier | Astral | Mythique | Soigneur | Solaire |
 
 Héros de départ : Torvald, Brann, Corvin, Elowen (une équipe équilibrée : défenseur, attaquant, assassin, soigneuse).
 

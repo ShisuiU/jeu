@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { LORE, CHAPTERS_PLANNED } from '../../data/lore';
+import { LORE } from '../../data/lore';
+import { CHAPTERS } from '../../data/campaign';
 import { FACTION_LIST } from '../../data/factions';
 import { AFFINITIES } from '../../data/affinities';
 import { ROLE_LIST } from '../../data/roles';
@@ -25,7 +26,7 @@ export function Codex() {
             <Panel key={l.id} title={l.title}><div className="lore">{l.text.map((t, i) => <p key={i}>{t}</p>)}</div></Panel>
           ))}
           <Panel title="Chapitres de la campagne">
-            {CHAPTERS_PLANNED.map((c) => <div key={c.n} className="stat-row"><span>Chapitre {c.n} · <b>{c.name}</b></span><span className="faint">{c.region}</span></div>)}
+            {CHAPTERS.map((c) => <div key={c.n} className="stat-row"><span>Chapitre {c.n} · <b>{c.name}</b></span><span className="faint">{c.region}</span></div>)}
           </Panel>
         </>
       )}

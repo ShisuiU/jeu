@@ -1,4 +1,5 @@
 import type { Reward } from './resources';
+import { LATER_CHAPTERS } from './campaignChapters';
 
 // CAMPAGNE — entièrement décrite par les données. Ajouter un chapitre = ajouter une entrée ici.
 
@@ -15,6 +16,8 @@ export interface StageDef {
   name: string;
   energy: number;
   waves: WaveEnemy[][];
+  /** Puissance des ennemis (les héros se renforcent par le rang, l'ascension et l'équipement). */
+  statMult?: number;
   boss?: boolean;
   heroXp: number;
   firstClear: Reward & { heroes?: string[] };
@@ -147,6 +150,7 @@ export const CHAPTERS: ChapterDef[] = [
     intro: 'La forteresse du Mur Blanc, rempart oriental de l’Empire de Valcrest, est tombée dans le silence. Reprenez-la aux Effacés.',
     stages: CH1,
   },
+  ...LATER_CHAPTERS,
 ];
 
 export const STAGE_BY_ID: Record<string, StageDef> = Object.fromEntries(CHAPTERS.flatMap((c) => c.stages).map((s) => [s.id, s]));

@@ -83,14 +83,13 @@ export function Saves() {
       <Panel title="Partie actuelle">
         <Summary s={save} />
         <p className="faint" style={{ marginTop: 10 }}>
-          Sauvegarde automatique sur l’appareil (IndexedDB){saveStatus.lastSavedAt ? ` · dernière écriture ${dt(saveStatus.lastSavedAt)}` : ''}.
-          {saveStatus.persisted ? ' Stockage protégé contre l’effacement automatique.' : ''}
+          Sauvegarde automatique{saveStatus.lastSavedAt ? ` · ${dt(saveStatus.lastSavedAt)}` : ''}{saveStatus.persisted ? ' · protégée' : ''}
         </p>
         {saveStatus.error && <div className="hint warn">Erreur d’écriture : {saveStatus.error}</div>}
       </Panel>
 
       <Panel title="Exporter">
-        <p className="muted" style={{ marginTop: 0, fontSize: 13 }}>Gardez une copie hors de l’appareil (Fichiers, iCloud Drive, Notes, mail). Indispensable avant de changer de téléphone.</p>
+        <p className="faint" style={{ marginTop: 0 }}>À faire avant de changer de téléphone.</p>
         <div className="row" style={{ gap: 8 }}>
           <button className="btn grow" onClick={download}>Fichier</button>
           <button className="btn secondary grow" onClick={copy}>Copier le code</button>

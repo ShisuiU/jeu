@@ -88,7 +88,6 @@ export function Gear({ gearUid }: { gearUid?: string }) {
                 : <GearSlotEmpty key={s.id} slot={s.id} onClick={() => toast('Emplacement vide : équipez un objet depuis la fiche du héros.')} />;
             })}
           </div>
-          <p className="faint" style={{ textAlign: 'center' }}>Touchez un objet pour le renforcer.</p>
         </>
       )}
 

@@ -445,7 +445,7 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
       {quit && (
         <Modal onClose={() => setQuit(false)}>
           <h2>Abandonner ?</h2>
-          <p className="muted" style={{ textAlign: 'center' }}>Le combat sera compté comme une défaite. L’énergie dépensée n’est pas rendue.</p>
+          <p className="muted" style={{ textAlign: 'center' }}>Compté comme une défaite. L’énergie n’est pas rendue.</p>
           <div className="row" style={{ gap: 8 }}>
             <button className="btn secondary grow" onClick={() => setQuit(false)}>Continuer</button>
             <button className="btn danger grow" onClick={doQuit}>Abandonner</button>

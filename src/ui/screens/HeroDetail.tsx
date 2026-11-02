@@ -8,9 +8,9 @@ import { RARITIES } from '../../data/rarities';
 import { BALANCE } from '../../data/balance';
 import { computeStats, maxLevelForRank, powerOf, STAT_LABELS, STAT_ORDER } from '../../game/stats';
 import { Disclosure, Panel, RarityTag, Screen, Stars, fmt } from '../components/common';
-import { HeroArt, hasRealArt } from '../art/HeroArt';
+import { HeroArt } from '../art/HeroArt';
 import { FactionEmblem } from '../art/FactionEmblem';
-import { Icon } from '../art/Icons';
+import { Icon, StatIcon } from '../art/Icons';
 import { heroXpToNext } from '../../game/progression';
 import { heroTotalStats } from '../../game/heroStats';
 import { summonWithFragments } from '../../game/summon';
@@ -74,39 +74,43 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
           <div className="row between"><span>{fragments} / {fragNeed} fragments</span><span className="faint">Doublons d’invocation</span></div>
           <div className="progress" style={{ margin: '6px 0 10px' }}><div style={{ width: `${Math.min(100, (fragments / fragNeed) * 100)}%` }} /></div>
           <button className="btn block" disabled={fragments < fragNeed} onClick={() => { let ok = false; mutate((st) => { ok = summonWithFragments(st, d.id, Date.now()); }); if (ok) toast(`${d.name} rejoint vos Héritiers !`, 'ok'); }}>Invoquer avec les fragments</button>
-          <p className="faint">Ce héros s’obtient aussi par les invocations ({rar.name}).</p>
         </Panel>
       )}
       {inst && tab === 'gear' && <HeroGear h={inst} />}
       {(tab === 'info' || !inst) && <>
 
-      <Panel title={inst ? 'Progression' : 'Non obtenu : statistiques de base'}>
-        <div className="row between" style={{ marginBottom: 8 }}>
-          <span>Niveau <b style={{ color: 'var(--gold-hi)' }}>{progress.level}</b> / {maxLv}</span>
-          <span className="muted">Puissance <b style={{ color: 'var(--gold-hi)' }}>{fmt(powerOf(stats))}</b></span>
+      <section className="hero-summary">
+        <div className="hs-line">
+          <span className="hs-lv">Niv. <b>{progress.level}</b><small>/{maxLv}</small></span>
+          <div className="hs-xp"><div style={{ width: `${inst && progress.level < maxLv ? (inst.xp / heroXpToNext(inst.level)) * 100 : 100}%` }} /></div>
+          <span className="hs-pw">{fmt(powerOf(stats))}<small> puissance</small></span>
         </div>
-        <div className="progress"><div style={{ width: `${inst && progress.level < maxLv ? (inst.xp / heroXpToNext(inst.level)) * 100 : 100}%` }} /></div>
-        {inst && <div className="faint" style={{ marginTop: 4 }}>{progress.level < maxLv ? `XP ${inst.xp} / ${heroXpToNext(inst.level)}` : 'Niveau maximum du rang atteint. Augmentez le rang au Sanctuaire.'}</div>}
-        <div className="row between wrap" style={{ marginTop: 10, fontSize: 13 }}>
-          <span>Rang <b>{progress.rank}</b>/{BALANCE.hero.maxRank}</span>
-          <span>Ascension <b>{progress.ascension}</b>/{BALANCE.hero.maxAscension}</span>
-          <span>Éveil <b>{progress.awaken}</b>/{BALANCE.hero.maxAwaken}</span>
+        <div className="hs-line">
+          <span className="hs-pill">Rang <b>{progress.rank}</b>/{BALANCE.hero.maxRank}</span>
+          <span className="hs-pill">Asc. <b>{progress.ascension}</b>/{BALANCE.hero.maxAscension}</span>
+          <span className="hs-pill">Éveil <b>{progress.awaken}</b>/{BALANCE.hero.maxAwaken}</span>
+          {inst ? (
+            <button className="hs-upgrade" onClick={() => push({ name: 'sanctuary', uid: inst.uid })} aria-label="Améliorer au Sanctuaire">
+              <Icon.temple size={14} /> Améliorer{canImprove(save, inst) && <span className="hs-dot" />}
+            </button>
+          ) : <span className="hs-pill muted">Non obtenu</span>}
         </div>
-        {inst && (
-          <button className="btn block sanct-cta" style={{ marginTop: 12 }} onClick={() => push({ name: 'sanctuary', uid: inst.uid })}>
-            <Icon.temple size={18} /> Améliorer au Sanctuaire
-            {canImprove(save, inst) && <span className="badge-dot" style={{ top: -3, right: -3 }} />}
-          </button>
-        )}
-      </Panel>
+      </section>
 
-      <Panel title="Statistiques">
-        <div className="stat-grid">
-          {STAT_ORDER.map((k) => (
-            <div key={k} className="stat-row"><span className="muted">{STAT_LABELS[k].long}</span><b>{fmt(stats[k])}{STAT_LABELS[k].pct ? ' %' : ''}{full && stats[k] !== full.base[k] && <small style={{ color: '#7bea8f', marginLeft: 4 }}>(+{fmt(Math.round((stats[k] - full.base[k]) * 10) / 10)})</small>}</b></div>
-          ))}
-        </div>
-      </Panel>
+      <section className="stat-sheet" aria-label="Statistiques">
+        {STAT_ORDER.map((k) => {
+          const I = StatIcon[k];
+          const bonus = full ? Math.round((stats[k] - full.base[k]) * 10) / 10 : 0;
+          return (
+            <div key={k} className="ss-row" title={STAT_LABELS[k].long}>
+              <I size={15} />
+              <span className="ss-k">{STAT_LABELS[k].short}{STAT_LABELS[k].pct ? ' %' : ''}</span>
+              <b className="ss-v">{fmt(stats[k])}{STAT_LABELS[k].pct ? '%' : ''}</b>
+              {bonus > 0 && <span className="ss-b">+{fmt(bonus)}</span>}
+            </div>
+          );
+        })}
+      </section>
 
       <Disclosure title="Compétences" summary={`${d.skills.length} compétences${d.leaderSkill ? ' · aura de chef' : ''}`}>
         {d.skills.map((s, i) => (
@@ -134,7 +138,6 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
         <div className="lore"><p><b>{f.name}</b> : {f.synergy}</p></div>
         <div className="panel-title" style={{ marginTop: 14 }}>Apparence</div>
         <div className="lore"><p className="muted">{d.look}</p></div>
-        {!hasRealArt(d.id) && <p className="faint">Illustration définitive en cours de création, portrait provisoire affiché.</p>}
       </Disclosure>
 
       {inst && (

@@ -41,7 +41,6 @@ export function Daily() {
             </div>
           ))}
         </div>
-        <p className="faint" style={{ marginTop: 10, marginBottom: 0 }}>Manquer un jour ne fait rien perdre. Grosses récompenses les jours 7, 14, 21 et 28.</p>
       </Panel>
       {rollback && <div className="hint warn" style={{ marginTop: 12 }}>L’horloge de l’appareil semble avoir reculé. Les récompenses temporelles reprendront quand l’heure aura rattrapé la dernière heure connue.</div>}
       <Panel title={can ? `Récompense du jour ${DAILY_REWARDS[idx].day}` : 'Prochaine récompense'}>

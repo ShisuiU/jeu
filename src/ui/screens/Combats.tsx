@@ -24,12 +24,12 @@ export function Combats() {
   const ev = activeEvents(now)[0];
   const cards: { title: string; sub: string; art: string; color: string; route: Route; dot?: boolean }[] = [
     { title: 'Campagne', sub: `Chapitre ${chap.n} · ${chap.name} · ★ ${st.stars}/${st.max}`, art: chap.stages[9].waves[1]?.find((w) => w.hpMult)?.enemy ?? 'herald', color: '#d9b36a', route: { name: 'campaign' } },
-    { title: 'Donjons', sub: `Équipement, élixirs, potions, grimoires · meilleur étage ${bestDungeon}/10`, art: 'forge_golem', color: '#ff9a3c', route: { name: 'dungeons' } },
-    { title: 'Tour des Âges', sub: `Étage ${save.progress.tower.floor}/${TOWER_FLOORS} · sans énergie`, art: 'tower_sentinel', color: '#b98cff', route: { name: 'tower' } },
+    { title: 'Donjons', sub: `Meilleur étage ${bestDungeon}/10`, art: 'forge_golem', color: '#ff9a3c', route: { name: 'dungeons' } },
+    { title: 'Tour des Âges', sub: `Étage ${save.progress.tower.floor}/${TOWER_FLOORS}`, art: 'tower_sentinel', color: '#b98cff', route: { name: 'tower' } },
     { title: 'Boss mondial', sub: `${WORLD_BOSS.name} · ${keys}/${WORLD_BOSS.keysPerDay} clés`, art: WORLD_BOSS.enemy, color: '#ffcc66', route: { name: 'worldboss' }, dot: keys > 0 },
     { title: 'Arène', sub: `Ligue ${arenaTier(save.arena.rating).name} · ${tickets}/${ARENA.ticketsPerDay} tickets`, art: 'hollow_knight', color: '#ff6b7d', route: { name: 'arena' }, dot: tickets > 0 },
   ];
-  if (ev) cards.push({ title: ev.name, sub: 'Événement en cours · objectifs et défi', art: 'ash_lord', color: ev.color ?? '#ff3d6e', route: { name: 'events' } });
+  if (ev) cards.push({ title: ev.name, sub: 'Événement en cours', art: 'ash_lord', color: ev.color ?? '#ff3d6e', route: { name: 'events' } });
   return (
     <Screen title="Combats">
       <div className="combat-list">

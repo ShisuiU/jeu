@@ -15,8 +15,8 @@ export const STAT_LABELS: Record<StatId, { short: string; long: string; pct?: bo
   atk: { short: 'ATQ', long: 'Attaque' },
   def: { short: 'DÉF', long: 'Défense' },
   spd: { short: 'VIT', long: 'Vitesse' },
-  critRate: { short: 'TX CRIT', long: 'Taux critique', pct: true },
-  critDmg: { short: 'DGT CRIT', long: 'Dégâts critiques', pct: true },
+  critRate: { short: 'CRIT', long: 'Taux critique', pct: true },
+  critDmg: { short: 'CRIT DMG', long: 'Dégâts critiques', pct: true },
   acc: { short: 'PRÉ', long: 'Précision' },
   res: { short: 'RÉS', long: 'Résistance' },
 };

@@ -5,6 +5,18 @@ const S = ({ size = 22, children, vb = '0 0 24 24' }: { size?: number; children:
   <svg viewBox={vb} width={size} height={size} fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">{children}</svg>
 );
 
+/** Petites icônes des statistiques (fiche du héros). */
+export const StatIcon: Record<string, (p: P) => JSX.Element> = {
+  hp: (p) => <S {...p}><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" /></S>,
+  atk: (p) => <S {...p}><path d="M14 4h6v6L9 21l-3-3z" /><path d="m5 14 5 5M3 21l3-3" /></S>,
+  def: (p) => <S {...p}><path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6z" /></S>,
+  spd: (p) => <S {...p}><path d="M13 3 5 14h6l-1 7 8-11h-6z" /></S>,
+  critRate: (p) => <S {...p}><circle cx="12" cy="12" r="7" /><circle cx="12" cy="12" r="2.5" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3" /></S>,
+  critDmg: (p) => <S {...p}><path d="m12 2 2.2 6.3L21 9l-5.2 4.2L17.6 20 12 16.3 6.4 20l1.8-6.8L3 9l6.8-.7z" /></S>,
+  acc: (p) => <S {...p}><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6S2 12 2 12z" /><circle cx="12" cy="12" r="2.6" /></S>,
+  res: (p) => <S {...p}><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z" /><path d="M8 12h8M12 8v8" /></S>,
+};
+
 export const Icon = {
   home: (p: P) => <S {...p}><path d="M3 11 12 3l9 8" /><path d="M5 10v10h5v-6h4v6h5V10" /></S>,
   heroes: (p: P) => <S {...p}><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20c.8-4 3.4-6 6.5-6s5.7 2 6.5 6" /><circle cx="17" cy="7" r="2.6" /><path d="M16 12.5c3 0 5 1.6 5.6 5" /></S>,

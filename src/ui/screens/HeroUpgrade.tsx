@@ -139,7 +139,7 @@ export function HeroGear({ h }: { h: HeroInstance }) {
         </div>
       </Panel>
       <Panel title="Ensembles">
-        {bonus.sets.length === 0 && <p className="faint">Aucun ensemble. Équipez plusieurs pièces du même ensemble pour activer son bonus.</p>}
+        {bonus.sets.length === 0 && <p className="faint">Aucun ensemble actif.</p>}
         {bonus.sets.map((st) => (
           <div key={st.id} className="stat-row">
             <span style={{ color: SETS[st.id].color }}>{SETS[st.id].name} {st.count}/{SETS[st.id].pieces}</span>

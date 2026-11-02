@@ -4,7 +4,7 @@ import { useUI } from '../../state/ui';
 import { CHAPTERS, DIFFICULTIES, DIFFICULTY_ORDER, type DifficultyId } from '../../data/campaign';
 import { HERO_BY_ID } from '../../data/heroes';
 import { chapterStars, isStageUnlocked, stageEnergy, stageProgress } from '../../game/campaign';
-import { Screen } from '../components/common';
+import { InfoButton, Screen } from '../components/common';
 import { Icon } from '../art/Icons';
 import { BattleBackdrop } from '../art/BattleBackdrop';
 import { EnemyArt } from '../art/EnemyArt';
@@ -75,7 +75,7 @@ export function Campaign() {
           );
         })}
       </div>
-      <p className="faint" style={{ textAlign: 'center' }}>Difficile, Expert et Cauchemar : ennemis de niveau +15 / +30 / +45 (max. 70), plus puissants, récompenses ×1,6 / ×2,4 / ×3,5.</p>
+      <div className="row" style={{ justifyContent: 'center', gap: 6, marginTop: 6 }}><span className="faint">Difficultés</span><InfoButton title="Difficultés">Difficile, Expert et Cauchemar : ennemis de niveau +15 / +30 / +45 (max. 70), plus puissants. Récompenses ×1,6 / ×2,4 / ×3,5.</InfoButton></div>
     </Screen>
   );
 }

@@ -75,7 +75,7 @@ export function Events() {
   const list = activeEvents(now);
   return (
     <Screen title="Événements">
-      {list.length === 0 && <div className="hint">Aucun événement en cours. De nouveaux événements apparaîtront ici automatiquement (connexion Internet nécessaire pour les recevoir).</div>}
+      {list.length === 0 && <div className="hint">Aucun événement en cours.</div>}
       {list.map((e) => {
         const p = save.events[e.id];
         const chal = e.challenge ? canStart(save, { mode: 'challenge', eventId: e.id }) : null;

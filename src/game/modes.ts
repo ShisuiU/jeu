@@ -78,13 +78,13 @@ export function resolveMode(s: SaveData, spec: BattleSpec): ModeInfo {
       return {
         title: `${d.name} · Étage ${spec.floor}`, subtitle: d.description, region: ({ forge: 'ash', amber: 'akkar', alchemy: 'prism', archive: 'astral' } as Record<string, string>)[d.id] ?? 'valcrest', waves: toSetups(dungeonWaves(d, spec.floor)),
         cost: { kind: 'energy', amount: dungeonEnergy(spec.floor) }, rewardPreview: scaleReward(d.reward(spec.floor), bonus), rewardLabel: bonus > 1 ? `Récompenses (bonus d’événement ×${bonus})` : 'Récompenses',
-        notes: [d.gear ? 'Équipement garanti à chaque victoire' : '', `Étage suivant débloqué en cas de victoire`].filter(Boolean), firstTime: (s.progress.dungeons[d.id]?.bestFloor ?? 0) < spec.floor,
+        notes: [d.gear ? 'Équipement garanti' : ''].filter(Boolean), firstTime: (s.progress.dungeons[d.id]?.bestFloor ?? 0) < spec.floor,
       };
     }
     case 'tower':
       return {
         title: `Tour des Âges · Étage ${spec.floor}`, subtitle: spec.floor % 10 === 0 ? 'Étage gardé par une Sentinelle' : 'Ascension', region: 'heart', waves: toSetups(towerWaves(spec.floor)),
-        cost: { kind: 'free', amount: 0 }, rewardPreview: towerReward(spec.floor), rewardLabel: 'Récompense de l’étage', notes: ['Sans énergie', 'Une victoire = étage suivant'], firstTime: true,
+        cost: { kind: 'free', amount: 0 }, rewardPreview: towerReward(spec.floor), rewardLabel: 'Récompense de l’étage', notes: ['Sans énergie'], firstTime: true,
       };
     case 'worldboss': {
       const t = BOSS_TIERS.find((x) => x.id === spec.tier)!;

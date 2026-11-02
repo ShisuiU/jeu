@@ -121,7 +121,7 @@
 - Retour en arrière par glissement depuis le bord gauche ; position dans les listes retrouvée au retour
 - Combat : appui long sur une carte pour voir ses PV, ses statistiques et ses effets en cours
 - Plus de voile flou en haut des écrans ; logo de l'écran d'ouverture animé sans à-coups
-- Correctif iPhone : suppression de la bande vide sous la barre du bas
+- Correctif iPhone (1.11.1) : barre d'état opaque. Le mode transparent faisait flouter le haut de l'écran par iOS et raccourcissait la zone d'affichage (bande vide en bas) ; énergie au-delà du maximum affichée en vert
 
 ## Suites possibles
 

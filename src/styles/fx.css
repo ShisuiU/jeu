@@ -1,0 +1,134 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   EFFETS DE COMPÉTENCES — trajets (projectiles, pluies, vagues, rayons) et impacts
+   propres à chaque arme et à chaque élément (voir src/ui/fx/skillFx.ts).
+   ───────────────────────────────────────────────────────────────────────────── */
+.fx-layer { position: absolute !important; inset: 0; z-index: 7 !important; pointer-events: none; overflow: hidden; }
+.fx-layer > span { position: absolute; width: 0; height: 0; }
+.fx-layer i { position: absolute; display: block; }
+
+/* ─── Projectiles : l'objet vole du lanceur vers la cible, orienté dans le sens du trajet ─── */
+.fx-proj { animation: fxFly linear forwards; }
+@keyframes fxFly { from { transform: translate(0, 0) rotate(var(--ang)); opacity: 0.2; } 12% { opacity: 1; } to { transform: translate(var(--dx), var(--dy)) rotate(var(--ang)); opacity: 1; } }
+/* Par défaut : orbe d'énergie avec traînée */
+.fx-proj i { left: -10px; top: -10px; width: 20px; height: 20px; border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 22%, var(--c) 45%, transparent 72%); box-shadow: 0 0 14px var(--c), -18px 0 18px -6px var(--c), -34px 0 22px -10px var(--c); }
+/* Flèches et carreaux : trait fin avec pointe */
+.fx-proj.w-pierce i { left: -30px; top: -1.5px; width: 34px; height: 3px; border-radius: 2px; background: linear-gradient(90deg, transparent, #d9cdb4 40%, #fff); box-shadow: 0 0 6px var(--c); }
+.fx-proj.w-pierce i::after { content: ''; position: absolute; right: -6px; top: -3px; border-left: 8px solid #fff; border-top: 4.5px solid transparent; border-bottom: 4.5px solid transparent; filter: drop-shadow(0 0 3px var(--c)); }
+.fx-proj.w-pierce.e-poison i, .fx-proj.w-pierce.e-poison i::after { background-color: #b8f08a; border-left-color: #b8f08a; }
+/* Glace : éclat de cristal */
+.fx-proj.e-ice i { left: -12px; top: -5px; width: 24px; height: 10px; border-radius: 0; background: linear-gradient(90deg, rgba(160,230,255,0.2), #e8fbff); clip-path: polygon(0 50%, 70% 0, 100% 50%, 70% 100%); box-shadow: none; filter: drop-shadow(0 0 6px #9fe3ff); }
+/* Technologie : tir laser fin et long */
+.fx-proj.e-tech i { left: -40px; top: -1.5px; width: 46px; height: 3px; border-radius: 2px; background: linear-gradient(90deg, transparent, var(--c), #fff); box-shadow: 0 0 8px var(--c), 0 0 16px var(--c); }
+/* Étoiles : étoile qui tourne */
+.fx-proj.e-star i { left: -11px; top: -11px; width: 22px; height: 22px; border-radius: 0; background: radial-gradient(circle, #fff 20%, var(--c) 60%); clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%); box-shadow: none; animation: fxSpin 0.4s linear infinite; filter: drop-shadow(0 0 6px var(--c)); }
+@keyframes fxSpin { to { transform: rotate(360deg); } }
+/* Néant : orbe sombre cerclé de violet */
+.fx-proj.e-void i { background: radial-gradient(circle, #05030a 0 38%, var(--c) 55%, transparent 72%); box-shadow: 0 0 16px #6b2bd9, -20px 0 20px -8px #3a1670; }
+/* Son : ondes qui avancent */
+.fx-proj.e-sound i { left: -14px; top: -14px; width: 28px; height: 28px; border-radius: 50%; background: none; border: 2px solid var(--c); box-shadow: 0 0 10px var(--c), inset 0 0 8px var(--c); animation: fxPulse 0.18s ease-in-out infinite alternate; }
+@keyframes fxPulse { to { transform: scale(1.35); opacity: 0.6; } }
+/* Sable : nuage de poussière */
+.fx-proj.e-sand i { left: -16px; top: -12px; width: 32px; height: 24px; background: radial-gradient(ellipse, rgba(232,194,122,0.9), rgba(232,194,122,0) 70%); box-shadow: -16px 0 18px -4px rgba(232,194,122,0.5); }
+/* Fouets, chaînes, fils : un lien s'étire du lanceur à la cible */
+.fx-proj.w-whip { animation: none; }
+.fx-proj.w-whip i { left: 0; top: -2px; width: var(--len); height: 4px; border-radius: 3px; transform-origin: 0 50%; transform: rotate(var(--ang)) scaleX(0); background: linear-gradient(90deg, var(--c), #fff 85%, var(--c)); box-shadow: 0 0 10px var(--c); animation: fxLash 1 forwards; animation-duration: inherit; }
+@keyframes fxLash { 0% { transform: rotate(var(--ang)) scaleX(0); } 55% { transform: rotate(var(--ang)) scaleX(1); opacity: 1; } 100% { transform: rotate(var(--ang)) scaleX(1); opacity: 0; } }
+/* Feu : boule de feu avec flammèches */
+.fx-proj.e-fire i { background: radial-gradient(circle, #fff6c8 0 18%, #ffb347 40%, #ff5a1f 60%, transparent 74%); box-shadow: 0 0 16px #ff7a2f, -16px 0 16px -4px #ff7a2f, -30px 0 22px -8px #b3361a; }
+/* Nature : graine/épine verte */
+.fx-proj.e-nature i { left: -12px; top: -4px; width: 24px; height: 8px; border-radius: 50% 0; background: linear-gradient(90deg, #3f7d2a, #9be36f); box-shadow: 0 0 8px #7fd65a; }
+
+/* ─── Pluie (flèches, météores, salves) : projectiles qui tombent sur la cible ─── */
+.fx-rain i { top: -140px; width: 4px; height: 26px; border-radius: 2px; background: linear-gradient(180deg, transparent, var(--c)); box-shadow: 0 0 8px var(--c); opacity: 0; animation: fxFall linear forwards; }
+.fx-rain.e-star i { width: 7px; height: 30px; background: linear-gradient(180deg, transparent, #fff 70%, var(--c)); border-radius: 50% 50% 50% 50% / 20% 20% 80% 80%; }
+.fx-rain.e-sand i { width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle, rgba(232,194,122,0.9), transparent 70%); box-shadow: none; }
+@keyframes fxFall { 0% { transform: translate(-2px, 0); opacity: 0; } 15% { opacity: 1; } 90% { transform: translate(-2px, 128px); opacity: 1; } 100% { transform: translate(-2px, 136px); opacity: 0; } }
+
+/* ─── Zone (attaque sur tous) : explosion sur chaque cible ─── */
+.fx-burst i { left: -40px; top: -40px; width: 80px; height: 80px; border-radius: 50%; background: radial-gradient(circle, color-mix(in srgb, var(--c) 70%, #fff) 0 15%, var(--c) 35%, transparent 70%); opacity: 0; animation: fxBoom ease-out forwards; animation-duration: inherit; }
+.fx-burst.e-void i { background: radial-gradient(circle, #000 0 25%, var(--c) 45%, transparent 70%); }
+.fx-burst.e-ice i { background: conic-gradient(from 0deg, transparent 0 10%, #e8fbff 12%, transparent 14% 35%, #bdefff 37%, transparent 39% 60%, #e8fbff 62%, transparent 64% 85%, #bdefff 87%, transparent 89%); border-radius: 50%; }
+.fx-burst.e-sound i { background: none; border: 3px solid var(--c); box-shadow: 0 0 12px var(--c); }
+@keyframes fxBoom { 0% { transform: scale(0.2); opacity: 0; } 25% { opacity: 1; } 100% { transform: scale(1.25); opacity: 0; } }
+
+/* ─── Soutien : rayon de lumière qui descend sur l'allié ─── */
+.fx-beam i { left: calc(var(--w) / -2); top: -220px; width: var(--w); height: 260px; background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--c) 55%, transparent) 60%, color-mix(in srgb, var(--c) 85%, #fff)); filter: blur(1px); opacity: 0; animation: fxBeam ease-out forwards; animation-duration: inherit; -webkit-mask-image: linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent); mask-image: linear-gradient(90deg, transparent, #000 25%, #000 75%, transparent); }
+@keyframes fxBeam { 0% { opacity: 0; transform: scaleX(0.3); } 30% { opacity: 1; transform: scaleX(1); } 100% { opacity: 0; transform: scaleX(0.8); } }
+.fx-beam.e-nature i { background: linear-gradient(0deg, color-mix(in srgb, #7fd65a 80%, #fff), transparent); top: -30px; height: 80px; }
+.fx-beam.e-tech i { background: repeating-linear-gradient(180deg, rgba(95,240,255,0.6) 0 3px, transparent 3px 8px); }
+
+/* ─── Sur soi : cercle d'aura ─── */
+.fx-aura i { left: calc(var(--w) * -0.75); top: calc(var(--w) * -0.75); width: calc(var(--w) * 1.5); height: calc(var(--w) * 1.5); border-radius: 50%; border: 3px solid var(--c); box-shadow: 0 0 18px var(--c), inset 0 0 18px var(--c); opacity: 0; animation: fxAura ease-out forwards; animation-duration: inherit; }
+@keyframes fxAura { 0% { transform: scale(1.4); opacity: 0; } 40% { opacity: 1; } 100% { transform: scale(0.7); opacity: 0; } }
+
+/* ─── Impacts sur la carte touchée (remplacent l'ancienne entaille unique) ─── */
+.vfx.impact { z-index: 5; }
+.vfx.impact i { position: absolute; display: block; pointer-events: none; }
+.vfx.impact::before { content: ''; position: absolute; inset: 0; border-radius: 6px; background: radial-gradient(circle, color-mix(in srgb, var(--vc) 55%, transparent), transparent 70%); opacity: 0; animation: fxFlash 0.35s ease-out forwards; }
+.vfx.impact.small::before { animation-duration: 0.25s; }
+@keyframes fxFlash { 10% { opacity: 1; } 100% { opacity: 0; } }
+
+/* Lame : deux entailles croisées */
+.vfx.w-blade i:nth-child(-n+2) { left: -12%; right: -12%; top: 48%; height: 3px; border-radius: 3px; background: linear-gradient(90deg, transparent, #fff, var(--vc), transparent); box-shadow: 0 0 10px var(--vc); transform: rotate(-38deg) scaleX(0); animation: fxSlash 0.32s ease-out forwards; }
+.vfx.w-blade i:nth-child(2) { --r: 32deg; animation-delay: 0.07s; transform: rotate(32deg) scaleX(0); }
+@keyframes fxSlash { 0% { transform: rotate(var(--r, -38deg)) scaleX(0); opacity: 1; } 70% { opacity: 1; } 100% { transform: rotate(var(--r, -38deg)) scaleX(1.1); opacity: 0; } }
+.vfx.w-blade.crit i:nth-child(-n+2) { height: 6px; }
+/* Masse, marteau, poing : onde de choc */
+.vfx.w-blunt i:first-child { left: 10%; right: 10%; top: 15%; aspect-ratio: 1; border-radius: 50%; border: 4px solid #fff; box-shadow: 0 0 14px var(--vc); opacity: 0; animation: fxShock 0.4s ease-out forwards; }
+@keyframes fxShock { 0% { transform: scale(0.2); opacity: 1; } 100% { transform: scale(1.5); opacity: 0; } }
+.unit.heavy .u-art { animation: fxHeavy 0.38s; }
+@keyframes fxHeavy { 15% { transform: translate(-7px, 3px); } 30% { transform: translate(6px, -3px); } 50% { transform: translate(-4px, 2px); } 70% { transform: translate(3px, 0); } }
+/* Perforant : éclats en étoile au point d'impact */
+.vfx.w-pierce i:first-child { left: 30%; right: 30%; top: 30%; aspect-ratio: 1; background: conic-gradient(#fff 0 4%, transparent 4% 25%, #fff 25% 29%, transparent 29% 50%, #fff 50% 54%, transparent 54% 75%, #fff 75% 79%, transparent 79%); border-radius: 50%; opacity: 0; animation: fxPop 0.28s ease-out forwards; }
+@keyframes fxPop { 0% { transform: scale(0.3) rotate(0); opacity: 1; } 100% { transform: scale(1.6) rotate(25deg); opacity: 0; } }
+/* Griffes : trois marques parallèles */
+.vfx.w-claw i { top: 15%; height: 70%; width: 3px; border-radius: 3px; background: linear-gradient(180deg, transparent, #fff, var(--vc), transparent); transform: rotate(20deg) scaleY(0); animation: fxClaw 0.3s ease-out forwards; }
+.vfx.w-claw i:nth-child(1) { left: 32%; } .vfx.w-claw i:nth-child(2) { left: 48%; animation-delay: 0.03s; } .vfx.w-claw i:nth-child(3) { left: 64%; animation-delay: 0.06s; }
+@keyframes fxClaw { 0% { transform: rotate(20deg) scaleY(0); opacity: 1; } 100% { transform: rotate(20deg) scaleY(1.1); opacity: 0; } }
+/* Fouet / chaîne : claquement en arc */
+.vfx.w-whip i:first-child { left: 5%; right: 5%; top: 25%; height: 50%; border-radius: 50%; border-top: 3px solid #fff; box-shadow: 0 -4px 10px -2px var(--vc); transform: rotate(-15deg) scale(0.4); opacity: 0; animation: fxWhip 0.3s ease-out forwards; }
+@keyframes fxWhip { 20% { opacity: 1; } 100% { transform: rotate(-15deg) scale(1.15); opacity: 0; } }
+
+/* Éléments : couche de matière par-dessus le geste */
+.vfx.e-fire::after { content: ''; position: absolute; left: 5%; right: 5%; bottom: 0; height: 90%; background: radial-gradient(ellipse at 50% 100%, #fff3b0 0 10%, #ffb347 28%, #ff5a1f 48%, transparent 70%); filter: blur(1px); transform-origin: 50% 100%; animation: fxFlame 0.5s ease-out forwards; }
+@keyframes fxFlame { 0% { transform: scaleY(0.2); opacity: 0; } 25% { opacity: 1; } 100% { transform: scaleY(1.2) translateY(-8px); opacity: 0; } }
+.vfx.e-ice::after { content: ''; position: absolute; inset: 8%; background: conic-gradient(from 10deg, transparent 0 8%, #e8fbff 9% 11%, transparent 12% 30%, #bdefff 31% 33%, transparent 34% 55%, #e8fbff 56% 58%, transparent 59% 78%, #bdefff 79% 81%, transparent 82%); border-radius: 50%; animation: fxPop 0.4s ease-out forwards; filter: drop-shadow(0 0 4px #9fe3ff); }
+.vfx.e-poison::after { content: ''; position: absolute; inset: 10%; background: radial-gradient(circle at 35% 40%, #b8f08a 0 8%, transparent 9%), radial-gradient(circle at 62% 30%, #8be04e 0 6%, transparent 7%), radial-gradient(circle at 55% 65%, #b8f08a 0 9%, transparent 10%), radial-gradient(circle at 30% 70%, #8be04e 0 5%, transparent 6%); animation: fxBubbles 0.55s ease-out forwards; }
+@keyframes fxBubbles { 0% { transform: translateY(10px) scale(0.6); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateY(-14px) scale(1.1); opacity: 0; } }
+.vfx.e-lightning::after { content: ''; position: absolute; left: 35%; width: 30%; top: -30%; height: 130%; background: #fff; clip-path: polygon(45% 0, 70% 0, 52% 38%, 78% 38%, 30% 100%, 44% 52%, 20% 52%); filter: drop-shadow(0 0 6px #b9d4ff) drop-shadow(0 0 12px #6f9bff); animation: fxZap 0.3s steps(3) forwards; }
+@keyframes fxZap { 0%, 66% { opacity: 1; } 33% { opacity: 0.3; } 100% { opacity: 0; } }
+.vfx.e-tech::after { content: ''; position: absolute; inset: 0; border-radius: 4px; background: repeating-linear-gradient(0deg, rgba(95,240,255,0.55) 0 2px, transparent 2px 6px); box-shadow: inset 0 0 14px #5ff0ff; animation: fxGlitch 0.35s steps(4) forwards; }
+@keyframes fxGlitch { 0% { transform: translateX(-3px); opacity: 1; } 50% { transform: translateX(3px); } 100% { transform: none; opacity: 0; } }
+.vfx.e-void::after { content: ''; position: absolute; left: 0; right: 0; top: 0; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, #000 0 30%, rgba(176,124,255,0.7) 45%, transparent 66%); animation: fxImplode 0.45s ease-in forwards; }
+@keyframes fxImplode { 0% { transform: scale(1.5); opacity: 0; } 40% { opacity: 1; } 100% { transform: scale(0.1); opacity: 0; } }
+.vfx.e-holy::after { content: ''; position: absolute; inset: -10%; background: conic-gradient(from 0deg, transparent 0 6%, rgba(255,232,150,0.9) 7% 9%, transparent 10% 18%, rgba(255,232,150,0.7) 19% 21%, transparent 22% 31%, rgba(255,232,150,0.9) 32% 34%, transparent 35% 44%, rgba(255,232,150,0.7) 45% 47%, transparent 48% 57%, rgba(255,232,150,0.9) 58% 60%, transparent 61% 70%, rgba(255,232,150,0.7) 71% 73%, transparent 74% 83%, rgba(255,232,150,0.9) 84% 86%, transparent 87%); border-radius: 50%; -webkit-mask-image: radial-gradient(circle, #000 20%, transparent 70%); mask-image: radial-gradient(circle, #000 20%, transparent 70%); animation: fxRays 0.5s ease-out forwards; }
+@keyframes fxRays { 0% { transform: scale(0.3) rotate(0); opacity: 0; } 30% { opacity: 1; } 100% { transform: scale(1.2) rotate(30deg); opacity: 0; } }
+.vfx.e-nature::after { content: ''; position: absolute; left: 10%; right: 10%; bottom: 0; height: 70%; background: linear-gradient(60deg, transparent 45%, #6fc04a 46% 52%, transparent 53%), linear-gradient(-60deg, transparent 45%, #8fd65a 46% 52%, transparent 53%), linear-gradient(90deg, transparent 47%, #5aa83a 48% 53%, transparent 54%); transform-origin: 50% 100%; animation: fxThorns 0.45s ease-out forwards; }
+@keyframes fxThorns { 0% { transform: scaleY(0); opacity: 1; } 50% { transform: scaleY(1); opacity: 1; } 100% { transform: scaleY(1); opacity: 0; } }
+.vfx.e-star::after { content: '✦'; position: absolute; inset: 0; display: grid; place-items: center; font-size: 40px; color: #fff; text-shadow: 0 0 10px var(--vc), 0 0 20px var(--vc); animation: fxPop 0.45s ease-out forwards; }
+.vfx.e-sand::after { content: ''; position: absolute; inset: -10%; border-radius: 50%; background: radial-gradient(circle, rgba(232,194,122,0.85), rgba(232,194,122,0.3) 45%, transparent 70%); filter: blur(2px); animation: fxDust 0.5s ease-out forwards; }
+@keyframes fxDust { 0% { transform: scale(0.4) rotate(0); opacity: 0; } 30% { opacity: 1; } 100% { transform: scale(1.3) rotate(90deg); opacity: 0; } }
+.vfx.e-sound::after { content: ''; position: absolute; left: 0; right: 0; top: 0; aspect-ratio: 1; border-radius: 50%; border: 3px solid var(--vc); box-shadow: 0 0 0 6px color-mix(in srgb, var(--vc) 30%, transparent); animation: fxShock 0.45s ease-out forwards; }
+.vfx.e-chain::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent 0 8px, rgba(220,210,190,0.7) 8px 11px, transparent 11px 16px); animation: fxFlash 0.35s ease-out forwards; }
+
+/* ─── États visibles en permanence sur les cartes ─── */
+.u-stfx { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+.u-stfx i { position: absolute; display: block; }
+.unit.st-freeze .u-art { border-color: #bdefff !important; box-shadow: 0 0 10px rgba(159,227,255,0.6); }
+.unit.st-freeze .u-stfx { background: linear-gradient(160deg, rgba(220,248,255,0.55), rgba(140,210,255,0.15) 45%, rgba(220,248,255,0.4)); box-shadow: inset 0 0 12px rgba(220,248,255,0.9); }
+.unit.st-freeze .u-art img { filter: saturate(0.35) hue-rotate(160deg) brightness(1.1); }
+.unit.st-burn .u-stfx i { bottom: -4px; width: 30%; height: 45%; border-radius: 50% 50% 20% 20%; background: radial-gradient(ellipse at 50% 100%, #ffd27a, #ff5a1f 55%, transparent 72%); animation: fxEmber 0.9s ease-in-out infinite alternate; }
+.unit.st-burn .u-stfx i:nth-child(1) { left: 5%; } .unit.st-burn .u-stfx i:nth-child(2) { left: 36%; animation-delay: 0.3s; height: 55%; } .unit.st-burn .u-stfx i:nth-child(3) { left: 66%; animation-delay: 0.6s; }
+@keyframes fxEmber { from { transform: scaleY(0.7); opacity: 0.6; } to { transform: scaleY(1.1); opacity: 0.95; } }
+.unit.st-poison .u-stfx { background: linear-gradient(0deg, rgba(110,200,60,0.35), transparent 60%); }
+.unit.st-poison .u-stfx i { bottom: 8%; width: 6px; height: 6px; border-radius: 50%; background: #b8f08a; box-shadow: 0 0 4px #8be04e; animation: fxBubble 1.4s linear infinite; }
+.unit.st-poison .u-stfx i:nth-child(1) { left: 25%; } .unit.st-poison .u-stfx i:nth-child(2) { left: 55%; animation-delay: 0.5s; } .unit.st-poison .u-stfx i:nth-child(3) { left: 72%; animation-delay: 0.9s; }
+@keyframes fxBubble { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-50px); opacity: 0; } }
+.unit.st-shield .u-art { box-shadow: 0 0 0 2px rgba(170,215,255,0.8), 0 0 14px rgba(170,215,255,0.6); }
+.unit.st-taunt .u-art { box-shadow: 0 0 0 2px rgba(255,90,90,0.8), 0 0 14px rgba(255,90,90,0.5); }
+.unit.st-stun .u-art img { filter: brightness(0.75); }
+.u-stars { position: absolute; left: 0; right: 0; top: -12px; z-index: 6; text-align: center; font-size: 11px; letter-spacing: 3px; color: #ffe14d; text-shadow: 0 0 6px #ffb800; animation: fxOrbit 1.2s linear infinite; pointer-events: none; }
+@keyframes fxOrbit { 0% { transform: translateX(-6px) scaleX(1); } 50% { transform: translateX(6px) scaleX(-1); } 100% { transform: translateX(-6px) scaleX(1); } }
+
+.reduced-motion .fx-layer, .reduced-motion .u-stars { display: none; }

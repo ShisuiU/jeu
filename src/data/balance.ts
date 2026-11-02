@@ -52,6 +52,8 @@ export const BALANCE = {
     /** Chance d'obtenir un équipement après une victoire de campagne. */
     gearDropChance: 0.65,
   },
+  /** Recharge d'énergie contre cristaux : prix croissant, limitée par jour. */
+  energyRefill: { amount: 60, costs: [50, 100, 200] },
   starter: {
     gold: 20000,
     crystals: 300,

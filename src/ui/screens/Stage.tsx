@@ -10,6 +10,10 @@ import { heroTotalStats } from '../../game/heroStats';
 import { powerOf } from '../../game/stats';
 import { msToNextEnergy } from '../../game/energy';
 import { canStart, payMode, resolveMode, type BattleSpec } from '../../game/modes';
+import { canSweep, sweep, type SweepSummary } from '../../game/comfort';
+import { Modal } from '../components/common';
+import { GearCard } from '../components/GearCard';
+import { play } from '../../audio/sfx';
 import { formatDuration } from '../../core/time';
 import { Panel, Screen, fmt } from '../components/common';
 import { RewardView } from '../components/RewardView';
@@ -28,6 +32,8 @@ export function Prep({ spec }: { spec: BattleSpec }) {
   const info = resolveMode(save, spec);
   const start = canStart(save, spec);
   const [teamId, setTeamId] = useState(save.activeTeamId);
+  const [summary, setSummary] = useState<(SweepSummary & { count: number }) | null>(null);
+  const sweepOk = canSweep(save, spec);
   const team = save.teams.find((t) => t.id === teamId) ?? save.teams[0];
   const members = team.slots.map((u) => save.heroes.find((h) => h.uid === u));
   const power = members.reduce((a, h) => a + (h ? powerOf(heroTotalStats(save, h).total) : 0), 0);
@@ -44,6 +50,15 @@ export function Prep({ spec }: { spec: BattleSpec }) {
     if (team.id !== save.activeTeamId) setActiveTeam(team.id);
     replace({ name: 'battle', spec, teamId: team.id, seed: Date.now() });
   };
+
+  const doSweep = (count: number) => {
+    if (!count) return;
+    let r: SweepSummary | null = null;
+    mutate((d) => { r = sweep(d, spec, team.id, count, Date.now()); });
+    play('claim');
+    setSummary({ ...(r as unknown as SweepSummary), count });
+  };
+  const maxRuns = info.cost.kind === 'energy' && info.cost.amount > 0 ? Math.floor(save.energy.current / info.cost.amount) : 0;
 
   return (
     <Screen title={info.title}>
@@ -93,6 +108,33 @@ export function Prep({ spec }: { spec: BattleSpec }) {
       <button className="btn block" style={{ marginTop: 16, minHeight: 56, fontSize: 18 }} disabled={!start.ok || energyShort || !count} onClick={go}>
         Combattre {info.cost.kind === 'energy' && <><Icon.energy size={18} /> {info.cost.amount}</>}{info.cost.kind === 'key' && '· 1 clé'}{info.cost.kind === 'ticket' && '· 1 ticket'}<span className="shine" />
       </button>
+      {(spec.mode === 'campaign' || spec.mode === 'dungeon') && (
+        <Panel title="Balayage">
+          {sweepOk.ok ? (
+            <>
+              <p className="faint" style={{ marginTop: 0 }}>Rejoue instantanément ce combat avec l’équipe choisie (mêmes coûts, mêmes récompenses, résultat calculé par le moteur).</p>
+              <div className="row" style={{ gap: 6 }}>
+                {[1, 5, 10].map((n) => <button key={n} className="btn secondary small grow" disabled={maxRuns < 1 || !count} onClick={() => doSweep(Math.min(n, maxRuns))}>×{n}</button>)}
+                <button className="btn small grow" disabled={maxRuns < 1 || !count} onClick={() => doSweep(maxRuns)}>Max ({maxRuns})</button>
+              </div>
+            </>
+          ) : <p className="faint" style={{ margin: 0 }}>{sweepOk.reason}</p>}
+        </Panel>
+      )}
+      {summary && (
+        <Modal onClose={() => setSummary(null)}>
+          <h2>Balayage terminé</h2>
+          <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>{summary.wins} victoire(s) sur {summary.runs} combat(s){summary.stopReason ? ` · ${summary.stopReason}` : ''}</p>
+          <RewardView reward={summary.reward} />
+          {summary.gear.length > 0 && <div className="gear-grid" style={{ marginTop: 10 }}>{summary.gear.slice(0, 8).map((g) => <GearCard key={g.uid} g={g} />)}</div>}
+          {summary.gear.length > 8 && <p className="faint">+ {summary.gear.length - 8} autre(s) équipement(s)</p>}
+          {summary.levelUps.length > 0 && <p className="hint" style={{ marginTop: 10 }}>Niveau supérieur : {summary.levelUps.map((l) => `${HERO_BY_ID[l.heroId].name.split(' ')[0]} (${l.to})`).join(', ')}</p>}
+          <div className="row" style={{ gap: 8, marginTop: 12 }}>
+            <button className="btn secondary grow" onClick={() => setSummary(null)}>Fermer</button>
+            <button className="btn grow" disabled={maxRuns < 1} onClick={() => doSweep(Math.min(summary.count, maxRuns))}>Encore ×{Math.min(summary.count, Math.max(1, maxRuns))}</button>
+          </div>
+        </Modal>
+      )}
       {!start.ok && <p className="faint" style={{ textAlign: 'center', marginTop: 8 }}>{start.reason}</p>}
       {energyShort && <p className="faint" style={{ textAlign: 'center', marginTop: 8 }}>Énergie insuffisante ({save.energy.current}/{info.cost.amount}) · +1 dans {formatDuration(msToNextEnergy(save.energy, now))}</p>}
     </Screen>

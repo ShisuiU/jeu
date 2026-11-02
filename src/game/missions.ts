@@ -14,6 +14,7 @@ export function applyResets(s: SaveData, now: number): boolean {
     s.missions.daily = { counters: {}, claimed: [], bonus: false };
     s.worldBoss.keysUsed = 0;
     s.arena.ticketsUsed = 0;
+    s.shop.energyRefills = 0;
     changed = true;
   }
   if (s.resets.week !== w) {

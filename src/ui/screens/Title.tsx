@@ -1,17 +1,17 @@
 import { GAME_SUBTITLE, GAME_TITLE } from '../../data/lore';
-import { WorldScene, Particles } from '../art/Scene';
-import { heroArtUrl } from '../art/HeroArt';
-import { PaintedBackdrop } from '../art/BattleBackdrop';
+import { Particles } from '../art/Scene';
+import worldArt from '../../assets/title/world.webp';
 
-const KEY_ART = ['aldric', 'vaelshira', 'azhar', 'solenne', 'idris'];
-
+// ÉCRAN D'OUVERTURE — le Monde Cousu : forteresse de Valcrest, cité de bronze d'Akkar,
+// flèches de verre du Prisme, forêts de Sylvaran et failles de cendre, sous le Cœur d'Aeon brisé.
+// Animations : lent travelling de caméra, pulsation du Cœur, braises, apparition du logo.
 export function Title({ ready, onStart, error }: { ready: boolean; onStart: () => void; error?: string | null }) {
-  const art = heroArtUrl(KEY_ART[new Date().getDate() % KEY_ART.length], 'full');
   return (
     <button className="title-screen" onClick={() => ready && onStart()} aria-label="Commencer">
-      <div className="home-scene">
-        {art ? <PaintedBackdrop src={art} blur={0} dim={0.55} position="center top" /> : <WorldScene />}
-        <Particles count={18} />
+      <div className="title-art" aria-hidden>
+        <img src={worldArt} alt="" draggable={false} />
+        <div className="title-heart" />
+        <Particles count={22} />
         <div className="title-shade" />
       </div>
       <div className="logo">

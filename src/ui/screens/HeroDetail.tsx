@@ -80,13 +80,13 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
       {inst && tab === 'gear' && <HeroGear h={inst} />}
       {(tab === 'info' || !inst) && <>
 
-      <Panel title={inst ? 'Progression' : 'Non obtenu — statistiques de base'}>
+      <Panel title={inst ? 'Progression' : 'Non obtenu : statistiques de base'}>
         <div className="row between" style={{ marginBottom: 8 }}>
           <span>Niveau <b style={{ color: 'var(--gold-hi)' }}>{progress.level}</b> / {maxLv}</span>
           <span className="muted">Puissance <b style={{ color: 'var(--gold-hi)' }}>{fmt(powerOf(stats))}</b></span>
         </div>
         <div className="progress"><div style={{ width: `${inst && progress.level < maxLv ? (inst.xp / heroXpToNext(inst.level)) * 100 : 100}%` }} /></div>
-        {inst && <div className="faint" style={{ marginTop: 4 }}>{progress.level < maxLv ? `XP ${inst.xp} / ${heroXpToNext(inst.level)}` : 'Niveau maximum du rang atteint — augmentez le rang au Sanctuaire.'}</div>}
+        {inst && <div className="faint" style={{ marginTop: 4 }}>{progress.level < maxLv ? `XP ${inst.xp} / ${heroXpToNext(inst.level)}` : 'Niveau maximum du rang atteint. Augmentez le rang au Sanctuaire.'}</div>}
         <div className="row between wrap" style={{ marginTop: 10, fontSize: 13 }}>
           <span>Rang <b>{progress.rank}</b>/{BALANCE.hero.maxRank}</span>
           <span>Ascension <b>{progress.ascension}</b>/{BALANCE.hero.maxAscension}</span>
@@ -131,10 +131,10 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
       <Panel title="Histoire">
         <div className="lore"><p>{d.lore}</p></div>
         <div className="panel-title" style={{ marginTop: 14 }}>Faction</div>
-        <div className="lore"><p><b>{f.name}</b> — {f.synergy}</p></div>
+        <div className="lore"><p><b>{f.name}</b> : {f.synergy}</p></div>
         <div className="panel-title" style={{ marginTop: 14 }}>Apparence</div>
         <div className="lore"><p className="muted">{d.look}</p></div>
-        {!hasRealArt(d.id) && <p className="faint">Illustration définitive en cours de création — portrait provisoire affiché.</p>}
+        {!hasRealArt(d.id) && <p className="faint">Illustration définitive en cours de création, portrait provisoire affiché.</p>}
       </Panel>
 
       {inst && (

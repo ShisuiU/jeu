@@ -51,7 +51,7 @@ export function Settings() {
       </Panel>
       <Panel title="Application">
         <div className="setting-row">
-          <div className="grow"><b>Mode</b><div className="faint">{isStandalone() ? 'Installée sur l’écran d’accueil ✓' : 'Navigateur — installez le jeu pour une meilleure expérience'}</div></div>
+          <div className="grow"><b>Mode</b><div className="faint">{isStandalone() ? 'Installée sur l’écran d’accueil ✓' : 'Navigateur. Installez le jeu pour une meilleure expérience.'}</div></div>
         </div>
         {!isStandalone() && (
           <div className="hint">Sur iPhone : dans Safari, touchez <b>Partager</b> (carré avec flèche) puis <b>« Sur l’écran d’accueil »</b>. Le jeu s’ouvrira en plein écran et fonctionnera hors ligne. Une fois installé, vos données ne sont plus effacées automatiquement par Safari.</div>

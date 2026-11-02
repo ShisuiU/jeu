@@ -24,7 +24,7 @@ export const LORE: LoreEntry[] = [
     id: 'neant',
     title: 'Le Néant Silencieux',
     text: [
-      "Par les coutures du Monde Cousu, quelque chose s'infiltre. Ce n'est ni un démon ni une armée : c'est une absence. Le Néant Silencieux efface. Les villages touchés ne sont pas détruits — ils cessent d'avoir existé, et même les souvenirs s'en vont.",
+      "Par les coutures du Monde Cousu, quelque chose s'infiltre. Ce n'est ni un démon ni une armée : c'est une absence. Le Néant Silencieux efface. Les villages touchés ne sont pas détruits : ils cessent d'avoir existé, et même les souvenirs s'en vont.",
       "Ses serviteurs, les Effacés, sont des êtres de toutes les époques vidés de leur nom. Ils ne parlent pas. Ils avancent.",
     ],
   },
@@ -34,7 +34,7 @@ export const LORE: LoreEntry[] = [
     text: [
       "Lorsque le Cœur s'est brisé, ses éclats se sont logés dans certaines personnes, sans distinction d'époque ou de peuple. Un chevalier, une ingénieure du futur, un démon renégat, une étoile vivante.",
       "Ces Héritiers résistent à l'Effacement. Mieux : ensemble, leurs éclats résonnent. Seuls, ils ne sont que des survivants. Réunis, ils sont la seule force capable de recoudre le monde.",
-      "Tu es le Lien — celui ou celle dont l'éclat permet d'appeler les autres Héritiers à travers les failles. Ta mission : rassembler les Héritiers, reprendre les territoires au Néant et retrouver les fragments du Cœur d'Aeon.",
+      "Tu es le Lien, celui ou celle dont l'éclat permet d'appeler les autres Héritiers à travers les failles. Ta mission : rassembler les Héritiers, reprendre les territoires au Néant et retrouver les fragments du Cœur d'Aeon.",
     ],
   },
   {

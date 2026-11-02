@@ -7,13 +7,15 @@ import { chapterStars, isStageUnlocked, stageProgress } from '../../game/campaig
 import { claimableCount } from '../../game/missions';
 import { activeEvents } from '../../game/events';
 import { canClaimDaily } from '../../game/daily';
+import { canImprove } from '../../game/upgrade';
 import { HeroArt, hasRealArt } from '../art/HeroArt';
 import { WorldScene, Particles } from '../art/Scene';
 import { Icon } from '../art/Icons';
 import { TopBar } from '../components/TopBar';
 import { unreadMail } from './Mail';
 
-// ACCUEIL — l'illustration du chef d'équipe en plein écran, trois raccourcis, la campagne.
+// ACCUEIL — l'illustration du chef d'équipe en plein écran, les lieux (Sanctuaire, Forge),
+// trois raccourcis, la campagne.
 // Tout le reste est accessible par la barre du bas (Héros, Invoquer, Combats, Menu).
 export function Home() {
   const save = useGame((s) => s.save)!;
@@ -30,6 +32,12 @@ export function Home() {
     { label: 'Missions', icon: Icon.scroll, dot: claimableCount(save) > 0, go: () => push({ name: 'missions' }) },
     { label: 'Événements', icon: Icon.calendar, dot: activeEvents(now).length > 0, go: () => push({ name: 'events' }) },
     { label: 'Courrier', icon: Icon.mail, dot: unreadMail(save.flags) || canClaimDaily(save, now), go: () => push({ name: unreadMail(save.flags) ? 'mail' : 'daily' }) },
+  ];
+
+  const teamHeroes = team.slots.map((u) => save.heroes.find((h) => h.uid === u)).filter((h): h is NonNullable<typeof h> => !!h);
+  const places = [
+    { label: 'Sanctuaire', icon: Icon.temple, dot: teamHeroes.some((h) => canImprove(save, h)), go: () => push({ name: 'sanctuary' }) },
+    { label: 'Forge', icon: Icon.forge, dot: false, go: () => push({ name: 'gear' }) },
   ];
 
   return (
@@ -50,6 +58,16 @@ export function Home() {
             <s.icon size={22} />
             {s.dot && <span className="badge-dot" />}
             <span className="sc-label">{s.label}</span>
+          </button>
+        ))}
+      </div>
+
+      <div className="home-places">
+        {places.map((p) => (
+          <button key={p.label} className="sc-btn place" onClick={p.go} aria-label={p.label}>
+            <p.icon size={22} />
+            {p.dot && <span className="badge-dot" />}
+            <span className="sc-label">{p.label}</span>
           </button>
         ))}
       </div>

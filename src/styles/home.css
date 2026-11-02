@@ -96,3 +96,7 @@
 
 .title-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5,4,8,0.75) 0%, rgba(5,4,8,0.15) 30%, rgba(5,4,8,0.1) 55%, rgba(5,4,8,0.9) 88%); }
 .title-screen .logo { top: 14%; }
+
+/* Lieux (Sanctuaire, Forge) — colonne de gauche de l'accueil */
+.home-places { position: absolute; z-index: 3; left: 10px; top: calc(var(--sat) + 64px); display: flex; flex-direction: column; gap: 10px; }
+.home-places .sc-label { right: auto; left: 56px; }

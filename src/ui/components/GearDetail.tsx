@@ -8,8 +8,9 @@ import { Modal } from './common';
 import { CostView } from './Cost';
 import { GearCard, statText } from './GearCard';
 
-/** Fiche d'un équipement : statistiques, forge, verrou, démantèlement, équiper/retirer. */
-export function GearDetail({ gearUid, onClose, equipTo }: { gearUid: string; onClose: () => void; equipTo?: string }) {
+/** Fiche d'un équipement. À la Forge : renforcer, verrouiller, démanteler. Depuis un héros : équiper/retirer, et lien vers la Forge. */
+export function GearDetail({ gearUid, onClose, equipTo, place = 'hero' }: { gearUid: string; onClose: () => void; equipTo?: string; place?: 'forge' | 'hero' }) {
+  const push = useUI((s) => s.push);
   const save = useGame((s) => s.save)!;
   const mutate = useGame((s) => s.mutate);
   const toast = useUI((s) => s.toast);
@@ -44,11 +45,14 @@ export function GearDetail({ gearUid, onClose, equipTo }: { gearUid: string; onC
       {g.subs.length < 4 && <p className="faint">Nouvelle statistique secondaire aux niveaux 4, 8 et 12 (puis renforcement).</p>}
       <p className="faint">{owner ? `Équipé sur ${HERO_BY_ID[owner.heroId].name}` : 'Non équipé'}</p>
 
-      {g.level < GEAR_MAX_LEVEL && (
+      {place === 'forge' && g.level < GEAR_MAX_LEVEL && (
         <div className="upg-row">
           <div className="grow"><b>Améliorer</b> → +{g.level + 1}<div><CostView cost={up} save={save} /></div></div>
           <button className="btn small" onClick={doUpgrade}>Forger</button>
         </div>
+      )}
+      {place === 'hero' && g.level < GEAR_MAX_LEVEL && (
+        <button className="btn block" style={{ marginTop: 12 }} onClick={() => { onClose(); push({ name: 'gear', gearUid: g.uid }); }}>Renforcer à la Forge</button>
       )}
       <div className="row wrap" style={{ gap: 8, marginTop: 12 }}>
         {equipTo && g.heroUid !== equipTo && (
@@ -56,7 +60,7 @@ export function GearDetail({ gearUid, onClose, equipTo }: { gearUid: string; onC
         )}
         {owner && <button className="btn secondary grow" onClick={() => { mutate((s) => unequipGear(s, g.uid)); onClose(); }}>Retirer</button>}
         <button className="btn secondary grow" onClick={() => mutate((s) => { const x = s.equipment.find((y) => y.uid === g.uid); if (x) x.locked = !x.locked; })}>{g.locked ? 'Déverrouiller' : 'Verrouiller'}</button>
-        {!owner && !g.locked && (
+        {place === 'forge' && !owner && !g.locked && (
           <button className="btn danger grow" onClick={() => { mutate((s) => { dismantleGear(s, g.uid); }); toast(`Démantelé : +${dis.gold} or, +${dis.forgeOre} minerai.`, 'ok'); onClose(); }}>Démanteler</button>
         )}
       </div>

@@ -14,7 +14,8 @@ import { Icon } from '../art/Icons';
 import { heroXpToNext } from '../../game/progression';
 import { heroTotalStats } from '../../game/heroStats';
 import { summonWithFragments } from '../../game/summon';
-import { HeroUpgrade, HeroGear } from './HeroUpgrade';
+import { HeroGear } from './HeroUpgrade';
+import { canImprove } from '../../game/upgrade';
 import { useState } from 'react';
 
 const SLOT_LABEL = { basic: 'Attaque de base', special: 'Compétence spéciale', ultimate: 'Ultime', passive: 'Passif' } as const;
@@ -25,7 +26,8 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
   const toggleLock = useGame((s) => s.toggleHeroLock);
   const toast = useUI((s) => s.toast);
   const mutate = useGame((s) => s.mutate);
-  const [tab, setTab] = useState<'info' | 'upgrade' | 'gear'>('info');
+  const [tab, setTab] = useState<'info' | 'gear'>('info');
+  const push = useUI((s) => s.push);
   const d = HERO_BY_ID[heroId];
   const inst = uid ? save.heroes.find((h) => h.uid === uid) : undefined;
   const rar = RARITIES[d.rarity];
@@ -64,7 +66,6 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
       {inst && (
         <div className="seg" style={{ margin: '4px 0 12px' }}>
           <button className={tab === 'info' ? 'on' : ''} onClick={() => setTab('info')}>Infos</button>
-          <button className={tab === 'upgrade' ? 'on' : ''} onClick={() => setTab('upgrade')}>Améliorer</button>
           <button className={tab === 'gear' ? 'on' : ''} onClick={() => setTab('gear')}>Équipement</button>
         </div>
       )}
@@ -76,7 +77,6 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
           <p className="faint">Ce héros s’obtient aussi par les invocations ({rar.name}).</p>
         </Panel>
       )}
-      {inst && tab === 'upgrade' && <HeroUpgrade h={inst} />}
       {inst && tab === 'gear' && <HeroGear h={inst} />}
       {(tab === 'info' || !inst) && <>
 
@@ -86,13 +86,18 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
           <span className="muted">Puissance <b style={{ color: 'var(--gold-hi)' }}>{fmt(powerOf(stats))}</b></span>
         </div>
         <div className="progress"><div style={{ width: `${inst && progress.level < maxLv ? (inst.xp / heroXpToNext(inst.level)) * 100 : 100}%` }} /></div>
-        {inst && <div className="faint" style={{ marginTop: 4 }}>{progress.level < maxLv ? `XP ${inst.xp} / ${heroXpToNext(inst.level)}` : 'Niveau maximum du rang atteint — augmentez le rang (onglet Améliorer).'}</div>}
+        {inst && <div className="faint" style={{ marginTop: 4 }}>{progress.level < maxLv ? `XP ${inst.xp} / ${heroXpToNext(inst.level)}` : 'Niveau maximum du rang atteint — augmentez le rang au Sanctuaire.'}</div>}
         <div className="row between wrap" style={{ marginTop: 10, fontSize: 13 }}>
           <span>Rang <b>{progress.rank}</b>/{BALANCE.hero.maxRank}</span>
           <span>Ascension <b>{progress.ascension}</b>/{BALANCE.hero.maxAscension}</span>
           <span>Éveil <b>{progress.awaken}</b>/{BALANCE.hero.maxAwaken}</span>
         </div>
-        {inst && <p className="faint" style={{ marginTop: 10 }}>Le héros gagne de l’expérience en combattant ou avec des élixirs (onglet Améliorer). Fragments : {fragments}.</p>}
+        {inst && (
+          <button className="btn block sanct-cta" style={{ marginTop: 12 }} onClick={() => push({ name: 'sanctuary', uid: inst.uid })}>
+            <Icon.temple size={18} /> Améliorer au Sanctuaire
+            {canImprove(save, inst) && <span className="badge-dot" style={{ top: -3, right: -3 }} />}
+          </button>
+        )}
       </Panel>
 
       <Panel title="Statistiques">

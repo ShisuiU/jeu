@@ -20,7 +20,9 @@ import { ResourceIcon } from '../art/Icons';
 
 const SLOT_TAG = { basic: 'Base', special: 'Spéciale', ultimate: 'Ultime', passive: 'Passif' } as const;
 
-export function HeroUpgrade({ h }: { h: HeroInstance }) {
+export type UpgradeSection = 'level' | 'power' | 'skills';
+
+export function HeroUpgrade({ h, section }: { h: HeroInstance; section?: UpgradeSection }) {
   const save = useGame((s) => s.save)!;
   const mutate = useGame((s) => s.mutate);
   const toast = useUI((s) => s.toast);
@@ -43,8 +45,10 @@ export function HeroUpgrade({ h }: { h: HeroInstance }) {
   const asc = ascendCheck(save, h);
   const awk = awakenCheck(save, h);
 
+  const show = (x: UpgradeSection) => !section || section === x;
   return (
     <>
+      {show('level') && <>
       <Panel title="Niveau">
         <div className="row between"><span>Niveau <b style={{ color: 'var(--gold-hi)' }}>{h.level}</b> / {cap}</span><span className="faint">{h.level < cap ? `XP ${h.xp} / ${heroXpToNext(h.level)}` : 'Plafond du rang'}</span></div>
         <div className="progress" style={{ margin: '6px 0 10px' }}><div style={{ width: `${h.level < cap ? (h.xp / heroXpToNext(h.level)) * 100 : 100}%` }} /></div>
@@ -62,6 +66,8 @@ export function HeroUpgrade({ h }: { h: HeroInstance }) {
         <UpgradeRow check={rank} label={h.rank < BALANCE.hero.maxRank ? `Passer au rang ${h.rank + 1}` : 'Rang maximum'} onClick={() => run((s) => rankUp(s, h.uid), `Rang ${h.rank + 1} atteint ! Niveau max : ${maxLevelForRank(h.rank + 1)}.`)} save={save} heroId={h.heroId} />
       </Panel>
 
+      </>}
+      {show('power') && <>
       <Panel title={`Ascension ${h.ascension} / ${BALANCE.hero.maxAscension}`}>
         <p className="faint" style={{ marginTop: 0 }}>+{Math.round(BALANCE.hero.ascensionBonus * 100)} % aux stats, +2 VIT, +1 % critique, +3 PRÉ et RÉS par palier.</p>
         <UpgradeRow check={asc} label={h.ascension < BALANCE.hero.maxAscension ? `Ascension ${h.ascension + 1}` : 'Ascension maximale'} onClick={() => run((s) => ascend(s, h.uid), `Ascension ${h.ascension + 1} !`)} save={save} heroId={h.heroId} />
@@ -72,7 +78,8 @@ export function HeroUpgrade({ h }: { h: HeroInstance }) {
         <UpgradeRow check={awk} label={h.awaken < BALANCE.hero.maxAwaken ? `Éveil ${h.awaken + 1}` : 'Éveil maximal'} onClick={() => run((s) => awaken(s, h.uid), `Éveil ${h.awaken + 1} !`)} save={save} heroId={h.heroId} />
       </Panel>
 
-      <Panel title="Compétences">
+      </>}
+      {show('skills') && <Panel title="Compétences">
         {d.skills.map((sk) => {
           const lv = h.skillLevels[sk.id] ?? 1;
           const max = sk.upgrades.length + 1;
@@ -88,7 +95,7 @@ export function HeroUpgrade({ h }: { h: HeroInstance }) {
             </div>
           );
         })}
-      </Panel>
+      </Panel>}
     </>
   );
 }

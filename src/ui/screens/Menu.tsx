@@ -22,6 +22,7 @@ export function Menu() {
     { title: 'Collection', items: [
       { label: 'Équipes', icon: 'team', route: { name: 'team' } },
       { label: 'Sac', icon: 'bag', route: { name: 'inventory' } },
+      { label: 'Sanctuaire', icon: 'temple', route: { name: 'sanctuary' } },
       { label: 'Forge', icon: 'forge', route: { name: 'gear' } },
     ] },
     { title: 'Univers', items: [{ label: 'Codex', icon: 'book', route: { name: 'codex' } }] },

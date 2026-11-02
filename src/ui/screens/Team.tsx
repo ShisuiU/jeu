@@ -65,7 +65,7 @@ export function Team() {
       </Panel>
 
       {picking !== null && (
-        <Panel title={`Emplacement ${picking + 1} — choisir un héros`}>
+        <Panel title={`Emplacement ${picking + 1} : choisir un héros`}>
           <div className="hero-grid">
             {save.heroes.map((h) => (
               <HeroCard key={h.uid} heroId={h.heroId} level={h.level} selected={team.slots[picking] === h.uid}

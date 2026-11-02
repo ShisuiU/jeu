@@ -29,7 +29,7 @@ export const FACTIONS: Record<FactionId, FactionDef> = {
     short: 'Cendre',
     motto: '« Tout brûle. Seul le pacte demeure. »',
     description:
-      "Par la plus profonde des failles s'est déversée la Légion : seigneurs infernaux, damnés enchaînés et mortels ayant vendu leur nom. Certains de ses champions ont rompu avec leurs maîtres et combattent désormais le Néant — pour leurs propres raisons.",
+      "Par la plus profonde des failles s'est déversée la Légion : seigneurs infernaux, damnés enchaînés et mortels ayant vendu leur nom. Certains de ses champions ont rompu avec leurs maîtres et combattent désormais le Néant, pour leurs propres raisons.",
     ambiance: 'Obsidienne fendue, braises, chaînes, cuir brûlé, cornes et fumée soufrée.',
     colors: { primary: '#5a1405', secondary: '#ff6a1f', glow: '#ffb35c' },
     synergy: 'Pacte : les héros de Cendre infligent plus de dégâts quand leurs PV sont bas.',
@@ -62,7 +62,7 @@ export const FACTIONS: Record<FactionId, FactionDef> = {
     short: 'Akkar',
     motto: '« Le désert garde les noms des braves. »',
     description:
-      "Héritiers de civilisations antiques — cités de briques, rois-soleils et légions de bronze — les clans d'Akkar errent sur les Terres Dévastées. Ils combinent armes antiques et technologie récupérée dans les ruines des autres époques.",
+      "Héritiers de civilisations antiques (cités de briques, rois-soleils et légions de bronze), les clans d'Akkar errent sur les Terres Dévastées. Ils combinent armes antiques et technologie récupérée dans les ruines des autres époques.",
     ambiance: 'Bronze, sable rouge, peintures de guerre, étendards en lambeaux, métal récupéré.',
     colors: { primary: '#6b3a12', secondary: '#e3a457', glow: '#ffd59a' },
     synergy: 'Fureur : chaque ennemi vaincu augmente l’attaque des héros d’Akkar.',

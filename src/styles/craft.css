@@ -1,0 +1,112 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   STYLE « MÉTAL FORGÉ » — surcharge finale du style des blocs.
+   Principes : coins presque droits ou biseautés (pas de grands arrondis ni de pilules),
+   matière sombre légèrement granuleuse, un seul filet de contour, équerres dorées aux
+   coins plutôt que des cadres dorés et des halos lumineux partout.
+   ───────────────────────────────────────────────────────────────────────────── */
+:root {
+  --radius: 4px;
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.07 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+  --stone: #15121b;
+  --stone-2: #1c1823;
+  --edge: #2e2836;
+  --edge-hi: #4a4152;
+  --brass: #b8955a;
+  /* Équerres dorées aux quatre coins (8 traits de 9 px). */
+  --corners:
+    linear-gradient(var(--brass), var(--brass)) left top / 9px 1px no-repeat,
+    linear-gradient(var(--brass), var(--brass)) left top / 1px 9px no-repeat,
+    linear-gradient(var(--brass), var(--brass)) right top / 9px 1px no-repeat,
+    linear-gradient(var(--brass), var(--brass)) right top / 1px 9px no-repeat,
+    linear-gradient(var(--brass), var(--brass)) left bottom / 9px 1px no-repeat,
+    linear-gradient(var(--brass), var(--brass)) left bottom / 1px 9px no-repeat,
+    linear-gradient(var(--brass), var(--brass)) right bottom / 9px 1px no-repeat,
+    linear-gradient(var(--brass), var(--brass)) right bottom / 1px 9px no-repeat;
+  /* Biseau de 6 px pour boutons et plaques. */
+  --bevel: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px);
+}
+
+/* ─── Panneaux ─── */
+.panel, .modal, .upg-line, .stage-node, .mode-card, .res-cell, .forge-res-box {
+  background-color: var(--stone);
+  background-image: var(--grain);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.035), 0 2px 0 rgba(0,0,0,0.5);
+}
+.panel::before, .modal::before {
+  content: ''; position: absolute; inset: -1px; pointer-events: none; background: var(--corners); opacity: 0.85;
+}
+.modal { position: relative; border-color: var(--edge-hi); box-shadow: 0 20px 60px rgba(0,0,0,0.7); }
+.panel-title { letter-spacing: 0.05em; text-transform: none; font-size: 15px; color: var(--gold-hi); padding-bottom: 7px; border-bottom: 1px solid var(--edge); }
+.panel-title::after { display: none; }
+.hint { border-radius: var(--radius); background: rgba(154,107,255,0.06); border-color: rgba(154,107,255,0.2); }
+
+/* ─── Boutons : plaques biseautées, sans reflet animé ni halo ─── */
+.btn {
+  border-radius: 0; clip-path: var(--bevel); border: 0;
+  background: linear-gradient(180deg, #d8b871, #b18947);
+  box-shadow: inset 0 1px 0 rgba(255,245,215,0.55), inset 0 -2px 0 rgba(60,40,12,0.55);
+  letter-spacing: 0.04em;
+}
+.btn:active { transform: translateY(1px); box-shadow: inset 0 1px 0 rgba(255,245,215,0.3), inset 0 -1px 0 rgba(60,40,12,0.55); }
+.btn.secondary { background: var(--stone-2); background-image: var(--grain); box-shadow: inset 0 0 0 1px var(--edge-hi), inset 0 -2px 0 rgba(0,0,0,0.5); }
+.btn.danger { background: linear-gradient(180deg, #b8423f, #842530); box-shadow: inset 0 1px 0 rgba(255,200,200,0.35), inset 0 -2px 0 rgba(40,5,10,0.6); }
+.btn .shine { display: none; }
+.btn .badge-dot { top: 5px !important; right: 9px !important; }
+.back-btn { border-radius: var(--radius); border-color: var(--edge); background: var(--stone-2); }
+
+/* ─── Étiquettes : rectangles, plus de pilules ─── */
+.chip { border-radius: 3px; background: rgba(255,255,255,0.04); border-color: var(--edge); }
+.chip.active { background: rgba(184,149,90,0.16); border-color: var(--brass); }
+.tag, .rarity-tag { border-radius: 3px; }
+
+/* ─── Onglets : soulignés ─── */
+.seg { background: transparent; border: 0; border-bottom: 1px solid var(--edge); border-radius: 0; padding: 0; }
+.seg button { border-radius: 0; height: 36px; position: relative; }
+.seg button.on { background: transparent; color: var(--gold-hi); }
+.seg button.on::after { content: ''; position: absolute; left: 18%; right: 18%; bottom: -1px; height: 2px; background: var(--brass); }
+
+/* ─── En-tête et barre du bas : sobres ─── */
+.screen-header { background: rgba(9,8,13,0.96); border-bottom-color: var(--edge); }
+.screen-header h1 { text-shadow: none; }
+.nav-item.active::after { top: 0; width: 26px; height: 2px; border-radius: 0; background: var(--brass); }
+.bottom-nav { border-top-color: var(--edge); }
+.bottom-nav::before { display: none; }
+
+/* ─── Cartes ─── */
+.hero-card { border-radius: 3px; border-width: 1px; box-shadow: 0 2px 0 rgba(0,0,0,0.6); }
+.hero-card.mythic, .hero-card.legendary { animation: none; }
+.hero-card .lvl, .u-lvl, .gc-lvl, .ss-lv { border-radius: 2px; }
+.gear-card { border-radius: 3px; box-shadow: none; }
+.menu-tile { border-radius: var(--radius); background-color: var(--stone); background-image: var(--grain); border: 1px solid var(--edge); box-shadow: inset 0 1px 0 rgba(255,255,255,0.035); }
+.menu-tile svg { color: var(--brass); }
+.combat-card { border-radius: var(--radius); box-shadow: none; }
+.combat-card::after { content: ''; position: absolute; inset: -1px; pointer-events: none; background: var(--corners); opacity: 0.7; }
+.chapter-card, .mode-hero { border-radius: var(--radius); box-shadow: none; }
+.stage-node { border-radius: var(--radius); }
+.stage-node .sn-idx { border-radius: 2px; }
+.ss-item, .sf-art, .sh-art { border-radius: 3px; }
+.ss-item.on { box-shadow: none; transform: none; }
+.ss-item > :first-child { border-radius: 2px; }
+.sf-art { box-shadow: 0 8px 24px rgba(0,0,0,0.6); }
+.ul-ic { border-radius: 3px; background: rgba(0,0,0,0.3); box-shadow: inset 0 0 0 1px var(--edge); }
+.upg-line { backdrop-filter: none; -webkit-backdrop-filter: none; background-color: rgba(21,18,27,0.94); }
+
+/* ─── Accueil ─── */
+.sc-btn { border-radius: var(--radius); background: rgba(12,10,16,0.78); border-color: var(--edge-hi); box-shadow: none; }
+.campaign-cta { border-radius: 0; clip-path: var(--bevel); border: 0; box-shadow: inset 0 0 0 1px var(--brass); }
+.campaign-cta::before { display: none; }
+
+/* ─── Messages ─── */
+.toast { border-radius: var(--radius); border-color: var(--edge-hi); background: rgba(16,13,21,0.97); }
+.modal-backdrop { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(3,2,6,0.8); }
+
+/* ─── Combat ─── */
+.unit .u-art { border-radius: 3px; }
+.skill-info { border-radius: var(--radius); background-color: rgba(16,13,21,0.95); border-color: var(--edge); }
+
+/* ─── Invocation ─── */
+.banner { border-radius: var(--radius); box-shadow: inset 0 0 50px rgba(0,0,0,0.6); }
+.banner::after { content: ''; position: absolute; inset: -1px; pointer-events: none; background: var(--corners); opacity: 0.8; }
+.banner-info h2 { text-shadow: 0 2px 6px #000; }

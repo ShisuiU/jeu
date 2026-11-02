@@ -10,6 +10,7 @@ import './styles/global.css';
 import './styles/home.css';
 import './styles/battle.css';
 import './styles/phase3.css';
+import './styles/craft.css';
 import App from './App';
 import { setupPWA } from './pwa';
 

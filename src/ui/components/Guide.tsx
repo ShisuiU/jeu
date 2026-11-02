@@ -7,7 +7,7 @@ import { Icon } from '../art/Icons';
 // GUIDE DE DÉMARRAGE — quelques écrans au premier lancement (relançable depuis les paramètres).
 const STEPS: { icon: keyof typeof Icon; title: string; text: string }[] = [
   { icon: 'portal', title: 'Bienvenue, Lien', text: 'Le Cœur d’Aeon s’est brisé et les époques se sont mélangées. Le Néant efface le Monde Cousu. Vous seul pouvez appeler les Héritiers à travers les failles.' },
-  { icon: 'sword', title: 'Combattre', text: 'Touchez CAMPAGNE sur l’accueil. En combat, choisissez une compétence puis touchez un ennemi — ou activez AUTO et accélérez avec ×2 / ×3. Chaque combat coûte de l’énergie, qui se recharge même jeu fermé.' },
+  { icon: 'sword', title: 'Combattre', text: 'Touchez CAMPAGNE sur l’accueil. En combat, choisissez une compétence puis touchez un ennemi. Vous pouvez aussi activer AUTO et accélérer avec ×2 / ×3. Chaque combat coûte de l’énergie, qui se recharge même jeu fermé.' },
   { icon: 'team', title: 'Votre équipe', text: '5 héros : 3 en première ligne (exposés), 2 en seconde ligne (protégés). Un défenseur devant, un soigneur derrière. Le chef donne un bonus à toute l’équipe.' },
   { icon: 'heroes', title: 'Progresser', text: 'Invoquez de nouveaux héros, puis améliorez-les depuis leur fiche : élixirs, rang, ascension, compétences et équipement. Les doublons deviennent des fragments.' },
   { icon: 'scroll', title: 'Chaque jour', text: 'Récompense de connexion, missions, donjons pour les ressources, Tour des Âges, boss mondial (3 clés) et arène (5 tickets). Quinze minutes suffisent ; une heure, c’est encore mieux.' },

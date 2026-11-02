@@ -132,7 +132,7 @@ const CH1: StageDef[] = [
     before: [
       { speaker: 'narrator', text: 'Sur la place du beffroi, une silhouette immense attend, sa cloche de bronze à la main. Elle n’a pas de visage. Elle n’en a plus besoin.' },
       { speaker: 'herald', text: '…………' },
-      { speaker: 'aldric', text: 'Il n’y a plus rien à lui dire. Héritiers — avec moi !' },
+      { speaker: 'aldric', text: 'Il n’y a plus rien à lui dire. Héritiers, avec moi !' },
     ],
     after: [
       { speaker: 'narrator', text: 'La cloche se brise. Le silence se déchire, et le vent revient sur les remparts.' },

@@ -173,3 +173,40 @@ export function playDot(status: StatusId) {
   if (!out()) return;
   if (status === 'poison') bubbles(2); else crackle(5, 0.2);
 }
+
+// ─── Invocation : l'éclat se charge, se brise, la faille s'ouvre, l'Héritier en sort ───
+/** Éclat qui vibre et se fissure (≈ 1,1 s). */
+export function playShardCharge() {
+  if (!out()) return;
+  osc('sine', 220, 440, { dur: 1.1, gain: 0.12, attack: 0.9 });
+  osc('triangle', 660, 1320, { dur: 1.1, gain: 0.05, attack: 0.9 }, 7);
+  [0.25, 0.5, 0.7, 0.85, 0.95].forEach((t) => noise('highpass', rnd(3500, 6500), null, { at: t, dur: 0.04, gain: 0.25 }));
+}
+/** Éclat qui vole en morceaux. */
+export function playShatter() {
+  if (!out()) return;
+  noise('highpass', 7000, 2500, { dur: 0.5, gain: 0.45 });
+  chimes([3520, 2960, 4186, 2637, 3951], 0.03, 0.4, 0.08);
+  osc('sine', 120, 35, { dur: 0.6, gain: 0.55 });
+}
+/** La faille se déchire ; plus la rareté est haute, plus l'accord monte et dure. */
+export function playRiftOpen(order: number) {
+  if (!out()) return;
+  noise('bandpass', 300, 3000, { dur: 0.9, gain: 0.35, attack: 0.5 }, 0.8);
+  osc('sawtooth', 55, 45, { dur: 1.2, gain: 0.08, attack: 0.3 });
+  const chord = order >= 6 ? [220, 277, 330, 440, 554] : order >= 5 ? [262, 330, 392, 523, 659] : order >= 4 ? [233, 294, 349, 466] : [196, 247, 294];
+  chord.forEach((f, i) => osc('sine', f, null, { at: 0.35 + i * 0.07, dur: 1.4 + order * 0.15, gain: 0.07 + order * 0.008, attack: 0.15 }));
+  if (order >= 5) { gong(0.3, 0.25); sparkle(10, 0.5); }
+}
+/** L'Héritier franchit la faille. */
+export function playEmerge(order: number) {
+  if (!out()) return;
+  whoosh(300, 1800, 0.45, 0.3);
+  chimes(order >= 5 ? [784, 988, 1175, 1568] : [659, 784, 988], 0.07, 0.6, 0.09, 0.2);
+}
+/** Une carte sort de la faille (invocation ×10). */
+export function playCardOut(order: number) {
+  if (!out()) return;
+  whoosh(800, 2400, 0.12, 0.18);
+  if (order >= 4) osc('sine', order >= 5 ? 1046 : 880, null, { at: 0.05, dur: 0.3, gain: 0.08 });
+}

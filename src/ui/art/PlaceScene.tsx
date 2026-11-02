@@ -12,9 +12,11 @@ for (const [path, url] of Object.entries(files)) {
 
 export type PlaceId = 'sanctuary' | 'forge';
 
+const FOCUS: Record<PlaceId, string> = { sanctuary: '50% 55%', forge: '55% 62%' };
+
 export const PlaceScene = memo(function PlaceScene({ place }: { place: PlaceId }) {
   const art = PLACE_ART[place];
-  if (art) return <img className="place-img" src={art} alt="" draggable={false} />;
+  if (art) return <img className="place-img" src={art} alt="" draggable={false} style={{ objectPosition: FOCUS[place] }} />;
   return place === 'forge' ? <ForgeSvg /> : <SanctuarySvg />;
 });
 
@@ -107,6 +109,17 @@ export function PlaceBanner({ place, title, subtitle }: { place: PlaceId; title:
         <div className="place-title">{title}</div>
         <div className="place-sub">{subtitle}</div>
       </div>
+    </div>
+  );
+}
+
+/** Fond d'écran d'un lieu : l'illustration floutée et assombrie derrière tout l'écran. */
+export function PlaceAmbient({ place }: { place: PlaceId }) {
+  const art = PLACE_ART[place];
+  if (!art) return <div className="bg-ambient" />;
+  return (
+    <div className="place-ambient" aria-hidden>
+      <img src={art} alt="" draggable={false} />
     </div>
   );
 }

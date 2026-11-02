@@ -226,19 +226,29 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
         </div>
       </div>
 
-      <div className="field enemy-field">
-        <div className="frow back">{row('enemy', true).map(renderUnit)}</div>
-        <div className="frow">{row('enemy', false).map(renderUnit)}</div>
-      </div>
+      {(() => {
+        // Taille des cartes selon le nombre réel de rangées (2 à 4) : jamais de chevauchement.
+        const eb = row('enemy', true), ef = row('enemy', false), af = row('ally', false), ab = row('ally', true);
+        const eRows = (eb.length ? 1 : 0) + (ef.length ? 1 : 0) || 1;
+        const aRows = (ab.length ? 1 : 0) + (af.length ? 1 : 0) || 1;
+        const bossBonus = side('enemy').some((u) => u.isBoss) ? 0.25 : 0;
+        return (
+          <div className="fields" style={{ ['--rows' as string]: eRows + aRows + bossBonus }}>
+            <div className="field enemy-field" style={{ flexGrow: eRows + bossBonus }}>
+              {eb.length > 0 && <div className="frow back">{eb.map(renderUnit)}</div>}
+              {ef.length > 0 && <div className="frow">{ef.map(renderUnit)}</div>}
+            </div>
+            <div className="field ally-field" style={{ flexGrow: aRows }}>
+              {af.length > 0 && <div className="frow">{af.map(renderUnit)}</div>}
+              {ab.length > 0 && <div className="frow back">{ab.map(renderUnit)}</div>}
+            </div>
+          </div>
+        );
+      })()}
 
       {ult && <div className={`ult-overlay ${ult}`} />}
       {wave && <div key={wave.id} className={`field-wave ${wave.side}`} style={{ ['--vc' as string]: wave.color }} onAnimationEnd={() => setWave(null)} />}
       {banner && <div className={`skill-banner ${banner.side} ${ult ? 'ult' : ''}`} key={banner.text + banner.side}>{banner.text}</div>}
-
-      <div className="field ally-field">
-        <div className="frow">{row('ally', false).map(renderUnit)}</div>
-        <div className="frow back">{row('ally', true).map(renderUnit)}</div>
-      </div>
 
       <div className="battle-controls">
         {awaiting && active && selSkill ? (
@@ -355,13 +365,14 @@ function UnitView({ u, vfx, active, acting, hit, targetable, popups, onClick }: 
   const sh = Math.min(1, shieldOf(u) / u.base.hp);
   return (
     <button className={`unit ${u.side} ${u.alive ? '' : 'dead'} ${active ? 'active' : ''} ${acting ? 'acting' : ''} ${hit ? 'hit' : ''} ${targetable ? 'targetable' : ''} ${u.isBoss ? 'boss' : ''}`} onClick={onClick}>
-      <div className="u-art">{u.kind === 'hero' ? <HeroArt heroId={u.refId} /> : <EnemyArt enemyId={u.refId} />}<span className="u-lvl">{u.level}</span><span className="u-name">{shortName(u.name)}</span></div>
+      <div className="u-art">{u.kind === 'hero' ? <HeroArt heroId={u.refId} /> : <EnemyArt enemyId={u.refId} />}<span className="u-lvl">{u.level}</span><span className="u-name">{shortName(u.name)}</span>
+        <div className="u-status">
+          {[...new Map(u.statuses.map((st) => [st.status, st])).values()].slice(0, 3).map((st) => <span key={st.uid} title={STATUS_INFO[st.status].name} style={{ background: STATUS_INFO[st.status].color }} />)}{new Set(u.statuses.map((x) => x.status)).size > 3 && <em>+</em>}
+        </div>
+      </div>
       <div className="u-bars">
         <div className="u-hp"><div style={{ width: `${hpPct(u) * 100}%` }} />{sh > 0 && <div className="u-sh" style={{ width: `${sh * 100}%` }} />}</div>
         <div className="u-tm"><div style={{ width: `${Math.min(100, u.tm / 10)}%` }} /></div>
-      </div>
-      <div className="u-status">
-        {[...new Map(u.statuses.map((st) => [st.status, st])).values()].slice(0, 3).map((st) => <span key={st.uid} title={STATUS_INFO[st.status].name} style={{ background: STATUS_INFO[st.status].color }} />)}{new Set(u.statuses.map((x) => x.status)).size > 3 && <em>+</em>}
       </div>
       {vfx && <span key={vfx.id} className={`vfx ${vfx.cls}`} style={{ ['--vc' as string]: vfx.color }} />}
       {popups.map((p) => <span key={p.id} className={`popup ${p.cls}`}>{p.text}</span>)}

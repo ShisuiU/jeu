@@ -4,12 +4,12 @@ import { Icon } from '../art/Icons';
 import { RARITIES } from '../../data/rarities';
 import type { RarityId } from '../../data/types';
 
-export function Screen({ title, children, right, noBack }: { title: string; children: ReactNode; right?: ReactNode; noBack?: boolean }) {
+export function Screen({ title, children, right, noBack, bg }: { title: string; children: ReactNode; right?: ReactNode; noBack?: boolean; bg?: ReactNode }) {
   const back = useUI((s) => s.back);
   const depth = useUI((s) => s.stack.length);
   return (
     <div className="screen">
-      <div className="bg-ambient" />
+      {bg ?? <div className="bg-ambient" />}
       <header className="screen-header">
         {!noBack && depth > 1 && <button className="back-btn" onClick={back} aria-label="Retour"><Icon.back /></button>}
         <h1>{title}</h1>

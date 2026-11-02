@@ -8,6 +8,7 @@ import { RARITIES } from '../../data/rarities';
 import { powerOf } from '../../game/stats';
 import { Panel, Screen, fmt } from '../components/common';
 import { HeroCard } from '../components/HeroCard';
+import { recommendTeam } from '../../game/comfort';
 
 // Formation : 3 héros en première ligne (exposés), 2 en seconde ligne (protégés).
 // Le moteur de combat (phase 2) utilisera ces positions pour le ciblage.
@@ -54,12 +55,13 @@ export function Team() {
         <div className="formation">
           {[3, 4].map((i) => renderSlot(i, true))}
         </div>
-        <div className="row" style={{ marginTop: 12, gap: 8 }}>
+        <div className="row wrap" style={{ marginTop: 12, gap: 8 }}>
           {team.id === save.activeTeamId
             ? <span className="chip active">Équipe active</span>
             : <button className="btn small" onClick={() => { setActiveTeam(team.id); toast(`« ${team.name} » est l’équipe active.`, 'ok'); }}>Définir comme active</button>}
           {leaderDef && <span className="chip">Chef : {leaderDef.name}</span>}
         </div>
+        <button className="btn secondary small block" style={{ marginTop: 10 }} onClick={() => { const r = recommendTeam(save); useGame.getState().mutate((s) => { const t = s.teams.find((x) => x.id === team.id); if (t) { t.slots = r.slots; t.leader = r.leader; } }); toast('Équipe recommandée appliquée.', 'ok'); setPicking(null); }}>Composer l’équipe recommandée</button>
       </Panel>
 
       {picking !== null && (

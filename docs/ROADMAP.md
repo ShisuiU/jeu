@@ -61,6 +61,13 @@
 - Un décor par région (combat, donjons, tour, boss mondial), sélecteur de chapitre
 - Récompenses de progression par chapitre ; puissance des ennemis calibrée par simulation et testée
 
+## ✅ Version 1.2.0 — Confort de jeu
+
+- Balayage : rejouer instantanément (×1, ×5, ×10, max) un niveau de campagne à 3 étoiles ou un étage de donjon terminé — mêmes coûts, mêmes récompenses, résultat calculé par le moteur
+- Recharge d'énergie contre cristaux (+60, 3 fois par jour : 50 / 100 / 200 cristaux)
+- « Équiper le meilleur » sur la fiche d'un héros (n'emprunte jamais l'équipement d'un autre héros)
+- « Composer l'équipe recommandée » (défenseur devant, soigneur derrière, meilleure aura de chef)
+
 ## Suites possibles
 
 - **Illustrations définitives** des 15 héros et des ennemis (le pipeline est prêt : déposer les images dans `src/assets/heroes/<id>/`)

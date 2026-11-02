@@ -96,6 +96,7 @@ export interface SaveData {
   arena: { rating: number; wins: number; losses: number; ticketsUsed: number; opponents: ArenaOpponent[] };
   worldBoss: { keysUsed: number; best: Record<string, number> };
   events: Record<string, { counters: Record<string, number>; claimed: string[]; challengeDone: boolean }>;
+  shop: { energyRefills: number };
 }
 
 export interface ArenaOpponent {
@@ -163,5 +164,6 @@ export function createNewSave(now: number = Date.now()): SaveData {
     arena: { rating: 1000, wins: 0, losses: 0, ticketsUsed: 0, opponents: [] },
     worldBoss: { keysUsed: 0, best: {} },
     events: {},
+    shop: { energyRefills: 0 },
   };
 }

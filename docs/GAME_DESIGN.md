@@ -74,6 +74,7 @@ Difficultés : Normal, Difficile, Expert, Cauchemar (ennemis plus forts, nouveau
 - **Économie** : or, énergie (1 / 4 min, max 120), cristaux, éclats d'invocation (terne, Aeon,
   primordial, faille), fragments de héros, élixirs d'XP, grimoires, sceaux de rang, potions
   d'ascension (3 tailles), minerai de forge, essence d'éveil. Constantes dans `data/balance.ts`.
+- **Confort** : balayage des niveaux maîtrisés, recharge d'énergie contre cristaux (3/jour), équipement automatique, équipe recommandée (`game/comfort.ts`).
 - **Quotidien** : cycle de connexion de 28 jours sans pénalité en cas d'absence ; missions, défis
   et événements en phase 4.
 - **Invocations** : données dans `data/summons.ts`.

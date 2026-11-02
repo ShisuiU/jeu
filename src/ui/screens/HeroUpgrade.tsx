@@ -10,6 +10,7 @@ import { heroXpToNext } from '../../game/progression';
 import { ascend, ascendCheck, awaken, awakenCheck, elixirsToCap, rankUp, rankUpCheck, skillCheck, upgradeSkill, useElixirs as applyElixirs, type Check } from '../../game/upgrade';
 import { heroGear } from '../../game/heroStats';
 import { gearBonus } from '../../game/gear';
+import { autoEquip } from '../../game/comfort';
 import { play } from '../../audio/sfx';
 import { Modal, Panel, fmt } from '../components/common';
 import { CostView } from '../components/Cost';
@@ -109,6 +110,7 @@ function UpgradeRow({ check, label, onClick, save, heroId }: { check: Check; lab
 export function HeroGear({ h }: { h: HeroInstance }) {
   const save = useGame((s) => s.save)!;
   const mutate = useGame((s) => s.mutate);
+  const toast = useUI((s) => s.toast);
   const [pick, setPick] = useState<string | null>(null);
   const [open, setOpen] = useState<string | null>(null);
   const items = heroGear(save, h.uid);
@@ -124,7 +126,10 @@ export function HeroGear({ h }: { h: HeroInstance }) {
             return g ? <GearCard key={s.id} g={g} onClick={() => setOpen(g.uid)} /> : <GearSlotEmpty key={s.id} slot={s.id} onClick={() => setPick(s.id)} />;
           })}
         </div>
-        {items.length > 0 && <button className="btn secondary small block" style={{ marginTop: 10 }} onClick={() => mutate((s) => { s.equipment.forEach((g) => { if (g.heroUid === h.uid) g.heroUid = null; }); })}>Tout retirer</button>}
+        <div className="row" style={{ gap: 8, marginTop: 10 }}>
+          <button className="btn small grow" onClick={() => { let n = 0; mutate((s) => { n = autoEquip(s, h.uid); }); toast(n ? `${n} objet(s) équipé(s).` : 'Aucun objet libre ne ferait mieux.', n ? 'ok' : 'info'); }}>Équiper le meilleur</button>
+          {items.length > 0 && <button className="btn secondary small grow" onClick={() => mutate((s) => { s.equipment.forEach((g) => { if (g.heroUid === h.uid) g.heroUid = null; }); })}>Tout retirer</button>}
+        </div>
       </Panel>
       <Panel title="Ensembles">
         {bonus.sets.length === 0 && <p className="faint">Aucun ensemble. Équipez plusieurs pièces du même ensemble pour activer son bonus.</p>}

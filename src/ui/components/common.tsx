@@ -53,6 +53,25 @@ export function Disclosure({ title, summary, children, defaultOpen = false }: { 
   );
 }
 
+/** Petit bouton « i » : l'explication n'apparaît que si on la demande. */
+export function InfoButton({ title, children }: { title: string; children: ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button className="info-btn" aria-label={`Aide : ${title}`} onClick={(e) => { e.stopPropagation(); setOpen(true); }}>i</button>
+      {open && (
+        <div className="modal-backdrop" onClick={() => setOpen(false)}>
+          <div className="modal info-modal" onClick={(e) => e.stopPropagation()}>
+            <h2>{title}</h2>
+            <div className="info-text">{children}</div>
+            <button className="btn secondary block" onClick={() => setOpen(false)}>Compris</button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 export function Stars({ rarity }: { rarity: RarityId }) {
   const r = RARITIES[rarity];
   return <span className="stars">{Array.from({ length: r.order }, (_, i) => <Icon.star key={i} size={10} color={r.color} />)}</span>;

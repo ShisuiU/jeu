@@ -10,7 +10,7 @@ import { generateOpponents } from '../../game/arena';
 import { seededRand } from '../../game/gear';
 import { dungeonBonus } from '../../game/events';
 import { formatDuration, msUntilReset } from '../../core/time';
-import { Panel, Screen, fmt } from '../components/common';
+import { InfoButton, Panel, Screen, fmt } from '../components/common';
 import { RewardView, rewardMainIcon } from '../components/RewardView';
 import { EnemyArt } from '../art/EnemyArt';
 import { HeroArt } from '../art/HeroArt';
@@ -91,9 +91,8 @@ export function Tower() {
   return (
     <Screen title="Tour des Âges">
       <Panel>
-        <div className="row between"><span>Étage atteint : <b style={{ color: 'var(--gold-hi)' }}>{cur}</b> / {TOWER_FLOORS}</span><span className="faint">Sans énergie</span></div>
+        <div className="row between"><span>Étage atteint : <b style={{ color: 'var(--gold-hi)' }}>{cur}</b> / {TOWER_FLOORS}</span><span className="row" style={{ gap: 6 }}><span className="faint">Sans énergie</span><InfoButton title="Tour des Âges">Chaque étage se conquiert une seule fois. Tous les 10 étages, une Sentinelle garde le passage avec de grosses récompenses.</InfoButton></span></div>
         <div className="progress" style={{ marginTop: 8 }}><div style={{ width: `${(cur / TOWER_FLOORS) * 100}%` }} /></div>
-        <p className="faint" style={{ marginBottom: 0 }}>Chaque étage se conquiert une fois. Tous les 10 étages, une Sentinelle garde le passage (grosses récompenses).</p>
       </Panel>
       <div className="tower">
         {floors.map((f) => (
@@ -125,7 +124,7 @@ export function WorldBoss() {
       </div>
       <Panel>
         <div className="row between"><span>Clés : <b style={{ color: 'var(--gold-hi)' }}>{keys}</b> / {WORLD_BOSS.keysPerDay}</span><span className="faint">Renouvellement dans {formatDuration(msUntilReset(now))}</span></div>
-        <p className="faint" style={{ marginBottom: 0 }}>Infligez un maximum de dégâts en {WORLD_BOSS.turnLimit} actions. Paliers de récompense à {DAMAGE_CHESTS.join(', ')} % de ses PV. Le Colosse est immunisé à l’étourdissement et au gel.</p>
+        <div className="row" style={{ marginTop: 6, gap: 6 }}><span className="faint grow">{WORLD_BOSS.turnLimit} actions pour frapper le plus fort possible</span><InfoButton title={WORLD_BOSS.name}>Infligez un maximum de dégâts en {WORLD_BOSS.turnLimit} actions. Paliers de récompense à {DAMAGE_CHESTS.join(', ')} % de ses PV. Le Colosse est immunisé à l’étourdissement et au gel.</InfoButton></div>
       </Panel>
       {BOSS_TIERS.map((t) => {
         const best = save.worldBoss.best[t.id] ?? 0;
@@ -163,7 +162,7 @@ export function Arena() {
           <span className="faint">{save.arena.wins} victoires · {save.arena.losses} défaites</span>
           <span>Tickets : <b style={{ color: 'var(--gold-hi)' }}>{tickets}</b>/{ARENA.ticketsPerDay}</span>
         </div>
-        <p className="faint" style={{ marginBottom: 0 }}>Adversaires contrôlés par l’ordinateur. Tickets renouvelés dans {formatDuration(msUntilReset(now))}. Les combats contre d’autres joueurs arriveront avec la synchronisation en ligne.</p>
+        <p className="faint" style={{ marginBottom: 0 }}>Nouveaux tickets dans {formatDuration(msUntilReset(now))}</p>
       </Panel>
       {save.arena.opponents.map((o, i) => (
         <Panel key={o.id}>

@@ -29,7 +29,7 @@ export function Inventory() {
         </div>
       </Panel>
       <Panel title="Fragments de héros" className={Object.values(save.heroFragments).some((n) => n > 0) ? '' : 'hidden-empty'}>
-        {Object.entries(save.heroFragments).filter(([, n]) => n > 0).length === 0 && <p className="faint">Aucun fragment. Les héros invoqués en double sont convertis en fragments.</p>}
+        {Object.entries(save.heroFragments).filter(([, n]) => n > 0).length === 0 && <p className="faint">Aucun fragment.</p>}
         {Object.entries(save.heroFragments).filter(([, n]) => n > 0).map(([id, n]) => (
           <div key={id} className="stat-row"><span>{HERO_BY_ID[id]?.name ?? id}</span><b>{n}{!save.heroes.some((h) => h.heroId === id) ? ` / ${RARITIES[HERO_BY_ID[id].rarity].fragmentsToSummon}` : ''}</b></div>
         ))}

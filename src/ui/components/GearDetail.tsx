@@ -42,7 +42,6 @@ export function GearDetail({ gearUid, onClose, equipTo, place = 'hero' }: { gear
       </div>
       <div className="stat-row"><span className="muted">Principale</span><b>{statText(g.main, mainValue(g))}</b></div>
       {g.subs.map((s, i) => <div key={i} className="stat-row"><span className="muted">Secondaire{s.rolls > 1 ? ` (+${s.rolls - 1})` : ''}</span><b>{statText(s.stat, s.value)}</b></div>)}
-      {g.subs.length < 4 && <p className="faint">Nouvelle statistique secondaire aux niveaux 4, 8 et 12 (puis renforcement).</p>}
       <p className="faint">{owner ? `Équipé sur ${HERO_BY_ID[owner.heroId].name}` : 'Non équipé'}</p>
 
       {place === 'forge' && g.level < GEAR_MAX_LEVEL && (

@@ -6,7 +6,7 @@ import { HERO_BY_ID } from '../../data/heroes';
 import { FACTIONS } from '../../data/factions';
 import { RARITIES } from '../../data/rarities';
 import { powerOf } from '../../game/stats';
-import { Panel, Screen, fmt } from '../components/common';
+import { InfoButton, Panel, Screen, fmt } from '../components/common';
 import { HeroCard } from '../components/HeroCard';
 import { recommendTeam } from '../../game/comfort';
 import { ListControls, usePersisted, type Filters } from '../components/ListControls';
@@ -92,11 +92,10 @@ export function Team() {
           <div key={f} className="stat-row"><span>{FACTIONS[f as keyof typeof FACTIONS].name} ×{n}</span><span className="faint" style={{ maxWidth: '60%', textAlign: 'right' }}>{FACTIONS[f as keyof typeof FACTIONS].synergy}</span></div>
         ))}
         {leaderDef?.leaderSkill && <div className="stat-row"><span>Aura de chef</span><b>{leaderDef.leaderSkill.description}</b></div>}
-        <div className="hint" style={{ marginTop: 10 }}>
-          Rôles présents : {roles.size}/6. {!members.some((h) => h && HERO_BY_ID[h.heroId].role === 'healer') && 'Aucun soigneur : les combats longs seront difficiles. '}
-          {!members.some((h) => h && HERO_BY_ID[h.heroId].role === 'defender') && 'Aucun défenseur en première ligne.'}
+        <div className="row" style={{ marginTop: 10, gap: 8 }}>
+          <span className="faint grow">Rôles {roles.size}/6{!members.some((h) => h && HERO_BY_ID[h.heroId].role === 'healer') ? ' · sans soigneur' : ''}{!members.some((h) => h && HERO_BY_ID[h.heroId].role === 'defender') ? ' · sans défenseur' : ''}</span>
+          <InfoButton title="Formation">Les synergies de faction et l’aura du chef s’appliquent automatiquement en combat. La première ligne est exposée ; la seconde subit 15 % de dégâts en moins tant que la première tient. Un soigneur et un défenseur rendent les combats longs plus sûrs.</InfoButton>
         </div>
-        <p className="faint" style={{ marginTop: 8 }}>Les synergies de faction et l’aura du chef sont appliquées automatiquement en combat. Première ligne : exposée. Seconde ligne : subit 15 % de dégâts en moins tant que la première ligne tient.</p>
       </Panel>
     </Screen>
   );

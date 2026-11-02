@@ -17,7 +17,6 @@ export function Settings() {
         <label className="faint">Nom de l’Héritier</label>
         <input className="text-input" style={{ marginTop: 6 }} defaultValue={save.profile.name} maxLength={18}
           onBlur={(e) => { if (e.target.value.trim() && e.target.value !== save.profile.name) { setProfile({ name: e.target.value }); toast('Nom enregistré.', 'ok'); } }} />
-        <p className="faint" style={{ marginTop: 6 }}>Pour changer d’avatar, ouvrez la fiche d’un héros et touchez « Choisir comme avatar ».</p>
       </Panel>
       <Panel title="Son et affichage">
         <div className="setting-row">

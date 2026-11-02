@@ -112,7 +112,6 @@ export function Prep({ spec }: { spec: BattleSpec }) {
         <Panel title="Balayage">
           {sweepOk.ok ? (
             <>
-              <p className="faint" style={{ marginTop: 0 }}>Rejoue instantanément ce combat avec l’équipe choisie (mêmes coûts, mêmes récompenses, résultat calculé par le moteur).</p>
               <div className="row" style={{ gap: 6 }}>
                 {[1, 5, 10].map((n) => <button key={n} className="btn secondary small grow" disabled={maxRuns < 1 || !count} onClick={() => doSweep(Math.min(n, maxRuns))}>×{n}</button>)}
                 <button className="btn small grow" disabled={maxRuns < 1 || !count} onClick={() => doSweep(maxRuns)}>Max ({maxRuns})</button>

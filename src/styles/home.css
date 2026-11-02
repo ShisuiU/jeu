@@ -43,7 +43,7 @@
 .logo { position: absolute; top: 22%; left: 0; right: 0; }
 .logo .name { font-family: var(--font-title); font-weight: 900; font-size: clamp(34px, 12.5vw, 52px); letter-spacing: 0.08em; background: linear-gradient(180deg, #fff6dd, #e2b866 50%, #8a6a33); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 4px 20px rgba(217,179,106,0.35)); animation: logoIn 1.4s cubic-bezier(.2,.8,.2,1); }
 .logo .sub { font-family: var(--font-title); letter-spacing: 0.32em; font-size: 12px; color: var(--rift); text-transform: uppercase; margin-top: 4px; animation: fadeIn 2s; }
-@keyframes logoIn { from { opacity: 0; letter-spacing: 0.4em; filter: blur(8px); } }
+@keyframes logoIn { from { opacity: 0; transform: translateY(12px) scale(0.96); } to { opacity: 1; transform: none; } }
 .tap-start { font-family: var(--font-title); letter-spacing: 0.2em; font-size: 14px; color: var(--gold-hi); animation: blink 2s infinite; }
 @keyframes blink { 50% { opacity: 0.35; } }
 
@@ -95,14 +95,16 @@
 .hl-n { font-family: var(--font-title); font-size: 24px; font-weight: 800; text-shadow: 0 2px 14px #000, 0 0 30px rgba(0,0,0,0.9); }
 
 .title-art { position: absolute; inset: 0; overflow: hidden; background: #07060b; }
-.title-art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 30%; transform-origin: 50% 40%; animation: titleCam 22s cubic-bezier(.25,.6,.3,1) both, titleDrift 30s ease-in-out 22s infinite alternate; }
+.title-art img { will-change: transform; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 30%; transform-origin: 50% 40%; animation: titleCam 22s cubic-bezier(.25,.6,.3,1) both, titleDrift 30s ease-in-out 22s infinite alternate; }
 .title-heart { position: absolute; left: 50%; top: 37%; width: 70vmin; height: 70vmin; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, rgba(255,214,140,0.35), rgba(185,140,255,0.18) 40%, transparent 68%); mix-blend-mode: screen; animation: heartPulse 4.5s ease-in-out infinite; pointer-events: none; }
 .title-art .particles { z-index: 1; }
 .title-shade { position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(5,4,8,0.7) 0%, rgba(5,4,8,0.05) 26%, transparent 55%, rgba(5,4,8,0.55) 78%, rgba(5,4,8,0.92) 100%); }
 .title-screen .logo { top: calc(var(--sat) + 7%); }
 .title-screen .logo .sub { text-shadow: 0 1px 6px #000, 0 0 14px #000; }
 .title-screen .tap-start { text-shadow: 0 2px 10px #000; }
-@keyframes titleCam { from { transform: scale(1.18) translateY(3%); filter: brightness(0.3); } 30% { filter: brightness(1); } to { transform: scale(1.04) translateY(0); } }
+@keyframes titleCam { from { transform: scale(1.18) translateY(3%); } to { transform: scale(1.04) translateY(0); } }
+.title-art::before { content: ''; position: absolute; inset: 0; z-index: 2; background: #000; pointer-events: none; animation: titleFade 2.4s ease-out forwards; }
+@keyframes titleFade { to { opacity: 0; } }
 @keyframes titleDrift { from { transform: scale(1.04) translateX(0); } to { transform: scale(1.08) translateX(-1.5%); } }
 @keyframes heartPulse { 0%, 100% { opacity: 0.55; transform: translate(-50%, -50%) scale(0.92); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.06); } }
 @media (prefers-reduced-motion: reduce) { .title-art img, .title-heart { animation: none; } }

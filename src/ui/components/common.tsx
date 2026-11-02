@@ -1,12 +1,21 @@
-import type { ReactNode } from 'react';
+import { useLayoutEffect, useRef, type ReactNode } from 'react';
 import { useUI } from '../../state/ui';
 import { Icon } from '../art/Icons';
 import { RARITIES } from '../../data/rarities';
 import type { RarityId } from '../../data/types';
 
+const SCROLL = new Map<string, number>();
+
 export function Screen({ title, children, right, noBack, bg }: { title: string; children: ReactNode; right?: ReactNode; noBack?: boolean; bg?: ReactNode }) {
   const back = useUI((s) => s.back);
   const depth = useUI((s) => s.stack.length);
+  // Mémorise la position de défilement de chaque écran pour la retrouver au retour.
+  const routeKey = useUI((s) => JSON.stringify(s.stack[s.stack.length - 1]));
+  const scroller = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const y = SCROLL.get(routeKey);
+    if (y && scroller.current) scroller.current.scrollTop = y;
+  }, [routeKey]);
   return (
     <div className="screen">
       {bg ?? <div className="bg-ambient" />}
@@ -15,7 +24,7 @@ export function Screen({ title, children, right, noBack, bg }: { title: string; 
         <h1>{title}</h1>
         {right}
       </header>
-      <div className="screen-scroll">{children}</div>
+      <div className="screen-scroll" ref={scroller} onScroll={(e) => SCROLL.set(routeKey, e.currentTarget.scrollTop)}>{children}</div>
     </div>
   );
 }

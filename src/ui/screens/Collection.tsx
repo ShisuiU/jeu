@@ -1,69 +1,35 @@
-import { heroTotalStats } from '../../game/heroStats';
 import { useMemo, useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
-import { HEROES, HERO_BY_ID } from '../../data/heroes';
-import { FACTION_LIST } from '../../data/factions';
+import { HEROES } from '../../data/heroes';
 import { RARITIES } from '../../data/rarities';
-import { ROLE_LIST } from '../../data/roles';
-import type { FactionId, RoleId } from '../../data/types';
-import { powerOf } from '../../game/stats';
 import { Screen } from '../components/common';
 import { HeroCard } from '../components/HeroCard';
-import { FactionEmblem } from '../art/FactionEmblem';
-
-type Sort = 'rarity' | 'level' | 'power' | 'name';
+import { ListControls, usePersisted, type Filters } from '../components/ListControls';
+import { HERO_GROUPS, HERO_SORTS, heroMatches, sortHeroes } from '../components/heroFilters';
 
 export function Collection() {
   const save = useGame((s) => s.save)!;
   const push = useUI((s) => s.push);
-  const [faction, setFaction] = useState<FactionId | null>(null);
-  const [role, setRole] = useState<RoleId | null>(null);
-  const [sort, setSort] = useState<Sort>('rarity');
+  const [prefs, setPrefs] = usePersisted<{ sort: string; filters: Filters }>('heroes', { sort: 'power', filters: {} });
   const [showCodex, setShowCodex] = useState(false);
+  const { sort, filters } = prefs;
 
-  const owned = useMemo(() => {
-    const list = save.heroes
-      .map((h) => ({ h, d: HERO_BY_ID[h.heroId], p: powerOf(heroTotalStats(save, h).total) }))
-      .filter((x) => (!faction || x.d.faction === faction) && (!role || x.d.role === role));
-    const by: Record<Sort, (a: typeof list[0], b: typeof list[0]) => number> = {
-      rarity: (a, b) => RARITIES[b.d.rarity].order - RARITIES[a.d.rarity].order || b.h.level - a.h.level,
-      level: (a, b) => b.h.level - a.h.level,
-      power: (a, b) => b.p - a.p,
-      name: (a, b) => a.d.name.localeCompare(b.d.name),
-    };
-    return list.sort(by[sort]);
-  }, [save.heroes, faction, role, sort]);
-
+  const owned = useMemo(() => sortHeroes(save, save.heroes, filters, sort), [save, filters, sort]);
   const ownedIds = new Set(save.heroes.map((h) => h.heroId));
-  const missing = HEROES.filter((d) => !ownedIds.has(d.id) && (!faction || d.faction === faction) && (!role || d.role === role))
+  const missing = HEROES.filter((d) => !ownedIds.has(d.id) && heroMatches(filters, d))
     .sort((a, b) => RARITIES[b.rarity].order - RARITIES[a.rarity].order);
 
   return (
     <Screen title={`Héros  ${ownedIds.size}/${HEROES.length}`} right={<button className="btn secondary small" onClick={() => push({ name: 'team' })}>Équipes</button>}>
-      <div className="chips" style={{ marginBottom: 10 }}>
-        <button className={`chip ${!faction && !role ? 'active' : ''}`} onClick={() => { setFaction(null); setRole(null); }}>Tous</button>
-        {FACTION_LIST.map((f) => (
-          <button key={f.id} className={`chip icon-chip ${faction === f.id ? 'active' : ''}`} aria-label={f.name} onClick={() => setFaction(faction === f.id ? null : f.id)}>
-            <FactionEmblem id={f.id} size={18} />
-          </button>
-        ))}
-        <span className="chip-sep" />
-        {ROLE_LIST.map((r) => <button key={r.id} className={`chip ${role === r.id ? 'active' : ''}`} onClick={() => setRole(role === r.id ? null : r.id)}>{r.name}</button>)}
-      </div>
-      <div className="row between" style={{ marginBottom: 12 }}>
-        <div className="seg" style={{ flex: 1 }}>
-          {(['rarity', 'level', 'power', 'name'] as Sort[]).map((s) => (
-            <button key={s} className={sort === s ? 'on' : ''} onClick={() => setSort(s)}>{{ rarity: 'Rareté', level: 'Niveau', power: 'Puissance', name: 'Nom' }[s]}</button>
-          ))}
-        </div>
-      </div>
+      <ListControls sortOptions={HERO_SORTS} sort={sort} onSort={(s) => setPrefs({ ...prefs, sort: s })}
+        groups={HERO_GROUPS} filters={filters} onFilters={(f) => setPrefs({ ...prefs, filters: f })}
+        count={(f) => save.heroes.filter((h) => heroMatches(f, HEROES.find((d) => d.id === h.heroId)!)).length} />
 
       {owned.length === 0 && <p className="muted" style={{ textAlign: 'center' }}>Aucun héros ne correspond à ces filtres.</p>}
       <div className="hero-grid">
         {owned.map(({ h }) => <HeroCard key={h.uid} heroId={h.heroId} level={h.level} badge={h.locked ? '🔒' : undefined} onClick={() => push({ name: 'hero', uid: h.uid, heroId: h.heroId })} />)}
       </div>
-
       {missing.length > 0 && (
         <>
           <button className="btn secondary block" style={{ marginTop: 18 }} onClick={() => setShowCodex(!showCodex)}>

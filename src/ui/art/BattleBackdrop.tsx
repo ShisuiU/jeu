@@ -45,7 +45,7 @@ const REGION_ART: Record<Region, () => string | undefined> = {
   heart: () => enemyArtUrl('voice_of_void'),
 };
 
-export function PaintedBackdrop({ src, blur = 8, dim = 0.6, position = 'center' }: { src: string; blur?: number; dim?: number; position?: string }) {
+export function PaintedBackdrop({ src, blur = 4, dim = 0.55, position = 'center' }: { src: string; blur?: number; dim?: number; position?: string }) {
   return (
     <div className="painted-bg" aria-hidden>
       <img src={src} alt="" draggable={false} style={{ objectPosition: position, filter: `blur(${blur}px) brightness(${dim}) saturate(1.15)` }} />

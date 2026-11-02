@@ -33,6 +33,7 @@ export const Icon = {
   gem: (p: P) => <S {...p}><path d="M6 3h12l4 6-10 12L2 9z" /><path d="M2 9h20M12 21 8 9l4-6 4 6z" /></S>,
   calendar: (p: P) => <S {...p}><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4" /><path d="m12 13 1 2 2 .3-1.5 1.4.4 2.1-1.9-1-1.9 1 .4-2.1L9 15.3l2-.3z" /></S>,
   mail: (p: P) => <S {...p}><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 7 9 6 9-6" /></S>,
+  filter: (p: P) => <S {...p}><path d="M3 5h18l-7 8v6l-4 2v-8z" /></S>,
   temple: (p: P) => <S {...p}><path d="M3 9 12 3l9 6" /><path d="M4 9h16" /><path d="M6 9v9M10 9v9M14 9v9M18 9v9" /><path d="M3 21h18M4 18h16" /></S>,
   forge: (p: P) => <S {...p}><path d="M3 10h13l2-3h3v4l-3 2H6z" /><path d="M8 13v3l-3 5h14l-3-5v-3" /></S>,
   star: ({ size = 12, color = '#ffd36b' }: P) => <svg viewBox="0 0 24 24" width={size} height={size}><path d="m12 2 2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 20.9l1.6-7L2 9.2l7.1-.6z" fill={color} stroke="#3a2a0a" strokeWidth="1" /></svg>,

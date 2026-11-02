@@ -103,6 +103,12 @@
 - Illustrations réalistes du Sanctuaire et de la Forge (bannière + fond flouté de l'écran)
 - Combat : la taille des cartes s'adapte au nombre réel de rangées et à la hauteur de l'écran — plus aucun chevauchement, cartes plus grandes quand il y a de la place ; pastilles d'état posées sur le portrait
 
+## ✅ Version 1.9.0 — Sanctuaire et Forge simplifiés
+
+- Un héros à la fois : bande de portraits en haut, l'illustration du lieu en fond
+- Sanctuaire : une ligne par amélioration (Niveau, Rang, Ascension, Éveil, Compétences) avec un seul bouton ; cadenas quand une condition manque ; compétences dans une fenêtre
+- Forge : on choisit un héros (ou le Sac) et on voit ses 7 emplacements ; Démanteler ne montre que les objets libres ; filtres réduits aux emplacements
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

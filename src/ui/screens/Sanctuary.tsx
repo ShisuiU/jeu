@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
 import { HERO_BY_ID } from '../../data/heroes';
@@ -6,73 +6,104 @@ import { BALANCE } from '../../data/balance';
 import { RARITIES } from '../../data/rarities';
 import { maxLevelForRank, powerOf } from '../../game/stats';
 import { heroTotalStats } from '../../game/heroStats';
-import { canImprove } from '../../game/upgrade';
-import { Screen, fmt } from '../components/common';
+import { ascend, ascendCheck, awaken, awakenCheck, canImprove, elixirsToCap, rankUp, rankUpCheck, skillCheck, useElixirs as applyElixirs, type Check } from '../../game/upgrade';
+import { play } from '../../audio/sfx';
+import { Modal, Screen, fmt } from '../components/common';
+import { CostView } from '../components/Cost';
+import { HeroStrip, useHeroOrder } from '../components/HeroStrip';
 import { HeroArt } from '../art/HeroArt';
-import { PlaceAmbient, PlaceBanner } from '../art/PlaceScene';
-import { HeroUpgrade, type UpgradeSection } from './HeroUpgrade';
+import { Icon, ResourceIcon } from '../art/Icons';
+import { PlaceAmbient } from '../art/PlaceScene';
+import { HeroUpgrade } from './HeroUpgrade';
 
-// SANCTUAIRE — le lieu où l'on fait progresser les héros :
-// niveau (élixirs), rang, ascension, éveil et compétences.
+// SANCTUAIRE — un héros à la fois, une ligne par amélioration.
 export function Sanctuary({ uid }: { uid?: string }) {
   const save = useGame((s) => s.save)!;
+  const mutate = useGame((s) => s.mutate);
   const push = useUI((s) => s.push);
-  const team = save.teams.find((t) => t.id === save.activeTeamId) ?? save.teams[0];
-  const teamUids = team.slots.filter(Boolean) as string[];
-
-  // Héros de l'équipe active d'abord, puis par puissance.
-  const order = useMemo(() => {
-    const pw = (u: string) => { const h = save.heroes.find((x) => x.uid === u)!; return powerOf(heroTotalStats(save, h).total); };
-    return [...save.heroes].map((h) => h.uid).sort((a, b) => (teamUids.includes(b) ? 1 : 0) - (teamUids.includes(a) ? 1 : 0) || pw(b) - pw(a));
-  }, [save, teamUids.join()]);
-
-  const [sel, setSel] = useState<string>(uid && save.heroes.some((h) => h.uid === uid) ? uid : (team.leader ?? order[0]));
-  const [section, setSection] = useState<UpgradeSection>('level');
+  const toast = useUI((s) => s.toast);
+  const { defaultUid } = useHeroOrder();
+  const [sel, setSel] = useState<string | undefined>(uid && save.heroes.some((h) => h.uid === uid) ? uid : defaultUid);
+  const [skills, setSkills] = useState(false);
   const h = save.heroes.find((x) => x.uid === sel) ?? save.heroes[0];
   if (!h) return <Screen title="Sanctuaire"><p className="muted">Aucun héros.</p></Screen>;
   const d = HERO_BY_ID[h.heroId];
-  const power = powerOf(heroTotalStats(save, h).total);
+  const cap = maxLevelForRank(h.rank);
+  const toCap = elixirsToCap(h);
+
+  const run = (fn: (s: typeof save) => Check, okMsg: string) => {
+    let c: Check = { ok: false, cost: {} };
+    mutate((s) => { c = fn(s); });
+    if (c.ok) { play('rare'); toast(okMsg, 'ok'); } else toast(c.reason ?? 'Impossible.', 'error');
+  };
+  const elixir = (n: number) => {
+    let r: ReturnType<typeof applyElixirs> = { used: 0, levels: 0 };
+    mutate((s) => { r = applyElixirs(s, h.uid, n); });
+    if (r.used) { play('claim'); toast(r.levels ? `+${r.levels} niveau(x)` : `+${r.used} élixir(s)`, 'ok'); } else toast(r.reason ?? 'Impossible.', 'error');
+  };
+  const skillMax = d.skills.reduce((a, s) => a + s.upgrades.length + 1, 0);
+  const skillNow = d.skills.reduce((a, s) => a + (h.skillLevels[s.id] ?? 1), 0);
+  const skillReady = d.skills.some((s) => skillCheck(save, h, s.id).ok);
 
   return (
     <Screen title="Sanctuaire" bg={<PlaceAmbient place="sanctuary" />}>
-      <PlaceBanner place="sanctuary" title="Sanctuaire des Héritiers" subtitle="Faites grandir vos héros" />
+      <HeroStrip selected={h.uid} onSelect={setSel} dot={canImprove} />
 
-      <div className="sanct-strip" role="listbox" aria-label="Choisir un héros">
-        {order.map((u) => {
-          const x = save.heroes.find((y) => y.uid === u)!;
-          return (
-            <button key={u} role="option" aria-selected={u === h.uid} className={`ss-item ${u === h.uid ? 'on' : ''}`}
-              style={{ ['--rc' as string]: RARITIES[HERO_BY_ID[x.heroId].rarity].color }} onClick={() => setSel(u)}>
-              <HeroArt heroId={x.heroId} kind="portrait" />
-              <span className="ss-lv">{x.level}</span>
-              {teamUids.includes(u) && <span className="ss-team" aria-label="Dans l’équipe" />}
-              {canImprove(save, x) && <span className="badge-dot" style={{ top: -3, right: -3 }} />}
-            </button>
-          );
-        })}
+      <button className="sanct-focus" onClick={() => push({ name: 'hero', uid: h.uid, heroId: h.heroId })} aria-label={`Fiche de ${d.name}`}>
+        <div className="sf-art" style={{ ['--rc' as string]: RARITIES[d.rarity].color }}><HeroArt heroId={d.id} kind="portrait" /></div>
+        <div className="sf-name">{d.name}</div>
+        <div className="sf-power">Puissance <b>{fmt(powerOf(heroTotalStats(save, h).total))}</b></div>
+      </button>
+
+      <div className="upg-list">
+        <UpRow icon={<ResourceIcon icon="flask" color="#9bdc6a" size={20} />} label="Niveau" value={`${h.level}/${cap}`}
+          sub={h.level < cap ? <span>{save.resources.xpElixir} élixir(s)</span> : <span>Plafond du rang : montez de rang</span>}>
+          <button className="btn secondary small" disabled={!toCap || !save.resources.xpElixir} onClick={() => elixir(1)}>+1</button>
+          <button className="btn small" disabled={!toCap || !save.resources.xpElixir} onClick={() => elixir(toCap)}>Max</button>
+        </UpRow>
+        <CheckRow icon={<ResourceIcon icon="sigil" color="#ffd48a" size={20} />} label="Rang" value={`${h.rank}/${BALANCE.hero.maxRank}`} check={rankUpCheck(save, h)} max={h.rank >= BALANCE.hero.maxRank}
+          heroId={h.heroId} onGo={() => run((s) => rankUp(s, h.uid), `Rang ${h.rank + 1} !`)} />
+        <CheckRow icon={<ResourceIcon icon="potion" color="#6fa8ff" size={20} />} label="Ascension" value={`${h.ascension}/${BALANCE.hero.maxAscension}`} check={ascendCheck(save, h)} max={h.ascension >= BALANCE.hero.maxAscension}
+          heroId={h.heroId} onGo={() => run((s) => ascend(s, h.uid), `Ascension ${h.ascension + 1} !`)} />
+        <CheckRow icon={<ResourceIcon icon="essence" color="#ff9bb5" size={20} />} label="Éveil" value={`${h.awaken}/${BALANCE.hero.maxAwaken}`} check={awakenCheck(save, h)} max={h.awaken >= BALANCE.hero.maxAwaken}
+          heroId={h.heroId} onGo={() => run((s) => awaken(s, h.uid), `Éveil ${h.awaken + 1} !`)} />
+        <UpRow icon={<Icon.book size={20} />} label="Compétences" value={`${skillNow}/${skillMax}`} dot={skillReady}
+          sub={<span>{skillReady ? 'Amélioration possible' : 'Grimoires de compétence'}</span>}>
+          <button className="btn secondary small" onClick={() => setSkills(true)}>Voir</button>
+        </UpRow>
       </div>
 
-      <div className="sanct-hero">
-        <div className="sh-art" style={{ ['--rc' as string]: RARITIES[d.rarity].color }}><HeroArt heroId={d.id} kind="portrait" /></div>
-        <div className="grow" style={{ minWidth: 0 }}>
-          <div className="sh-name">{d.name}</div>
-          <div className="sh-stats">
-            <span>Niv. <b>{h.level}</b>/{maxLevelForRank(h.rank)}</span>
-            <span>Rang <b>{h.rank}</b>/{BALANCE.hero.maxRank}</span>
-            <span>Asc. <b>{h.ascension}</b>/{BALANCE.hero.maxAscension}</span>
-            <span>Éveil <b>{h.awaken}</b>/{BALANCE.hero.maxAwaken}</span>
-          </div>
-          <div className="sh-power">Puissance <b>{fmt(power)}</b></div>
-        </div>
-        <button className="btn secondary small" onClick={() => push({ name: 'hero', uid: h.uid, heroId: h.heroId })}>Fiche</button>
-      </div>
-
-      <div className="seg" style={{ margin: '10px 0 12px' }}>
-        <button className={section === 'level' ? 'on' : ''} onClick={() => setSection('level')}>Niveau</button>
-        <button className={section === 'power' ? 'on' : ''} onClick={() => setSection('power')}>Ascension</button>
-        <button className={section === 'skills' ? 'on' : ''} onClick={() => setSection('skills')}>Compétences</button>
-      </div>
-      <HeroUpgrade key={h.uid} h={h} section={section} />
+      {skills && (
+        <Modal onClose={() => setSkills(false)}>
+          <h2>Compétences · {d.name.split(' ')[0]}</h2>
+          <HeroUpgrade h={h} section="skills" />
+          <button className="btn secondary block" style={{ marginTop: 10 }} onClick={() => setSkills(false)}>Fermer</button>
+        </Modal>
+      )}
     </Screen>
+  );
+}
+
+function UpRow({ icon, label, value, sub, dot, children }: { icon: React.ReactNode; label: string; value: string; sub?: React.ReactNode; dot?: boolean; children?: React.ReactNode }) {
+  return (
+    <div className="upg-line">
+      <span className="ul-ic">{icon}{dot && <span className="badge-dot" style={{ top: -2, right: -2 }} />}</span>
+      <div className="ul-txt">
+        <div><b>{label}</b> <span className="ul-val">{value}</span></div>
+        {sub && <div className="ul-sub">{sub}</div>}
+      </div>
+      <div className="ul-act">{children}</div>
+    </div>
+  );
+}
+
+function CheckRow({ icon, label, value, check, max, heroId, onGo }: { icon: React.ReactNode; label: string; value: string; check: Check; max: boolean; heroId: string; onGo: () => void }) {
+  const save = useGame((s) => s.save)!;
+  const blocked = !check.ok && !!check.reason && !check.reason.includes('insuffisant');
+  return (
+    <UpRow icon={icon} label={label} value={value} dot={check.ok}
+      sub={max ? <span>Maximum atteint</span> : blocked ? <span>{check.reason}</span> : <CostView cost={check.cost} save={save} heroId={heroId} />}>
+      {max ? <span className="chip active">Max</span> : blocked ? <span className="ul-lock" aria-label="Verrouillé"><Icon.lock size={16} /></span> : <button className="btn small" disabled={!check.ok} onClick={onGo}>Monter</button>}
+    </UpRow>
   );
 }

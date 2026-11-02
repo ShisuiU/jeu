@@ -99,20 +99,6 @@ function ForgeSvg() {
   );
 }
 
-/** Bandeau d'entrée d'un lieu : scène + nom + sous-titre. */
-export function PlaceBanner({ place, title, subtitle }: { place: PlaceId; title: string; subtitle: string }) {
-  return (
-    <div className={`place-banner ${place}`}>
-      <PlaceScene place={place} />
-      <div className="place-shade" />
-      <div className="place-text">
-        <div className="place-title">{title}</div>
-        <div className="place-sub">{subtitle}</div>
-      </div>
-    </div>
-  );
-}
-
 /** Fond d'écran d'un lieu : l'illustration floutée et assombrie derrière tout l'écran. */
 export function PlaceAmbient({ place }: { place: PlaceId }) {
   const art = PLACE_ART[place];

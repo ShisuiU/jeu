@@ -3,7 +3,7 @@ import { ENEMIES, type EnemyDef } from '../../data/enemies';
 
 // Silhouettes provisoires des Effacés : formes grises sans visage, fissurées de lumière violette.
 // Les illustrations définitives se déposent dans src/assets/enemies/<id>/portrait.webp.
-const files = import.meta.glob('/src/assets/enemies/*/*.{webp,png,jpg,jpeg}', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
+const files = import.meta.glob('/src/assets/enemies/*/portrait.{webp,png,jpg,jpeg}', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
 const ART: Record<string, string> = {};
 for (const [p, url] of Object.entries(files)) { const m = p.match(/enemies\/([^/]+)\/portrait\./); if (m) ART[m[1]] = url; }
 

@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useReducer, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useReducer, useRef, useState } from 'react';
+import type { SkillDef } from '../../data/types';
 import { useGame } from '../../state/store';
 import { useUI, type Route } from '../../state/ui';
 import { HERO_BY_ID } from '../../data/heroes';
@@ -57,6 +58,13 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
   const [result, setResult] = useState<ModeResult | null>(null);
   const [quit, setQuit] = useState(false);
   const [infoId, setInfoId] = useState<string | null>(null);
+  const measureRef = useRef<HTMLDivElement>(null);
+  const [infoH, setInfoH] = useState(64);
+  useLayoutEffect(() => {
+    const el = measureRef.current; if (!el) return;
+    let m = 0; el.querySelectorAll<HTMLElement>('.skill-info').forEach((x) => { m = Math.max(m, x.offsetHeight); });
+    if (m) setInfoH(Math.min(m, 140));
+  }, []);
   useEffect(() => {
     try { if (!localStorage.getItem('aeonfall.tip.unitInfo')) { localStorage.setItem('aeonfall.tip.unitInfo', '1'); setTimeout(() => useUI.getState().toast('Astuce : maintenez le doigt sur une carte pour voir ses effets.'), 1500); } } catch { /* ignoré */ }
   }, []);
@@ -255,28 +263,29 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
       {banner && <div className={`skill-banner ${banner.side} ${ult ? 'ult' : ''}`} key={banner.text + banner.side}>{banner.text}</div>}
 
       <div className="battle-controls">
-        {awaiting && active && selSkill ? (
-          <div className="skill-info">
-            <div className="row between">
-              <span><b>{shortName(active.name)}</b> · {selSkill.name} <span className="faint">· {selSkill.cooldown ? `recharge ${effectiveCooldown(selSkill, active.skillLevels[selSkill.id] ?? 1)} t.` : 'chaque tour'}</span></span>
-              {targetKind(selSkill) === 'none'
-                ? <button className="btn small" style={{ minHeight: 28 }} onClick={() => act()}>Lancer</button>
-                : <span className="hint-target">{targetKind(selSkill) === 'ally' ? '▸ un allié' : '▸ un ennemi'}</span>}
-            </div>
-            <div className="desc">{selSkill.description}</div>
+        {/* Hauteur de l'aide = plus longue description de l'équipe (mesurée une fois) : texte complet, sans saut d'écran. */}
+        <div className="skill-measure" ref={measureRef} aria-hidden>
+          {initial.battle.units.filter((u) => u.side === 'ally').flatMap((u) => u.skills.filter((x) => x.slot !== 'passive').map((sk) => (
+            <div key={u.id + sk.id} className="skill-info"><SkillInfoBody unit={u} sk={sk} /></div>
+          )))}
+        </div>
+        <div className={`skill-info ${awaiting && active && selSkill ? '' : 'idle'}`} style={{ height: infoH }}>
+          {awaiting && active && selSkill ? <SkillInfoBody unit={active} sk={selSkill} onLaunch={targetKind(selSkill) === 'none' ? () => act() : undefined} />
+            : <span>{finished.current ? '' : auto ? 'Combat automatique : touchez AUTO pour reprendre la main.' : awaiting ? 'Choisissez une compétence.' : 'Tour adverse…'}</span>}
+        </div>
+        <div className="ctrl-row">
+          <div className="ctrl-col">
+            <button className={`ctrl ${auto ? 'on' : ''}`} onClick={toggleAuto}>AUTO</button>
+            <button className="ctrl" onClick={cycleSpeed} aria-label={`Vitesse ×${speed}`}>×{speed}</button>
           </div>
-        ) : <div className="skill-info empty" aria-hidden />}
-        <div className="row" style={{ gap: 8 }}>
-          <button className={`ctrl ${auto ? 'on' : ''}`} onClick={toggleAuto}>AUTO</button>
-          <button className="ctrl" onClick={cycleSpeed}>×{speed}</button>
           <div className="skills">
-            {awaiting && active && active.skills.filter((x) => x.slot !== 'passive').map((sk, i) => {
-              const cd = active.cooldowns[sk.id] ?? 0;
+            {(awaiting && active ? active.skills.filter((x) => x.slot !== 'passive') : []).map((sk) => {
+              const cd = active!.cooldowns[sk.id] ?? 0;
               return (
-                <button key={sk.id} className={`skill-btn ${sk.slot} ${selected === sk.id ? 'sel' : ''}`} disabled={cd > 0}
+                <button key={sk.id} className={`skill-card ${sk.slot} ${selected === sk.id ? 'sel' : ''}`} disabled={cd > 0}
                   onClick={() => { play('tap'); if (selected === sk.id && targetKind(sk) === 'none') void act(); else setSelected(sk.id); }}>
-                  <span className="n">{sk.slot === 'ultimate' ? '★' : i + 1}</span>
-                  {cd > 0 && <span className="cd">{cd}</span>}
+                  <span className={`sk-tag ${cd > 0 ? 'cd' : ''}`}>{cd > 0 ? `Recharge ${cd} t.` : SLOT_TAG[sk.slot]}</span>
+                  <span className="sk-name">{sk.name}</span>
                 </button>
               );
             })}
@@ -388,6 +397,23 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
         </Modal>
       )}
     </div>
+  );
+}
+
+const SLOT_TAG = { basic: 'Base', special: 'Spéciale', ultimate: 'Ultime', passive: 'Passif' } as const;
+
+function SkillInfoBody({ unit, sk, onLaunch }: { unit: Unit; sk: SkillDef; onLaunch?: () => void }) {
+  const tk = targetKind(sk);
+  return (
+    <>
+      <div className="si-head">
+        <span><b>{shortName(unit.name)}</b> · {sk.name}</span>
+        {onLaunch ? <button className="btn small" style={{ minHeight: 28 }} onClick={onLaunch}>Lancer</button>
+          : <span className="hint-target">{tk === 'ally' ? '▸ un allié' : tk === 'none' ? '▸ automatique' : '▸ un ennemi'}</span>}
+      </div>
+      <div className="si-meta">{SLOT_TAG[sk.slot]} · {sk.cooldown ? `recharge ${effectiveCooldown(sk, unit.skillLevels[sk.id] ?? 1)} tours` : 'utilisable à chaque tour'}</div>
+      <div className="desc">{sk.description}</div>
+    </>
   );
 }
 

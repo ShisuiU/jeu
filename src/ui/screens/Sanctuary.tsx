@@ -15,6 +15,7 @@ import { HeroArt } from '../art/HeroArt';
 import { Icon, ResourceIcon } from '../art/Icons';
 import { PlaceAmbient } from '../art/PlaceScene';
 import { HeroUpgrade } from './HeroUpgrade';
+import { Wallet } from '../components/Wallet';
 
 // SANCTUAIRE — un héros à la fois, une ligne par amélioration.
 export function Sanctuary({ uid }: { uid?: string }) {
@@ -47,6 +48,7 @@ export function Sanctuary({ uid }: { uid?: string }) {
 
   return (
     <Screen title="Sanctuaire" bg={<PlaceAmbient place="sanctuary" />}>
+      <Wallet ids={['gold', 'xpElixir', 'rankSigil', 'skillTome', 'potionMinor', 'potionGreater', 'potionSupreme', 'awakenEssence']} />
       <HeroStrip selected={h.uid} onSelect={setSel} dot={canImprove} />
 
       <button className="sanct-focus" onClick={() => push({ name: 'hero', uid: h.uid, heroId: h.heroId })} aria-label={`Fiche de ${d.name}`}>
@@ -76,6 +78,7 @@ export function Sanctuary({ uid }: { uid?: string }) {
       {skills && (
         <Modal onClose={() => setSkills(false)}>
           <h2>Compétences · {d.name.split(' ')[0]}</h2>
+          <Wallet ids={['skillTome', 'gold']} cols={2} />
           <HeroUpgrade h={h} section="skills" />
           <button className="btn secondary block" style={{ marginTop: 10 }} onClick={() => setSkills(false)}>Fermer</button>
         </Modal>

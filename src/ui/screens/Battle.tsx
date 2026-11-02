@@ -13,6 +13,8 @@ import { heroXpToNext } from '../../game/progression';
 import { play } from '../../audio/sfx';
 import { playCast, playDeath, playDot, playHeal, playImpact, playRevive, playShield, playStatus } from '../../audio/battleSfx';
 import { skillFx, type SkillFx } from '../fx/skillFx';
+import { AffinityIcon, affinityEdge } from '../art/Identity';
+import { AFFINITIES } from '../../data/affinities';
 import { HeroArt } from '../art/HeroArt';
 import { EnemyArt } from '../art/EnemyArt';
 import { Icon } from '../art/Icons';
@@ -125,7 +127,7 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
           if (e.crit) { setFlash(true); setTimeout(() => setFlash(false), 140); }
           if (!soundOnce.has('hit:' + e.source)) { soundOnce.add('hit:' + e.source); playImpact(f, { crit: ev.some((x) => x.kind === 'damage' && x.source === e.source && x.crit), many: ev.filter((x) => x.kind === 'damage' && x.source === e.source).length > 1 }); }
           if (f.weapon === 'blunt' || e.crit) heavy.add(e.target);
-          hit.add(e.target); addPopup(e.target, `${e.crit ? 'CRIT ' : ''}-${e.amount}`, `dmg ${e.crit ? 'crit' : ''} ${e.strong ? 'strong' : ''} ${e.weak ? 'weak' : ''}`); pause = true; break;
+          hit.add(e.target); addPopup(e.target, `${e.crit ? 'CRIT ' : ''}-${e.amount}${e.strong ? ' ▲' : e.weak ? ' ▼' : ''}`, `dmg ${e.crit ? 'crit' : ''} ${e.strong ? 'strong' : ''} ${e.weak ? 'weak' : ''}`); pause = true; break;
         }
         case 'dot': hit.add(e.target); addPopup(e.target, `-${e.amount}`, e.status === 'poison' ? 'poison' : 'burn'); addVfx(e.target, `impact w-none e-${e.status === 'poison' ? 'poison' : 'fire'} small`, e.status === 'poison' ? '#8be04e' : '#ff8a3a'); if (!soundOnce.has('dot' + e.status)) { soundOnce.add('dot' + e.status); playDot(e.status); } pause = true; break;
         case 'heal': if (e.amount > 0) { addPopup(e.target, `+${e.amount}`, 'heal'); addVfx(e.target, 'healfx', '#7bea8f'); if (!soundOnce.has('heal')) { soundOnce.add('heal'); playHeal(); } } pause = true; break;
@@ -269,7 +271,8 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
 
   const renderUnit = (u: Unit) => (
     <UnitView key={u.id} u={u} vfx={vfx[u.id]} active={s.activeId === u.id} acting={acting === u.id} hit={hits.has(u.id)} heavy={heavyHits.has(u.id)}
-      targetable={targetable.has(u.id)} popups={popups[u.id] ?? []} onClick={() => onUnit(u)} onInfo={() => setInfoId(u.id)} />
+      targetable={targetable.has(u.id)} popups={popups[u.id] ?? []} onClick={() => onUnit(u)} onInfo={() => setInfoId(u.id)}
+      edge={awaiting && active && targetable.has(u.id) && u.side !== active.side ? affinityEdge(active.affinity, u.affinity) : undefined} />
   );
 
   return (
@@ -422,6 +425,7 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
           <div className="unit-info-backdrop" onClick={() => setInfoId(null)}>
             <div className={`unit-info ${u.side}`} role="dialog" aria-label={u.name}>
               <div className="ui-head"><b>{u.name}</b><span className="faint">Niv. {u.level}</span></div>
+              <div className="ui-aff"><AffinityIcon id={u.affinity} size={16} /> {AFFINITIES[u.affinity].name}{AFFINITIES[u.affinity].strongAgainst ? ` · fort contre ${AFFINITIES[AFFINITIES[u.affinity].strongAgainst!].name}` : ' · neutre'}</div>
               <div className="ui-hp"><span>PV</span><b>{Math.max(0, Math.round(u.hp))} / {Math.round(u.base.hp)}</b></div>
               <div className="ui-stats"><span>ATQ <b>{Math.round(u.base.atk)}</b></span><span>DÉF <b>{Math.round(u.base.def)}</b></span><span>VIT <b>{Math.round(u.base.spd)}</b></span></div>
               {list.length === 0 ? <p className="faint" style={{ margin: '8px 0 0' }}>Aucun effet en cours.</p> : (
@@ -511,7 +515,7 @@ function SkillInfoBody({ unit, sk, onLaunch }: { unit: Unit; sk: SkillDef; onLau
 
 const shortName = (n: string) => n.replace(/^(Le|La|Les|L’|L')\s*/i, '').split(' ')[0];
 
-function UnitView({ u, vfx, active, acting, hit, heavy, targetable, popups, onClick, onInfo }: { u: Unit; vfx?: { id: number; cls: string; color: string }; active: boolean; acting: boolean; hit: boolean; heavy?: boolean; targetable: boolean; popups: Popup[]; onClick: () => void; onInfo: () => void }) {
+function UnitView({ u, vfx, active, acting, hit, heavy, targetable, popups, onClick, onInfo, edge }: { u: Unit; vfx?: { id: number; cls: string; color: string }; active: boolean; acting: boolean; hit: boolean; heavy?: boolean; targetable: boolean; popups: Popup[]; onClick: () => void; onInfo: () => void; edge?: -1 | 0 | 1 }) {
   const sh = Math.min(1, shieldOf(u) / u.base.hp);
   // Appui long (0,45 s) : fiche de l'unité ; le toucher simple garde son rôle (cibler).
   const timer = useRef<number | undefined>(undefined);
@@ -526,7 +530,7 @@ function UnitView({ u, vfx, active, acting, hit, heavy, targetable, popups, onCl
       onClick={() => { if (longDone.current) { longDone.current = false; return; } onClick(); }}
       onPointerDown={startPress} onPointerUp={endPress} onPointerLeave={endPress} onPointerCancel={endPress}
       onContextMenu={(e) => { e.preventDefault(); }}>
-      <div className="u-art">{u.kind === 'hero' ? <HeroArt heroId={u.refId} /> : <EnemyArt enemyId={u.refId} />}<span className="u-lvl">{u.level}</span><span className="u-name">{shortName(u.name)}</span>
+      <div className="u-art">{u.kind === 'hero' ? <HeroArt heroId={u.refId} /> : <EnemyArt enemyId={u.refId} />}<span className="u-lvl">{u.level}</span><span className="u-aff"><AffinityIcon id={u.affinity} size={15} /></span><span className="u-name">{shortName(u.name)}</span>
         {stCls && <span className="u-stfx" aria-hidden><i /><i /><i /></span>}
         <div className="u-status">
           {[...new Map(u.statuses.map((st) => [st.status, st])).values()].slice(0, 3).map((st) => <span key={st.uid} title={STATUS_INFO[st.status].name} style={{ background: STATUS_INFO[st.status].color }} />)}{new Set(u.statuses.map((x) => x.status)).size > 3 && <em>+</em>}
@@ -537,6 +541,8 @@ function UnitView({ u, vfx, active, acting, hit, heavy, targetable, popups, onCl
         <div className="u-tm"><div style={{ width: `${Math.min(100, u.tm / 10)}%` }} /></div>
       </div>
       {stCls.includes('st-stun') && <span className="u-stars" aria-hidden>✦ ✦ ✦</span>}
+      {edge === 1 && <span className="u-edge up">▲ +30 %</span>}
+      {edge === -1 && <span className="u-edge down">▼ −20 %</span>}
       {vfx && <span key={vfx.id} className={`vfx ${vfx.cls}`} style={{ ['--vc' as string]: vfx.color }}><i /><i /><i /></span>}
       {popups.map((p) => <span key={p.id} className={`popup ${p.cls}`}>{p.text}</span>)}
     </button>

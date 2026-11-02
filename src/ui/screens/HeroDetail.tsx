@@ -2,14 +2,12 @@ import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
 import { HERO_BY_ID } from '../../data/heroes';
 import { FACTIONS } from '../../data/factions';
-import { ROLES } from '../../data/roles';
-import { AFFINITIES } from '../../data/affinities';
 import { RARITIES } from '../../data/rarities';
 import { BALANCE } from '../../data/balance';
 import { computeStats, maxLevelForRank, powerOf, STAT_LABELS, STAT_ORDER } from '../../game/stats';
-import { Disclosure, Panel, RarityTag, Screen, Stars, fmt } from '../components/common';
+import { Disclosure, Panel, Screen, fmt } from '../components/common';
 import { HeroArt } from '../art/HeroArt';
-import { FactionEmblem } from '../art/FactionEmblem';
+import { IdentityStrip } from '../art/Identity';
 import { Icon, StatIcon } from '../art/Icons';
 import { heroXpToNext } from '../../game/progression';
 import { heroTotalStats } from '../../game/heroStats';
@@ -37,7 +35,6 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
   const fragments = save.heroFragments[d.id] ?? 0;
   const fragNeed = rar.fragmentsToSummon;
   const f = FACTIONS[d.faction];
-  const aff = AFFINITIES[d.affinity];
   const maxLv = maxLevelForRank(progress.rank);
 
   return (
@@ -53,13 +50,7 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
       <div className="hero-sheet-head">
         <div className="title-line">{d.title}</div>
         <h2>{d.name}</h2>
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 4 }}><Stars rarity={d.rarity} /></div>
-        <div className="tag-row">
-          <RarityTag rarity={d.rarity} />
-          <span className="chip"><FactionEmblem id={d.faction} size={14} />{f.short}</span>
-          <span className="chip">{ROLES[d.role].name}</span>
-          <span className="chip" style={{ color: aff.color }}>{aff.name}</span>
-        </div>
+        <IdentityStrip rarity={d.rarity} affinity={d.affinity} role={d.role} faction={d.faction} />
         <p className="quote">{d.quote.replace(/« /g, '«\u00a0').replace(/ »/g, '\u00a0»')}</p>
       </div>
 

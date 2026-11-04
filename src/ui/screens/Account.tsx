@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
-import { useAccount, loadCloud } from '../../cloud/account';
+import { useAccount, loadCloud, cloudWanted } from '../../cloud/account';
+import { inTutorial } from '../components/Coach';
+import { Icon } from '../art/Icons';
 import type { SaveData } from '../../save/schema';
 import { Modal, Panel, Screen } from '../components/common';
 
@@ -14,11 +16,11 @@ export function saveSummary(s: SaveData) {
   return `Niveau ${s.profile.level} · ${s.heroes.length} héros · ${stages} niveaux de campagne`;
 }
 
-export function Account() {
+export function Account({ mode: initial }: { mode?: 'register' } = {}) {
   const acc = useAccount();
   const save = useGame((s) => s.save)!;
   const toast = useUI((s) => s.toast);
-  const [mode, setMode] = useState<'login' | 'register'>('login');
+  const [mode, setMode] = useState<'login' | 'register'>(initial ?? 'login');
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
   const [busy, setBusy] = useState(false);
@@ -97,6 +99,47 @@ export function CloudConflictModal() {
       <button className="acc-choice" onClick={() => void loadCloud().then((m) => m.resolve('remote'))}>
         <b>Mon compte en ligne</b><span>{saveSummary(c.remote)}</span><span className="faint">Modifiée le {when(c.remoteAt)}</span>
       </button>
+    </Modal>
+  );
+}
+
+// INVITATION À CRÉER UN COMPTE — affichée sur l'accueil quand la partie a un peu avancé et n'est
+// sauvegardée que sur l'appareil. « Plus tard » la repousse (1, 3 puis 7 jours), 4 fois au plus.
+const PROMPT_KEY = 'aeonfall.accountPrompt';
+type PromptState = { n: number; last: number; never?: boolean };
+const DELAYS = [0, 1, 3, 7].map((d) => d * 86_400_000);
+const readPrompt = (): PromptState => { try { return JSON.parse(localStorage.getItem(PROMPT_KEY) ?? '') as PromptState; } catch { return { n: 0, last: 0 }; } };
+const writePrompt = (p: PromptState) => { try { localStorage.setItem(PROMPT_KEY, JSON.stringify(p)); } catch { /* */ } };
+
+export function shouldPromptAccount(s: SaveData, now: number, p: PromptState = readPrompt()): boolean {
+  if (p.never || p.n >= DELAYS.length || cloudWanted() || useAccount.getState().user) return false;
+  const clears = Object.values(s.progress.campaign).filter((p) => p.clears > 0).length;
+  if (Math.max(clears, s.stats.battlesWon) < 3 || inTutorial(s)) return false;
+  return now - p.last >= DELAYS[p.n];
+}
+
+export function AccountPrompt() {
+  const save = useGame((s) => s.save)!;
+  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    // Petit délai : on laisse l'accueil s'afficher, et rien d'autre (connexion du jour, guide) par-dessus.
+    const t = setTimeout(() => {
+      if (document.querySelector('.modal-backdrop, .sheet-backdrop, .coach')) return;
+      if (shouldPromptAccount(useGame.getState().save!, Date.now())) setOpen(true);
+    }, 1200);
+    return () => clearTimeout(t);
+  }, []);
+  if (!open) return null;
+  const close = (never = false) => { const p = readPrompt(); writePrompt({ n: p.n + 1, last: Date.now(), never }); setOpen(false); };
+  return (
+    <Modal onClose={() => close()}>
+      <div className="acc-prompt-ic"><Icon.save size={34} /></div>
+      <h2>Ne perds pas ta partie</h2>
+      <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>Elle n’est enregistrée que sur ce téléphone. Avec un compte gratuit, elle est aussi sauvegardée en ligne : tu la retrouves sur un autre appareil ou après avoir réinstallé le jeu.</p>
+      <div className="acc-prompt-sum">{saveSummary(save)}</div>
+      <button className="btn block" onClick={() => { close(); useUI.getState().push({ name: 'account', mode: 'register' }); }}>Créer un compte</button>
+      <button className="btn secondary block" style={{ marginTop: 8 }} onClick={() => close()}>Plus tard</button>
+      <button className="acc-link" onClick={() => close(true)}>Ne plus me demander</button>
     </Modal>
   );
 }

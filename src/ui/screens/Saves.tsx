@@ -7,6 +7,7 @@ import { flushSave, listBackups, parseStored, replaceSave, resetEverything, save
 import type { SaveData } from '../../save/schema';
 import type { StoredSave } from '../../save/db';
 import { Modal, Panel, Screen, fmt } from '../components/common';
+import { useAccount } from '../../cloud/account';
 
 const dt = (ms: number) => new Date(ms).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
 
@@ -86,6 +87,7 @@ export function Saves() {
           Sauvegarde automatique{saveStatus.lastSavedAt ? ` · ${dt(saveStatus.lastSavedAt)}` : ''}{saveStatus.persisted ? ' · protégée' : ''}
         </p>
         {saveStatus.error && <div className="hint warn">Erreur d’écriture : {saveStatus.error}</div>}
+        <CloudLine />
       </Panel>
 
       <Panel title="Exporter">
@@ -151,4 +153,12 @@ export function Saves() {
       )}
     </Screen>
   );
+}
+
+function CloudLine() {
+  const user = useAccount((a) => a.user);
+  const push = useUI((s) => s.push);
+  return user
+    ? <p className="faint" style={{ marginBottom: 0 }}>Sauvegardée en ligne sur le compte {user.email}.</p>
+    : <button className="hint acc-cloud-hint" onClick={() => push({ name: 'account', mode: 'register' })}>Uniquement sur ce téléphone. <b>Créer un compte gratuit ›</b></button>;
 }

@@ -11,7 +11,8 @@ import { canClaimDaily } from './game/daily';
 import { claimableCount } from './game/missions';
 import { finishedExpeditions } from './game/expeditions';
 import { cloudWanted, loadCloud } from './cloud/account';
-import { CloudConflictModal } from './ui/screens/Account';
+import { AccountPrompt, CloudConflictModal } from './ui/screens/Account';
+import { inTutorial } from './ui/components/Coach';
 import { BottomNav } from './ui/components/BottomNav';
 import { Toasts } from './ui/components/Toasts';
 import { Title } from './ui/screens/Title';
@@ -73,7 +74,7 @@ function renderRoute(r: Route) {
     case 'events': return <Events />;
     case 'combats': return <Combats />;
     case 'expeditions': return <Expeditions />;
-    case 'account': return <Account />;
+    case 'account': return <Account mode={r.mode} />;
     case 'stage': return <Stage key={r.stageId} stageId={r.stageId} />;
     case 'prep': return <Prep key={JSON.stringify(r.spec)} spec={r.spec} />;
     case 'battle': return <Battle key={r.seed} spec={r.spec} teamId={r.teamId} seed={r.seed} />;
@@ -125,7 +126,7 @@ export default function App() {
       lastSave = st.save;
       const n = claimableCount(st.save);
       // Pendant le tutoriel du début, pas de message par-dessus les éléments à toucher.
-      const tutorial = st.save.flags.guide_done !== true || (!st.save.flags.coach_off && !st.save.flags.coach_home_summon && Object.values(st.save.progress.campaign).filter((p) => p.clears > 0).length < 3);
+      const tutorial = inTutorial(st.save);
       if (n > prev && !tutorial) {
         const ui = useUI.getState();
         ui.toast(n - prev > 1 ? `${n - prev} missions accomplies : récompenses à réclamer.` : 'Mission accomplie : récompense à réclamer.', 'ok',
@@ -188,6 +189,7 @@ export default function App() {
           </div>
           {route.name !== 'battle' && <BottomNav />}
           <CloudConflictModal />
+          {route.name === 'home' && <AccountPrompt />}
           {route.name === 'home' && !save.flags.guide_done && <Guide />}
         </>
       )}

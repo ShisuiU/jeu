@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { Icon } from '../art/Icons';
 
 // OUTILS DE LISTE — tri par menu déroulant, filtres dans un panneau qui monte du bas,
@@ -27,7 +28,8 @@ export function Sheet({ title, onClose, children, footer }: { title: string; onC
     const k = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', k); return () => window.removeEventListener('keydown', k);
   }, [onClose]);
-  return (
+  // Rendu au niveau de l'application : le bouton du bas reste visible au-dessus de la barre de navigation.
+  return createPortal(
     <div className="sheet-backdrop" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
       <div className="sheet" role="dialog" aria-label={title}>
         <div className="sheet-grip" />
@@ -35,7 +37,8 @@ export function Sheet({ title, onClose, children, footer }: { title: string; onC
         <div className="sheet-body">{children}</div>
         {footer && <div className="sheet-foot">{footer}</div>}
       </div>
-    </div>
+    </div>,
+    document.querySelector('.app') ?? document.body,
   );
 }
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createNewSave, SAVE_VERSION } from '../src/save/schema';
 import { migrateSave } from '../src/save/migrations';
-import { summon, summonWithFragments, rollRarity } from '../src/game/summon';
+import { summon, rollRarity } from '../src/game/summon';
 import { BANNER_BY_ID, BANNERS } from '../src/data/summons';
 import { seededRand, generateGear, upgradeGear, equipGear, dismantleGear, gearBonus, applyGearBonus, mainValue } from '../src/game/gear';
 import { useElixirs, rankUp, rankUpCheck, ascend, awaken, upgradeSkill, elixirsToCap } from '../src/game/upgrade';
@@ -42,7 +42,7 @@ describe('invocations', () => {
     expect(c.common / n).toBeCloseTo(0.6, 1);
     expect(c.rare / n).toBeCloseTo(0.08, 1);
   });
-  it('dépense, attribue des héros et convertit les doublons en fragments', () => {
+  it('dépense, attribue des héros et convertit les doublons en copies', () => {
     const s = rich();
     const before = s.resources.shardDim;
     const res = summon(s, 'standard', 10, seededRand(5), 2000);
@@ -50,7 +50,7 @@ describe('invocations', () => {
     expect(s.resources.shardDim).toBe(before - 10);
     expect(res.results).toHaveLength(10);
     const dup = res.results.filter((x) => x.duplicate);
-    for (const d of dup) expect(s.heroFragments[d.heroId]).toBeGreaterThan(0);
+    for (const d of dup) expect(s.heroCopies[d.heroId]).toBeGreaterThan(0);
     expect(new Set(s.heroes.map((h) => h.heroId)).size).toBe(s.heroes.length);
   });
   it('refuse sans ressources', () => {
@@ -74,14 +74,6 @@ describe('invocations', () => {
       const r = summon(s, 'aeon', 10, seededRand(seed), 1);
       expect(r.results.some((x) => RARITIES[x.rarity].order >= RARITIES.epic.order)).toBe(true);
     }
-  });
-  it('obtenir un héros avec ses fragments', () => {
-    const s = createNewSave(1);
-    expect(summonWithFragments(s, 'idris', 1)).toBe(false);
-    s.heroFragments.idris = RARITIES.legendary.fragmentsToSummon;
-    expect(summonWithFragments(s, 'idris', 1)).toBe(true);
-    expect(s.heroes.some((h) => h.heroId === 'idris')).toBe(true);
-    expect(s.heroFragments.idris).toBe(0);
   });
 });
 
@@ -112,11 +104,14 @@ describe('améliorations', () => {
     useElixirs(s, h.uid, 999);
     expect(ascend(s, h.uid).ok).toBe(true);
     expect(h.ascension).toBe(1);
-    expect(awaken(s, h.uid).ok).toBe(false); // ascension 2 requise
-    ascend(s, h.uid);
-    s.heroFragments.elowen = 100;
+    expect(awaken(s, h.uid).ok).toBe(false); // aucun doublon
+    s.heroCopies.elowen = 2;
     expect(awaken(s, h.uid).ok).toBe(true);
     expect(h.awaken).toBe(1);
+    expect(s.heroCopies.elowen).toBe(1);
+    expect(awaken(s, h.uid).ok).toBe(true); // ascension 1 ≥ éveil 1
+    expect(awaken(s, h.uid).ok).toBe(false); // plus de doublon, et ascension 2 requise
+
   });
   it('compétences : jusqu’au niveau maximum', () => {
     const s = rich();

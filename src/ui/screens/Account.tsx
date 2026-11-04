@@ -5,7 +5,7 @@ import { useAccount, loadCloud, cloudWanted } from '../../cloud/account';
 import { inTutorial } from '../components/Coach';
 import { Icon } from '../art/Icons';
 import type { SaveData } from '../../save/schema';
-import { Modal, Panel, Screen } from '../components/common';
+import { Modal, Panel } from '../components/common';
 
 // COMPTE — connexion facultative : la partie est alors sauvegardée en ligne et se retrouve sur
 // n'importe quel appareil. Sans compte, rien ne change (sauvegarde sur l'appareil uniquement).
@@ -16,7 +16,8 @@ export function saveSummary(s: SaveData) {
   return `Niveau ${s.profile.level} · ${s.heroes.length} héros · ${stages} niveaux de campagne`;
 }
 
-export function Account({ mode: initial }: { mode?: 'register' } = {}) {
+/** Compte en ligne (affiché en haut de « Sauvegarde et compte »). */
+export function AccountBody({ mode: initial }: { mode?: 'register' } = {}) {
   const acc = useAccount();
   const save = useGame((s) => s.save)!;
   const toast = useUI((s) => s.toast);
@@ -36,7 +37,7 @@ export function Account({ mode: initial }: { mode?: 'register' } = {}) {
   };
 
   if (!acc.user) return (
-    <Screen title="Compte">
+    <>
       <Panel>
         <p className="muted" style={{ marginTop: 0 }}>Avec un compte gratuit, ta partie est sauvegardée en ligne : tu la retrouves sur un autre appareil ou après avoir réinstallé le jeu. Le jeu reste jouable hors ligne.</p>
         <div className="seg" style={{ marginBottom: 12 }}>
@@ -54,11 +55,11 @@ export function Account({ mode: initial }: { mode?: 'register' } = {}) {
         {mode === 'register' && <p className="faint" style={{ marginBottom: 0 }}>Ta partie actuelle ({saveSummary(save)}) deviendra celle du compte.</p>}
       </Panel>
       <p className="faint" style={{ textAlign: 'center' }}>Données conservées : ton adresse e-mail et ta sauvegarde de jeu, chez Google Firebase. Tu peux supprimer ton compte à tout moment.</p>
-    </Screen>
+    </>
   );
 
   return (
-    <Screen title="Compte">
+    <>
       <Panel>
         <div className="acc-who"><b>{acc.user.email}</b><span className={`acc-state ${acc.status}`}>{acc.status === 'syncing' ? 'Synchronisation…' : acc.status === 'offline' ? 'Hors ligne' : acc.status === 'error' ? 'Erreur' : 'Sauvegarde en ligne active'}</span></div>
         <div className="faint">Dernière synchronisation : {when(acc.lastSync)}</div>
@@ -81,7 +82,7 @@ export function Account({ mode: initial }: { mode?: 'register' } = {}) {
           </div>
         </Modal>
       )}
-    </Screen>
+    </>
   );
 }
 

@@ -10,9 +10,9 @@ export function CostView({ cost, save, heroId }: { cost: Cost; save: SaveData; h
     <span className="cost">
       {Object.entries(cost).map(([k, v]) => {
         if (!v) return null;
-        if (k === 'fragments') {
-          const have = heroId ? save.heroFragments[heroId] ?? 0 : 0;
-          return <span key={k} className={have < v ? 'lack' : ''}><Icon.gem size={14} /> {have}/{v} fragments</span>;
+        if (k === 'copies') {
+          const have = heroId ? save.heroCopies?.[heroId] ?? 0 : 0;
+          return <span key={k} className={have < v ? 'lack' : ''} title="Doublon du héros"><Icon.portal size={14} /> {have}/{v} doublon</span>;
         }
         const def = RESOURCES[k as keyof typeof RESOURCES];
         const have = save.resources[k as keyof typeof save.resources] ?? 0;

@@ -1,5 +1,5 @@
 import { Coach } from './Coach';
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
 import { HERO_BY_ID } from '../../data/heroes';
@@ -13,8 +13,6 @@ import { Icon } from '../art/Icons';
 import { Modal } from './common';
 import { GearCard, SLOT_ICON } from './GearCard';
 import { GearDetail } from './GearDetail';
-import { heroLine } from '../../data/heroLines';
-import { play } from '../../audio/sfx';
 
 // VITRINE DU HÉROS — l'illustration au centre, les 7 emplacements d'équipement autour
 // (arme, casque, armure à gauche ; gants, bottes, accessoire à droite ; artefact en bas).
@@ -28,22 +26,7 @@ export function HeroShowcase({ heroId, h, onPrev, onNext, below }: { heroId: str
   const toast = useUI((s) => s.toast);
   const [pick, setPick] = useState<GearSlot | null>(null);
   const [open, setOpen] = useState<string | null>(null);
-  // Le héros parle : un mot d'accueil à l'ouverture, puis une réplique à chaque fois qu'on le touche.
-  const [talk, setTalk] = useState<{ text: string; k: number } | null>(null);
-  const lineIx = useRef(0);
-  const hideT = useRef<ReturnType<typeof setTimeout>>();
   const def = HERO_BY_ID[heroId];
-  const say = (i: number) => {
-    setTalk({ text: heroLine(heroId, def.quote, i), k: Date.now() });
-    clearTimeout(hideT.current); hideT.current = setTimeout(() => setTalk(null), 4200);
-  };
-  useEffect(() => {
-    // La citation est déjà écrite sous le nom : on accueille avec une autre réplique.
-    lineIx.current = 1; setTalk(null);
-    const t = setTimeout(() => say(1), 650);
-    return () => { clearTimeout(t); clearTimeout(hideT.current); };
-  }, [heroId]); // eslint-disable-line react-hooks/exhaustive-deps
-  const poke = () => { lineIx.current += 1; say(lineIx.current); play('tap'); };
   const items = h ? heroGear(save, h.uid) : [];
   const bonus = gearBonus(items);
   const owners = Object.fromEntries(save.heroes.map((x) => [x.uid, HERO_BY_ID[x.heroId].name.split(' ')[0]]));
@@ -72,10 +55,9 @@ export function HeroShowcase({ heroId, h, onPrev, onNext, below }: { heroId: str
   return (
     <>
       <div className="showcase">
-        <button className="sc-art" aria-label={`Parler à ${def.name}`} onClick={poke}><div className="sc-breathe"><HeroArt heroId={heroId} kind="full" position="center 12%" /></div></button>
+        <div className="sc-art"><div className="sc-breathe"><HeroArt heroId={heroId} kind="full" position="center 12%" /></div></div>
         <div className={`sc-motes ${def.affinity}`} aria-hidden>{Array.from({ length: 12 }, (_, i) => <i key={i} style={{ ['--i' as string]: i }} />)}</div>
         <div className="sc-shade" />
-        {talk && <div key={talk.k} className="sc-talk" role="status">{talk.text}</div>}
         {onPrev && <button className="sc-nav prev" aria-label="Héros précédent" onClick={onPrev}>‹</button>}
         {onNext && <button className="sc-nav next" aria-label="Héros suivant" onClick={onNext}>›</button>}
         {h && (

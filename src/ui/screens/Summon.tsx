@@ -2,7 +2,7 @@ import { Coach } from '../components/Coach';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
-import { BANNERS, BANNER_BY_ID, EVENT_WELCOME_GIFT, DUPLICATE_FRAGMENTS } from '../../data/summons';
+import { BANNERS, BANNER_BY_ID, EVENT_WELCOME_GIFT } from '../../data/summons';
 import { HEROES, HERO_BY_ID } from '../../data/heroes';
 import { RARITIES } from '../../data/rarities';
 import { RESOURCES } from '../../data/resources';
@@ -115,7 +115,7 @@ export function Summon() {
           {b.featured && <p className="faint">{HERO_BY_ID[b.featured.heroId].name} : {Math.round(b.featured.share * 100)} % des tirages {RARITIES[HERO_BY_ID[b.featured.heroId].rarity].name.toLowerCase()}s.</p>}
           {b.pity && <p className="faint">Garantie : un héros {RARITIES[b.pity.rarity].name.toLowerCase()} ou mieux au plus tard tous les {b.pity.every} appels (compteur : {pity}).</p>}
           {b.multiGuarantee && <p className="faint">Appel ×10 : au moins un héros {RARITIES[b.multiGuarantee].name.toLowerCase()} ou mieux.</p>}
-          <p className="faint">Héros déjà possédé → fragments : {(Object.entries(DUPLICATE_FRAGMENTS) as [RarityId, number][]).map(([r, n]) => `${RARITIES[r].name} ${n}`).join(' · ')}.</p>
+          <p className="faint">Héros déjà possédé → 1 doublon : il sert à l’éveiller ou à renforcer sa famille ou son affinité (fiche du héros).</p>
           <button className="btn block" onClick={() => setSheet(null)}>Fermer</button>
         </Modal>
       )}
@@ -127,7 +127,7 @@ export function Summon() {
             {save.summons.history.slice(0, 20).map((x, i) => (
               <button key={i} className="hist-item" onClick={() => { const inst = save.heroes.find((h) => h.heroId === x.heroId); setSheet(null); push({ name: 'hero', heroId: x.heroId, uid: inst?.uid }); }}>
                 <div className="hist-ava" style={{ borderColor: RARITIES[HERO_BY_ID[x.heroId].rarity].color }}><HeroArt heroId={x.heroId} /></div>
-                <span className="faint">{x.duplicate ? 'fragments' : 'nouveau'}</span>
+                <span className="faint">{x.duplicate ? 'doublon' : 'nouveau'}</span>
               </button>
             ))}
           </div>
@@ -204,14 +204,14 @@ function RiftReveal({ results, bannerColor, bannerGlow, altar, onClose, again, c
               <div className="rr-rar" style={{ color: rc }}>{'★'.repeat(order)} {RARITIES[best.rarity].name.toUpperCase()}</div>
               <h2>{HERO_BY_ID[best.heroId].name}</h2>
               <div className="muted">{HERO_BY_ID[best.heroId].title}</div>
-              <div className={`chip ${best.duplicate ? '' : 'active'}`} style={{ margin: '10px auto 0', width: 'fit-content' }}>{best.duplicate ? `Déjà à vos côtés · +${best.fragments} fragments` : 'Un nouvel Héritier répond à l’appel'}</div>
+              <div className={`chip ${best.duplicate ? '' : 'active'}`} style={{ margin: '10px auto 0', width: 'fit-content' }}>{best.duplicate ? 'Déjà à vos côtés · +1 doublon' : 'Un nouvel Héritier répond à l’appel'}</div>
             </div>
           ) : (
             <div className="rr-grid">
               {results.map((r, i) => (
                 <div key={i} className="rr-card" style={{ animationDelay: `${0.12 + i * 0.14}s`, ['--rc' as string]: RARITIES[r.rarity].color, ['--fx' as string]: `${((i % 5) - 2) * -60}px`, ['--fy' as string]: `${-160 - Math.floor(i / 5) * 90}px` }}>
                   <HeroCard heroId={r.heroId} level={1} />
-                  <span className={`rg-tag ${r.duplicate ? '' : 'new'}`}>{r.duplicate ? `+${r.fragments} frag.` : 'NOUVEAU'}</span>
+                  <span className={`rg-tag ${r.duplicate ? '' : 'new'}`}>{r.duplicate ? 'DOUBLON' : 'NOUVEAU'}</span>
                 </div>
               ))}
             </div>

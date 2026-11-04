@@ -10,7 +10,7 @@ import type { EnergyState } from '../game/energy';
 import type { GearRarity, GearSlot, GearStat, SetId } from '../data/equipment';
 
 /** Version actuelle du format de sauvegarde. Toute modification de structure ⇒ +1 et une migration. */
-export const SAVE_VERSION = 3;
+export const SAVE_VERSION = 4;
 
 export interface HeroInstance {
   uid: string;
@@ -73,7 +73,12 @@ export interface SaveData {
   revision: number;
   profile: { name: string; level: number; xp: number; avatarHeroId: string };
   resources: Record<ResourceId, number>;
+  /** Ancien système (avant v4) : converti en copies à la migration, gardé vide. */
   heroFragments: Record<string, number>;
+  /** Doublons d'invocation : copies d'un héros possédé, à utiliser (éveil, lien de famille, lien d'affinité). */
+  heroCopies: Record<string, number>;
+  /** Niveaux des liens (0 à 10) : chaque niveau donne +1 % PV, ATQ et DÉF aux héros concernés. */
+  bonds: { faction: Record<string, number>; affinity: Record<string, number> };
   energy: EnergyState;
   time: TimeState;
   heroes: HeroInstance[];
@@ -149,6 +154,8 @@ export function createNewSave(now: number = Date.now()): SaveData {
     profile: { name: 'Héritier', level: 1, xp: 0, avatarHeroId: STARTER_HEROES[0] },
     resources,
     heroFragments: {},
+    heroCopies: {},
+    bonds: { faction: {}, affinity: {} },
     energy: { current: BALANCE.energy.max, lastTick: now },
     time: { highWater: now, lastSeen: now, rollbackCount: 0 },
     heroes,

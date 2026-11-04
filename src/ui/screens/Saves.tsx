@@ -7,7 +7,7 @@ import { flushSave, listBackups, parseStored, replaceSave, resetEverything, save
 import type { SaveData } from '../../save/schema';
 import type { StoredSave } from '../../save/db';
 import { Modal, Panel, Screen, fmt } from '../components/common';
-import { useAccount } from '../../cloud/account';
+import { AccountBody } from './Account';
 
 const dt = (ms: number) => new Date(ms).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
 
@@ -24,7 +24,8 @@ function Summary({ s }: { s: SaveData }) {
   );
 }
 
-export function Saves() {
+// SAUVEGARDE ET COMPTE — tout ce qui protège la partie, au même endroit : compte en ligne, export, copies de secours.
+export function Saves({ mode }: { mode?: 'register' } = {}) {
   const save = useGame((s) => s.save)!;
   const toast = useUI((s) => s.toast);
   const [code, setCode] = useState('');
@@ -80,14 +81,16 @@ export function Saves() {
   };
 
   return (
-    <Screen title="Sauvegarde">
+    <Screen title="Sauvegarde et compte">
+      <div className="panel-title" style={{ margin: '2px 0 8px' }}>Compte en ligne</div>
+      <AccountBody mode={mode} />
+      <div className="panel-title" style={{ margin: '18px 0 8px' }}>Sur cet appareil</div>
       <Panel title="Partie actuelle">
         <Summary s={save} />
         <p className="faint" style={{ marginTop: 10 }}>
           Sauvegarde automatique{saveStatus.lastSavedAt ? ` · ${dt(saveStatus.lastSavedAt)}` : ''}{saveStatus.persisted ? ' · protégée' : ''}
         </p>
         {saveStatus.error && <div className="hint warn">Erreur d’écriture : {saveStatus.error}</div>}
-        <CloudLine />
       </Panel>
 
       <Panel title="Exporter">
@@ -155,10 +158,3 @@ export function Saves() {
   );
 }
 
-function CloudLine() {
-  const user = useAccount((a) => a.user);
-  const push = useUI((s) => s.push);
-  return user
-    ? <p className="faint" style={{ marginBottom: 0 }}>Sauvegardée en ligne sur le compte {user.email}.</p>
-    : <button className="hint acc-cloud-hint" onClick={() => push({ name: 'account', mode: 'register' })}>Uniquement sur ce téléphone. <b>Créer un compte gratuit ›</b></button>;
-}

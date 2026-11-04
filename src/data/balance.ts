@@ -45,8 +45,8 @@ export const BALANCE = {
       { potion: 'potionSupreme', amount: 8, gold: 80000, minLevel: 50 },
       { potion: 'potionSupreme', amount: 18, gold: 120000, minLevel: 60 },
     ],
-    /** Éveil e → e+1 : réservé aux héros avancés (ascension >= e + 2), coûte fragments du héros + essence d'éveil. */
-    awaken: { fragmentsBase: 10, essenceBase: 3, gold: 40000 },
+    /** Éveil e → e+1 : coûte 1 doublon du héros + essence d'éveil + or ; demande l'ascension e (le 1er éveil est libre). */
+    awaken: { copies: 1, essenceBase: 2, gold: 20000 },
     /** Compétence niveau n → n+1 : grimoires = n, or = skillGold × n. */
     skillGold: 4000,
     /** Chance d'obtenir un équipement après une victoire de campagne. */

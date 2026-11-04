@@ -1,35 +1,23 @@
 import { cloudWanted, useAccount } from '../../cloud/account';
 import { useGame } from '../../state/store';
 import { useUI, type Route } from '../../state/ui';
-import { canClaimDaily } from '../../game/daily';
-import { claimableCount } from '../../game/missions';
 import { Screen } from '../components/common';
 import { Icon } from '../art/Icons';
-import { unreadMail } from './Mail';
 
 type Entry = { label: string; icon: keyof typeof Icon; route: Route; dot?: boolean };
 
 export function Menu() {
   const push = useUI((s) => s.push);
   const save = useGame((s) => s.save)!;
-  const now = useGame((s) => s.now);
+  // Le Menu ne contient que ce qui n'a pas de place ailleurs : chaque écran n'a qu'une seule entrée.
+  // (Missions, Événements, Courrier, Sanctuaire et Forge sont sur l'Accueil ; Équipes et Liens dans Héros.)
   const groups: { title: string; items: Entry[] }[] = [
-    { title: 'Chaque jour', items: [
-      { label: 'Missions', icon: 'scroll', route: { name: 'missions' }, dot: claimableCount(save) > 0 },
-      { label: 'Connexion', icon: 'gift', route: { name: 'daily' }, dot: canClaimDaily(save, now) },
-      { label: 'Courrier', icon: 'mail', route: { name: 'mail' }, dot: unreadMail(save.flags) },
-      { label: 'Événements', icon: 'calendar', route: { name: 'events' } },
-    ] },
-    { title: 'Collection', items: [
-      { label: 'Équipes', icon: 'team', route: { name: 'team' } },
+    { title: 'Ma partie', items: [
       { label: 'Sac', icon: 'bag', route: { name: 'inventory' } },
-      { label: 'Sanctuaire', icon: 'temple', route: { name: 'sanctuary' } },
-      { label: 'Forge', icon: 'forge', route: { name: 'gear' } },
+      { label: 'Codex', icon: 'book', route: { name: 'codex' } },
     ] },
-    { title: 'Univers', items: [{ label: 'Codex', icon: 'book', route: { name: 'codex' } }] },
     { title: 'Système', items: [
-      { label: 'Compte', icon: 'heroes', route: { name: 'account' }, dot: !useAccount.getState().user && !cloudWanted() && save.stats.battlesWon >= 3 },
-      { label: 'Sauvegarde', icon: 'save', route: { name: 'saves' } },
+      { label: 'Sauvegarde et compte', icon: 'save', route: { name: 'saves' }, dot: !useAccount.getState().user && !cloudWanted() && save.stats.battlesWon >= 3 },
       { label: 'Paramètres', icon: 'gear', route: { name: 'settings' } },
     ] },
   ];
@@ -52,6 +40,7 @@ export function Menu() {
           </div>
         </div>
       ))}
+      <p className="faint menu-map">Missions, Événements, Courrier, Sanctuaire et Forge : sur l’<b>Accueil</b>. Équipes et liens : dans <b>Héros</b>.</p>
     </Screen>
   );
 }

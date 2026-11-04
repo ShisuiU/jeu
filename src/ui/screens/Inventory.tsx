@@ -5,7 +5,6 @@ import { BALANCE } from '../../data/balance';
 import { Panel, Screen, fmt } from '../components/common';
 import { Icon, ResourceIcon } from '../art/Icons';
 import { HERO_BY_ID } from '../../data/heroes';
-import { RARITIES } from '../../data/rarities';
 
 const GROUPS: { title: string; ids: string[] }[] = [
   { title: 'Monnaies', ids: ['gold', 'crystals'] },
@@ -17,6 +16,7 @@ const GROUPS: { title: string; ids: string[] }[] = [
 export function Inventory() {
   const save = useGame((s) => s.save)!;
   const toast = useUI((s) => s.toast);
+  const push = useUI((s) => s.push);
   return (
     <Screen title="Sac">
       <Panel title="Énergie">
@@ -28,12 +28,18 @@ export function Inventory() {
           </div>
         </div>
       </Panel>
-      <Panel title="Fragments de héros" className={Object.values(save.heroFragments).some((n) => n > 0) ? '' : 'hidden-empty'}>
-        {Object.entries(save.heroFragments).filter(([, n]) => n > 0).length === 0 && <p className="faint">Aucun fragment.</p>}
-        {Object.entries(save.heroFragments).filter(([, n]) => n > 0).map(([id, n]) => (
-          <div key={id} className="stat-row"><span>{HERO_BY_ID[id]?.name ?? id}</span><b>{n}{!save.heroes.some((h) => h.heroId === id) ? ` / ${RARITIES[HERO_BY_ID[id].rarity].fragmentsToSummon}` : ''}</b></div>
-        ))}
-      </Panel>
+      {Object.values(save.heroCopies).some((n) => n > 0) && (
+        <Panel title="Doublons de héros">
+          {Object.entries(save.heroCopies).filter(([, n]) => n > 0).map(([id, n]) => {
+            const h = save.heroes.find((x) => x.heroId === id);
+            return (
+              <button key={id} className="stat-row" style={{ width: '100%' }} disabled={!h} onClick={() => h && push({ name: 'hero', uid: h.uid, heroId: id })}>
+                <span>{HERO_BY_ID[id]?.name ?? id}</span><b>×{n} ›</b>
+              </button>
+            );
+          })}
+        </Panel>
+      )}
       {GROUPS.map((g) => (
         <Panel key={g.title} title={g.title}>
           <div className="res-grid">

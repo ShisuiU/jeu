@@ -6,6 +6,9 @@ import { unreadMail } from '../screens/Mail';
 import { claimableCount, eventsDot } from '../../game/missions';
 import { WORLD_BOSS } from '../../data/worldBoss';
 import { ARENA } from '../../data/arena';
+import { isUnlocked } from '../../game/unlocks';
+import { newCopies } from '../../game/copies';
+import { cloudWanted, useAccount } from '../../cloud/account';
 
 const ITEMS: { tab: Tab; label: string; icon: keyof typeof Icon }[] = [
   { tab: 'home', label: 'Accueil', icon: 'home' },
@@ -21,9 +24,12 @@ export function BottomNav() {
   const tab = useUI((s) => s.tab);
   // Un sélecteur par pastille : chacun renvoie un booléen stable (sinon React redessine en boucle).
   const summonDot = useGame((s) => !!s.save && (s.save.resources.shardAeon > 0 || s.save.resources.shardPrimal > 0 || !s.save.flags.gift_event_ash));
-  const combatsDot = useGame((s) => !!s.save && (s.save.worldBoss.keysUsed < WORLD_BOSS.keysPerDay || s.save.arena.ticketsUsed < ARENA.ticketsPerDay || (s.save.expeditions?.runs ?? []).some((r) => s.now >= r.endsAt) || eventsDot(s.save, s.now)));
-  const menuDot = useGame((s) => !!s.save && (canClaimDaily(s.save, s.now) || unreadMail(s.save.flags) || claimableCount(s.save) > 0));
-  const dots: Partial<Record<Tab, boolean>> = { summon: summonDot, combats: combatsDot, menu: menuDot };
+  // Chaque pastille indique l'onglet où se trouve l'action (pas de pastille vers un mode encore fermé).
+  const combatsDot = useGame((s) => !!s.save && ((isUnlocked(s.save, 'worldboss') && s.save.worldBoss.keysUsed < WORLD_BOSS.keysPerDay) || (isUnlocked(s.save, 'arena') && s.save.arena.ticketsUsed < ARENA.ticketsPerDay) || (s.save.expeditions?.runs ?? []).some((r) => s.now >= r.endsAt)));
+  const homeDot = useGame((s) => !!s.save && (canClaimDaily(s.save, s.now) || unreadMail(s.save.flags) || claimableCount(s.save) > 0 || (isUnlocked(s.save, 'events') && eventsDot(s.save, s.now))));
+  const heroesDot = useGame((s) => !!s.save && newCopies(s.save));
+  const menuDot = useGame((s) => !!s.save && !useAccount.getState().user && !cloudWanted() && s.save.stats.battlesWon >= 3);
+  const dots: Partial<Record<Tab, boolean>> = { home: homeDot, collection: heroesDot, summon: summonDot, combats: combatsDot, menu: menuDot };
   return (
     <nav className="bottom-nav">
       {ITEMS.map((it) => {

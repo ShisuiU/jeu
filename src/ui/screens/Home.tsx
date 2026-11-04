@@ -6,6 +6,7 @@ import { FACTIONS } from '../../data/factions';
 import { CHAPTERS } from '../../data/campaign';
 import { chapterStars, isStageUnlocked, stageProgress } from '../../game/campaign';
 import { claimableCount, eventsDot } from '../../game/missions';
+import { isUnlocked, unlockText } from '../../game/unlocks';
 import { canClaimDaily } from '../../game/daily';
 import { canImprove } from '../../game/upgrade';
 import { HeroArt, hasRealArt } from '../art/HeroArt';
@@ -30,8 +31,8 @@ export function Home() {
   const stars = chapterStars(save, 'normal', nextStage?.chapter ?? CHAPTERS.length);
   const shortcuts = [
     { label: 'Missions', icon: Icon.scroll, dot: claimableCount(save) > 0, go: () => push({ name: 'missions' }) },
-    { label: 'Événements', icon: Icon.calendar, dot: eventsDot(save, now), go: () => push({ name: 'events' }) },
-    { label: 'Courrier', icon: Icon.mail, dot: unreadMail(save.flags) || canClaimDaily(save, now), go: () => push({ name: unreadMail(save.flags) ? 'mail' : 'daily' }) },
+    { label: 'Événements', icon: Icon.calendar, dot: isUnlocked(save, 'events') && eventsDot(save, now), go: () => (isUnlocked(save, 'events') ? push({ name: 'events' }) : useUI.getState().toast(`Événements : ${unlockText('events').toLowerCase()} de la campagne.`)) },
+    { label: 'Courrier', icon: Icon.mail, dot: unreadMail(save.flags) || canClaimDaily(save, now), go: () => push({ name: 'mail' }) },
   ];
 
   const teamHeroes = team.slots.map((u) => save.heroes.find((h) => h.uid === u)).filter((h): h is NonNullable<typeof h> => !!h);

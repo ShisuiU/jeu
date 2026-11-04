@@ -7,6 +7,8 @@ import { WORLD_BOSS } from '../../data/worldBoss';
 import { ARENA, arenaTier } from '../../data/arena';
 import { chapterStars, isStageUnlocked } from '../../game/campaign';
 import { activeEvents } from '../../game/events';
+import { eventClaimable } from '../../game/missions';
+import { BONUS_SHORT } from '../../data/eventCycle';
 import { EXPEDITION_SLOTS, finishedExpeditions } from '../../game/expeditions';
 import { Screen } from '../components/common';
 import { EnemyArt } from '../art/EnemyArt';
@@ -22,7 +24,6 @@ export function Combats() {
   const bestDungeon = Math.max(0, ...DUNGEONS.map((d) => save.progress.dungeons[d.id]?.bestFloor ?? 0));
   const keys = WORLD_BOSS.keysPerDay - save.worldBoss.keysUsed;
   const tickets = ARENA.ticketsPerDay - save.arena.ticketsUsed;
-  const ev = activeEvents(now)[0];
   const cards: { title: string; sub: string; art: string; color: string; route: Route; dot?: boolean }[] = [
     { title: 'Campagne', sub: `Chapitre ${chap.n} · ${chap.name} · ★ ${st.stars}/${st.max}`, art: chap.stages[9].waves[1]?.find((w) => w.hpMult)?.enemy ?? 'herald', color: '#d9b36a', route: { name: 'campaign' } },
     { title: 'Donjons', sub: `Meilleur étage ${bestDungeon}/10`, art: 'forge_golem', color: '#ff9a3c', route: { name: 'dungeons' } },
@@ -31,7 +32,10 @@ export function Combats() {
     { title: 'Expéditions', sub: (() => { const f = finishedExpeditions(save, now); const r = save.expeditions?.runs.length ?? 0; return f ? `${f} de retour : butin à récupérer` : r ? `${r} en cours` : `${EXPEDITION_SLOTS} missions par jour, même jeu fermé`; })(), art: 'seam_stalker', color: '#9fb7ff', route: { name: 'expeditions' }, dot: finishedExpeditions(save, now) > 0 || (save.expeditions?.runs.length ?? 0) + (save.expeditions?.done.length ?? 0) === 0 },
     { title: 'Arène', sub: `Ligue ${arenaTier(save.arena.rating).name} · ${tickets}/${ARENA.ticketsPerDay} tickets`, art: 'hollow_knight', color: '#ff6b7d', route: { name: 'arena' }, dot: tickets > 0 },
   ];
-  if (ev) cards.push({ title: ev.name, sub: 'Événement en cours', art: 'ash_lord', color: ev.color ?? '#ff3d6e', route: { name: 'events' } });
+  for (const ev of [...activeEvents(now)].reverse()) cards.unshift({
+    title: ev.name, sub: ev.cycle ? `Cette semaine · bonus ${BONUS_SHORT[ev.cycle.bonus.kind]} ×${String(ev.cycle.bonus.mult).replace('.', ',')}` : 'Événement spécial',
+    art: ev.cycle?.art ?? 'ash_lord', color: ev.color ?? '#ff3d6e', route: { name: 'events' }, dot: !save.flags[`seen_${ev.id}`] || eventClaimable(save, now, ev.id) > 0,
+  });
   return (
     <Screen title="Combats">
       <div className="combat-list">

@@ -5,8 +5,7 @@ import { HERO_BY_ID } from '../../data/heroes';
 import { FACTIONS } from '../../data/factions';
 import { CHAPTERS } from '../../data/campaign';
 import { chapterStars, isStageUnlocked, stageProgress } from '../../game/campaign';
-import { claimableCount } from '../../game/missions';
-import { activeEvents } from '../../game/events';
+import { claimableCount, eventsDot } from '../../game/missions';
 import { canClaimDaily } from '../../game/daily';
 import { canImprove } from '../../game/upgrade';
 import { HeroArt, hasRealArt } from '../art/HeroArt';
@@ -31,7 +30,7 @@ export function Home() {
   const stars = chapterStars(save, 'normal', nextStage?.chapter ?? CHAPTERS.length);
   const shortcuts = [
     { label: 'Missions', icon: Icon.scroll, dot: claimableCount(save) > 0, go: () => push({ name: 'missions' }) },
-    { label: 'Événements', icon: Icon.calendar, dot: activeEvents(now).length > 0, go: () => push({ name: 'events' }) },
+    { label: 'Événements', icon: Icon.calendar, dot: eventsDot(save, now), go: () => push({ name: 'events' }) },
     { label: 'Courrier', icon: Icon.mail, dot: unreadMail(save.flags) || canClaimDaily(save, now), go: () => push({ name: unreadMail(save.flags) ? 'mail' : 'daily' }) },
   ];
 

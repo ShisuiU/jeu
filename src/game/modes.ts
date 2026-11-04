@@ -307,5 +307,6 @@ export function nextSpec(s: SaveData, spec: BattleSpec): BattleSpec | null {
   }
   if (spec.mode === 'dungeon') return spec.floor < DUNGEON_FLOORS ? { ...spec, floor: spec.floor + 1 } : null;
   if (spec.mode === 'tower') return s.progress.tower.floor < TOWER_FLOORS ? { mode: 'tower', floor: s.progress.tower.floor + 1 } : null;
+  if (spec.mode === 'challenge' && spec.trial != null && spec.trial < 2) { const n = { ...spec, trial: spec.trial + 1 }; return canStart(s, n).ok ? n : null; }
   return null;
 }

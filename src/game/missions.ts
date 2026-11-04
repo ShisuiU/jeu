@@ -120,3 +120,6 @@ export function eventClaimable(s: SaveData, now: number, eventId?: string): numb
   }
   return n;
 }
+
+/** Pastille « Événements » : nouvel événement pas encore ouvert, ou récompense à réclamer. */
+export const eventsDot = (s: SaveData, now: number) => activeEvents(now).some((e) => !s.flags[`seen_${e.id}`]) || eventClaimable(s, now) > 0;

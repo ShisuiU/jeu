@@ -3,9 +3,7 @@ import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
 import { DAILY_BONUS, DAILY_MISSIONS, WEEKLY_BONUS, WEEKLY_MISSIONS } from '../../data/missions';
 import { ACHIEVEMENTS } from '../../data/achievements';
-import { bonusAvailable, claimableByTab, claimAchievement, claimBonus, claimMission, missionState, type MissionKind, claimEventTask, eventTaskState } from '../../game/missions';
-import { activeEvents, bannerAvailable } from '../../game/events';
-import { canStart } from '../../game/modes';
+import { bonusAvailable, claimableByTab, claimAchievement, claimBonus, claimMission, missionState, type MissionKind } from '../../game/missions';
 import { formatDuration, msUntilReset, msUntilWeekReset } from '../../core/time';
 import { play } from '../../audio/sfx';
 import { RESOURCES } from '../../data/resources';
@@ -63,49 +61,6 @@ export function Missions() {
           {ACHIEVEMENTS.map((a) => { const [v, t] = a.progress(save); return <Row key={a.id} title={a.title} value={v} target={t} reward={a.reward} claimed={save.achievements.includes(a.id)} onClaim={() => claim((s) => claimAchievement(s, a.id))} />; })}
         </Panel>
       )}
-    </Screen>
-  );
-}
-
-export function Events() {
-  const save = useGame((s) => s.save)!;
-  const now = useGame((s) => s.now);
-  const mutate = useGame((s) => s.mutate);
-  const { push, toast } = useUI.getState();
-  const list = activeEvents(now);
-  return (
-    <Screen title="Événements">
-      {list.length === 0 && <div className="hint">Aucun événement en cours.</div>}
-      {list.map((e) => {
-        const p = save.events[e.id];
-        const chal = e.challenge ? canStart(save, { mode: 'challenge', eventId: e.id }) : null;
-        return (
-          <div key={e.id}>
-            <div className="event-card" style={{ ['--mc' as string]: e.color ?? '#b98cff' }}>
-              <div className="faint">ÉVÉNEMENT · se termine dans {formatDuration(Date.parse(e.end) - now)}</div>
-              <h2 style={{ fontSize: 22, color: e.color }}>{e.name}</h2>
-              <p className="muted" style={{ fontSize: 13 }}>{e.description}</p>
-              <div className="row wrap" style={{ gap: 6 }}>
-                {e.dungeonBonus && e.dungeonBonus > 1 && <span className="chip active">Donjons ×{e.dungeonBonus}</span>}
-                {e.banners?.filter((b) => bannerAvailable(b, now)).map((b) => <button key={b} className="chip active" onClick={() => push({ name: 'summon' })}>Invocation spéciale ›</button>)}
-              </div>
-            </div>
-            {e.tasks && e.tasks.length > 0 && (
-              <Panel title="Objectifs de l’événement">
-                {e.tasks.map((t) => { const st = eventTaskState(save, e.id, t.id)!; return <Row key={t.id} title={t.title} value={st.value} target={t.target} reward={t.reward} claimed={st.claimed} onClaim={() => { let ok = false; mutate((s) => { ok = claimEventTask(s, e.id, t.id); }); if (ok) { play('claim'); toast('Récompense obtenue !', 'ok'); } }} />; })}
-              </Panel>
-            )}
-            {e.challenge && (
-              <Panel title="Défi spécial">
-                <b>{e.challenge.name}</b>
-                <p className="faint">{e.challenge.description}</p>
-                <RewardView reward={e.challenge.reward} />
-                <button className="btn block" style={{ marginTop: 10 }} disabled={!chal?.ok} onClick={() => push({ name: 'prep', spec: { mode: 'challenge', eventId: e.id } })}>{p?.challengeDone ? 'Défi réussi ✓' : 'Relever le défi'}</button>
-              </Panel>
-            )}
-          </div>
-        );
-      })}
     </Screen>
   );
 }

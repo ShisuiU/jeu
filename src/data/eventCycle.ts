@@ -17,6 +17,11 @@ export const BONUS_LABEL: Record<EventBonusKind, string> = {
   campaignGold: 'Or gagné en campagne',
 };
 
+/** Libellé court (cartes, pastille du bonus). */
+export const BONUS_SHORT: Record<EventBonusKind, string> = {
+  expedition: 'expéditions', arena: 'arène', dungeon: 'donjons', worldBoss: 'boss mondial', campaignXp: 'XP en campagne', campaignGold: 'or en campagne',
+};
+
 export interface CycleTask { key: TrackKey; target: number; title: string; points: number; reward: Reward }
 
 export interface CycleTheme {

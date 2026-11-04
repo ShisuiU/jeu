@@ -1,12 +1,15 @@
 import type { Reward } from './resources';
 import type { TrackKey } from './missions';
 import type { WaveEnemy } from './campaign';
+import type { EventBonusKind } from './eventCycle';
 
 // ÉVÉNEMENTS — décrits en JSON. Le jeu télécharge public/events.json au démarrage (sans passer par le
 // cache), le mémorise pour le hors-ligne, et retombe sur cette liste intégrée si rien n'est disponible.
 // Pour lancer un nouvel événement : modifier uniquement public/events.json, sans toucher au code.
 
-export interface EventTask { id: string; key: TrackKey; target: number; title: string; reward: Reward }
+export interface EventTask { id: string; key: TrackKey; target: number; title: string; reward: Reward; points?: number }
+/** Combat d'épreuve : ennemis du thème, au niveau du chapitre où en est le joueur. */
+export interface EventTrial { id: string; name: string; points: number; reward: Reward }
 export interface EventChallenge { id: string; name: string; description: string; waves: WaveEnemy[][]; reward: Reward }
 export interface GameEvent {
   id: string;
@@ -21,6 +24,16 @@ export interface GameEvent {
   /** Bonus de butin des donjons (multiplicateur). */
   dungeonBonus?: number;
   color?: string;
+  /** Événement de la semaine (calendrier automatique) : champs ci-dessous. */
+  cycle?: {
+    theme: string;
+    tagline: string;
+    region: string;
+    art: string;
+    bonus: { kind: EventBonusKind; mult: number };
+    trials: EventTrial[];
+    milestones: { points: number; reward: Reward }[];
+  };
 }
 
 export const BUNDLED_EVENTS: GameEvent[] = [

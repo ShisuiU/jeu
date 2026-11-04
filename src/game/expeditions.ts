@@ -11,6 +11,7 @@ import { powerOf } from './stats';
 import { heroTotalStats } from './heroStats';
 import { applyReward } from './rewards';
 import { track } from './missions';
+import { eventBonus } from './events';
 
 // EXPÉDITIONS — le Lien envoie des héros à travers les failles. Ils reviennent après un temps
 // réel (même jeu fermé) avec du butin. 4 expéditions proposées par jour ; bonus si la condition
@@ -83,8 +84,9 @@ export function expeditionLoot(s: SaveData, o: ExpeditionOffer, heroUids: string
   const ratio = Math.max(0.6, Math.min(1.3, power / Math.max(1, o.reqPower)));
   const bonus = condMet(o.cond, heroUids.map((u) => s.heroes.find((h) => h.uid === u)!.heroId));
   const reward: Reward = {};
+  const ev = eventBonus(s.time.highWater, 'expedition');
   for (const [k, v] of Object.entries(o.base)) {
-    const n = (v as number) * ratio * (bonus ? 1.3 : 1);
+    const n = (v as number) * ratio * (bonus ? 1.3 : 1) * ev;
     const whole = Math.floor(n);
     // Partie décimale tirée au sort de façon déterministe (les petites ressources rares tombent parfois).
     const frac = n - whole;

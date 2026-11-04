@@ -11,6 +11,7 @@ import { addAccountXp, addHeroXp } from './progression';
 import { gearBonus, rollCampaignGear, seededRand, pickWeighted } from './gear';
 import { BALANCE } from '../data/balance';
 import { GEAR_INVENTORY_CAP } from '../data/equipment';
+import { eventBonus } from './events';
 import type { GearItem } from '../save/schema';
 
 /** Butin bonus d'une victoire de campagne (un tirage). Les donjons (phase 4) en donneront davantage. */
@@ -117,7 +118,8 @@ export function applyStageResult(s: SaveData, stageId: string, diff: DifficultyI
   const mult = DIFFICULTIES[diff].rewardMult;
   const { heroes, ...base } = result.firstClear ? stage.firstClear : { ...stage.repeat, heroes: undefined };
   const reward: Reward = {};
-  for (const [k, v] of Object.entries(base)) reward[k as keyof Reward] = Math.round((v ?? 0) * mult);
+  const goldEv = eventBonus(now, 'campaignGold');
+  for (const [k, v] of Object.entries(base)) reward[k as keyof Reward] = Math.round((v ?? 0) * mult * (k === 'gold' ? goldEv : 1));
   applyReward(s, reward);
   result.reward = reward;
   for (const id of heroes ?? []) {
@@ -140,7 +142,7 @@ export function applyStageResult(s: SaveData, stageId: string, diff: DifficultyI
   result.loot = { [lootKey]: Math.round(lootAmount * mult) };
   applyReward(s, result.loot);
 
-  const xp = Math.round(stage.heroXp * mult);
+  const xp = Math.round(stage.heroXp * mult * eventBonus(now, 'campaignXp'));
   for (const uid of participantUids) {
     const h = s.heroes.find((x) => x.uid === uid);
     if (!h) continue;

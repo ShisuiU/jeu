@@ -6,7 +6,7 @@ sans App Store ni serveur : c'est une application web progressive (PWA) qu'on in
 
 > État : **version 1.20.1** (Expéditions) — histoire en 8 chapitres (80 niveaux, 4 difficultés), 23 héros, invocations, améliorations, équipement, donjons, tour, boss mondial, arène, missions, événements.
 
-**Jouer : https://shisuiu.github.io/jeu/** Voir [docs/ROADMAP.md](docs/ROADMAP.md).
+**Jouer : https://jeu-aeonfall.vercel.app/** (adresse principale, hébergée par Vercel). Secours : https://shisuiu.github.io/jeu/ (GitHub Pages). Voir [docs/ROADMAP.md](docs/ROADMAP.md).
 
 ## Jouer sur iPhone
 

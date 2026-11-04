@@ -25,6 +25,11 @@ export function coachActive(s: SaveData, id: CoachId): boolean {
   return i === 0 || !!s.flags[`coach_${COACH_ORDER[i - 1]}`];
 }
 
+/** Le tutoriel du début est-il encore en cours (pas de message par-dessus) ? */
+export function inTutorial(s: SaveData): boolean {
+  return s.flags.guide_done !== true || (!s.flags.coach_off && !s.flags.coach_home_summon && Object.values(s.progress.campaign).filter((p) => p.clears > 0).length < 3);
+}
+
 export function resetCoach(s: SaveData) {
   for (const id of COACH_ORDER) delete s.flags[`coach_${id}`];
   delete s.flags.coach_off;

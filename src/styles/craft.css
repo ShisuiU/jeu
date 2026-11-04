@@ -383,3 +383,10 @@ body:has(.coach) .toasts { visibility: hidden; }
 .wk-trial.open .wk-step { border-color: var(--gold-hi); color: var(--gold-hi); }
 .wk-trial.done .wk-step { background: #2a2418; border-color: var(--gold); color: var(--gold-hi); }
 .wk-trial.locked { opacity: 0.45; }
+
+/* ─── Invitation à créer un compte ─── */
+.acc-prompt-ic { width: 64px; height: 64px; margin: 2px auto 8px; display: grid; place-items: center; border-radius: 50%; color: var(--gold-hi); background: radial-gradient(circle, rgba(217,179,106,0.22), rgba(20,16,28,0.9) 70%); border: 1px solid var(--line-strong); }
+.acc-prompt-sum { margin: 0 0 14px; padding: 8px 10px; text-align: center; font-size: 13px; color: var(--text-dim); border-radius: 10px; background: rgba(255,255,255,0.04); border: 1px solid var(--line); }
+.acc-cloud-hint { display: block; width: 100%; margin-top: 10px; text-align: left; }
+.acc-cloud-hint b { color: var(--gold-hi); }
+body:has(.acc-prompt-ic) .toasts { visibility: hidden; }

@@ -110,11 +110,11 @@ export function Expeditions() {
         <Sheet title={offer.place} onClose={() => setPrep(null)} footer={
           <div className="row" style={{ gap: 8 }}>
             <button className="btn secondary grow" onClick={() => setPrep(null)}>Annuler</button>
-            <button className="btn grow" disabled={picked.length !== offer.size} onClick={launch}>Partir ({dur(offer.minutes)})</button>
+            <button className="btn grow" disabled={picked.length !== offer.size} onClick={launch}>{picked.length === offer.size ? `Partir (${dur(offer.minutes)})` : `Choisis ${offer.size - picked.length} héros`}</button>
           </div>
         }>
           <div className="ex-prep-head">
-            <span>{picked.length}/{offer.size} héros</span>
+            <span>{picked.length ? `${picked.length}/${offer.size} héros` : `Touche ${offer.size > 1 ? `${offer.size} héros` : 'un héros'} pour l’envoyer`}</span>
             <span className={`ex-cond ${picked.length && condMet(offer.cond, picked.map((u) => save.heroes.find((h) => h.uid === u)!.heroId)) ? 'on' : ''}`}><CondIcon c={offer.cond} size={15} /> {condLabel(offer.cond)} +30 %</span>
           </div>
           {preview && (

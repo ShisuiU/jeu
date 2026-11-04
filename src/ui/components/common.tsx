@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { useUI } from '../../state/ui';
 import { Icon } from '../art/Icons';
 import { RARITIES } from '../../data/rarities';
@@ -87,10 +88,12 @@ export function Toggle({ on, onChange, label }: { on: boolean; onChange: (v: boo
 }
 
 export function Modal({ children, onClose }: { children: ReactNode; onClose?: () => void }) {
-  return (
+  // Rendue directement dans <body> : rien dans l'écran (défilement, effets) ne peut la rogner ou la recouvrir.
+  return createPortal(
     <div className="modal-backdrop" onClick={(e) => { if (e.target === e.currentTarget) onClose?.(); }}>
       <div className="modal">{children}</div>
-    </div>
+    </div>,
+    document.querySelector('.app') ?? document.body,
   );
 }
 

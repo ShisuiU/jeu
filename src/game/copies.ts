@@ -52,5 +52,10 @@ export function heroBonus(s: SaveData, h: HeroInstance): GearBonus {
   return { ...b, pct: { ...b.pct, hp: b.pct.hp + p, atk: b.pct.atk + p, def: b.pct.def + p } };
 }
 
-/** Nombre total de copies en attente (pour la pastille « à utiliser »). */
-export const pendingCopies = (s: SaveData) => s.heroes.reduce((n, h) => n + (copiesOf(s, h.heroId) > 0 ? 1 : 0), 0);
+/** Nombre total de doublons en réserve. */
+export const totalCopies = (s: SaveData) => Object.values(s.heroCopies ?? {}).reduce((a, n) => a + Math.max(0, n), 0);
+// Pastille « nouveau doublon » sur l'onglet Héros : seulement quand des doublons sont arrivés depuis la dernière visite.
+const SEEN_KEY = 'aeonfall.copiesSeen';
+export const copiesSeen = () => { try { return Number(localStorage.getItem(SEEN_KEY) ?? 0); } catch { return 0; } };
+export const markCopiesSeen = (s: SaveData) => { try { localStorage.setItem(SEEN_KEY, String(totalCopies(s))); } catch { /* */ } };
+export const newCopies = (s: SaveData) => totalCopies(s) > copiesSeen();

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
 import { HEROES } from '../../data/heroes';
@@ -8,7 +8,7 @@ import { HeroCard } from '../components/HeroCard';
 import { ListControls, usePersisted, type Filters } from '../components/ListControls';
 import { HERO_GROUPS, HERO_SORTS, heroMatches, sortHeroes } from '../components/heroFilters';
 import { BondsSheet } from '../components/Copies';
-import { copiesOf } from '../../game/copies';
+import { copiesOf, markCopiesSeen } from '../../game/copies';
 
 export function Collection() {
   const save = useGame((s) => s.save)!;
@@ -17,6 +17,7 @@ export function Collection() {
   const [showCodex, setShowCodex] = useState(false);
   const [bonds, setBonds] = useState(false);
   const { sort, filters } = prefs;
+  useEffect(() => { markCopiesSeen(save); }, [save]);
 
   const owned = useMemo(() => sortHeroes(save, save.heroes, filters, sort), [save, filters, sort]);
   const ownedIds = new Set(save.heroes.map((h) => h.heroId));

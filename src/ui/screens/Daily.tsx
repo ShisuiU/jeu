@@ -5,10 +5,11 @@ import { DAILY_REWARDS, type DailyRewardDef } from '../../data/dailyRewards';
 import { canClaimDaily } from '../../game/daily';
 import { formatDuration, msUntilReset } from '../../core/time';
 import { play } from '../../audio/sfx';
-import { Modal, Panel, Screen } from '../components/common';
+import { Modal, Panel } from '../components/common';
 import { RewardView, rewardMainIcon } from '../components/RewardView';
 
-export function Daily() {
+/** Contenu de l'onglet « Connexion » du Courrier. */
+export function DailyBody() {
   const save = useGame((s) => s.save)!;
   const now = useGame((s) => s.now);
   const rollback = useGame((s) => s.clockRollback);
@@ -26,7 +27,7 @@ export function Daily() {
   };
 
   return (
-    <Screen title="Connexion quotidienne">
+    <>
       <Panel>
         <div className="row between" style={{ marginBottom: 10, alignItems: 'baseline' }}>
           <span className="muted" style={{ whiteSpace: 'nowrap' }}><b style={{ color: 'var(--gold-hi)', fontSize: 18 }}>{save.daily.totalLogins}</b> jour(s)</span>
@@ -56,6 +57,6 @@ export function Daily() {
           <button className="btn block" style={{ marginTop: 16 }} onClick={() => setGot(null)}>Continuer</button>
         </Modal>
       )}
-    </Screen>
+    </>
   );
 }

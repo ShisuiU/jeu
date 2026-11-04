@@ -25,7 +25,6 @@ const HeroDetail = L(() => import('./ui/screens/HeroDetail'), 'HeroDetail');
 const Team = L(() => import('./ui/screens/Team'), 'Team');
 const Inventory = L(() => import('./ui/screens/Inventory'), 'Inventory');
 const Menu = L(() => import('./ui/screens/Menu'), 'Menu');
-const Daily = L(() => import('./ui/screens/Daily'), 'Daily');
 const Settings = L(() => import('./ui/screens/Settings'), 'Settings');
 const Saves = L(() => import('./ui/screens/Saves'), 'Saves');
 const Codex = L(() => import('./ui/screens/Codex'), 'Codex');
@@ -44,7 +43,6 @@ const WorldBoss = L(() => import('./ui/screens/Modes'), 'WorldBoss');
 const Arena = L(() => import('./ui/screens/Modes'), 'Arena');
 const Combats = L(() => import('./ui/screens/Combats'), 'Combats');
 const Expeditions = L(() => import('./ui/screens/Expeditions'), 'Expeditions');
-const Account = L(() => import('./ui/screens/Account'), 'Account');
 const Missions = L(() => import('./ui/screens/Missions'), 'Missions');
 const Events = L(() => import('./ui/screens/Events'), 'Events');
 
@@ -56,7 +54,7 @@ function renderRoute(r: Route) {
     case 'team': return <Team />;
     case 'inventory': return <Inventory />;
     case 'menu': return <Menu />;
-    case 'daily': return <Daily />;
+    case 'daily': return <Mail tab="daily" />;
     case 'settings': return <Settings />;
     case 'saves': return <Saves />;
     case 'codex': return <Codex />;
@@ -74,7 +72,7 @@ function renderRoute(r: Route) {
     case 'events': return <Events />;
     case 'combats': return <Combats />;
     case 'expeditions': return <Expeditions />;
-    case 'account': return <Account mode={r.mode} />;
+    case 'account': return <Saves mode={r.mode} />;
     case 'stage': return <Stage key={r.stageId} stageId={r.stageId} />;
     case 'prep': return <Prep key={JSON.stringify(r.spec)} spec={r.spec} />;
     case 'battle': return <Battle key={r.seed} spec={r.spec} teamId={r.teamId} seed={r.seed} />;

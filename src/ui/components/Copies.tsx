@@ -50,7 +50,6 @@ function CopiesModal({ h, onClose }: { h: HeroInstance; onClose: () => void }) {
   const bond = (kind: BondKind) => {
     const key = kind === 'faction' ? d.faction : d.affinity;
     const lv = bondLevel(save, kind, key);
-    const owned = save.heroes.filter((x) => (kind === 'faction' ? HERO_BY_ID[x.heroId].faction : HERO_BY_ID[x.heroId].affinity) === key).length;
     const name = kind === 'faction' ? FACTIONS[key as FactionId].short : AFFINITIES[key as AffinityId].name;
     const chk = giveCopyCheck(save, h.heroId, kind);
     return (
@@ -58,7 +57,7 @@ function CopiesModal({ h, onClose }: { h: HeroInstance; onClose: () => void }) {
         <span className="cp-ic">{kind === 'faction' ? <FactionEmblem id={key as FactionId} size={26} /> : <AffinityIcon id={key as AffinityId} size={26} />}</span>
         <div className="grow">
           <b>{kind === 'faction' ? `Famille ${name}` : `Affinité ${name}`}</b> <span className="cp-lv">{lv}/{BOND_MAX}</span>
-          <div className="cp-sub">+{BOND_PCT} % PV, ATQ et DÉF pour vos {owned} héros {kind === 'faction' ? name : `d’affinité ${name}`}</div>
+          <div className="cp-sub">+{BOND_PCT} % PV, ATQ et DÉF à tous les héros {kind === 'faction' ? name : `d’affinité ${name}`}</div>
         </div>
         <button className="btn small" disabled={!chk.ok} onClick={() => { let ok = false; mutate((s) => { ok = giveCopy(s, h.heroId, kind); }); if (ok) done(`Lien ${name} : niveau ${lv + 1} !`); }}>{lv >= BOND_MAX ? 'Max' : 'Offrir'}</button>
       </div>

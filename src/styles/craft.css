@@ -425,3 +425,8 @@ body:has(.acc-prompt-ic) .toasts { visibility: hidden; }
 .cp-cost { margin-top: 4px; font-size: 12px; }
 .bond-bar { height: 5px; margin: 5px 0 3px; border-radius: 3px; background: rgba(255,255,255,0.07); overflow: hidden; }
 .bond-bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-hi)); }
+.combat-card.locked { height: 58px; opacity: 0.6; background: rgba(12,10,16,0.7); }
+.combat-card.locked .cc-text { margin-left: 16px; }
+.combat-card.locked .cc-title { font-size: 16px; color: var(--text-dim); }
+.combat-card.locked > svg { transform: none; }
+.menu-map { text-align: center; margin-top: 18px; line-height: 1.5; }

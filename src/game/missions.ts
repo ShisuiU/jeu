@@ -3,7 +3,7 @@ import { ACHIEVEMENTS } from '../data/achievements';
 import { dayKey, weekKey } from '../core/time';
 import type { SaveData } from '../save/schema';
 import { applyReward } from './rewards';
-import { activeEvents } from './events';
+import { activeEvents, milestoneState } from './events';
 
 /** Remet à zéro missions, clés de boss et tickets d'arène au changement de jour/semaine (mutation). */
 export function applyResets(s: SaveData, now: number): boolean {
@@ -109,3 +109,17 @@ export function claimableByTab(s: SaveData): { daily: number; weekly: number; pr
   const per = (kind: MissionKind) => DEFS[kind].filter((m) => { const st = missionState(s, kind, m.id); return st.done && !st.claimed; }).length + (bonusAvailable(s, kind) ? 1 : 0);
   return { daily: per('daily'), weekly: per('weekly'), progress: ACHIEVEMENTS.filter((a) => achievementDone(s, a.id) && !s.achievements.includes(a.id)).length };
 }
+
+/** Récompenses d'événement à réclamer (objectifs accomplis et paliers de points atteints). */
+export function eventClaimable(s: SaveData, now: number, eventId?: string): number {
+  let n = 0;
+  for (const e of activeEvents(now)) {
+    if (eventId && e.id !== eventId) continue;
+    n += (e.tasks ?? []).filter((t) => { const st = eventTaskState(s, e.id, t.id); return st?.done && !st.claimed; }).length;
+    n += (e.cycle?.milestones ?? []).filter((_, i) => milestoneState(s, e, i)?.ready).length;
+  }
+  return n;
+}
+
+/** Pastille « Événements » : nouvel événement pas encore ouvert, ou récompense à réclamer. */
+export const eventsDot = (s: SaveData, now: number) => activeEvents(now).some((e) => !s.flags[`seen_${e.id}`]) || eventClaimable(s, now) > 0;

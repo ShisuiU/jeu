@@ -416,7 +416,7 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
             {spec.mode !== 'tower' && spec.mode !== 'challenge' && (
               <button className="btn secondary grow" onClick={retry}>{result.won ? 'Rejouer' : 'Réessayer'} {cost.kind === 'energy' && <><Icon.energy size={16} />{cost.amount}</>}{cost.kind === 'key' && ' (1 clé)'}{cost.kind === 'ticket' && ' (1 ticket)'}</button>
             )}
-            {spec.mode === 'tower' && !result.won && <button className="btn secondary grow" onClick={retry}>Réessayer</button>}
+            {(spec.mode === 'tower' || (spec.mode === 'challenge' && spec.trial != null)) && !result.won && <button className="btn secondary grow" onClick={retry}>Réessayer</button>}
             {next && <button className="btn grow" onClick={() => replace({ name: 'prep', spec: next })}>Suivant</button>}
           </div>
         </div>

@@ -45,7 +45,7 @@ const Combats = L(() => import('./ui/screens/Combats'), 'Combats');
 const Expeditions = L(() => import('./ui/screens/Expeditions'), 'Expeditions');
 const Account = L(() => import('./ui/screens/Account'), 'Account');
 const Missions = L(() => import('./ui/screens/Missions'), 'Missions');
-const Events = L(() => import('./ui/screens/Missions'), 'Events');
+const Events = L(() => import('./ui/screens/Events'), 'Events');
 
 function renderRoute(r: Route) {
   switch (r.name) {

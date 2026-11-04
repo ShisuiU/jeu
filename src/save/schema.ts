@@ -96,7 +96,11 @@ export interface SaveData {
   achievements: string[];
   arena: { rating: number; wins: number; losses: number; ticketsUsed: number; opponents: ArenaOpponent[] };
   worldBoss: { keysUsed: number; best: Record<string, number> };
-  events: Record<string, { counters: Record<string, number>; claimed: string[]; challengeDone: boolean }>;
+  events: Record<string, {
+    counters: Record<string, number>; claimed: string[]; challengeDone: boolean;
+    /** Événement de la semaine : combats d'épreuve gagnés, paliers réclamés, chapitre de référence. */
+    trials?: number; tiers?: number[]; chap?: number;
+  }>;
   shop: { energyRefills: number };
   /** Expéditions (héros envoyés en mission, retour en temps réel). */
   expeditions: ExpeditionState;

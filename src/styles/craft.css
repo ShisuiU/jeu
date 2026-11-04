@@ -354,3 +354,32 @@ body:has(.coach) .toasts { visibility: hidden; }
 .acc-choice { width: 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 12px; margin-top: 8px; border-radius: var(--radius); text-align: left; background-color: var(--stone-2); border: 1px solid var(--edge-hi); font-size: 13px; }
 .acc-choice b { font-family: var(--font-title); color: var(--gold-hi); font-size: 15px; }
 .acc-choice:active { border-color: var(--brass); }
+
+/* ─── Événement de la semaine ─── */
+.wk-hero { position: relative; overflow: hidden; min-height: 168px; margin-bottom: 12px; border-radius: 14px; border: 1px solid color-mix(in srgb, var(--mc) 40%, transparent); background: #0c0a12; }
+.wk-bg { position: absolute; inset: 0; opacity: 0.55; }
+.wk-bg > * { position: absolute; inset: 0; }
+.wk-art { position: absolute; right: -6%; top: 0; bottom: 0; width: 52%; -webkit-mask-image: linear-gradient(270deg, #000 55%, transparent); mask-image: linear-gradient(270deg, #000 55%, transparent); }
+.wk-art img { object-position: center 20%; }
+.wk-hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(8,6,12,0.92) 30%, rgba(8,6,12,0.2) 75%); pointer-events: none; }
+.wk-text { position: relative; z-index: 1; padding: 14px 16px; max-width: 66%; }
+.wk-when { font-size: 12px; color: var(--text-faint); }
+.wk-text h2 { margin: 4px 0 6px; font-size: 22px; line-height: 1.1; color: var(--mc); }
+.wk-text p { margin: 0 0 10px; font-size: 13px; color: var(--text-dim, #c9c2d6); line-height: 1.35; }
+.wk-bonus { display: inline-block; padding: 4px 9px; border-radius: 999px; font-size: 12px; font-weight: 700; color: #120e18; background: var(--mc); }
+.wk-head { margin-bottom: 18px; } .wk-head b { font-size: 22px; color: var(--gold-hi); }
+.wk-track { position: relative; height: 8px; margin: 0 14px 34px; border-radius: 4px; background: rgba(255,255,255,0.08); }
+.wk-fill { position: absolute; inset: 0 auto 0 0; border-radius: 4px; background: linear-gradient(90deg, var(--gold), var(--gold-hi)); transition: width 0.4s ease; }
+.wk-node { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: #1a1622; border: 1px solid var(--line-strong); color: var(--text-faint); font-size: 13px; }
+.wk-node span { position: absolute; top: 36px; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--text-faint); }
+.wk-node.ready { border-color: var(--gold-hi); box-shadow: 0 0 0 3px rgba(255,226,163,0.18), 0 0 14px rgba(255,226,163,0.45); animation: wk-pulse 1.6s ease-in-out infinite; }
+.wk-node.claimed { background: #2a2418; color: var(--gold-hi); border-color: var(--gold); }
+@keyframes wk-pulse { 50% { transform: translate(-50%, -50%) scale(1.08); } }
+.wk-tip { display: flex; flex-direction: column; gap: 6px; padding-top: 4px; }
+.wk-pts { width: 40px; height: 40px; flex-shrink: 0; display: grid; place-items: center; border-radius: 10px; font-weight: 700; font-size: 13px; color: var(--gold-hi); background: rgba(217,179,106,0.1); border: 1px solid rgba(217,179,106,0.3); }
+.wk-trial { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.wk-trial:last-child { border: 0; }
+.wk-step { width: 30px; height: 30px; flex-shrink: 0; display: grid; place-items: center; border-radius: 50%; font-weight: 700; border: 1px solid var(--line-strong); color: var(--text-faint); }
+.wk-trial.open .wk-step { border-color: var(--gold-hi); color: var(--gold-hi); }
+.wk-trial.done .wk-step { background: #2a2418; border-color: var(--gold); color: var(--gold-hi); }
+.wk-trial.locked { opacity: 0.45; }

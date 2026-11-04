@@ -1,0 +1,174 @@
+import { useEffect, useState } from 'react';
+import { useGame } from '../../state/store';
+import { useUI } from '../../state/ui';
+import { activeEvents, bannerAvailable, claimMilestone, eventPoints, milestoneState, nextWeekly, trialsDone } from '../../game/events';
+import { claimEventTask, eventClaimable, eventTaskState } from '../../game/missions';
+import { canStart } from '../../game/modes';
+import { BONUS_LABEL, BONUS_SHORT } from '../../data/eventCycle';
+import { RESOURCES } from '../../data/resources';
+import type { GameEvent } from '../../data/events';
+import { formatDuration } from '../../core/time';
+import { play } from '../../audio/sfx';
+import { Panel, Screen } from '../components/common';
+import { RewardView, rewardMainIcon } from '../components/RewardView';
+import { EnemyArt } from '../art/EnemyArt';
+import { BattleBackdrop } from '../art/BattleBackdrop';
+
+// ÉVÉNEMENTS — l'événement de la semaine (thème, bonus, épreuve, objectifs, paliers) et les événements spéciaux.
+
+const left = (ms: number) => { const d = Math.floor(ms / 86_400_000); return d >= 1 ? `${d} j ${Math.floor((ms % 86_400_000) / 3_600_000)} h` : formatDuration(ms); };
+const fmtMult = (m: number) => `×${String(m).replace('.', ',')}`;
+const rewardText = (r: Record<string, number | undefined>) => Object.entries(r).map(([k, v]) => `+${(v ?? 0).toLocaleString('fr-FR')} ${RESOURCES[k as keyof typeof RESOURCES]?.name ?? k}`).join(' · ');
+
+export function Events() {
+  const save = useGame((s) => s.save)!;
+  const now = useGame((s) => s.now);
+  const mutate = useGame((s) => s.mutate);
+  const list = activeEvents(now);
+  const [sel, setSel] = useState(list[0]?.id);
+  const e = list.find((x) => x.id === sel) ?? list[0];
+
+  // L'événement a été vu : la pastille « nouveau » disparaît.
+  useEffect(() => { if (e && !save.flags[`seen_${e.id}`]) mutate((s) => { s.flags[`seen_${e.id}`] = true; }); }, [e?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  return (
+    <Screen title="Événements">
+      {list.length > 1 && (
+        <div className="seg" style={{ marginBottom: 12 }}>
+          {list.map((x) => { const n = eventClaimable(save, now, x.id); return <button key={x.id} className={x.id === e?.id ? 'on' : ''} onClick={() => setSel(x.id)}>{x.cycle ? 'Cette semaine' : x.name}{n > 0 && <span className="seg-count">{n}</span>}</button>; })}
+        </div>
+      )}
+      {!e && <div className="hint">Aucun événement en cours.</div>}
+      {e?.cycle ? <Weekly e={e} /> : e ? <Special e={e} /> : null}
+    </Screen>
+  );
+}
+
+function useClaim() {
+  const mutate = useGame((s) => s.mutate);
+  const toast = useUI((s) => s.toast);
+  return (fn: (s: NonNullable<ReturnType<typeof useGame.getState>['save']>) => boolean) => {
+    let ok = false; mutate((s) => { ok = fn(s); });
+    if (ok) { play('claim'); toast('Récompense obtenue !', 'ok'); }
+  };
+}
+
+function Tasks({ e }: { e: GameEvent }) {
+  const save = useGame((s) => s.save)!;
+  const claim = useClaim();
+  if (!e.tasks?.length) return null;
+  return (
+    <Panel title="Objectifs">
+      {e.tasks.map((t) => {
+        const st = eventTaskState(save, e.id, t.id)!;
+        return (
+          <div key={t.id} className={`mission ${st.claimed ? 'claimed' : ''}`}>
+            {t.points ? <div className="wk-pts">+{t.points}</div> : <div className="m-ic">{rewardMainIcon(t.reward, 24)}</div>}
+            <div className="grow">
+              <div className="m-title">{t.title}</div>
+              <div className="progress" style={{ margin: '5px 0 3px' }}><div style={{ width: `${Math.min(100, (st.value / t.target) * 100)}%` }} /></div>
+              <div className="faint">{rewardText(t.reward)}</div>
+            </div>
+            {st.claimed ? <span className="m-done">✓</span> : st.done ? <button className="btn small" onClick={() => claim((s) => claimEventTask(s, e.id, t.id))}>Réclamer</button> : <span className="m-count">{st.value}/{t.target}</span>}
+          </div>
+        );
+      })}
+    </Panel>
+  );
+}
+
+function Weekly({ e }: { e: GameEvent }) {
+  const save = useGame((s) => s.save)!;
+  const now = useGame((s) => s.now);
+  const push = useUI((s) => s.push);
+  const claim = useClaim();
+  const c = e.cycle!;
+  const pts = eventPoints(save, e);
+  const max = c.milestones[c.milestones.length - 1].points;
+  const done = trialsDone(save, e);
+  const nxt = nextWeekly(now);
+  const [tier, setTier] = useState<number | null>(null);
+  const tierSt = tier != null ? milestoneState(save, e, tier) : null;
+  return (
+    <>
+      <div className="wk-hero" style={{ ['--mc' as string]: e.color }}>
+        <div className="wk-bg"><BattleBackdrop region={c.region} /></div>
+        <div className="wk-art"><EnemyArt enemyId={c.art} /></div>
+        <div className="wk-text">
+          <div className="wk-when">Fin dans {left(Date.parse(e.end) - now)}</div>
+          <h2>{e.name}</h2>
+          <p>{c.tagline}</p>
+          <span className="wk-bonus" title={BONUS_LABEL[c.bonus.kind]}>Bonus {BONUS_SHORT[c.bonus.kind]} {fmtMult(c.bonus.mult)}</span>
+        </div>
+      </div>
+
+      <Panel>
+        <div className="wk-head"><b>{pts}</b><span className="faint"> / {max} points</span></div>
+        <div className="wk-track">
+          <div className="wk-fill" style={{ width: `${Math.min(100, (pts / max) * 100)}%` }} />
+          {c.milestones.map((m, i) => {
+            const st = milestoneState(save, e, i)!;
+            return (
+              <button key={i} className={`wk-node ${st.claimed ? 'claimed' : st.ready ? 'ready' : ''}`} style={{ left: `${(m.points / max) * 100}%` }} aria-label={`Palier ${m.points} points`}
+                onClick={() => (st.ready ? claim((s) => claimMilestone(s, e.id, i, now)) : setTier(tier === i ? null : i))}>
+                {st.claimed ? '✓' : rewardMainIcon(m.reward, 16)}
+                <span>{m.points}</span>
+              </button>
+            );
+          })}
+        </div>
+        {tierSt && !tierSt.ready && <div className="wk-tip"><span className="faint">Palier {tierSt.points} points{tierSt.claimed ? ' (réclamé)' : ''}</span><RewardView reward={tierSt.reward} /></div>}
+      </Panel>
+
+      <Panel title="Épreuve">
+        {c.trials.map((t, i) => {
+          const state = i < done ? 'done' : i === done ? 'open' : 'locked';
+          const ok = state === 'open' && canStart(save, { mode: 'challenge', eventId: e.id, trial: i }).ok;
+          return (
+            <div key={t.id} className={`wk-trial ${state}`}>
+              <div className="wk-step">{state === 'done' ? '✓' : i + 1}</div>
+              <div className="grow">
+                <div className="m-title">{t.name}</div>
+                <div className="faint">+{t.points} points</div>
+              </div>
+              {state === 'open' && <button className="btn small" disabled={!ok} onClick={() => push({ name: 'prep', spec: { mode: 'challenge', eventId: e.id, trial: i } })}>Combattre</button>}
+            </div>
+          );
+        })}
+      </Panel>
+
+      <Tasks e={e} />
+      <p className="faint" style={{ textAlign: 'center' }}>La semaine prochaine : {nxt.theme.name}</p>
+    </>
+  );
+}
+
+function Special({ e }: { e: GameEvent }) {
+  const save = useGame((s) => s.save)!;
+  const now = useGame((s) => s.now);
+  const push = useUI((s) => s.push);
+  const p = save.events[e.id];
+  const chal = e.challenge ? canStart(save, { mode: 'challenge', eventId: e.id }) : null;
+  return (
+    <>
+      <div className="event-card" style={{ ['--mc' as string]: e.color ?? '#b98cff' }}>
+        <div className="faint">Fin dans {left(Date.parse(e.end) - now)}</div>
+        <h2 style={{ fontSize: 22, color: e.color }}>{e.name}</h2>
+        <p className="muted" style={{ fontSize: 13 }}>{e.description}</p>
+        <div className="row wrap" style={{ gap: 6 }}>
+          {e.dungeonBonus && e.dungeonBonus > 1 && <span className="chip active">Donjons {fmtMult(e.dungeonBonus)}</span>}
+          {e.banners?.filter((b) => bannerAvailable(b, now)).map((b) => <button key={b} className="chip active" onClick={() => push({ name: 'summon' })}>Invocation spéciale ›</button>)}
+        </div>
+      </div>
+      <Tasks e={e} />
+      {e.challenge && (
+        <Panel title="Défi spécial">
+          <b>{e.challenge.name}</b>
+          <p className="faint">{e.challenge.description}</p>
+          <RewardView reward={e.challenge.reward} />
+          <button className="btn block" style={{ marginTop: 10 }} disabled={!chal?.ok} onClick={() => push({ name: 'prep', spec: { mode: 'challenge', eventId: e.id } })}>{p?.challengeDone ? 'Défi réussi ✓' : 'Relever le défi'}</button>
+        </Panel>
+      )}
+    </>
+  );
+}

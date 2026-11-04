@@ -11,7 +11,8 @@ import { applyStageResult, payEnergy, stageEnergy, stageProgress, stageWaves, is
 import { applyReward } from './rewards';
 import { addAccountXp, addHeroXp } from './progression';
 import { generateGear, pickWeighted, seededRand } from './gear';
-import { activeEvents, dungeonBonus } from './events';
+import { activeEvents, dungeonBonus, eventBonus, eventProgress, trialsDone } from './events';
+import { CYCLE_THEMES } from '../data/eventCycle';
 import { track } from './missions';
 import { generateOpponents, ratingDelta } from './arena';
 
@@ -24,7 +25,7 @@ export type BattleSpec =
   | { mode: 'tower'; floor: number }
   | { mode: 'worldboss'; tier: string }
   | { mode: 'arena'; opponentId: string }
-  | { mode: 'challenge'; eventId: string };
+  | { mode: 'challenge'; eventId: string; trial?: number };
 
 export type CostKind = 'energy' | 'key' | 'ticket' | 'free';
 
@@ -56,6 +57,36 @@ function scaleReward(r: Reward, m: number): Reward {
   const o: Reward = {};
   for (const [k, v] of Object.entries(r)) o[k as keyof Reward] = Math.max(1, Math.round((v ?? 0) * m));
   return o;
+}
+
+/** Chapitre où en est le joueur (premier niveau débloqué le plus avancé, mode normal). */
+export function currentChapter(s: SaveData): number {
+  return ([...CHAPTERS].reverse().find((c) => isStageUnlocked(s, 'normal', c.stages[0])) ?? CHAPTERS[0]).n;
+}
+
+/** Ajustement par thème (certains gardiens sont plus redoutables), calibré par simulation. */
+const TRIAL_ADJ: Record<string, number> = { tide: 0.9, tourney: 1.15, forge: 1.05, hunt: 1.05, pilgrim: 1, seams: 0.85 };
+
+/** Combat d'épreuve d'un événement de la semaine : ennemis du thème, calés sur les niveaux 3, 6 et 9
+ *  du chapitre de référence (fixé au premier combat d'épreuve, pour ne pas changer en cours de semaine). */
+export function trialSetup(s: SaveData, eventId: string, i: number): { waves: WaveEnemy[][]; statMult: number; chapter: number; heroXp: number } | null {
+  const e = activeEvents(s.time.highWater).find((x) => x.id === eventId);
+  const t = e?.cycle && CYCLE_THEMES.find((x) => x.id === e.cycle!.theme);
+  if (!e || !t || i < 0 || i > 2) return null;
+  const chapter = s.events[e.id]?.chap ?? currentChapter(s);
+  const stages = CHAPTERS[chapter - 1].stages;
+  // Niveaux des ennemis : niveaux 3, 6 et 10 du chapitre ; puissance : niveaux 3, 6 et 9 (sans l'ajustement propre au boss).
+  const ref = stages[[2, 5, 8][i]];
+  const lv = Math.max(...stages[[2, 5, 9][i]].waves.flat().map((w) => w.level));
+  const [a, b, d] = t.foes;
+  const W = (enemy: string, level: number, slot: number, hpMult?: number): WaveEnemy => ({ enemy, level, slot, hpMult });
+  const waves = [
+    [[W(a, lv, 0), W(b, lv, 1), W(a, lv, 2)], [W(b, lv, 0), W(d, lv, 3), W(a, lv, 2)]],
+    [[W(a, lv, 0), W(b, lv, 1), W(d, lv, 3)], [W(b, lv, 0), W(a, lv, 1), W(b, lv, 2), W(d, lv, 4)]],
+    [[W(a, lv, 0), W(b, lv, 1), W(a, lv, 2), W(d, lv, 3)], [W(t.guardian, lv + 1, 1, 4 + chapter * 0.1), W(d, lv, 3), W(b, lv, 4)]],
+  ][i];
+  // Dernier combat : un peu adouci (gardien renforcé) ; au chapitre 8, les héros plafonnent au niveau 60.
+  return { waves, statMult: (ref.statMult ?? 1) * TRIAL_ADJ[t.id] * (i === 2 ? (chapter >= 8 ? 0.68 : 0.8) : 1), chapter, heroXp: ref.heroXp };
 }
 
 export function resolveMode(s: SaveData, spec: BattleSpec): ModeInfo {
@@ -91,7 +122,7 @@ export function resolveMode(s: SaveData, spec: BattleSpec): ModeInfo {
       return {
         title: `${WORLD_BOSS.name} · ${t.name}`, subtitle: `Combat limité à ${WORLD_BOSS.turnLimit} actions`, region: 'akkar',
         waves: [[{ kind: 'enemy', refId: WORLD_BOSS.enemy, slot: 1, level: t.level, hpMult: t.hpMult }]], turnLimit: WORLD_BOSS.turnLimit,
-        cost: { kind: 'key', amount: 1 }, rewardPreview: t.reward, rewardLabel: 'Récompense maximale (100 % des PV)',
+        cost: { kind: 'key', amount: 1 }, rewardPreview: scaleReward(t.reward, eventBonus(s.time.highWater, 'worldBoss')), rewardLabel: eventBonus(s.time.highWater, 'worldBoss') > 1 ? 'Récompense maximale (bonus d’événement)' : 'Récompense maximale (100 % des PV)',
         notes: [`Paliers de dégâts : ${DAMAGE_CHESTS.join(' / ')} %`, `Meilleur score : ${Math.round(s.worldBoss.best[t.id] ?? 0)} %`], firstTime: false,
       };
     }
@@ -101,12 +132,22 @@ export function resolveMode(s: SaveData, spec: BattleSpec): ModeInfo {
       return {
         title: `Arène · ${o?.name ?? '?'}`, subtitle: `Classement ${s.arena.rating}`, region: 'valcrest',
         waves: [(o?.heroes ?? []).map((h) => ({ kind: 'hero' as const, refId: h.heroId, slot: h.slot, level: h.level }))],
-        cost: { kind: 'ticket', amount: 1 }, rewardPreview: arenaTier(s.arena.rating).reward, rewardLabel: 'Récompense de victoire',
+        cost: { kind: 'ticket', amount: 1 }, rewardPreview: scaleReward(arenaTier(s.arena.rating).reward, eventBonus(s.time.highWater, 'arena')), rewardLabel: eventBonus(s.time.highWater, 'arena') > 1 ? 'Récompense de victoire (bonus d’événement)' : 'Récompense de victoire',
         notes: [`Victoire : +${ratingDelta(true, Math.max(0, i))} points · Défaite : ${ratingDelta(false, 0)}`], firstTime: false,
       };
     }
     case 'challenge': {
       const e = activeEvents(s.time.highWater).find((x) => x.id === spec.eventId);
+      if (e?.cycle && spec.trial != null) {
+        const tr = e.cycle.trials[spec.trial];
+        const set = trialSetup(s, e.id, spec.trial);
+        return {
+          title: `${tr?.name ?? 'Épreuve'}`, subtitle: `${e.name} · épreuve ${spec.trial + 1}/3`, region: e.cycle.region,
+          waves: set ? toSetups(set.waves, 0, set.statMult) : [[]],
+          cost: { kind: 'free', amount: 0 }, rewardPreview: tr?.reward ?? {}, rewardLabel: `Récompense · +${tr?.points ?? 0} points`,
+          notes: set ? [`Difficulté du chapitre ${set.chapter}`] : [], firstTime: true,
+        };
+      }
       const c = e?.challenge;
       return {
         title: c?.name ?? 'Défi', subtitle: e?.name ?? '', region: 'ash', waves: c ? toSetups(c.waves) : [[]],
@@ -126,6 +167,10 @@ export function canStart(s: SaveData, spec: BattleSpec): { ok: boolean; reason?:
     case 'arena': return s.arena.ticketsUsed >= ARENA.ticketsPerDay ? { ok: false, reason: 'Plus de tickets aujourd’hui.' } : s.arena.opponents.some((o) => o.id === spec.opponentId) ? { ok: true } : { ok: false, reason: 'Adversaire introuvable.' };
     case 'challenge': {
       const e = activeEvents(s.time.highWater).find((x) => x.id === spec.eventId);
+      if (e?.cycle && spec.trial != null) {
+        const done = trialsDone(s, e);
+        return spec.trial === done && done < e.cycle.trials.length ? { ok: true } : { ok: false, reason: spec.trial < done ? 'Épreuve déjà réussie.' : 'Réussissez l’épreuve précédente.' };
+      }
       if (!e?.challenge) return { ok: false, reason: 'Événement terminé.' };
       return s.events[e.id]?.challengeDone ? { ok: false, reason: 'Défi déjà réussi.' } : { ok: true };
     }
@@ -137,6 +182,7 @@ export function payMode(s: SaveData, spec: BattleSpec, now: number): { ok: boole
   const c = canStart(s, spec);
   if (!c.ok) return c;
   const info = resolveMode(s, spec);
+  if (spec.mode === 'challenge' && spec.trial != null) { const p = eventProgress(s, spec.eventId); p.chap ??= currentChapter(s); }
   if (info.cost.kind === 'energy' && !payEnergy(s, info.cost.amount, now)) return { ok: false, reason: 'Énergie insuffisante.' };
   if (info.cost.kind === 'key') s.worldBoss.keysUsed += 1;
   if (info.cost.kind === 'ticket') s.arena.ticketsUsed += 1;
@@ -203,7 +249,7 @@ export function applyMode(s: SaveData, spec: BattleSpec, o: Outcome, now: number
       const chests = DAMAGE_CHESTS.filter((c) => pct >= c).length;
       res.damage = { dealt, pct, chests };
       s.worldBoss.best[t.id] = Math.max(s.worldBoss.best[t.id] ?? 0, pct);
-      if (chests > 0) { res.reward = scaleReward(t.reward, chests / DAMAGE_CHESTS.length); applyReward(s, res.reward); }
+      if (chests > 0) { res.reward = scaleReward(t.reward, (chests / DAMAGE_CHESTS.length) * eventBonus(now, 'worldBoss')); applyReward(s, res.reward); }
       res.won = chests > 0;
       res.lines.push(`Dégâts : ${Math.round(dealt).toLocaleString('fr-FR')} (${pct.toFixed(1)} % des PV) · ${chests}/${DAMAGE_CHESTS.length} paliers`);
       return res;
@@ -218,7 +264,7 @@ export function applyMode(s: SaveData, spec: BattleSpec, o: Outcome, now: number
       res.rating = { delta, rating: s.arena.rating };
       if (o.won) {
         s.arena.wins++; track(s, 'arenaWin'); track(s, 'battleWin');
-        res.reward = arenaTier(s.arena.rating).reward;
+        res.reward = scaleReward(arenaTier(s.arena.rating).reward, eventBonus(now, 'arena'));
         applyReward(s, res.reward);
       } else s.arena.losses++;
       s.arena.opponents = generateOpponents(s, r);
@@ -229,6 +275,19 @@ export function applyMode(s: SaveData, spec: BattleSpec, o: Outcome, now: number
     case 'challenge': {
       const e = activeEvents(now).find((x) => x.id === spec.eventId);
       const res = empty(o.won);
+      if (o.won && e?.cycle && spec.trial != null) {
+        const tr = e.cycle.trials[spec.trial];
+        const p = eventProgress(s, e.id);
+        if (!tr || spec.trial !== (p.trials ?? 0)) return res;
+        const set = trialSetup(s, e.id, spec.trial);
+        s.stats.battlesWon++; track(s, 'battleWin'); track(s, 'challengeWin');
+        p.trials = spec.trial + 1;
+        res.firstClear = true; res.reward = tr.reward; applyReward(s, res.reward);
+        res.heroXp = heroXpFor(s, o.participants, set?.heroXp ?? 300);
+        res.lines.push(`+${tr.points} points d’événement`);
+        return res;
+      }
+      if (!o.won) s.stats.battlesLost++;
       if (!o.won || !e?.challenge) return res;
       track(s, 'battleWin'); track(s, 'challengeWin');
       const p = (s.events[e.id] ??= { counters: {}, claimed: [], challengeDone: false });
@@ -248,5 +307,6 @@ export function nextSpec(s: SaveData, spec: BattleSpec): BattleSpec | null {
   }
   if (spec.mode === 'dungeon') return spec.floor < DUNGEON_FLOORS ? { ...spec, floor: spec.floor + 1 } : null;
   if (spec.mode === 'tower') return s.progress.tower.floor < TOWER_FLOORS ? { mode: 'tower', floor: s.progress.tower.floor + 1 } : null;
+  if (spec.mode === 'challenge' && spec.trial != null && spec.trial < 2) { const n = { ...spec, trial: spec.trial + 1 }; return canStart(s, n).ok ? n : null; }
   return null;
 }

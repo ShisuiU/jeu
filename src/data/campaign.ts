@@ -30,7 +30,7 @@ export interface ChapterDef {
   n: number;
   name: string;
   region: string;
-  backdrop: 'valcrest' | 'sylvaran' | 'prism' | 'akkar' | 'ash' | 'astral' | 'heart';
+  backdrop: 'valcrest' | 'sylvaran' | 'prism' | 'akkar' | 'ash' | 'astral' | 'heart' | 'seams';
   intro: string;
   stages: StageDef[];
 }

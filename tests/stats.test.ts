@@ -5,9 +5,9 @@ import { RARITIES } from '../src/data/rarities';
 import { FACTIONS } from '../src/data/factions';
 
 describe('données des héros', () => {
-  it('21 héros aux identifiants uniques et cohérents', () => {
-    expect(HEROES).toHaveLength(21);
-    expect(new Set(HEROES.map((h) => h.id)).size).toBe(21);
+  it('23 héros aux identifiants uniques et cohérents', () => {
+    expect(HEROES).toHaveLength(23);
+    expect(new Set(HEROES.map((h) => h.id)).size).toBe(23);
     const skillIds = HEROES.flatMap((h) => h.skills.map((s) => s.id));
     expect(new Set(skillIds).size).toBe(skillIds.length);
     for (const h of HEROES) {

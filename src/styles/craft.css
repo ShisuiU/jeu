@@ -313,3 +313,5 @@
 .coach-actions { display: flex; justify-content: space-between; align-items: center; }
 .coach-actions button { font-size: 12.5px; color: var(--text-faint); text-decoration: underline; text-underline-offset: 3px; }
 .coach-actions .coach-ok { text-decoration: none; font-weight: 800; color: #1d1408; background: linear-gradient(180deg, #d8b871, #b18947); padding: 6px 16px; border-radius: 3px; }
+/* Pas de message par-dessus l'élément que le tutoriel demande de toucher. */
+body:has(.coach) .toasts { visibility: hidden; }

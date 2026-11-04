@@ -1,17 +1,17 @@
 import type { ChapterDef, DialogueLine, StageDef, WaveEnemy } from './campaign';
 import type { Reward } from './resources';
 
-// CHAPITRES 2 À 7 — vagues générées par règles (niveau, composition croissante), histoire écrite à la main.
+// CHAPITRES 2 À 8 — vagues générées par règles (niveau, composition croissante), histoire écrite à la main.
 interface ChapterCfg {
   n: number; name: string; region: string; backdrop: ChapterDef['backdrop']; intro: string;
-  levelStart: number; pool: [string, string, string]; elite: string; boss: string; heroReward: string;
+  levelStart: number; pool: [string, string, string]; elite: string; boss: string; heroReward: string; midHero?: string;
   names: string[]; story: Partial<Record<number, { before?: DialogueLine[]; after?: DialogueLine[] }>>;
 }
 
 /** Puissance des ennemis par chapitre (calibrée par simulation, voir tests/balance.chapters.test.ts). */
-const POWER: Record<number, number> = { 2: 1.6, 3: 1.85, 4: 2.55, 5: 2.6, 6: 2.8, 7: 2.8 };
+const POWER: Record<number, number> = { 2: 1.6, 3: 1.85, 4: 2.55, 5: 2.6, 6: 2.8, 7: 2.8, 8: 3.9 };
 /** Ajustement du boss (certains kits sont plus redoutables que d'autres). */
-const BOSS_ADJ: Record<number, number> = { 2: 1, 3: 0.85, 4: 0.62, 5: 1.05, 6: 1, 7: 0.9 };
+const BOSS_ADJ: Record<number, number> = { 2: 1, 3: 0.85, 4: 0.62, 5: 1.05, 6: 1, 7: 0.9, 8: 0.66 };
 export const CHAPTER_POWER = (n: number, i: number) => Math.round(POWER[n] * (1 + (i - 1) * 0.01) * (i === 10 ? BOSS_ADJ[n] : 1) * 100) / 100;
 
 const L = (speaker: string, text: string): DialogueLine => ({ speaker, text });
@@ -31,8 +31,9 @@ function buildStages(c: ChapterCfg): StageDef[] {
     const firstClear: Reward & { heroes?: string[] } = { gold: 4000 + c.n * 1000 + i * 300, crystals: boss ? 200 : 40 };
     if (i % 3 === 0) firstClear.shardDim = 2;
     if (i === 5) firstClear.potionGreater = 3;
+    if (i === 5 && c.midHero) firstClear.heroes = [c.midHero];
     if (i === 8) firstClear.skillTome = 2;
-    if (boss) Object.assign(firstClear, { shardAeon: 1, awakenEssence: 2, heroes: [c.heroReward] }, c.n === 7 ? { shardPrimal: 1 } : {});
+    if (boss) Object.assign(firstClear, { shardAeon: 1, awakenEssence: 2, heroes: [c.heroReward] }, c.n >= 7 ? { shardPrimal: 1 } : {});
     const repeat: Reward = { gold: 1200 + c.n * 300 + i * 60, ...(i >= 5 ? { xpElixir: 1 } : {}) };
     return {
       id: `${c.n}-${i}`, chapter: c.n, index: i, name, energy: 6 + Math.floor(c.n / 2) + (boss ? 2 : 0),
@@ -131,6 +132,30 @@ const CFGS: ChapterCfg[] = [
       10: {
         before: [L('voice_of_void', 'Bonjour, Lien. Je suis toi. La version de toi qui a perdu, qui a tout vu disparaître, et qui a compris : le silence est la seule paix.'), L('solenne', 'Ne lui donne pas raison. Donne-lui un nom. Ce qui a un nom ne peut pas être effacé.'), L('aldric', 'Héritiers. Une dernière fois : derrière moi. Toujours derrière moi !')],
         after: [L('narrator', 'La Voix se brise comme du verre. Dans le silence qui suit, un premier son revient : un battement.'), L('solenne', 'Le Cœur bat. Fêlé, cousu, mais vivant. Je peux le maintenir… si je reste avec vous.'), L('azhar', 'Le rituel est enfin terminé. Pas comme je le voulais : mieux.'), L('elowen', 'J’entends la forêt. Elle chante.'), L('vaelshira', 'Le Néant recule. Il n’a pas disparu… mais il a appris à nous craindre.'), L('narrator', 'Le Monde Cousu ne sera jamais plus comme avant. Les époques resteront mêlées. Mais il vivra, et les Héritiers veilleront sur ses coutures.'), L('narrator', 'Solenne, l’Éclat Premier, rejoint les Héritiers. Fin de l’histoire principale… pour l’instant.')],
+      },
+    },
+  },
+  {
+    n: 8, name: 'Les Coutures du Monde', region: 'Les Marches recousues', backdrop: 'seams', levelStart: 58,
+    intro: 'Le Cœur bat de nouveau. Mais là où les époques ont été cousues ensemble, les fils lâchent un à un, et les effacés reviennent sans leur nom.',
+    pool: ['echo_wanderer', 'stitch_golem', 'seam_stalker'], elite: 'hollow_heir', boss: 'weaver_of_ages', heroReward: 'ondine', midHero: 'liran',
+    names: ['Les coutures défaites', 'Le bourg sans nom', 'Le marché des Échos', 'La route recousue', 'La place du crieur', 'Le pont entre deux âges', 'L’atelier abandonné', 'La salle des patrons', 'Le métier du monde', 'Le Tisserand des Âges'],
+    story: {
+      1: { before: [L('narrator', 'Le Cœur bat de nouveau. Mais là où les époques ont été cousues ensemble, les fils lâchent un à un.'), L('solenne', 'Les coutures se défont. Si elles cèdent, chaque époque repartira de son côté, et nous avec.'), L('aldric', 'Alors on tient les fils. Héritiers, en avant.')] },
+      3: { before: [L('narrator', 'Des silhouettes floues errent entre les étals vides et répètent des mots sans fin.'), L('elowen', 'Ce sont des gens. Ceux que le Néant a effacés.'), L('caelum', 'Des Échos. Le Cœur les rappelle, mais ils ne savent plus qui ils sont.')] },
+      5: {
+        before: [L('narrator', 'Sur la place, un Écho agite une clochette et crie des noms que personne n’entend.'), L('liran', 'Oyez, oyez… Je… je ne sais plus mon nom.'), L('solenne', 'Moi, je m’en souviens. Tu t’appelles Liran.')],
+        after: [L('liran', 'Liran. Liran ! Je me souviens de tout. Laissez-moi crier le nom des autres : je peux les ramener.'), L('aldric', 'Bienvenue parmi les Héritiers, crieur.')],
+      },
+      7: { before: [L('narrator', 'Dans un atelier abandonné, des milliers de patrons de tissu représentent le monde : chaque époque, chaque ville, chaque visage.'), L('vaelshira', 'Quelqu’un a recousu le monde après la Fracture. Fil par fil.'), L('azhar', 'Je croyais que c’était le Cœur. C’était quelqu’un.')] },
+      8: {
+        before: [L('ondine', 'Vous n’auriez pas dû venir jusqu’ici. Mon maître découd déjà le monde.'), L('aldric', 'Ton maître ?'), L('ondine', 'Le Tisserand des Âges. Il a recousu ce monde, il le trouve raté. Il veut en tisser un parfait. Sans vous.')],
+        after: [L('ondine', 'Vous vous battez pour un monde plein de défauts. Il m’a appris que c’était une faute.'), L('solenne', 'Un monde sans défauts est un monde sans personne. Réfléchis, Ondine.')],
+      },
+      9: { before: [L('narrator', 'Le métier du monde : un tissage immense où chaque fil est une vie.'), L('liran', 'Je les entends tous. Ils ne veulent pas être décousus.'), L('kaedra', 'Alors coupons la main qui tient les ciseaux.')] },
+      10: {
+        before: [L('weaver_of_ages', 'J’AI RECOUSU VOTRE MONDE APRÈS LA FRACTURE. IL EST PLEIN DE NŒUDS ET DE DÉCHIRURES. JE VAIS LE REFAIRE. PARFAIT.'), L('ondine', 'Maître, un monde parfait n’a personne dedans. Je reste avec eux.'), L('aldric', 'Héritiers ! Pour chaque fil de travers !')],
+        after: [L('narrator', 'Le Tisserand lâche ses aiguilles. Les fils se figent, puis se renouent d’eux-mêmes : de travers, mais solides.'), L('ondine', 'Il ne savait pas qu’un monde pouvait se recoudre tout seul.'), L('liran', 'Les Échos reviennent. Ils ont des noms, maintenant.'), L('solenne', 'Le Monde Cousu tient. Il y aura d’autres déchirures, Lien. Et nous serons là.')],
       },
     },
   },

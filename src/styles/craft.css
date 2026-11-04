@@ -390,3 +390,28 @@ body:has(.coach) .toasts { visibility: hidden; }
 .acc-cloud-hint { display: block; width: 100%; margin-top: 10px; text-align: left; }
 .acc-cloud-hint b { color: var(--gold-hi); }
 body:has(.acc-prompt-ic) .toasts { visibility: hidden; }
+
+/* ─── Héros vivants : souffle, particules d'affinité, répliques ─── */
+button.sc-art { padding: 0; border: 0; background: none; display: block; width: 100%; cursor: pointer; overflow: hidden; }
+.sc-breathe { position: absolute; inset: 0; transform-origin: 50% 28%; animation: sc-breathe 6.5s ease-in-out infinite; }
+@keyframes sc-breathe { 0%, 100% { transform: scale(1) translateY(0); } 50% { transform: scale(1.022) translateY(-0.6%); } }
+.sc-motes { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+.sc-motes i { position: absolute; bottom: -8px; left: calc(4% + var(--i) * 8%); width: 4px; height: 4px; border-radius: 50%; opacity: 0;
+  animation: mote-rise calc(7s + var(--i) * 0.35s) linear infinite; animation-delay: calc(var(--i) * -0.73s); }
+.sc-motes.solar i { background: #ffb45a; box-shadow: 0 0 6px 2px rgba(255,140,40,0.65); }
+.sc-motes.telluric i { width: 5px; height: 3px; border-radius: 2px; background: #b9d48a; box-shadow: 0 0 5px rgba(150,200,110,0.5); animation-name: mote-drift; }
+.sc-motes.lunar i { top: -8px; bottom: auto; background: #dfe8ff; box-shadow: 0 0 6px 1px rgba(190,210,255,0.7); animation-name: mote-fall; }
+.sc-motes.void i { width: 7px; height: 7px; background: #b26bff; filter: blur(1.5px); box-shadow: 0 0 10px 3px rgba(150,70,255,0.5); }
+@keyframes mote-rise { 0% { transform: translate(0, 0); opacity: 0; } 12% { opacity: 0.85; } 70% { opacity: 0.6; } 100% { transform: translate(14px, -78vh); opacity: 0; } }
+@keyframes mote-drift { 0% { transform: translate(0, 0) rotate(0); opacity: 0; } 15% { opacity: 0.7; } 100% { transform: translate(-40px, -55vh) rotate(260deg); opacity: 0; } }
+@keyframes mote-fall { 0% { transform: translate(0, 0); opacity: 0; } 15% { opacity: 0.8; } 100% { transform: translate(-12px, 70vh); opacity: 0; } }
+.sc-talk { position: absolute; z-index: 3; left: 50%; top: 33%; transform: translateX(-50%); width: max-content; max-width: 50%; padding: 9px 13px; pointer-events: none;
+  font-size: 14px; line-height: 1.35; font-style: italic; text-align: center; color: #f3ead8;
+  background-color: rgba(12,10,16,0.86); background-image: var(--grain); border: 1px solid var(--edge-hi); border-radius: 8px;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.55); animation: talk-in 0.28s cubic-bezier(.2,.8,.2,1), talk-out 0.4s ease-in 3.8s forwards; }
+@keyframes talk-in { from { opacity: 0; transform: translate(-50%, 6px) scale(0.96); } }
+@keyframes talk-out { to { opacity: 0; transform: translate(-50%, -4px); } }
+.reduced-motion .sc-motes { display: none; }
+.result-voice { max-width: 320px; margin: 4px auto 8px; text-align: center; font-style: italic; font-size: 14px; color: #efe4cf; animation: voice-in 0.4s 0.5s both; }
+@keyframes voice-in { from { opacity: 0; transform: translateY(6px); } }
+.result-voice span { display: block; margin-top: 3px; font-style: normal; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); }

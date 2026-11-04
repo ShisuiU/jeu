@@ -4,6 +4,7 @@ import type { SkillDef } from '../../data/types';
 import { useGame } from '../../state/store';
 import { useUI, type Route } from '../../state/ui';
 import { HERO_BY_ID } from '../../data/heroes';
+import { HERO_LINES } from '../../data/heroLines';
 import { createBattle, beginTurn, performAction, unitById, availableSkills, targetKind, validTargets, hpPct, shieldOf, predictOrder } from '../../game/battle/engine';
 import { chooseAction } from '../../game/battle/ai';
 import { STATUS_INFO, type Action, type BattleState, type Unit } from '../../game/battle/types';
@@ -363,6 +364,14 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
       {phase === 'result' && result && (
         <div className="result-overlay">
           <div className={`result-title ${result.won ? 'win' : 'lose'}`}>{spec.mode === 'worldboss' ? 'COMBAT TERMINÉ' : result.won ? 'VICTOIRE' : 'DÉFAITE'}</div>
+          {result.won && (() => {
+            // Un héros encore debout dit un mot (choisi selon le combat, toujours le même pour ce combat).
+            const alive = s.units.filter((u) => u.side === 'ally' && u.alive && u.kind === 'hero' && HERO_LINES[u.refId]);
+            if (!alive.length) return null;
+            const u = alive[(s.units.length * 7 + alive.length) % alive.length];
+            const lines = HERO_LINES[u.refId];
+            return <div className="result-voice">« {lines[(u.hp + s.units.length) % lines.length | 0]} »<span>{HERO_BY_ID[u.refId]?.name.split(' ')[0]}</span></div>;
+          })()}
           {result.lines.map((l, i) => <div key={i} className="chip active" style={{ margin: '6px auto', display: 'flex', width: 'fit-content', textAlign: 'center' }}>{l}</div>)}
           {result.won && spec.mode === 'campaign' && (
             <div className="result-stars">

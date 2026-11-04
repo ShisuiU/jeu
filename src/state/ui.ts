@@ -29,7 +29,8 @@ export type Route =
   | { name: 'missions' }
   | { name: 'events' }
   | { name: 'combats' }
-  | { name: 'expeditions' };
+  | { name: 'expeditions' }
+  | { name: 'account' };
 
 export type Tab = 'home' | 'collection' | 'summon' | 'combats' | 'menu';
 

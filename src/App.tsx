@@ -10,6 +10,8 @@ import { configureMusic, playMusic, stopMusic } from './audio/music';
 import { canClaimDaily } from './game/daily';
 import { claimableCount } from './game/missions';
 import { finishedExpeditions } from './game/expeditions';
+import { cloudWanted, loadCloud } from './cloud/account';
+import { CloudConflictModal } from './ui/screens/Account';
 import { BottomNav } from './ui/components/BottomNav';
 import { Toasts } from './ui/components/Toasts';
 import { Title } from './ui/screens/Title';
@@ -41,6 +43,7 @@ const WorldBoss = L(() => import('./ui/screens/Modes'), 'WorldBoss');
 const Arena = L(() => import('./ui/screens/Modes'), 'Arena');
 const Combats = L(() => import('./ui/screens/Combats'), 'Combats');
 const Expeditions = L(() => import('./ui/screens/Expeditions'), 'Expeditions');
+const Account = L(() => import('./ui/screens/Account'), 'Account');
 const Missions = L(() => import('./ui/screens/Missions'), 'Missions');
 const Events = L(() => import('./ui/screens/Missions'), 'Events');
 
@@ -70,6 +73,7 @@ function renderRoute(r: Route) {
     case 'events': return <Events />;
     case 'combats': return <Combats />;
     case 'expeditions': return <Expeditions />;
+    case 'account': return <Account />;
     case 'stage': return <Stage key={r.stageId} stageId={r.stageId} />;
     case 'prep': return <Prep key={JSON.stringify(r.spec)} spec={r.spec} />;
     case 'battle': return <Battle key={r.seed} spec={r.spec} teamId={r.teamId} seed={r.seed} />;
@@ -147,6 +151,9 @@ export default function App() {
     });
   }, [started]);
 
+  // Compte en ligne : reprise automatique de la connexion au démarrage (SDK chargé seulement si besoin).
+  useEffect(() => { if (started && cloudWanted()) void loadCloud().then((m) => m.startCloud()).catch(() => {}); }, [started]);
+
   // Retour par glissement depuis le bord gauche (comme les apps iPhone), sauf en combat.
   const swipe = useRef<{ x: number; y: number } | null>(null);
   const onTouchStart = (e: React.TouchEvent) => {
@@ -180,6 +187,7 @@ export default function App() {
             </ErrorBoundary>
           </div>
           {route.name !== 'battle' && <BottomNav />}
+          <CloudConflictModal />
           {route.name === 'home' && !save.flags.guide_done && <Guide />}
         </>
       )}

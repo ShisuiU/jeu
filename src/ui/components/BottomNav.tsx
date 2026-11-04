@@ -21,7 +21,7 @@ export function BottomNav() {
   const tab = useUI((s) => s.tab);
   // Un sélecteur par pastille : chacun renvoie un booléen stable (sinon React redessine en boucle).
   const summonDot = useGame((s) => !!s.save && (s.save.resources.shardAeon > 0 || s.save.resources.shardPrimal > 0 || !s.save.flags.gift_event_ash));
-  const combatsDot = useGame((s) => !!s.save && (s.save.worldBoss.keysUsed < WORLD_BOSS.keysPerDay || s.save.arena.ticketsUsed < ARENA.ticketsPerDay));
+  const combatsDot = useGame((s) => !!s.save && (s.save.worldBoss.keysUsed < WORLD_BOSS.keysPerDay || s.save.arena.ticketsUsed < ARENA.ticketsPerDay || (s.save.expeditions?.runs ?? []).some((r) => s.now >= r.endsAt)));
   const menuDot = useGame((s) => !!s.save && (canClaimDaily(s.save, s.now) || unreadMail(s.save.flags) || claimableCount(s.save) > 0));
   const dots: Partial<Record<Tab, boolean>> = { summon: summonDot, combats: combatsDot, menu: menuDot };
   return (

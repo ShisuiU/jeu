@@ -7,6 +7,7 @@ import { WORLD_BOSS } from '../../data/worldBoss';
 import { ARENA, arenaTier } from '../../data/arena';
 import { chapterStars, isStageUnlocked } from '../../game/campaign';
 import { activeEvents } from '../../game/events';
+import { EXPEDITION_SLOTS, finishedExpeditions } from '../../game/expeditions';
 import { Screen } from '../components/common';
 import { EnemyArt } from '../art/EnemyArt';
 import { Icon } from '../art/Icons';
@@ -27,6 +28,7 @@ export function Combats() {
     { title: 'Donjons', sub: `Meilleur étage ${bestDungeon}/10`, art: 'forge_golem', color: '#ff9a3c', route: { name: 'dungeons' } },
     { title: 'Tour des Âges', sub: `Étage ${save.progress.tower.floor}/${TOWER_FLOORS}`, art: 'tower_sentinel', color: '#b98cff', route: { name: 'tower' } },
     { title: 'Boss mondial', sub: `${WORLD_BOSS.name} · ${keys}/${WORLD_BOSS.keysPerDay} clés`, art: WORLD_BOSS.enemy, color: '#ffcc66', route: { name: 'worldboss' }, dot: keys > 0 },
+    { title: 'Expéditions', sub: (() => { const f = finishedExpeditions(save, now); const r = save.expeditions?.runs.length ?? 0; return f ? `${f} de retour : butin à récupérer` : r ? `${r} en cours` : `${EXPEDITION_SLOTS} missions par jour, même jeu fermé`; })(), art: 'seam_stalker', color: '#9fb7ff', route: { name: 'expeditions' }, dot: finishedExpeditions(save, now) > 0 || (save.expeditions?.runs.length ?? 0) + (save.expeditions?.done.length ?? 0) === 0 },
     { title: 'Arène', sub: `Ligue ${arenaTier(save.arena.rating).name} · ${tickets}/${ARENA.ticketsPerDay} tickets`, art: 'hollow_knight', color: '#ff6b7d', route: { name: 'arena' }, dot: tickets > 0 },
   ];
   if (ev) cards.push({ title: ev.name, sub: 'Événement en cours', art: 'ash_lord', color: ev.color ?? '#ff3d6e', route: { name: 'events' } });

@@ -3,7 +3,7 @@ import type { Reward } from './resources';
 // MISSIONS — objectifs journaliers et hebdomadaires suivis par compteurs (game/missions.ts → track()).
 export type TrackKey =
   | 'login' | 'battleWin' | 'campaignWin' | 'dungeonWin' | 'towerWin' | 'arenaFight' | 'arenaWin' | 'worldBoss'
-  | 'energySpent' | 'summon' | 'gearUpgrade' | 'heroUpgrade' | 'challengeWin';
+  | 'energySpent' | 'summon' | 'gearUpgrade' | 'heroUpgrade' | 'challengeWin' | 'expedition';
 
 export interface MissionDef { id: string; key: TrackKey; target: number; title: string; reward: Reward }
 
@@ -15,6 +15,7 @@ export const DAILY_MISSIONS: MissionDef[] = [
   { id: 'd_summon', key: 'summon', target: 1, title: 'Invoquer 1 héros', reward: { gold: 5000 } },
   { id: 'd_forge', key: 'gearUpgrade', target: 2, title: 'Améliorer 2 fois un équipement', reward: { forgeOre: 15 } },
   { id: 'd_arena', key: 'arenaFight', target: 2, title: 'Combattre 2 fois dans l’arène', reward: { crystals: 20 } },
+  { id: 'd_expedition', key: 'expedition', target: 1, title: 'Terminer 1 expédition', reward: { gold: 4000, xpElixir: 2 } },
 ];
 export const DAILY_BONUS: Reward = { crystals: 80, shardDim: 2 };
 

@@ -1,3 +1,4 @@
+import { Coach } from './Coach';
 import { useState, type ReactNode } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
@@ -67,6 +68,7 @@ export function HeroShowcase({ heroId, h, onPrev, onNext, below }: { heroId: str
       </div>
 
       {below}
+      {h && <Coach id="hero_gear" target=".sc-slot.empty" when={save.equipment.some((g) => !g.heroUid)} text="Touche un emplacement pour équiper un objet." />}
       {h && (
         <div className="sc-tools">
           <div className="sc-sets">

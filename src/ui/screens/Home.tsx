@@ -1,3 +1,4 @@
+import { Coach } from '../components/Coach';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
 import { HERO_BY_ID } from '../../data/heroes';
@@ -72,6 +73,9 @@ export function Home() {
         ))}
       </div>
 
+      <Coach id="home_campaign" target=".campaign-cta" text="Ton aventure commence ici : touche Campagne." />
+      <Coach id="home_summon" target=".nav-item:nth-child(3)" text="Première victoire ! Appelle de nouveaux Héritiers à l’Autel des Failles." />
+      <Coach id="home_sanct" target='.sc-btn[aria-label="Sanctuaire"]' text="Fais progresser tes héros au Sanctuaire." />
       <div className="home-bottom">
         {def && (
           <button className="home-leader" onClick={() => push({ name: 'hero', uid: leader.uid, heroId: leader.heroId })}>

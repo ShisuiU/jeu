@@ -301,3 +301,15 @@
 .sc-tools { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; }
 .sc-sets { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
 .sc-setchip { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 2px; color: var(--sc); border: 1px solid color-mix(in srgb, var(--sc) 55%, transparent); background: color-mix(in srgb, var(--sc) 10%, transparent); }
+
+/* ─── Tutoriel en situation ─── */
+.coach { position: fixed; inset: 0; z-index: 62; pointer-events: none; }
+.coach-veil { position: fixed; background: rgba(3,2,6,0.72); pointer-events: auto; }
+.coach-ring { position: fixed; border-radius: 6px; box-shadow: 0 0 0 2px var(--gold-hi), 0 0 18px rgba(255,226,163,0.7); animation: coachPulse 1.3s ease-in-out infinite; pointer-events: none; }
+@keyframes coachPulse { 50% { box-shadow: 0 0 0 3px var(--gold-hi), 0 0 30px rgba(255,226,163,0.9); } }
+.coach-bubble { position: fixed; left: 16px; right: 16px; max-width: 420px; margin: 0 auto; z-index: 63; pointer-events: auto; padding: 12px 14px 10px; border-radius: var(--radius);
+  background-color: var(--stone); background-image: var(--grain); border: 1px solid var(--brass); box-shadow: 0 14px 40px rgba(0,0,0,0.7); animation: popIn 0.3s cubic-bezier(.2,1.3,.4,1); }
+.coach-bubble p { margin: 0 0 8px; font-size: 15px; line-height: 1.4; color: var(--text); }
+.coach-actions { display: flex; justify-content: space-between; align-items: center; }
+.coach-actions button { font-size: 12.5px; color: var(--text-faint); text-decoration: underline; text-underline-offset: 3px; }
+.coach-actions .coach-ok { text-decoration: none; font-weight: 800; color: #1d1408; background: linear-gradient(180deg, #d8b871, #b18947); padding: 6px 16px; border-radius: 3px; }

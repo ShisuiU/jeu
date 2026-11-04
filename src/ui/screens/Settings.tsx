@@ -1,3 +1,4 @@
+import { resetCoach } from '../components/Coach';
 import { viewportInfo } from '../../viewport';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
@@ -62,7 +63,7 @@ export function Settings() {
         </div>
         <div className="setting-row">
           <div className="grow"><b>Guide de démarrage</b><div className="faint">Revoir les explications du début</div></div>
-          <button className="btn secondary small" onClick={() => { useGame.getState().mutate((s) => { s.flags.guide_done = false; }); useUI.getState().tab('home'); }}>Revoir</button>
+          <button className="btn secondary small" onClick={() => { useGame.getState().mutate((s) => { s.flags.guide_done = false; resetCoach(s); }); useUI.getState().tab('home'); }}>Revoir</button>
         </div>
         {save.time.rollbackCount > 0 && <div className="faint">Reculs d’horloge détectés : {save.time.rollbackCount}</div>}
         <div className="faint" style={{ marginTop: 8 }}>

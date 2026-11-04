@@ -117,7 +117,9 @@ export default function App() {
       if (!st.save || st.save === lastSave) return;
       lastSave = st.save;
       const n = claimableCount(st.save);
-      if (n > prev) {
+      // Pendant le tutoriel du début, pas de message par-dessus les éléments à toucher.
+      const tutorial = st.save.flags.guide_done !== true || (!st.save.flags.coach_off && !st.save.flags.coach_home_summon && Object.values(st.save.progress.campaign).filter((p) => p.clears > 0).length < 3);
+      if (n > prev && !tutorial) {
         const ui = useUI.getState();
         ui.toast(n - prev > 1 ? `${n - prev} missions accomplies : récompenses à réclamer.` : 'Mission accomplie : récompense à réclamer.', 'ok',
           { label: 'Voir', run: () => useUI.getState().push({ name: 'missions' }) }, 4500);

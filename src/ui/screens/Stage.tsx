@@ -1,3 +1,4 @@
+import { Coach } from '../components/Coach';
 import { AffinityIcon, RoleIcon } from '../art/Identity';
 import type { AffinityId } from '../../data/types';
 import { useState } from 'react';
@@ -64,6 +65,7 @@ export function Prep({ spec }: { spec: BattleSpec }) {
 
   return (
     <Screen title={info.title}>
+      <Coach id="prep_fight" target=".fight-btn" text="Voici les ennemis et la récompense. Lance le combat !" />
       <p className="muted" style={{ marginTop: 0 }}>{info.subtitle}</p>
       {boss && spec.mode !== 'arena' && <div className="hint warn" style={{ marginBottom: 12 }}><b>Boss.</b> Immunisé à l’étourdissement et au gel, furieux sous 50 % de PV.</div>}
       <AffinityAdvice waves={info.waves} />
@@ -108,7 +110,7 @@ export function Prep({ spec }: { spec: BattleSpec }) {
         </div>
       </Panel>
 
-      <button className="btn block" style={{ marginTop: 16, minHeight: 56, fontSize: 18 }} disabled={!start.ok || energyShort || !count} onClick={go}>
+      <button className="btn block fight-btn" style={{ marginTop: 16, minHeight: 56, fontSize: 18 }} disabled={!start.ok || energyShort || !count} onClick={go}>
         Combattre {info.cost.kind === 'energy' && <><Icon.energy size={18} /> {info.cost.amount}</>}{info.cost.kind === 'key' && '· 1 clé'}{info.cost.kind === 'ticket' && '· 1 ticket'}<span className="shine" />
       </button>
       {(spec.mode === 'campaign' || spec.mode === 'dungeon') && (

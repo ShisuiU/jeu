@@ -1,3 +1,4 @@
+import { cloudWanted, useAccount } from '../../cloud/account';
 import { useGame } from '../../state/store';
 import { useUI, type Route } from '../../state/ui';
 import { canClaimDaily } from '../../game/daily';
@@ -27,6 +28,7 @@ export function Menu() {
     ] },
     { title: 'Univers', items: [{ label: 'Codex', icon: 'book', route: { name: 'codex' } }] },
     { title: 'Système', items: [
+      { label: 'Compte', icon: 'heroes', route: { name: 'account' }, dot: !useAccount.getState().user && !cloudWanted() && save.stats.battlesWon >= 3 },
       { label: 'Sauvegarde', icon: 'save', route: { name: 'saves' } },
       { label: 'Paramètres', icon: 'gear', route: { name: 'settings' } },
     ] },

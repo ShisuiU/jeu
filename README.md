@@ -4,7 +4,7 @@ RPG mobile de collection de héros au tour par tour, univers original mêlant fa
 science-fiction et civilisations antiques. Conçu pour iPhone, jouable **hors ligne**, **gratuit**,
 sans App Store ni serveur : c'est une application web progressive (PWA) qu'on installe depuis Safari.
 
-> État : **version 1.20.1** (Expéditions) — histoire en 8 chapitres (80 niveaux, 4 difficultés), 23 héros, invocations, améliorations, équipement, donjons, tour, boss mondial, arène, missions, événements.
+> État : **version 1.21.0** (Comptes en ligne) — histoire en 8 chapitres (80 niveaux, 4 difficultés), 23 héros, invocations, améliorations, équipement, donjons, tour, boss mondial, arène, missions, événements.
 
 **Jouer : https://jeu-aeonfall.vercel.app/** (adresse principale, hébergée par Vercel). Secours : https://shisuiu.github.io/jeu/ (GitHub Pages). Voir [docs/ROADMAP.md](docs/ROADMAP.md).
 
@@ -19,7 +19,8 @@ Sinon, fermez complètement l'app (balayage vers le haut) et rouvrez-la. La prog
 et convertie automatiquement si le format de sauvegarde évolue.
 
 ⚠️ Installez le jeu sur l'écran d'accueil : Safari peut effacer les données des sites non installés
-après 7 jours sans visite. Exportez régulièrement votre sauvegarde (Menu → Sauvegarde).
+après 7 jours sans visite. Créez un compte gratuit (Menu → Compte) pour sauvegarder la partie en ligne
+et la retrouver sur un autre appareil, ou exportez-la (Menu → Sauvegarde).
 
 ## Publier gratuitement (GitHub Pages)
 

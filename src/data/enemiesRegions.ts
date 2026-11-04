@@ -68,4 +68,17 @@ export const REGION_ENEMIES: Record<string, EnemyDef> = {
     [sk('hs2_1', 'Pulsation', 'basic', 0, 'Frappe un ennemi.', [D(2.6)]), sk('hs2_2', 'Battement', 'special', 3, 'Soigne et protège ses alliés.', [{ kind: 'heal', target: 'allAllies', pctMaxHp: 0.15 }, { kind: 'shield', target: 'allAllies', pctMaxHp: 0.1, turns: 2 }])]),
   voice_of_void: e('voice_of_void', 'La Voix du Néant', 'controller', 'void', 1.05, 110, 'void', ['#05030a', '#ff3d6e'], 'Le Néant Silencieux a enfin trouvé une voix : la vôtre, déformée, venue d’un futur effacé.',
     [sk('vv_1', 'Murmure', 'basic', 0, 'Frappe, 30 % d’étourdir.', [D(3.2), ST('stun', 0.3, 1)]), sk('vv_2', 'Silence absolu', 'special', 3, 'Attaque tous les ennemis, réduit ATQ et DÉF (60 %).', [D(1.7, 'allEnemies'), ST('atkDown', 0.6, 2, 'allEnemies', 0.3), ST('defDown', 0.6, 2, 'allEnemies', 0.3)]), sk('vv_3', 'Effacement total', 'ultimate', 4, 'Énormes dégâts à tous, vide la jauge (30 %).', [D(2.9, 'allEnemies'), { kind: 'turnMeter', target: 'allEnemies', delta: -0.3 }])], { boss: true, bias: { hp: 1.3 } }),
+
+  // ─── Chapitre 8 : Les Coutures du Monde ───
+  echo_wanderer: e('echo_wanderer', 'Écho errant', 'attacker', 'void', 0.72, 106, 'knight', ['#1e1a2a', '#cfc4ff'], 'Fantôme d’un être effacé, vêtu de morceaux de plusieurs époques, le visage brouillé.',
+    [sk('ew_1', 'Souvenir tranchant', 'basic', 0, 'Frappe un ennemi.', [D(3.3)]), sk('ew_2', 'Cri oublié', 'special', 3, 'Attaque tous les ennemis et réduit leur ATQ (40 %).', [D(1.5, 'allEnemies'), ST('atkDown', 0.4, 2, 'allEnemies', 0.25)])]),
+  seam_stalker: e('seam_stalker', 'Rôdeur des coutures', 'assassin', 'lunar', 0.64, 118, 'hound', ['#141a24', '#9fb7ff'], 'Bête faite de morceaux d’époques cousus de fil d’argent, qui surgit des déchirures.',
+    [sk('ss_1', 'Déchirure', 'basic', 0, 'Frappe deux fois.', [D(1.7, 'enemy', { hits: 2 })]), sk('ss_2', 'Point de fuite', 'special', 3, 'Réduit la DÉF (50 %) puis frappe fort.', [ST('defDown', 0.5, 2, 'enemy', 0.3), D(3.6)])]),
+  stitch_golem: e('stitch_golem', 'Golem recousu', 'defender', 'telluric', 0.78, 86, 'golem', ['#2a2a24', '#c9b7a0'], 'Gardien bâti de ruines de plusieurs âges, recousues de câbles d’argent.',
+    [sk('sg_1', 'Poing cousu', 'basic', 0, 'Frappe (DÉF).', [D(1.7, 'enemy', { scaling: 'def' })]), sk('sg_2', 'Ravaudage', 'special', 4, 'Bouclier sur ses alliés et provocation.', [{ kind: 'shield', target: 'allAllies', pctMaxHp: 0.14, turns: 2 }, ST('taunt', 1, 2, 'self')])]),
+  weaver_of_ages: e('weaver_of_ages', 'Le Tisserand des Âges', 'controller', 'void', 1.08, 110, 'void', ['#08060f', '#e0d6ff'], 'Entité immense faite de fils d’étoiles qui a recousu le monde après la Fracture, et veut le découdre.',
+    [sk('wa_1', 'Fil du temps', 'basic', 0, 'Frappe et réduit la VIT (40 %).', [D(3.3), ST('spdDown', 0.4, 2, 'enemy', 0.3)]),
+     sk('wa_2', 'Grande découture', 'special', 3, 'Attaque tous les ennemis et vide leur jauge de tour (30 %).', [D(1.8, 'allEnemies'), { kind: 'turnMeter', target: 'allEnemies', delta: -0.3 }]),
+     sk('wa_3', 'Trame parfaite', 'ultimate', 5, 'Attaque tous les ennemis, 35 % d’étourdir.', [D(2.2, 'allEnemies'), ST('stun', 0.35, 1, 'allEnemies')])],
+    { boss: true }),
 };

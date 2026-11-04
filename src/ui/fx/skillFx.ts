@@ -53,6 +53,10 @@ const OVERRIDES: Record<string, Partial<SkillFx>> = {
   sulfura_1: { weapon: 'whip', element: 'fire', motion: 'projectile' },
   azhar_1: { weapon: 'blunt', element: 'void', motion: 'melee' },
   solenne_1: { weapon: 'none', element: 'holy', motion: 'projectile' },
+  ondine_1: { weapon: 'pierce', element: 'star', motion: 'melee' },
+  ondine_2: { weapon: 'pierce', element: 'star', motion: 'melee' },
+  ondine_3: { element: 'star' },
+  liran_1: { weapon: 'none', element: 'sound', motion: 'projectile' },
 };
 
 /** Même principe, par nom (compétences d'ennemis). */

@@ -67,12 +67,13 @@ export function Coach({ id, target, text, when = true }: { id: CoachId; target: 
   // Toucher l'élément éclairé valide l'étape (sans bloquer le geste).
   useEffect(() => {
     if (!active) return;
-    const onDown = (e: PointerEvent) => {
+    // Validé après le « click » (doigt relevé) : rien ne doit apparaître sous le doigt pendant le geste.
+    const onClick = (e: MouseEvent) => {
       const el = document.querySelector(target);
-      if (el && e.target instanceof Node && el.contains(e.target)) mutate((s) => { s.flags[`coach_${id}`] = true; });
+      if (el && e.target instanceof Node && el.contains(e.target)) setTimeout(() => mutate((s) => { s.flags[`coach_${id}`] = true; }), 0);
     };
-    document.addEventListener('pointerdown', onDown, true);
-    return () => document.removeEventListener('pointerdown', onDown, true);
+    document.addEventListener('click', onClick, true);
+    return () => document.removeEventListener('click', onClick, true);
   }, [active, target, id, mutate]);
 
   useEffect(() => { if (active && rect) play('open'); }, [active, !!rect]); // eslint-disable-line react-hooks/exhaustive-deps

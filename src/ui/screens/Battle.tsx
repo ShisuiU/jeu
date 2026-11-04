@@ -71,8 +71,9 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
     if (m) setInfoH(Math.min(m, 140));
   }, []);
   useEffect(() => {
+    if (phase !== 'fight') return;
     try { if (!localStorage.getItem('aeonfall.tip.unitInfo')) { localStorage.setItem('aeonfall.tip.unitInfo', '1'); setTimeout(() => useUI.getState().toast('Astuce : maintenez le doigt sur une carte pour voir ses effets.'), 1500); } } catch { /* ignoré */ }
-  }, []);
+  }, [phase]); // eslint-disable-line react-hooks/exhaustive-deps
   const autoRef = useRef(auto); autoRef.current = auto;
   const speedRef = useRef(speed); speedRef.current = speed;
   const alive = useRef(true);

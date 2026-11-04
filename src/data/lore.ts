@@ -38,6 +38,14 @@ export const LORE: LoreEntry[] = [
     ],
   },
   {
+    id: 'coutures',
+    title: 'Les Coutures du Monde',
+    text: [
+      "Après la Fracture, quelqu'un a recousu le monde, fil par fil : le Tisserand des Âges. Les coutures ont tenu douze ans.",
+      "Quand le Cœur s'est remis à battre, elles ont commencé à lâcher. Par les déchirures reviennent les Échos : les effacés, qui ne savent plus leur nom. Les rappeler par leur nom suffit parfois à les ramener.",
+    ],
+  },
+  {
     id: 'secret',
     title: 'Ce que personne ne sait',
     text: [

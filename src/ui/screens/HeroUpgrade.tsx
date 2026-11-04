@@ -74,7 +74,7 @@ export function HeroUpgrade({ h, section }: { h: HeroInstance; section?: Upgrade
       </Panel>
 
       <Panel title={`Éveil ${h.awaken} / ${BALANCE.hero.maxAwaken}`}>
-        <p className="faint" style={{ marginTop: 0 }}>Réservé aux héros avancés : +{Math.round(BALANCE.hero.awakenBonus * 100)} % aux stats, +2 VIT, +5 % dégâts critiques par niveau. Utilise les fragments du héros (doublons d’invocation).</p>
+        <p className="faint" style={{ marginTop: 0 }}>Réservé aux héros avancés : +{Math.round(BALANCE.hero.awakenBonus * 100)} % aux stats, +2 VIT, +5 % dégâts critiques par niveau. Coûte 1 doublon du héros (obtenu en l’invoquant à nouveau).</p>
         <UpgradeRow check={awk} label={h.awaken < BALANCE.hero.maxAwaken ? `Éveil ${h.awaken + 1}` : 'Éveil maximal'} onClick={() => run((s) => awaken(s, h.uid), `Éveil ${h.awaken + 1} !`)} save={save} heroId={h.heroId} />
       </Panel>
 

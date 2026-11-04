@@ -8,10 +8,11 @@ import type { UnitSetup } from './battle/types';
 import { spendEnergy } from './energy';
 import { applyReward } from './rewards';
 import { addAccountXp, addHeroXp } from './progression';
-import { gearBonus, rollCampaignGear, seededRand, pickWeighted } from './gear';
+import { rollCampaignGear, seededRand, pickWeighted } from './gear';
 import { BALANCE } from '../data/balance';
 import { GEAR_INVENTORY_CAP } from '../data/equipment';
 import { eventBonus } from './events';
+import { addCopy, heroBonus } from './copies';
 import type { GearItem } from '../save/schema';
 
 /** Butin bonus d'une victoire de campagne (un tirage). Les donjons (phase 4) en donneront davantage. */
@@ -55,7 +56,7 @@ export function teamSetups(s: SaveData, team: TeamPreset): UnitSetup[] {
   team.slots.forEach((uid, slot) => {
     const h = uid ? s.heroes.find((x) => x.uid === uid) : undefined;
     if (!h) return;
-    const gear = gearBonus(s.equipment.filter((g) => g.heroUid === h.uid));
+    const gear = heroBonus(s, h);
     out.push({ kind: 'hero', refId: h.heroId, slot, level: h.level, rank: h.rank, ascension: h.ascension, awaken: h.awaken, skillLevels: h.skillLevels, heroUid: h.uid, gear });
   });
   return out;
@@ -124,7 +125,7 @@ export function applyStageResult(s: SaveData, stageId: string, diff: DifficultyI
   result.reward = reward;
   for (const id of heroes ?? []) {
     if (!HERO_BY_ID[id]) continue;
-    if (s.heroes.some((h) => h.heroId === id)) s.heroFragments[id] = (s.heroFragments[id] ?? 0) + 20;
+    if (s.heroes.some((h) => h.heroId === id)) addCopy(s, id);
     else { s.heroes.push(createHeroInstance(id, now)); result.newHeroes.push(id); }
   }
   s.progress.campaign[key] = { stars: Math.max(prog.stars, stars), clears: prog.clears + 1 };

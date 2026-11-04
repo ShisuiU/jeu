@@ -5,12 +5,12 @@ import { FACTIONS } from '../../data/factions';
 import { RARITIES } from '../../data/rarities';
 import { BALANCE } from '../../data/balance';
 import { computeStats, maxLevelForRank, powerOf, STAT_LABELS, STAT_ORDER } from '../../game/stats';
-import { Disclosure, Panel, Screen, fmt } from '../components/common';
+import { Disclosure, Screen, fmt } from '../components/common';
 import { IdentityStrip } from '../art/Identity';
 import { Icon, StatIcon } from '../art/Icons';
 import { heroXpToNext } from '../../game/progression';
 import { heroTotalStats } from '../../game/heroStats';
-import { summonWithFragments } from '../../game/summon';
+import { CopiesCard } from '../components/Copies';
 import { HeroShowcase } from '../components/HeroShowcase';
 import { usePersisted, type Filters } from '../components/ListControls';
 import { sortHeroes } from '../components/heroFilters';
@@ -23,7 +23,6 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
   const setProfile = useGame((s) => s.setProfile);
   const toggleLock = useGame((s) => s.toggleHeroLock);
   const toast = useUI((s) => s.toast);
-  const mutate = useGame((s) => s.mutate);
   const push = useUI((s) => s.push);
   const replace = useUI((s) => s.replace);
   // Héros précédent / suivant, dans l'ordre (tri + filtres) de l'écran Héros.
@@ -37,8 +36,6 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
   const progress = inst ?? { level: 1, rank: rar.startRank, ascension: 0, awaken: 0 };
   const full = inst ? heroTotalStats(save, inst) : null;
   const stats = full ? full.total : computeStats(d, progress);
-  const fragments = save.heroFragments[d.id] ?? 0;
-  const fragNeed = rar.fragmentsToSummon;
   const f = FACTIONS[d.faction];
   const maxLv = maxLevelForRank(progress.rank);
 
@@ -57,14 +54,6 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
         </div>
       } />
 
-      {!inst && (
-        <Panel title="Fragments">
-          <div className="row between"><span>{fragments} / {fragNeed} fragments</span><span className="faint">Doublons d’invocation</span></div>
-          <div className="progress" style={{ margin: '6px 0 10px' }}><div style={{ width: `${Math.min(100, (fragments / fragNeed) * 100)}%` }} /></div>
-          <button className="btn block" disabled={fragments < fragNeed} onClick={() => { let ok = false; mutate((st) => { ok = summonWithFragments(st, d.id, Date.now()); }); if (ok) toast(`${d.name} rejoint vos Héritiers !`, 'ok'); }}>Invoquer avec les fragments</button>
-        </Panel>
-      )}
-
       <section className="hero-summary">
         <div className="hs-line">
           <span className="hs-lv">Niv. <b>{progress.level}</b><small>/{maxLv}</small></span>
@@ -82,6 +71,7 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
           ) : <span className="hs-pill muted">Non obtenu</span>}
         </div>
       </section>
+      {inst && <CopiesCard h={inst} />}
 
       <section className="stat-sheet" aria-label="Statistiques">
         {STAT_ORDER.map((k) => {

@@ -9,7 +9,8 @@ import { track } from './missions';
 // AMÉLIORATION DES HÉROS — chaque action vérifie ses conditions et ses coûts, puis modifie la sauvegarde.
 // Tous les coûts viennent de data/balance.ts.
 
-export type Cost = Partial<Record<ResourceId, number>> & { fragments?: number };
+/** `copies` : doublons du héros (voir game/copies.ts). */
+export type Cost = Partial<Record<ResourceId, number>> & { copies?: number };
 export interface Check { ok: boolean; reason?: string; cost: Cost }
 
 const U = BALANCE.upgrades;
@@ -18,7 +19,7 @@ const find = (s: SaveData, uid: string) => s.heroes.find((h) => h.uid === uid);
 function affordable(s: SaveData, h: HeroInstance, cost: Cost): string | undefined {
   for (const [k, v] of Object.entries(cost)) {
     if (!v) continue;
-    if (k === 'fragments') { if ((s.heroFragments[h.heroId] ?? 0) < v) return 'Fragments insuffisants.'; }
+    if (k === 'copies') { if ((s.heroCopies[h.heroId] ?? 0) < v) return 'Il faut un doublon de ce héros (invocation).'; }
     else if ((s.resources[k as ResourceId] ?? 0) < v) return 'Ressources insuffisantes.';
   }
   return undefined;
@@ -27,7 +28,7 @@ function affordable(s: SaveData, h: HeroInstance, cost: Cost): string | undefine
 function pay(s: SaveData, h: HeroInstance, cost: Cost) {
   for (const [k, v] of Object.entries(cost)) {
     if (!v) continue;
-    if (k === 'fragments') s.heroFragments[h.heroId] -= v;
+    if (k === 'copies') s.heroCopies[h.heroId] -= v;
     else s.resources[k as ResourceId] -= v;
   }
 }
@@ -93,9 +94,9 @@ export function ascend(s: SaveData, heroUid: string): Check {
 // ─── Éveil ───
 export function awakenCheck(s: SaveData, h: HeroInstance): Check {
   const n = h.awaken + 1;
-  const cost: Cost = { fragments: U.awaken.fragmentsBase * n, awakenEssence: U.awaken.essenceBase * n, gold: U.awaken.gold * n };
+  const cost: Cost = { copies: U.awaken.copies, awakenEssence: U.awaken.essenceBase * n, gold: U.awaken.gold * n };
   if (h.awaken >= BALANCE.hero.maxAwaken) return { ok: false, reason: 'Éveil maximal.', cost };
-  if (h.ascension < h.awaken + 2) return { ok: false, reason: `Ascension ${h.awaken + 2} requise.`, cost };
+  if (h.ascension < h.awaken) return { ok: false, reason: `Ascension ${h.awaken} requise.`, cost };
   const r = affordable(s, h, cost);
   return { ok: !r, reason: r, cost };
 }

@@ -1,4 +1,4 @@
-import { BANNER_BY_ID, DUPLICATE_FRAGMENTS, type BannerDef } from '../data/summons';
+import { BANNER_BY_ID, type BannerDef } from '../data/summons';
 import { HEROES, HERO_BY_ID } from '../data/heroes';
 import { RARITIES } from '../data/rarities';
 import type { RarityId } from '../data/types';
@@ -6,8 +6,10 @@ import { createHeroInstance, type SaveData } from '../save/schema';
 import { pickWeighted, type Rand } from './gear';
 import { track } from './missions';
 import { bannerAvailable } from './events';
+import { addCopy } from './copies';
 
-export interface SummonResult { heroId: string; rarity: RarityId; duplicate: boolean; fragments: number; guaranteed: boolean }
+/** `duplicate` : héros déjà possédé, transformé en copie (doublon). */
+export interface SummonResult { heroId: string; rarity: RarityId; duplicate: boolean; guaranteed: boolean }
 
 const ord = (r: RarityId) => RARITIES[r].order;
 
@@ -31,7 +33,7 @@ export function canAfford(s: SaveData, bannerId: string, count: number): boolean
   return !!b && s.resources[b.cost.resource] >= b.cost.amount * count;
 }
 
-/** Invoque `count` héros (mutation). Les héros déjà possédés deviennent des fragments. */
+/** Invoque `count` héros (mutation). Les héros déjà possédés deviennent des copies (doublons). */
 export function summon(s: SaveData, bannerId: string, count: 1 | 10, r: Rand, now: number): { ok: boolean; reason?: string; results: SummonResult[] } {
   const b = BANNER_BY_ID[bannerId];
   if (!b) return { ok: false, reason: 'Invocation inconnue.', results: [] };
@@ -55,15 +57,12 @@ export function summon(s: SaveData, bannerId: string, count: 1 | 10, r: Rand, no
   const results: SummonResult[] = rolls.map(({ rarity, guaranteed }) => {
     const heroId = pickHero(r, rarity, b);
     const owned = s.heroes.some((h) => h.heroId === heroId);
-    let fragments = 0;
-    if (owned) {
-      fragments = DUPLICATE_FRAGMENTS[rarity];
-      s.heroFragments[heroId] = (s.heroFragments[heroId] ?? 0) + fragments;
-    } else {
+    if (owned) addCopy(s, heroId);
+    else {
       s.heroes.push(createHeroInstance(heroId, now));
     }
     s.summons.history.unshift({ heroId, banner: b.id, at: now, duplicate: owned });
-    return { heroId, rarity, duplicate: owned, fragments, guaranteed };
+    return { heroId, rarity, duplicate: owned, guaranteed };
   });
   s.summons.history = s.summons.history.slice(0, 50);
   s.summons.total += count;
@@ -72,13 +71,3 @@ export function summon(s: SaveData, bannerId: string, count: 1 | 10, r: Rand, no
   return { ok: true, results };
 }
 
-/** Obtient un héros non possédé en dépensant ses fragments. */
-export function summonWithFragments(s: SaveData, heroId: string, now: number): boolean {
-  const d = HERO_BY_ID[heroId];
-  if (!d || s.heroes.some((h) => h.heroId === heroId)) return false;
-  const need = RARITIES[d.rarity].fragmentsToSummon;
-  if ((s.heroFragments[heroId] ?? 0) < need) return false;
-  s.heroFragments[heroId] -= need;
-  s.heroes.push(createHeroInstance(heroId, now));
-  return true;
-}

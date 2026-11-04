@@ -1,4 +1,5 @@
 import { HERO_BY_ID } from '../data/heroes';
+import { DUPLICATE_FRAGMENTS } from '../data/summons';
 import { createNewSave, SAVE_VERSION, type SaveData } from './schema';
 
 // MIGRATIONS
@@ -11,6 +12,16 @@ export const MIGRATIONS: Record<number, Migration> = {
   2: (s) => ({ ...s, equipment: Array.isArray(s.equipment) ? s.equipment : [], summons: s.summons ?? { pity: {}, total: 0, history: [] } }),
   // v3 (phase 4) : missions, arène, boss mondial, événements. Les valeurs par défaut sont complétées ensuite.
   3: (s) => ({ ...s, achievements: Array.isArray(s.achievements) ? s.achievements : [] }),
+  // v4 : les fragments de héros deviennent des copies (doublons) ; arrondi au supérieur pour ne rien perdre.
+  4: (s) => {
+    const copies: Record<string, number> = { ...(s.heroCopies ?? {}) };
+    for (const [id, n] of Object.entries((s.heroFragments ?? {}) as Record<string, number>)) {
+      const d = HERO_BY_ID[id];
+      if (!d || !n || n <= 0) continue;
+      copies[id] = (copies[id] ?? 0) + Math.max(1, Math.ceil(n / DUPLICATE_FRAGMENTS[d.rarity]));
+    }
+    return { ...s, heroFragments: {}, heroCopies: copies, bonds: s.bonds ?? { faction: {}, affinity: {} } };
+  },
 };
 
 export class SaveFormatError extends Error {}

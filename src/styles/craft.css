@@ -391,8 +391,7 @@ body:has(.coach) .toasts { visibility: hidden; }
 .acc-cloud-hint b { color: var(--gold-hi); }
 body:has(.acc-prompt-ic) .toasts { visibility: hidden; }
 
-/* ─── Héros vivants : souffle, particules d'affinité, répliques ─── */
-button.sc-art { padding: 0; border: 0; background: none; display: block; width: 100%; cursor: pointer; overflow: hidden; }
+/* ─── Héros vivants : souffle et particules d'affinité ─── */
 .sc-breathe { position: absolute; inset: 0; transform-origin: 50% 28%; animation: sc-breathe 6.5s ease-in-out infinite; }
 @keyframes sc-breathe { 0%, 100% { transform: scale(1) translateY(0); } 50% { transform: scale(1.022) translateY(-0.6%); } }
 .sc-motes { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
@@ -405,13 +404,24 @@ button.sc-art { padding: 0; border: 0; background: none; display: block; width: 
 @keyframes mote-rise { 0% { transform: translate(0, 0); opacity: 0; } 12% { opacity: 0.85; } 70% { opacity: 0.6; } 100% { transform: translate(14px, -78vh); opacity: 0; } }
 @keyframes mote-drift { 0% { transform: translate(0, 0) rotate(0); opacity: 0; } 15% { opacity: 0.7; } 100% { transform: translate(-40px, -55vh) rotate(260deg); opacity: 0; } }
 @keyframes mote-fall { 0% { transform: translate(0, 0); opacity: 0; } 15% { opacity: 0.8; } 100% { transform: translate(-12px, 70vh); opacity: 0; } }
-.sc-talk { position: absolute; z-index: 3; left: 50%; top: 33%; transform: translateX(-50%); width: max-content; max-width: 50%; padding: 9px 13px; pointer-events: none;
-  font-size: 14px; line-height: 1.35; font-style: italic; text-align: center; color: #f3ead8;
-  background-color: rgba(12,10,16,0.86); background-image: var(--grain); border: 1px solid var(--edge-hi); border-radius: 8px;
-  box-shadow: 0 8px 22px rgba(0,0,0,0.55); animation: talk-in 0.28s cubic-bezier(.2,.8,.2,1), talk-out 0.4s ease-in 3.8s forwards; }
-@keyframes talk-in { from { opacity: 0; transform: translate(-50%, 6px) scale(0.96); } }
-@keyframes talk-out { to { opacity: 0; transform: translate(-50%, -4px); } }
 .reduced-motion .sc-motes { display: none; }
 .result-voice { max-width: 320px; margin: 4px auto 8px; text-align: center; font-style: italic; font-size: 14px; color: #efe4cf; animation: voice-in 0.4s 0.5s both; }
 @keyframes voice-in { from { opacity: 0; transform: translateY(6px); } }
 .result-voice span { display: block; margin-top: 3px; font-style: normal; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); }
+
+/* ─── Doublons et liens ─── */
+.copies-card { position: relative; display: flex; align-items: center; gap: 10px; width: 100%; margin: 10px 0 4px; padding: 10px 12px; text-align: left;
+  background-color: var(--stone); background-image: var(--grain); border: 1px solid var(--edge); border-radius: var(--radius); }
+.copies-card.has { border-color: color-mix(in srgb, var(--gold) 55%, var(--edge)); }
+.copies-card .cc-ic { width: 30px; height: 30px; display: grid; place-items: center; color: var(--gold-hi); }
+.copies-card .cc-act { font-size: 13px; color: var(--gold-hi); }
+.cc-n { color: var(--gold-hi); font-weight: 700; }
+.copy-choice, .bond-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06); text-align: left; }
+.copy-choice:last-of-type { border-bottom: 0; }
+.cp-ic { width: 38px; height: 38px; flex-shrink: 0; display: grid; place-items: center; border-radius: 8px; background: rgba(255,255,255,0.04); border: 1px solid var(--edge); color: var(--gold-hi); }
+.cp-lv { font-size: 12px; color: var(--text-faint); }
+.cp-sub { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+.cp-sub.warn { color: #ff9b9b; }
+.cp-cost { margin-top: 4px; font-size: 12px; }
+.bond-bar { height: 5px; margin: 5px 0 3px; border-radius: 3px; background: rgba(255,255,255,0.07); overflow: hidden; }
+.bond-bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-hi)); }

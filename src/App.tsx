@@ -9,6 +9,7 @@ import { configureAudio, play, unlockAudio } from './audio/sfx';
 import { configureMusic, playMusic, stopMusic } from './audio/music';
 import { canClaimDaily } from './game/daily';
 import { claimableCount } from './game/missions';
+import { finishedExpeditions } from './game/expeditions';
 import { BottomNav } from './ui/components/BottomNav';
 import { Toasts } from './ui/components/Toasts';
 import { Title } from './ui/screens/Title';
@@ -39,6 +40,7 @@ const Tower = L(() => import('./ui/screens/Modes'), 'Tower');
 const WorldBoss = L(() => import('./ui/screens/Modes'), 'WorldBoss');
 const Arena = L(() => import('./ui/screens/Modes'), 'Arena');
 const Combats = L(() => import('./ui/screens/Combats'), 'Combats');
+const Expeditions = L(() => import('./ui/screens/Expeditions'), 'Expeditions');
 const Missions = L(() => import('./ui/screens/Missions'), 'Missions');
 const Events = L(() => import('./ui/screens/Missions'), 'Events');
 
@@ -67,6 +69,7 @@ function renderRoute(r: Route) {
     case 'missions': return <Missions />;
     case 'events': return <Events />;
     case 'combats': return <Combats />;
+    case 'expeditions': return <Expeditions />;
     case 'stage': return <Stage key={r.stageId} stageId={r.stageId} />;
     case 'prep': return <Prep key={JSON.stringify(r.spec)} spec={r.spec} />;
     case 'battle': return <Battle key={r.seed} spec={r.spec} teamId={r.teamId} seed={r.seed} />;
@@ -129,6 +132,19 @@ export default function App() {
       try { if (n > 0) void nav.setAppBadge?.(n)?.catch(() => {}); else void nav.clearAppBadge?.()?.catch(() => {}); } catch { /* non pris en charge */ }
     });
     return unsub;
+  }, [started]);
+
+  // Notification « expédition de retour » : quand une expédition se termine (même pendant le jeu).
+  useEffect(() => {
+    if (!started) return;
+    const st0 = useGame.getState();
+    let prev = st0.save ? finishedExpeditions(st0.save, st0.now) : 0;
+    return useGame.subscribe((st) => {
+      if (!st.save) return;
+      const n = finishedExpeditions(st.save, st.now);
+      if (n > prev && useUI.getState().stack.at(-1)?.name !== 'expeditions') useUI.getState().toast('Une expédition est de retour : butin à récupérer.', 'ok', { label: 'Voir', run: () => useUI.getState().push({ name: 'expeditions' }) }, 6000);
+      prev = n;
+    });
   }, [started]);
 
   // Retour par glissement depuis le bord gauche (comme les apps iPhone), sauf en combat.

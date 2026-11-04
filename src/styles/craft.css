@@ -315,3 +315,28 @@
 .coach-actions .coach-ok { text-decoration: none; font-weight: 800; color: #1d1408; background: linear-gradient(180deg, #d8b871, #b18947); padding: 6px 16px; border-radius: 3px; }
 /* Pas de message par-dessus l'élément que le tutoriel demande de toucher. */
 body:has(.coach) .toasts { visibility: hidden; }
+
+/* ─── Expéditions ─── */
+.ex-list { display: flex; flex-direction: column; gap: 8px; }
+.ex-card { position: relative; display: flex; gap: 10px; padding: 8px; border-radius: var(--radius); background-color: var(--stone); background-image: var(--grain); border: 1px solid var(--edge); }
+.ex-card.ready { border-color: var(--brass); box-shadow: 0 0 14px rgba(184,149,90,0.35); }
+.ex-card.done { opacity: 0.55; }
+.ex-art { width: 58px; flex-shrink: 0; aspect-ratio: 3 / 4; border-radius: 3px; overflow: hidden; border: 1px solid var(--edge-hi); }
+.ex-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.ex-title { font-family: var(--font-title); font-weight: 700; color: var(--gold-hi); font-size: 14.5px; }
+.ex-tags { display: flex; flex-wrap: wrap; gap: 4px 8px; font-size: 11.5px; color: var(--text-dim); }
+.ex-cond { display: inline-flex; align-items: center; gap: 4px; }
+.ex-cond.on { color: #8fe3a0; font-weight: 700; }
+.ex-loot { display: flex; flex-wrap: wrap; gap: 3px 10px; font-size: 12px; font-weight: 700; }
+.ex-loot span { display: inline-flex; align-items: center; gap: 3px; font-variant-numeric: tabular-nums; }
+.ex-run { margin-top: 2px; }
+.ex-bar { height: 4px; border-radius: 2px; background: rgba(255,255,255,0.07); overflow: hidden; }
+.ex-bar > div { height: 100%; background: linear-gradient(90deg, #5a7ad8, #9fb7ff); transition: width 1s linear; }
+.ex-runline { display: flex; align-items: center; gap: 6px; margin-top: 5px; font-size: 11.5px; }
+.ex-team { display: flex; gap: 3px; }
+.ex-ava { width: 22px; display: block; }
+.ex-ava .hero-card .meta, .ex-ava .hero-card .hc-id, .ex-ava .hero-card .lvl { display: none; }
+.ex-recall { margin-left: auto; font-size: 11.5px; color: var(--text-faint); text-decoration: underline; }
+.ex-act { display: flex; align-items: center; flex-shrink: 0; }
+.ex-prep-head { display: flex; justify-content: space-between; align-items: center; font-size: 13px; margin-bottom: 8px; }
+.ex-preview { display: flex; flex-direction: column; gap: 4px; padding: 8px 10px; margin-bottom: 10px; border-radius: var(--radius); background: rgba(0,0,0,0.3); border: 1px solid var(--edge); font-size: 12px; }

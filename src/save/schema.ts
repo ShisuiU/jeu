@@ -1,3 +1,4 @@
+import type { ExpeditionState } from '../game/expeditions';
 import { BALANCE } from '../data/balance';
 import { HERO_BY_ID, STARTER_HEROES } from '../data/heroes';
 import { RARITIES } from '../data/rarities';
@@ -97,6 +98,8 @@ export interface SaveData {
   worldBoss: { keysUsed: number; best: Record<string, number> };
   events: Record<string, { counters: Record<string, number>; claimed: string[]; challengeDone: boolean }>;
   shop: { energyRefills: number };
+  /** Expéditions (héros envoyés en mission, retour en temps réel). */
+  expeditions: ExpeditionState;
 }
 
 export interface ArenaOpponent {
@@ -165,5 +168,6 @@ export function createNewSave(now: number = Date.now()): SaveData {
     worldBoss: { keysUsed: 0, best: {} },
     events: {},
     shop: { energyRefills: 0 },
+    expeditions: { day: '', offers: [], runs: [], done: [] },
   };
 }

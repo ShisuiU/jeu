@@ -28,7 +28,8 @@ export type Route =
   | { name: 'arena' }
   | { name: 'missions' }
   | { name: 'events' }
-  | { name: 'combats' };
+  | { name: 'combats' }
+  | { name: 'expeditions' };
 
 export type Tab = 'home' | 'collection' | 'summon' | 'combats' | 'menu';
 

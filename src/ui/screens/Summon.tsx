@@ -1,3 +1,4 @@
+import { Coach } from '../components/Coach';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
@@ -48,6 +49,7 @@ export function Summon() {
 
   return (
     <Screen title="Autel des Failles" bg={<div className="altar-bg">{altar && <img src={altar} alt="" draggable={false} />}</div>}>
+      <Coach id="summon_call" target=".summon-one" when={!reveal && canAfford(save, b.id, 1)} text="Pose un éclat sur l’autel : un Héritier répondra à l’appel." />
       <div className="shard-tabs" role="tablist" aria-label="Type d’éclat">
         {BANNERS.filter((x) => bannerAvailable(x.id, now)).map((x) => (
           <button key={x.id} role="tab" aria-selected={x.id === bannerId} className={`shard-tab ${x.id === bannerId ? 'on' : ''}`} style={{ ['--bc' as string]: x.color, ['--bg2' as string]: x.glow }} onClick={() => { play('tap'); setBannerId(x.id); }}>
@@ -88,7 +90,7 @@ export function Summon() {
       )}
 
       <div className="row" style={{ gap: 10, marginTop: 12 }}>
-        <button className="btn secondary grow summon-btn" disabled={!canAfford(save, b.id, 1)} onClick={() => doSummon(1)}>
+        <button className="btn secondary grow summon-btn summon-one" disabled={!canAfford(save, b.id, 1)} onClick={() => doSummon(1)}>
           Appeler ×1<small><ResourceIcon icon={res.icon} color={res.color} size={14} /> {fmt(b.cost.amount)} · vous : {fmt(have)}</small>
         </button>
         <button className="btn grow summon-btn" disabled={!canAfford(save, b.id, 10)} onClick={() => doSummon(10)}>

@@ -1,3 +1,4 @@
+import { Coach } from '../components/Coach';
 import { useCallback, useEffect, useLayoutEffect, useReducer, useRef, useState } from 'react';
 import type { SkillDef } from '../../data/types';
 import { useGame } from '../../state/store';
@@ -320,6 +321,9 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
       {banner && <div className={`skill-banner ${banner.side} ${ult ? 'ult' : ''}`} key={banner.text + banner.side}>{banner.text}</div>}
 
       <FxLayer items={fxItems} />
+      <Coach id="battle_skill" target=".battle-controls .skills" when={awaiting && !auto && phase === 'fight'} text="C’est ton tour : choisis une compétence." />
+      <Coach id="battle_target" target=".unit.enemy.targetable" when={awaiting && !auto && !!selSkill && targetKind(selSkill) !== 'none'} text="Touche un ennemi pour attaquer. ▲ : ton affinité est avantagée, ▼ : elle est désavantagée." />
+      <Coach id="battle_auto" target=".ctrl-col" when={awaiting && !auto && phase === 'fight'} text="AUTO fait jouer l’équipe toute seule ; ×1 / ×2 / ×3 accélère." />
 
       <div className="battle-controls">
         {/* Hauteur de l'aide = plus longue description de l'équipe (mesurée une fois) : texte complet, sans saut d'écran. */}

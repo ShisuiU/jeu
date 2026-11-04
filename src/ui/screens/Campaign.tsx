@@ -1,3 +1,4 @@
+import { Coach } from '../components/Coach';
 import { useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
@@ -24,6 +25,7 @@ export function Campaign() {
 
   return (
     <Screen title="Campagne">
+      <Coach id="campaign_stage" target=".stage-node:not(.locked)" text="Choisis le premier niveau." />
       <div className="seg" style={{ marginBottom: 10 }}>
         {DIFFICULTY_ORDER.map((d) => {
           const open = isStageUnlocked(save, d, CHAPTERS[0].stages[0]);

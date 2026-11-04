@@ -1,3 +1,4 @@
+import { Coach } from '../components/Coach';
 import { useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
@@ -48,6 +49,7 @@ export function Sanctuary({ uid }: { uid?: string }) {
 
   return (
     <Screen title="Sanctuaire" bg={<PlaceAmbient place="sanctuary" />}>
+      <Coach id="sanct_level" target=".upg-line .ul-act" text="Les élixirs font monter le niveau : « Max » utilise tout ce qu’il faut." />
       <Wallet ids={['gold', 'xpElixir', 'rankSigil', 'skillTome', 'potionMinor', 'potionGreater', 'potionSupreme', 'awakenEssence']} />
       <HeroStrip selected={h.uid} onSelect={setSel} dot={canImprove} />
 

@@ -26,8 +26,13 @@ export function fixViewport() {
   const apply = () => {
     const portrait = window.innerHeight >= window.innerWidth;
     const screenH = Math.max(screen.height, screen.width);
-    // Barre d'état opaque : l'écart normal est la barre d'état (≤ 62 pt). Au-delà, iOS réserve aussi le bas.
-    const reserved = standalone() && portrait && screenH - window.innerHeight > 80;
+    // Cas observé sur iPhone (app installée, barre d'état transparente) : la page passe sous la barre
+    // d'état (marge du haut > 0) mais la zone d'affichage est raccourcie d'autant en bas, et ce bas
+    // n'est pas affichable. Écran 932, zone 873, haut 59 : écart = marge du haut. La barre d'accueil
+    // est alors déjà hors de la zone : la marge du bas du jeu est superflue.
+    const gap = screenH - window.innerHeight;
+    const top = measureInset('top');
+    const reserved = standalone() && portrait && ((top > 0 && gap >= top - 2) || gap > 80);
     document.documentElement.classList.toggle('ios-bottom-reserved', reserved);
   };
   apply();

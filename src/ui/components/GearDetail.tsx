@@ -9,7 +9,7 @@ import { CostView } from './Cost';
 import { GearCard, statText } from './GearCard';
 
 /** Fiche d'un équipement. À la Forge : renforcer, verrouiller, démanteler. Depuis un héros : équiper/retirer, et lien vers la Forge. */
-export function GearDetail({ gearUid, onClose, equipTo, place = 'hero' }: { gearUid: string; onClose: () => void; equipTo?: string; place?: 'forge' | 'hero' }) {
+export function GearDetail({ gearUid, onClose, equipTo, place = 'hero', onReplace }: { gearUid: string; onClose: () => void; equipTo?: string; place?: 'forge' | 'hero'; onReplace?: () => void }) {
   const push = useUI((s) => s.push);
   const save = useGame((s) => s.save)!;
   const mutate = useGame((s) => s.mutate);
@@ -57,6 +57,7 @@ export function GearDetail({ gearUid, onClose, equipTo, place = 'hero' }: { gear
         {equipTo && g.heroUid !== equipTo && (
           <button className="btn grow" onClick={() => { mutate((s) => { equipGear(s, g.uid, equipTo); }); play('claim'); onClose(); }}>Équiper</button>
         )}
+        {onReplace && <button className="btn secondary grow" onClick={() => { onClose(); onReplace(); }}>Changer</button>}
         {owner && <button className="btn secondary grow" onClick={() => { mutate((s) => unequipGear(s, g.uid)); onClose(); }}>Retirer</button>}
         <button className="btn secondary grow" onClick={() => mutate((s) => { const x = s.equipment.find((y) => y.uid === g.uid); if (x) x.locked = !x.locked; })}>{g.locked ? 'Déverrouiller' : 'Verrouiller'}</button>
         {place === 'forge' && !owner && !g.locked && (

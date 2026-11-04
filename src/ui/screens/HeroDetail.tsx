@@ -6,15 +6,15 @@ import { RARITIES } from '../../data/rarities';
 import { BALANCE } from '../../data/balance';
 import { computeStats, maxLevelForRank, powerOf, STAT_LABELS, STAT_ORDER } from '../../game/stats';
 import { Disclosure, Panel, Screen, fmt } from '../components/common';
-import { HeroArt } from '../art/HeroArt';
 import { IdentityStrip } from '../art/Identity';
 import { Icon, StatIcon } from '../art/Icons';
 import { heroXpToNext } from '../../game/progression';
 import { heroTotalStats } from '../../game/heroStats';
 import { summonWithFragments } from '../../game/summon';
-import { HeroGear } from './HeroUpgrade';
+import { HeroShowcase } from '../components/HeroShowcase';
+import { usePersisted, type Filters } from '../components/ListControls';
+import { sortHeroes } from '../components/heroFilters';
 import { canImprove } from '../../game/upgrade';
-import { useState } from 'react';
 
 const SLOT_LABEL = { basic: 'Attaque de base', special: 'Compétence spéciale', ultimate: 'Ultime', passive: 'Passif' } as const;
 
@@ -24,8 +24,13 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
   const toggleLock = useGame((s) => s.toggleHeroLock);
   const toast = useUI((s) => s.toast);
   const mutate = useGame((s) => s.mutate);
-  const [tab, setTab] = useState<'info' | 'gear'>('info');
   const push = useUI((s) => s.push);
+  const replace = useUI((s) => s.replace);
+  // Héros précédent / suivant, dans l'ordre (tri + filtres) de l'écran Héros.
+  const [prefs] = usePersisted<{ sort: string; filters: Filters }>('heroes', { sort: 'power', filters: {} });
+  const order = uid ? sortHeroes(save, save.heroes, prefs.filters, prefs.sort).map((x) => x.h) : [];
+  const idx = order.findIndex((x) => x.uid === uid);
+  const nav = (dir: 1 | -1) => (order.length > 1 && idx >= 0 ? () => { const n = order[(idx + dir + order.length) % order.length]; replace({ name: 'hero', uid: n.uid, heroId: n.heroId }); } : undefined);
   const d = HERO_BY_ID[heroId];
   const inst = uid ? save.heroes.find((h) => h.uid === uid) : undefined;
   const rar = RARITIES[d.rarity];
@@ -43,23 +48,15 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
         {inst.locked ? <Icon.lock /> : <Icon.unlock />}
       </button>
     )}>
-      <div className="hero-sheet-art">
-        <HeroArt heroId={d.id} kind="full" position="center 15%" />
-        <div className="shade" />
-      </div>
+      <HeroShowcase heroId={d.id} h={inst} onPrev={nav(-1)} onNext={nav(1)} below={
       <div className="hero-sheet-head">
-        <div className="title-line">{d.title}</div>
-        <h2>{d.name}</h2>
-        <IdentityStrip rarity={d.rarity} affinity={d.affinity} role={d.role} faction={d.faction} />
-        <p className="quote">{d.quote.replace(/« /g, '«\u00a0').replace(/ »/g, '\u00a0»')}</p>
-      </div>
-
-      {inst && (
-        <div className="seg" style={{ margin: '4px 0 12px' }}>
-          <button className={tab === 'info' ? 'on' : ''} onClick={() => setTab('info')}>Infos</button>
-          <button className={tab === 'gear' ? 'on' : ''} onClick={() => setTab('gear')}>Équipement</button>
+          <div className="title-line">{d.title}</div>
+          <h2>{d.name}</h2>
+          <IdentityStrip rarity={d.rarity} affinity={d.affinity} role={d.role} faction={d.faction} />
+          <p className="quote">{d.quote.replace(/« /g, '«\u00a0').replace(/ »/g, '\u00a0»')}</p>
         </div>
-      )}
+      } />
+
       {!inst && (
         <Panel title="Fragments">
           <div className="row between"><span>{fragments} / {fragNeed} fragments</span><span className="faint">Doublons d’invocation</span></div>
@@ -67,8 +64,6 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
           <button className="btn block" disabled={fragments < fragNeed} onClick={() => { let ok = false; mutate((st) => { ok = summonWithFragments(st, d.id, Date.now()); }); if (ok) toast(`${d.name} rejoint vos Héritiers !`, 'ok'); }}>Invoquer avec les fragments</button>
         </Panel>
       )}
-      {inst && tab === 'gear' && <HeroGear h={inst} />}
-      {(tab === 'info' || !inst) && <>
 
       <section className="hero-summary">
         <div className="hs-line">
@@ -137,7 +132,6 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
           {save.profile.avatarHeroId === d.id ? 'Avatar actuel' : 'Choisir comme avatar'}
         </button>
       )}
-      </>}
     </Screen>
   );
 }

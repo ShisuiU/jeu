@@ -275,3 +275,29 @@
 .aff-advice > span { display: inline-flex; align-items: center; gap: 4px; }
 .ec-role { display: inline-flex; align-items: center; gap: 3px; justify-content: center; }
 .enemy-chip .ec-art .u-aff { right: 2px; top: 2px; }
+
+/* ─── Vitrine du héros : illustration + emplacements d'équipement autour ─── */
+.showcase { position: relative; height: min(60vh, 520px); margin: -12px -16px 0; overflow: hidden; }
+.sc-art { position: absolute; inset: 0; }
+.sc-art img { object-position: center 12% !important; }
+.sc-shade { position: absolute; inset: 0; pointer-events: none; background:
+  linear-gradient(90deg, rgba(7,6,11,0.55), transparent 24%, transparent 76%, rgba(7,6,11,0.55)),
+  linear-gradient(180deg, rgba(7,6,11,0.15), transparent 30%, transparent 62%, rgba(7,6,11,1)); }
+.sc-col { position: absolute; top: 14px; display: flex; flex-direction: column; gap: 10px; z-index: 2; }
+.sc-col.left { left: 12px; } .sc-col.right { right: 12px; }
+.sc-bottom { position: absolute; left: 50%; transform: translateX(-50%); bottom: 104px; display: flex; gap: 10px; z-index: 2; }
+.sc-slot { position: relative; width: 54px; height: 54px; display: grid; place-items: center; color: color-mix(in srgb, var(--gc) 70%, #fff);
+  background: radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--gc) 28%, #16131d), #0b0a10 75%); clip-path: var(--bevel);
+  box-shadow: inset 0 0 0 1.5px var(--gc), inset 0 -2px 0 rgba(0,0,0,0.5); }
+.sc-slot:active { transform: scale(0.94); }
+.sc-slot.empty { --gc: #4a4152; color: #6f6878; background: rgba(10,9,14,0.72); box-shadow: inset 0 0 0 1px #4a4152; }
+.sc-slot .sc-plus { position: absolute; right: 5px; bottom: 2px; font-size: 13px; font-weight: 800; color: #8a8494; }
+.sc-slot .sc-lv { position: absolute; left: 5px; top: 3px; font-size: 10px; font-weight: 800; color: #fff; text-shadow: 0 1px 2px #000; }
+.sc-slot .sc-set { position: absolute; right: 6px; top: 6px; width: 6px; height: 6px; border-radius: 50%; box-shadow: 0 0 4px currentColor; }
+.sc-nav { position: absolute; top: 46%; z-index: 3; width: 30px; height: 44px; display: grid; place-items: center; font-size: 30px; line-height: 1; color: rgba(255,255,255,0.75); text-shadow: 0 2px 6px #000; }
+.sc-nav.prev { left: 70px; } .sc-nav.next { right: 70px; }
+.showcase + .hero-sheet-head { margin-top: -96px; }
+.sc-tools { margin-top: 2px; }
+.sc-tools { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; }
+.sc-sets { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+.sc-setchip { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 2px; color: var(--sc); border: 1px solid color-mix(in srgb, var(--sc) 55%, transparent); background: color-mix(in srgb, var(--sc) 10%, transparent); }

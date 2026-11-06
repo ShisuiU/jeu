@@ -55,7 +55,7 @@ export function IdentityStrip({ rarity, affinity, role, faction }: { rarity: Rar
     { k: 'rarity' as const, icon: <span className="id-stars" style={{ color: r.color }}>{'★'.repeat(r.order)}</span>, label: r.name, color: r.color, title: `Rareté : ${r.name}`, text: `${r.order} étoile(s). Plus la rareté est haute, plus les statistiques de base sont fortes.` },
     { k: 'affinity' as const, icon: <AffinityIcon id={affinity} size={18} />, label: a.name, color: a.color, title: `Affinité : ${a.name}`, text: `${a.description} ${AFF_TEXT(affinity)}` },
     { k: 'role' as const, icon: <RoleIcon id={role} size={17} />, label: ro.name, color: '#d9cdb4', title: `Rôle : ${ro.name}`, text: ro.description },
-    { k: 'faction' as const, icon: <FactionEmblem id={faction} size={18} />, label: f.short, color: f.colors.primary, title: f.name, text: f.synergy },
+    { k: 'faction' as const, icon: <FactionEmblem id={faction} size={18} />, label: f.short, color: f.colors.glow, title: f.name, text: f.synergy },
   ];
   const cur = items.find((x) => x.k === open);
   return (

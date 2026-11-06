@@ -89,7 +89,7 @@ export function Summon() {
         </button>
       )}
 
-      <div className="row" style={{ gap: 10, marginTop: 12 }}>
+      <div className="row summon-bar" style={{ gap: 10, marginTop: 12 }}>
         <button className="btn secondary grow summon-btn summon-one" disabled={!canAfford(save, b.id, 1)} onClick={() => doSummon(1)}>
           Appeler ×1<small><ResourceIcon icon={res.icon} color={res.color} size={14} /> {fmt(b.cost.amount)} · vous : {fmt(have)}</small>
         </button>

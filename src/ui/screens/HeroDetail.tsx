@@ -71,7 +71,7 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
           ) : <span className="hs-pill muted">{d.exclusive ? 'Exclusif · événement' : 'Non obtenu'}</span>}
         </div>
       </section>
-      {inst && (save.heroCopies[inst.heroId] ?? 0) > 0 && <CopiesCard h={inst} />}
+      {inst && <CopiesCard h={inst} />}
 
       <section className="stat-sheet" aria-label="Statistiques">
         {STAT_ORDER.map((k) => {

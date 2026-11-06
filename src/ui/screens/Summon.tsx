@@ -22,7 +22,7 @@ import { placeArt } from '../art/PlaceScene';
 // L'AUTEL DES FAILLES — le Lien pose un éclat du Cœur d'Aeon sur l'autel. L'éclat se brise,
 // une faille s'ouvre dans le ciel et un Héritier en sort. La couleur de la faille annonce la rareté.
 
-const SHORT: Record<string, string> = { standard: 'Terne', aeon: 'Aeon', epic: 'Épique', primal: 'Primordial', event_ash: 'Faille' };
+const SHORT: Record<string, string> = { standard: 'Terne', aeon: 'Aeon', epic: 'Épique', event_ash: 'Faille' };
 
 export function Summon() {
   const save = useGame((s) => s.save)!;

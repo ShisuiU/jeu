@@ -8,7 +8,7 @@ import { HERO_BY_ID } from '../../data/heroes';
 
 const GROUPS: { title: string; ids: string[] }[] = [
   { title: 'Monnaies', ids: ['gold', 'crystals'] },
-  { title: 'Invocation', ids: ['shardDim', 'shardAeon', 'shardPrimal', 'shardEvent'] },
+  { title: 'Invocation', ids: ['shardDim', 'shardAeon', 'shardEvent'] },
   { title: 'Progression des héros', ids: ['xpElixir', 'skillTome', 'rankSigil', 'potionMinor', 'potionGreater', 'potionSupreme', 'awakenEssence'] },
   { title: 'Forge', ids: ['forgeOre'] },
 ];

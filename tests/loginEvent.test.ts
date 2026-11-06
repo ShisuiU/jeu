@@ -16,7 +16,7 @@ describe('héros exclusifs', () => {
   it('Élyra est exclusive et ne sort jamais à l’invocation', () => {
     expect(HEROES.filter((h) => h.exclusive).map((h) => h.id)).toEqual(['elyra']);
     const s = fresh();
-    for (let i = 0; i < 30; i++) summon(s, 'primal', 10, seededRand(100 + i), T0);
+    for (let i = 0; i < 30; i++) summon(s, 'epic', 10, seededRand(100 + i), T0);
     expect(s.heroes.some((h) => h.heroId === 'elyra')).toBe(false);
     expect(s.heroCopies.elyra ?? 0).toBe(0);
   });

@@ -54,8 +54,8 @@ describe('invocations', () => {
     expect(new Set(s.heroes.map((h) => h.heroId)).size).toBe(s.heroes.length);
   });
   it('refuse sans ressources', () => {
-    const s = createNewSave(1); s.resources.shardPrimal = 0;
-    expect(summon(s, 'primal', 1, seededRand(1), 1).ok).toBe(false);
+    const s = createNewSave(1); s.resources.crystals = 0;
+    expect(summon(s, 'epic', 1, seededRand(1), 1).ok).toBe(false);
   });
   it('garantie : un légendaire au plus tard à la 100e invocation rare', () => {
     for (let seed = 1; seed <= 20; seed++) {
@@ -190,19 +190,8 @@ it('fragments nécessaires cohérents avec la rareté', () => {
 });
 
 describe('taux d’invocation (rééquilibrés, façon Raid)', () => {
-  it('invocation sacrée : surtout des épiques, un légendaire garanti au plus tard au 10e appel', () => {
-    const s = rich();
-    const counts: Record<string, number> = {};
-    let since = 0, worst = 0;
-    for (let i = 0; i < 400; i++) {
-      const r = summon(s, 'primal', 1, seededRand(7000 + i), 1);
-      const rar = r.results[0].rarity;
-      counts[rar] = (counts[rar] ?? 0) + 1;
-      since = RARITIES[rar].order >= RARITIES.legendary.order ? 0 : since + 1;
-      worst = Math.max(worst, since);
-    }
-    expect((counts.epic ?? 0) / 400).toBeGreaterThan(0.7);
-    expect(((counts.legendary ?? 0) + (counts.mythic ?? 0)) / 400).toBeLessThan(0.22);
-    expect(worst).toBeLessThan(10);
+  it('l’invocation primordiale est retirée', () => {
+    expect(BANNERS.map((b) => b.id)).not.toContain('primal');
+    expect(summon(rich(), 'primal', 1, seededRand(1), 1).ok).toBe(false);
   });
 });

@@ -33,7 +33,7 @@ function buildStages(c: ChapterCfg): StageDef[] {
     if (i === 5) firstClear.potionGreater = 3;
     if (i === 5 && c.midHero) firstClear.heroes = [c.midHero];
     if (i === 8) firstClear.skillTome = 2;
-    if (boss) Object.assign(firstClear, { shardAeon: 1, awakenEssence: 2, heroes: [c.heroReward] }, c.n >= 7 ? { shardPrimal: 1 } : {});
+    if (boss) Object.assign(firstClear, { shardAeon: 1, awakenEssence: 2, heroes: [c.heroReward] }, c.n >= 7 ? { crystals: (firstClear.crystals ?? 0) + 300 } : {});
     const repeat: Reward = { gold: 1200 + c.n * 300 + i * 60, ...(i >= 5 ? { xpElixir: 1 } : {}) };
     return {
       id: `${c.n}-${i}`, chapter: c.n, index: i, name, energy: 6 + Math.floor(c.n / 2) + (boss ? 2 : 0),

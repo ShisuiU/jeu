@@ -285,6 +285,15 @@
   - Invocation rare (éclats d’Aeon) : légendaire 0,9 % (avant 2,3 %), garanti tous les 100 (avant 60)
   - Faille de Cendre : légendaire 3 % (avant 7 %), garanti tous les 50 (avant 40)
 
+## ✅ Version 1.33.0 — Sanctuaire en pages, absorption de héros
+
+- Sanctuaire découpé en 4 onglets, à la manière des tavernes des grands jeux du genre : **Niveau**, **Rang**, **Ascension** (avec l’Éveil) et **Compétences** ; un point rouge signale l’onglet où une amélioration est possible
+- **Absorber des héros** (onglet Niveau) : jusqu’à 6 héros donnés à un autre pour lui faire gagner de l’expérience
+  - chaque héros rend une base selon sa rareté (Commun 400 XP … Mythique 6 000 XP) plus 80 % de l’expérience déjà investie
+  - coût : 400 or par niveau du héros absorbé ; aperçu du niveau atteint avant de confirmer ; plafond du rang respecté
+  - protégés : héros verrouillés, dans une équipe, en expédition ou en avatar ; l’équipement des héros absorbés retourne au sac
+- **Invocation primordiale retirée** : les récompenses qui donnaient des éclats primordiaux donnent désormais 300 cristaux par éclat (une invocation épique) ; les éclats déjà possédés sont convertis automatiquement (sauvegarde v6)
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

@@ -134,7 +134,7 @@ export function applyStageResult(s: SaveData, stageId: string, diff: DifficultyI
   const r = seededRand(now ^ (prog.clears * 7919) ^ stage.index);
   if (r() < BALANCE.upgrades.gearDropChance || stage.boss) {
     if (s.equipment.length < GEAR_INVENTORY_CAP) {
-      const g = rollCampaignGear(r, stage.index, !!stage.boss, now);
+      const g = rollCampaignGear(r, stage.index, !!stage.boss, now, stage.chapter);
       s.equipment.push(g);
       result.gear.push(g);
     }

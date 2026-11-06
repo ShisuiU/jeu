@@ -91,7 +91,7 @@ export function createBattle(allies: UnitSetup[], waves: UnitSetup[][], opts: Ba
   };
   spawnWave(s, waves[0]);
   // Petite dispersion initiale des jauges pour éviter les égalités parfaites.
-  for (const u of s.units) u.tm = rand(s) * 150;
+  for (const u of s.units) u.tm = rand(s) * 150 + ((u.flags.setStartTm ?? 0) / 100) * TM_FULL; // ensemble Élan
   return s;
 }
 
@@ -318,6 +318,8 @@ export function beginTurn(s: BattleState): Unit | null {
         heal(s, u, u.base.hp * st.value);
       }
     }
+    // Ensemble Pérennité : soin au début de chaque tour.
+    if (u.alive && u.flags.setRegen && u.hp < u.base.hp) heal(s, u, (u.base.hp * u.flags.setRegen) / 100);
     // Passif d'Hesper : perturbe la jauge d'un ennemi.
     if (u.alive && hasSkill(u, 'hesper_3')) {
       const sk = u.skills.find((x) => x.id === 'hesper_3')!;

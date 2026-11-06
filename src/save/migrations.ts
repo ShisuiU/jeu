@@ -22,6 +22,8 @@ export const MIGRATIONS: Record<number, Migration> = {
     }
     return { ...s, heroFragments: {}, heroCopies: copies, bonds: s.bonds ?? { faction: {}, affinity: {} } };
   },
+  // v5 : étoiles sur l'équipement ; un ancien objet reçoit autant d'étoiles que son rang de rareté (même puissance qu'avant).
+  5: (s) => ({ ...s, equipment: (s.equipment ?? []).map((g: { rarity: string; stars?: number }) => ({ ...g, stars: g.stars ?? ({ common: 1, uncommon: 2, rare: 3, epic: 4, legendary: 5, mythic: 6 } as Record<string, number>)[g.rarity] ?? 1 })) }),
 };
 
 export class SaveFormatError extends Error {}

@@ -10,7 +10,7 @@ import type { UnitSetup } from './battle/types';
 import { applyStageResult, payEnergy, stageEnergy, stageProgress, stageWaves, isStageUnlocked, type BattleResult } from './campaign';
 import { applyReward } from './rewards';
 import { addAccountXp, addHeroXp } from './progression';
-import { generateGear, pickWeighted, seededRand } from './gear';
+import { dungeonStars, generateGear, pickWeighted, seededRand } from './gear';
 import { activeEvents, dungeonBonus, eventBonus, eventProgress, trialsDone } from './events';
 import { CYCLE_THEMES } from '../data/eventCycle';
 import { track } from './missions';
@@ -220,7 +220,7 @@ export function applyMode(s: SaveData, spec: BattleSpec, o: Outcome, now: number
       res.reward = scaleReward(d.reward(spec.floor), dungeonBonus(now));
       applyReward(s, res.reward);
       if (d.gear && s.equipment.length < GEAR_INVENTORY_CAP) {
-        const g: GearItem = generateGear(r, pickWeighted(r, d.gear(spec.floor).filter(([, w]) => w > 0)), now);
+        const g: GearItem = generateGear(r, pickWeighted(r, d.gear(spec.floor).filter(([, w]) => w > 0)), now, undefined, undefined, dungeonStars(r, spec.floor));
         s.equipment.push(g); res.gear.push(g);
       }
       res.heroXp = heroXpFor(s, o.participants, 80 + spec.floor * 30);

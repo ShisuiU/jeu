@@ -23,7 +23,7 @@ export const DUNGEONS: DungeonDef[] = [
   {
     id: 'forge', name: 'Forge Engloutie', description: 'Équipement garanti et minerai de forge.', boss: 'forge_golem', minions: ['hollow_shield', 'hollow_soldier', 'hollow_archer'],
     reward: (f) => ({ forgeOre: 10 + f * 6, gold: 800 + f * 300 }),
-    gear: (f) => [['uncommon', Math.max(0, 50 - f * 6)], ['rare', 40], ['epic', 6 + f * 4], ['legendary', f >= 6 ? f - 4 : 0]],
+    gear: (f) => [['uncommon', Math.max(0, 50 - f * 6)], ['rare', 40], ['epic', 6 + f * 4], ['legendary', f >= 6 ? f - 4 : 0], ['mythic', f >= 9 ? (f - 8) * 0.8 : 0]],
     color: '#ff9a3c', icon: 'forge',
   },
   {

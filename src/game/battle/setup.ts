@@ -21,7 +21,7 @@ export function buildUnit(setup: UnitSetup, side: 'ally' | 'enemy', idx: number)
     return {
       id: `${side}${idx}`, side, slot: setup.slot, kind: 'hero', refId: d.id, heroUid: setup.heroUid, name: d.name, level: setup.level,
       affinity: d.affinity, role: d.role, faction: d.faction, isBoss: false, base, hp: base.hp, tm: 0,
-      cooldowns: initialCooldowns(d.skills, lv), statuses: [], skills: d.skills, skillLevels: lv, alive: true, flags: setup.gear?.lifesteal ? { leech: setup.gear.lifesteal } : {},
+      cooldowns: initialCooldowns(d.skills, lv), statuses: [], skills: d.skills, skillLevels: lv, alive: true, flags: { ...(setup.gear?.lifesteal ? { leech: setup.gear.lifesteal } : {}), ...(setup.gear?.regen ? { setRegen: setup.gear.regen } : {}), ...(setup.gear?.startTm ? { setStartTm: setup.gear.startTm } : {}) },
     };
   }
   const e = ENEMIES[setup.refId];

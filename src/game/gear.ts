@@ -1,7 +1,7 @@
 import { nextRandom } from '../core/rng';
 import { uid } from '../core/ids';
 import {
-  GEAR_MAX_LEVEL, GEAR_RARITIES, MAIN_BASE, SET_LIST, SETS, SLOTS, SLOT_BY_ID, SUB_RANGE,
+  GEAR_MAX_LEVEL, GEAR_MAX_STARS, GEAR_RARITIES, MAIN_BASE, SET_LIST, SETS, SLOTS, SLOT_BY_ID, STAR_MULT, SUB_RANGE,
   campaignGearTable, gearUpgradeCost, gearDismantleValue, type GearRarity, type GearSlot, type GearStat, type SetId,
 } from '../data/equipment';
 import type { Stats } from '../data/types';
@@ -30,7 +30,11 @@ function rollSub(r: Rand, stat: GearStat, rarity: GearRarity): number {
 
 const SUB_POOL: GearStat[] = ['hp', 'atk', 'def', 'hpPct', 'atkPct', 'defPct', 'spd', 'critRate', 'critDmg', 'acc', 'res'];
 
-export function generateGear(r: Rand, rarity: GearRarity, now: number, slot?: GearSlot, set?: SetId): GearItem {
+/** Étoiles par défaut quand la source n'en impose pas : autant que le rang de rareté. */
+export const defaultStars = (rarity: GearRarity) => Math.min(GEAR_MAX_STARS, GEAR_RARITIES[rarity].order);
+const clampStars = (n: number) => Math.max(1, Math.min(GEAR_MAX_STARS, Math.round(n)));
+
+export function generateGear(r: Rand, rarity: GearRarity, now: number, slot?: GearSlot, set?: SetId, stars?: number): GearItem {
   const s = slot ?? pick(r, SLOTS).id;
   const main = pick(r, SLOT_BY_ID[s].mains);
   const subs: GearItem['subs'] = [];
@@ -39,15 +43,22 @@ export function generateGear(r: Rand, rarity: GearRarity, now: number, slot?: Ge
     const st = pick(r, pool.filter((x) => !subs.some((y) => y.stat === x)));
     subs.push({ stat: st, value: rollSub(r, st, rarity), rolls: 1 });
   }
-  return { uid: uid('g_'), slot: s, rarity, set: set ?? pick(r, SET_LIST).id, level: 0, main, subs, heroUid: null, locked: false, obtainedAt: now };
+  // Mythique : une secondaire déjà renforcée.
+  for (let i = 0; i < (GEAR_RARITIES[rarity].boosted ?? 0) && subs.length; i++) {
+    const sub = pick(r, subs);
+    sub.value = Math.round((sub.value + rollSub(r, sub.stat, rarity)) * 10) / 10;
+    sub.rolls += 1;
+  }
+  return { uid: uid('g_'), slot: s, rarity, stars: clampStars(stars ?? defaultStars(rarity)), set: set ?? pick(r, SET_LIST).id, level: 0, main, subs, heroUid: null, locked: false, obtainedAt: now };
 }
 
-export function mainValue(g: Pick<GearItem, 'main' | 'rarity' | 'level'>): number {
-  const v = MAIN_BASE[g.main] * GEAR_RARITIES[g.rarity].mult * (1 + 0.12 * g.level);
+/** Statistique principale : base × étoiles × niveau (+12 % de la base par niveau). */
+export function mainValue(g: Pick<GearItem, 'main' | 'rarity' | 'level'> & { stars?: number }): number {
+  const v = MAIN_BASE[g.main] * STAR_MULT[clampStars(g.stars ?? defaultStars(g.rarity))] * (1 + 0.12 * g.level);
   return g.main === 'hp' || g.main === 'atk' || g.main === 'def' || g.main === 'acc' || g.main === 'res' ? Math.round(v) : Math.round(v * 10) / 10;
 }
 
-/** Améliore un équipement d'un niveau (mutation). Aux niveaux 4, 8, 12 : nouvelle stat secondaire ou renforcement. */
+/** Améliore un équipement d'un niveau (mutation). Aux niveaux 4, 8, 12 et 16 : nouvelle stat secondaire ou renforcement. */
 export function upgradeGear(s: SaveData, gearUid: string, r: Rand): { ok: boolean; reason?: string; boosted?: GearStat } {
   const g = s.equipment.find((x) => x.uid === gearUid);
   if (!g) return { ok: false, reason: 'Équipement introuvable.' };
@@ -103,12 +114,15 @@ export interface GearBonus {
   flat: Partial<Stats>;
   pct: { hp: number; atk: number; def: number; spd: number };
   lifesteal: number;
+  /** Ensembles à effet : soin par tour (% PV max) et jauge de tour de départ (%). */
+  regen: number;
+  startTm: number;
   sets: { id: SetId; count: number; active: number }[];
 }
 
 /** Total des bonus d'équipement (stats principales, secondaires et ensembles) d'un héros. */
 export function gearBonus(items: GearItem[]): GearBonus {
-  const b: GearBonus = { flat: {}, pct: { hp: 0, atk: 0, def: 0, spd: 0 }, lifesteal: 0, sets: [] };
+  const b: GearBonus = { flat: {}, pct: { hp: 0, atk: 0, def: 0, spd: 0 }, lifesteal: 0, regen: 0, startTm: 0, sets: [] };
   const add = (stat: GearStat, v: number) => {
     if (stat === 'hpPct') b.pct.hp += v;
     else if (stat === 'atkPct') b.pct.atk += v;
@@ -128,6 +142,8 @@ export function gearBonus(items: GearItem[]): GearBonus {
     for (let i = 0; i < active; i++) {
       for (const [k, v] of Object.entries(def.bonus)) {
         if (k === 'lifesteal') b.lifesteal += v as number;
+        else if (k === 'regen') b.regen += v as number;
+        else if (k === 'startTm') b.startTm += v as number;
         else if (k === 'spd') b.pct.spd += v as number;
         else add(k as GearStat, v as number);
       }
@@ -150,6 +166,15 @@ export function applyGearBonus(base: Stats, b: GearBonus): Stats {
   };
 }
 
-export function rollCampaignGear(r: Rand, stageIndex: number, boss: boolean, now: number): GearItem {
-  return generateGear(r, pickWeighted(r, campaignGearTable(stageIndex, boss)), now);
+/** Étoiles du butin de campagne : selon le chapitre (+1 pour un boss, parfois +1 de chance). */
+export function campaignStars(r: Rand, chapter: number, boss: boolean): number {
+  return clampStars(1 + Math.floor((chapter - 1) * 0.6) + (boss ? 1 : 0) + (r() < 0.25 ? 1 : 0));
+}
+/** Étoiles du butin de donjon : selon l'étage (6★ possibles au 10e). */
+export function dungeonStars(r: Rand, floor: number): number {
+  return clampStars(1 + Math.ceil(floor / 2.5) + (r() < 0.2 ? 1 : 0));
+}
+
+export function rollCampaignGear(r: Rand, stageIndex: number, boss: boolean, now: number, chapter = 1): GearItem {
+  return generateGear(r, pickWeighted(r, campaignGearTable(stageIndex, boss)), now, undefined, undefined, campaignStars(r, chapter, boss));
 }

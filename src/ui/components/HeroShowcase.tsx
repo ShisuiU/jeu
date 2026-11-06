@@ -13,6 +13,8 @@ import { Icon } from '../art/Icons';
 import { Modal } from './common';
 import { GearCard, SLOT_ICON } from './GearCard';
 import { GearDetail } from './GearDetail';
+import { GearStars, SetEmblem } from '../art/SetEmblem';
+import { defaultStars } from '../../game/gear';
 
 // VITRINE DU HÉROS — l'illustration au centre, les 7 emplacements d'équipement autour
 // (arme, casque, armure à gauche ; gants, bottes, accessoire à droite ; artefact en bas).
@@ -47,7 +49,8 @@ export function HeroShowcase({ heroId, h, onPrev, onNext, below }: { heroId: str
       <button key={s} className="sc-slot" style={{ ['--gc' as string]: r.color }} aria-label={`${name} ${r.name} +${g.level}`} onClick={() => setOpen(g.uid)}>
         <I size={22} />
         <span className="sc-lv">+{g.level}</span>
-        <span className="sc-set" style={{ background: SETS[g.set].color }} />
+        <span className="sc-set"><SetEmblem id={g.set} size={11} /></span>
+        <span className="sc-stars"><GearStars n={g.stars ?? defaultStars(g.rarity)} size={7} /></span>
       </button>
     );
   };

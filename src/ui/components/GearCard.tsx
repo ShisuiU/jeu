@@ -2,6 +2,8 @@ import { GEAR_RARITIES, SETS, SLOT_BY_ID, STAT_NAMES, PCT_STATS, type GearSlot, 
 import type { GearItem } from '../../save/schema';
 import { mainValue } from '../../game/gear';
 import { Icon } from '../art/Icons';
+import { GearStars, SetEmblem } from '../art/SetEmblem';
+import { defaultStars } from '../../game/gear';
 
 export const SLOT_ICON: Record<GearSlot, keyof typeof Icon> = {
   weapon: 'sword', helmet: 'helmet', armor: 'armor', gloves: 'gloves', boots: 'boots', accessory: 'ring', artifact: 'gem',
@@ -13,11 +15,12 @@ export function GearCard({ g, onClick, owner, selected }: { g: GearItem; onClick
   const r = GEAR_RARITIES[g.rarity];
   const I = Icon[SLOT_ICON[g.slot]] as (p: { size?: number }) => JSX.Element;
   return (
-    <button className={`gear-card ${selected ? 'sel' : ''}`} style={{ ['--gc' as string]: r.color }} onClick={onClick}>
+    <button className={`gear-card r-${g.rarity} ${selected ? 'sel' : ''}`} style={{ ['--gc' as string]: r.color }} onClick={onClick} aria-label={`${SLOT_BY_ID[g.slot].name} ${r.name}, ${g.stars ?? defaultStars(g.rarity)} étoiles, +${g.level}, ensemble ${SETS[g.set].name}`}>
       <span className="gc-ic"><I size={26} /></span>
       <span className="gc-lvl">+{g.level}</span>
-      <span className="gc-set" style={{ background: SETS[g.set].color }} title={SETS[g.set].name} />
+      <span className="gc-set" title={SETS[g.set].name}><SetEmblem id={g.set} size={13} /></span>
       {g.locked && <span className="gc-lock"><Icon.lock size={10} /></span>}
+      <GearStars n={g.stars ?? defaultStars(g.rarity)} />
       <span className="gc-main">{statText(g.main, mainValue(g))}</span>
       {owner && <span className="gc-owner">{owner}</span>}
     </button>

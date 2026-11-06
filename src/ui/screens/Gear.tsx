@@ -14,11 +14,14 @@ import { Icon, ResourceIcon } from '../art/Icons';
 import { mainValue } from '../../game/gear';
 import type { GearItem } from '../../save/schema';
 import { PlaceAmbient } from '../art/PlaceScene';
+import { SetEmblem } from '../art/SetEmblem';
+import { defaultStars } from '../../game/gear';
 
 const BAG = 'bag';
 
 const GEAR_SORTS: Option[] = [
   { id: 'rarity', label: 'Rareté' },
+  { id: 'stars', label: 'Étoiles' },
   { id: 'level', label: 'Niveau de forge' },
   { id: 'slot', label: 'Emplacement' },
   { id: 'main', label: 'Statistique principale' },
@@ -27,12 +30,14 @@ const slotIcon = (id: string) => { const I = Icon[SLOT_ICON[id as keyof typeof S
 const GEAR_GROUPS: FilterGroup[] = [
   { id: 'slot', label: 'Emplacement', options: SLOTS.map((s) => ({ id: s.id, label: s.name, icon: slotIcon(s.id) })) },
   { id: 'rarity', label: 'Rareté', options: (Object.keys(GEAR_RARITIES) as GearRarity[]).reverse().map((r) => ({ id: r, label: GEAR_RARITIES[r].name, color: GEAR_RARITIES[r].color })) },
-  { id: 'set', label: 'Ensemble', options: SET_LIST.map((s) => ({ id: s.id, label: s.name, color: s.color })) },
+  { id: 'stars', label: 'Étoiles', options: [6, 5, 4, 3, 2, 1].map((n) => ({ id: String(n), label: `${n} ★`, color: '#ffd36b' })) },
+  { id: 'set', label: 'Ensemble', options: SET_LIST.map((s) => ({ id: s.id, label: s.name, color: s.color, icon: <SetEmblem id={s.id} size={14} /> })) },
 ];
-const gearMatches = (f: Filters, g: GearItem) => matches(f, 'slot', g.slot) && matches(f, 'rarity', g.rarity) && matches(f, 'set', g.set);
+const gearMatches = (f: Filters, g: GearItem) => matches(f, 'slot', g.slot) && matches(f, 'rarity', g.rarity) && matches(f, 'set', g.set) && matches(f, 'stars', String(g.stars ?? defaultStars(g.rarity)));
 const SLOT_ORDER = Object.fromEntries(SLOTS.map((s, i) => [s.id, i]));
 const GEAR_SORT_FN: Record<string, (a: GearItem, b: GearItem) => number> = {
-  rarity: (a, b) => GEAR_RARITIES[b.rarity].order - GEAR_RARITIES[a.rarity].order || b.level - a.level,
+  rarity: (a, b) => GEAR_RARITIES[b.rarity].order - GEAR_RARITIES[a.rarity].order || (b.stars ?? 0) - (a.stars ?? 0) || b.level - a.level,
+  stars: (a, b) => (b.stars ?? 0) - (a.stars ?? 0) || GEAR_RARITIES[b.rarity].order - GEAR_RARITIES[a.rarity].order || b.level - a.level,
   level: (a, b) => b.level - a.level || GEAR_RARITIES[b.rarity].order - GEAR_RARITIES[a.rarity].order,
   slot: (a, b) => SLOT_ORDER[a.slot] - SLOT_ORDER[b.slot] || GEAR_RARITIES[b.rarity].order - GEAR_RARITIES[a.rarity].order,
   main: (a, b) => a.main.localeCompare(b.main) || mainValue(b) - mainValue(a),

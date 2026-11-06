@@ -492,3 +492,22 @@ body:has(.summon-bar) .toasts { bottom: calc(var(--nav-h) + var(--sab) + 96px); 
   .ss-k { font-size: 10.5px; letter-spacing: 0; }
   .ss-b { display: none; }
 }
+
+/* ─── Lisibilité (audit axe-core) : tailles minimales, contrastes, textes non coupés ─── */
+.seg-count { background: #c22f3c; font-size: 11px; min-width: 17px; height: 17px; }
+.seg button:disabled, .seg button[disabled] { color: #8a8378; }
+.seg button { white-space: normal; line-height: 1.1; text-overflow: clip; }
+.hero-card .lvl, .u-lvl, .ss-lv { font-size: 11px; }
+.mini-slot .hero-card .name { font-size: 9.5px; }
+.leader-crown { font-size: 10px; }
+.gc-main { font-size: 10.5px; }
+.chests span { font-size: 11px; }
+.daily-cell { font-size: 11px; }
+.daily-cell .d { font-size: 10.5px; }
+.shard-tab span { font-size: 11px; }
+.hl-t { font-size: 11px; }
+.seg button.locked { color: #8a8378; font-style: italic; }
+.foe-art .u-lvl { font-size: 11px; }
+.foe-name { font-size: 11px; }
+.gc-main, .daily-cell .d { font-size: 11px; }
+.leader-crown { font-size: 10.5px; }

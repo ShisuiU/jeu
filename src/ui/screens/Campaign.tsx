@@ -29,7 +29,7 @@ export function Campaign() {
       <div className="seg" style={{ marginBottom: 10 }}>
         {DIFFICULTY_ORDER.map((d) => {
           const open = isStageUnlocked(save, d, CHAPTERS[0].stages[0]);
-          return <button key={d} className={diff === d ? 'on' : ''} style={open ? undefined : { opacity: 0.45 }} onClick={() => { if (!open) { toast(`${DIFFICULTIES[d].name} : terminez d’abord le chapitre 1 en ${DIFFICULTIES[DIFFICULTY_ORDER[DIFFICULTY_ORDER.indexOf(d) - 1]].name}.`); return; } setDiff(d); setChap(latest(d)); }}>{DIFFICULTIES[d].name}</button>;
+          return <button key={d} className={`${diff === d ? 'on' : ''} ${open ? '' : 'locked'}`} aria-disabled={!open} onClick={() => { if (!open) { toast(`${DIFFICULTIES[d].name} : terminez d’abord le chapitre 1 en ${DIFFICULTIES[DIFFICULTY_ORDER[DIFFICULTY_ORDER.indexOf(d) - 1]].name}.`); return; } setDiff(d); setChap(latest(d)); }}>{DIFFICULTIES[d].name}</button>;
         })}
       </div>
       <div className="chips" style={{ marginBottom: 12 }}>

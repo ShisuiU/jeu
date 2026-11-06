@@ -128,3 +128,43 @@
   opacity: 0.8;
 }
 .theme-v2 .panel { position: relative; }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   IDENTITÉ PAR PARTIE DU JEU — chaque onglet a sa couleur et son décor (comme les grands jeux du genre),
+   pour que l'on sache d'un coup d'œil où l'on est. Les boutons d'action restent dorés partout.
+   ───────────────────────────────────────────────────────────────────────────── */
+.theme-v2 { --accent: #e3bd72; --accent-hi: #ffe2a3; --accent-glow: rgba(255, 210, 130, 0.35); --tab-tint: rgba(120, 70, 200, 0.18); --tab-bg: url('../assets/theme/world.webp'); }
+.theme-v2[data-tab='collection'] { --accent: #8fb0ff; --accent-hi: #d6e3ff; --accent-glow: rgba(120, 160, 255, 0.4); --tab-tint: rgba(60, 100, 230, 0.22); --tab-bg: url('../assets/theme/bg-heroes.webp'); }
+.theme-v2[data-tab='summon'] { --accent: #c29cff; --accent-hi: #eadcff; --accent-glow: rgba(180, 130, 255, 0.4); --tab-tint: rgba(150, 80, 255, 0.24); }
+.theme-v2[data-tab='combats'] { --accent: #ff7f5f; --accent-hi: #ffd0c0; --accent-glow: rgba(255, 110, 80, 0.4); --tab-tint: rgba(220, 60, 40, 0.22); --tab-bg: url('../assets/theme/bg-battle.webp'); }
+.theme-v2[data-tab='menu'] { --accent: #6fd3c2; --accent-hi: #c8f5ec; --accent-glow: rgba(90, 210, 190, 0.35); --tab-tint: rgba(40, 170, 150, 0.2); --tab-bg: url('../assets/theme/bg-archive.webp'); }
+
+.theme-v2 .bg-ambient {
+  background:
+    radial-gradient(120% 70% at 50% 0%, var(--tab-tint), transparent 62%),
+    linear-gradient(180deg, rgba(7, 6, 11, 0.06) 0%, rgba(7, 6, 11, 0.5) 34%, rgba(7, 6, 11, 0.88) 68%, rgba(7, 6, 11, 0.97) 100%),
+    var(--tab-bg) center top / cover no-repeat,
+    #08070c;
+}
+.theme-v2 { --v2-corner: var(--accent); }
+.theme-v2 .screen-header h1 { color: var(--accent-hi); text-shadow: 0 1px 0 #000, 0 0 16px var(--accent-glow); }
+.theme-v2 .screen-header::after { background: linear-gradient(90deg, transparent, var(--accent), transparent); }
+.theme-v2 .panel-title { color: var(--accent-hi); }
+.theme-v2 .panel-title::before { background: linear-gradient(90deg, transparent, var(--accent)); opacity: 0.7; }
+.theme-v2 .panel-title::after { background: linear-gradient(90deg, var(--accent), transparent); opacity: 0.7; }
+.theme-v2 .seg button.on { color: var(--accent-hi); text-shadow: 0 0 10px var(--accent-glow); }
+.theme-v2 .seg button.on::after { background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
+.theme-v2 .nav-item.active { color: var(--accent-hi); }
+.theme-v2 .nav-item.active::after { background: linear-gradient(135deg, #fff, var(--accent)); box-shadow: 0 0 9px var(--accent-glow); }
+.theme-v2 .nav-item.active svg { filter: drop-shadow(0 0 7px var(--accent-glow)); }
+.theme-v2 .bottom-nav::before { background: linear-gradient(90deg, transparent, var(--accent), transparent); }
+.theme-v2 .menu-tile svg { color: var(--accent-hi); filter: drop-shadow(0 0 6px var(--accent-glow)); }
+
+/* Hiérarchie : ce qui attend le joueur ressort (récompense à réclamer, objectif accompli). */
+.theme-v2 .mission:has(> .btn) {
+  margin: 0 -10px; padding: 10px; border-radius: 4px;
+  background: linear-gradient(90deg, rgba(255, 210, 130, 0.14), rgba(255, 210, 130, 0.03));
+  box-shadow: inset 3px 0 0 var(--accent-hi);
+}
+.theme-v2 .mission.claimed { opacity: 0.45; }
+.theme-v2 .panel-title { font-size: 15px; }

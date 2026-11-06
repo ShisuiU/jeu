@@ -83,6 +83,7 @@ function renderRoute(r: Route) {
 export default function App() {
   const save = useGame((s) => s.save);
   const route = useUI((s) => s.stack[s.stack.length - 1]);
+  const tab = useUI((s) => s.stack[0].name); // onglet de départ de la pile : sert à l'identité visuelle de chaque partie
   const depth = useUI((s) => s.stack.length);
   const [ready, setReady] = useState(false);
   const [started, setStarted] = useState(false);
@@ -176,7 +177,7 @@ export default function App() {
   };
 
   return (
-    <div className={`app ${save?.settings.reducedMotion ? 'reduced-motion' : ''} ${save?.settings.theme === 'classic' ? '' : 'theme-v2'}`} onPointerDown={unlockAudio} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+    <div data-tab={tab} className={`app ${save?.settings.reducedMotion ? 'reduced-motion' : ''} ${save?.settings.theme === 'classic' ? '' : 'theme-v2'}`} onPointerDown={unlockAudio} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
       {!started || !save ? (
         <Title ready={ready && !!save} onStart={start} error={error} />
       ) : (

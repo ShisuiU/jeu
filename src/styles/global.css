@@ -10,7 +10,7 @@
   --gold-lo: #8a6a33;
   --text: #ece6da;
   --text-dim: #a49d90;
-  --text-faint: #6f695f;
+  --text-faint: #908878; /* contraste ≥ 4,5:1 sur le fond (audit axe-core) */
   --danger: #ff5a5a;
   --ok: #7bd88f;
   --void: #9a6bff;

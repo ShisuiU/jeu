@@ -16,7 +16,7 @@ export function Settings() {
     <Screen title="Paramètres">
       <Panel title="Profil">
         <label className="faint">Nom de l’Héritier</label>
-        <input className="text-input" style={{ marginTop: 6 }} defaultValue={save.profile.name} maxLength={18}
+        <input className="text-input" aria-label="Nom de l’Héritier" style={{ marginTop: 6 }} defaultValue={save.profile.name} maxLength={18}
           onBlur={(e) => { if (e.target.value.trim() && e.target.value !== save.profile.name) { setProfile({ name: e.target.value }); toast('Nom enregistré.', 'ok'); } }} />
       </Panel>
       <Panel title="Apparence">
@@ -35,7 +35,7 @@ export function Settings() {
         </div>
         <div className="setting-row">
           <div className="grow"><b>Volume</b></div>
-          <input type="range" min={0} max={1} step={0.05} value={st.volume} disabled={!st.sound} style={{ width: 140, accentColor: '#d9b36a' }}
+          <input type="range" aria-label="Volume des effets sonores" min={0} max={1} step={0.05} value={st.volume} disabled={!st.sound} style={{ width: 140, accentColor: '#d9b36a' }}
             onChange={(e) => update({ volume: Number(e.target.value) })} onPointerUp={() => play('tap')} />
         </div>
         <div className="setting-row">
@@ -44,7 +44,7 @@ export function Settings() {
         </div>
         <div className="setting-row">
           <div className="grow"><b>Volume de la musique</b></div>
-          <input type="range" min={0} max={1} step={0.05} value={st.musicVolume} disabled={!st.music} style={{ width: 140, accentColor: '#d9b36a' }} onChange={(e) => update({ musicVolume: Number(e.target.value) })} />
+          <input type="range" aria-label="Volume de la musique" min={0} max={1} step={0.05} value={st.musicVolume} disabled={!st.music} style={{ width: 140, accentColor: '#d9b36a' }} onChange={(e) => update({ musicVolume: Number(e.target.value) })} />
         </div>
         <div className="setting-row">
           <div className="grow"><b>Vitesse de combat par défaut</b></div>

@@ -26,3 +26,16 @@ export function rewardMainIcon(r: Reward, size = 20) {
   const def = RESOURCES[k as keyof typeof RESOURCES];
   return <ResourceIcon icon={def.icon} color={def.color} size={size} />;
 }
+
+/** Récompenses sur une ligne (icône + quantité), pour les écrans où la place compte. */
+export function RewardInline({ reward }: { reward: Reward }) {
+  return (
+    <div className="reward-inline">
+      {Object.entries(reward).filter(([, v]) => (v ?? 0) > 0).map(([k, v]) => {
+        const d = RESOURCES[k as keyof typeof RESOURCES];
+        if (!d) return null;
+        return <span key={k} title={d.name}><ResourceIcon icon={d.icon} color={d.color} size={18} /><b>{fmt(v ?? 0)}</b><small>{d.name}</small></span>;
+      })}
+    </div>
+  );
+}

@@ -23,14 +23,15 @@ export function CopiesCard({ h }: { h: HeroInstance }) {
   const save = useGame((s) => s.save)!;
   const [open, setOpen] = useState(false);
   const n = copiesOf(save, h.heroId);
+  // Sans doublon, l'encart est masqué ; la fenêtre reste ouverte même après avoir utilisé le dernier.
   return (
     <>
-      <button className={`copies-card ${n ? 'has' : ''}`} onClick={() => setOpen(true)}>
+      {n > 0 && <button className={`copies-card ${n ? 'has' : ''}`} onClick={() => setOpen(true)}>
         <span className="cc-ic"><Icon.portal size={18} /></span>
         <span className="grow"><b>Doublons</b> <span className="cc-n">×{n}</span></span>
         <span className="cc-act">{n ? 'Utiliser' : 'À quoi ça sert ?'}</span>
         {n > 0 && <span className="badge-dot" style={{ top: 8, right: 8 }} />}
-      </button>
+      </button>}
       {open && <CopiesModal h={h} onClose={() => setOpen(false)} />}
     </>
   );

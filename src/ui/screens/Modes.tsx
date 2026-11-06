@@ -11,7 +11,7 @@ import { seededRand } from '../../game/gear';
 import { dungeonBonus } from '../../game/events';
 import { formatDuration, msUntilReset } from '../../core/time';
 import { InfoButton, Panel, Screen, fmt } from '../components/common';
-import { RewardView, rewardMainIcon } from '../components/RewardView';
+import { RewardInline, rewardMainIcon } from '../components/RewardView';
 import { EnemyArt } from '../art/EnemyArt';
 import { HeroArt } from '../art/HeroArt';
 import { Icon, ResourceIcon } from '../art/Icons';
@@ -129,11 +129,16 @@ export function WorldBoss() {
       {BOSS_TIERS.map((t) => {
         const best = save.worldBoss.best[t.id] ?? 0;
         return (
-          <Panel key={t.id} title={`${t.name} · niveau ${t.level}`}>
-            <div className="row between"><span className="faint">Meilleur score</span><b>{best.toFixed(1)} %</b></div>
+          <Panel key={t.id}>
+            <div className="row between" style={{ gap: 10 }}>
+              <div className="grow">
+                <b>{t.name}</b> <span className="faint">· niveau {t.level}</span>
+                <div className="faint" style={{ fontSize: 12 }}>Meilleur score <b style={{ color: 'var(--gold-hi)' }}>{best.toFixed(1)} %</b></div>
+              </div>
+              <button className="btn" disabled={keys <= 0} onClick={() => push({ name: 'prep', spec: { mode: 'worldboss', tier: t.id } })}>Affronter</button>
+            </div>
             <div className="chests">{DAMAGE_CHESTS.map((c) => <span key={c} className={best >= c ? 'on' : ''}>{c}%</span>)}</div>
-            <RewardView reward={t.reward} />
-            <button className="btn block" style={{ marginTop: 10 }} disabled={keys <= 0} onClick={() => push({ name: 'prep', spec: { mode: 'worldboss', tier: t.id } })}>Affronter (1 clé)</button>
+            <RewardInline reward={t.reward} />
           </Panel>
         );
       })}

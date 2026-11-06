@@ -1,5 +1,5 @@
 import { Coach } from '../components/Coach';
-import { AffinityIcon, RoleIcon } from '../art/Identity';
+import { AffinityIcon } from '../art/Identity';
 import type { AffinityId } from '../../data/types';
 import { useState } from 'react';
 import { useGame } from '../../state/store';
@@ -7,7 +7,6 @@ import { useUI } from '../../state/ui';
 import { ENEMIES } from '../../data/enemies';
 import { HERO_BY_ID } from '../../data/heroes';
 import { AFFINITIES } from '../../data/affinities';
-import { ROLES } from '../../data/roles';
 import { STAGE_BY_ID } from '../../data/campaign';
 import { heroTotalStats } from '../../game/heroStats';
 import { powerOf } from '../../game/stats';
@@ -19,7 +18,7 @@ import { GearCard } from '../components/GearCard';
 import { play } from '../../audio/sfx';
 import { formatDuration } from '../../core/time';
 import { Panel, Screen, fmt } from '../components/common';
-import { RewardView } from '../components/RewardView';
+import { RewardInline, RewardView } from '../components/RewardView';
 import { HeroCard } from '../components/HeroCard';
 import { EnemyArt } from '../art/EnemyArt';
 import { HeroArt } from '../art/HeroArt';
@@ -36,6 +35,7 @@ export function Prep({ spec }: { spec: BattleSpec }) {
   const start = canStart(save, spec);
   const [teamId, setTeamId] = useState(save.activeTeamId);
   const [summary, setSummary] = useState<(SweepSummary & { count: number }) | null>(null);
+  const [sweepOpen, setSweepOpen] = useState(false);
   const sweepOk = canSweep(save, spec);
   const team = save.teams.find((t) => t.id === teamId) ?? save.teams[0];
   const members = team.slots.map((u) => save.heroes.find((h) => h.uid === u));
@@ -63,67 +63,85 @@ export function Prep({ spec }: { spec: BattleSpec }) {
   };
   const maxRuns = info.cost.kind === 'energy' && info.cost.amount > 0 ? Math.floor(save.energy.current / info.cost.amount) : 0;
 
+  // Ennemis regroupés : chaque type une seule fois (avec le nombre), le boss en premier.
+  const foes = (() => {
+    const m = new Map<string, { refId: string; isHero: boolean; level: number; n: number; boss: boolean }>();
+    for (const w of info.waves) for (const e of w) {
+      const isHero = e.kind === 'hero';
+      const k = `${e.kind}:${e.refId}`;
+      const cur = m.get(k);
+      if (cur) { cur.n += 1; cur.level = Math.max(cur.level, e.level); }
+      else m.set(k, { refId: e.refId, isHero, level: e.level, n: 1, boss: !isHero && !!ENEMIES[e.refId]?.boss });
+    }
+    return [...m.values()].sort((x, y) => Number(y.boss) - Number(x.boss));
+  })();
+  const blocked = !start.ok || energyShort || !count;
+
   return (
     <Screen title={info.title}>
       <Coach id="prep_fight" target=".fight-btn" text="Voici les ennemis et la récompense. Lance le combat !" />
-      <p className="muted" style={{ marginTop: 0 }}>{info.subtitle}</p>
-      {boss && spec.mode !== 'arena' && <div className="hint warn" style={{ marginBottom: 12 }}><b>Boss.</b> Immunisé à l’étourdissement et au gel, furieux sous 50 % de PV.</div>}
+      <div className="prep-sub"><span className="muted">{info.subtitle}</span></div>
       <AffinityAdvice waves={info.waves} />
-      {info.waves.map((w, i) => (
-        <Panel key={i} title={spec.mode === 'arena' ? 'Équipe adverse' : `Vague ${i + 1}`}>
-          <div className="enemy-row">
-            {w.map((e, j) => {
-              const isHero = e.kind === 'hero';
-              const name = isHero ? HERO_BY_ID[e.refId].name : ENEMIES[e.refId].name;
-              const role = isHero ? HERO_BY_ID[e.refId].role : ENEMIES[e.refId].role;
-              const aff = isHero ? HERO_BY_ID[e.refId].affinity : ENEMIES[e.refId].affinity;
-              return (
-                <div key={j} className={`enemy-chip ${!isHero && ENEMIES[e.refId].boss ? 'boss' : ''}`}>
-                  <div className="ec-art">{isHero ? <HeroArt heroId={e.refId} /> : <EnemyArt enemyId={e.refId} />}<span className="u-lvl">{e.level}</span><span className="u-aff"><AffinityIcon id={aff} size={15} /></span></div>
-                  <div className="ec-name">{name}</div>
-                  <div className="faint ec-role"><RoleIcon id={role} size={11} />{ROLES[role].name}</div>
-                </div>
-              );
-            })}
-          </div>
-        </Panel>
-      ))}
+
+      <Panel title={spec.mode === 'arena' ? 'Équipe adverse' : `Ennemis · ${info.waves.length} vague${info.waves.length > 1 ? 's' : ''}`}>
+        <div className="foe-row">
+          {foes.map((f) => {
+            const d = f.isHero ? HERO_BY_ID[f.refId] : ENEMIES[f.refId];
+            return (
+              <div key={f.refId} className={`foe ${f.boss ? 'boss' : ''}`} title={d.name}>
+                <div className="foe-art">{f.isHero ? <HeroArt heroId={f.refId} /> : <EnemyArt enemyId={f.refId} />}<span className="u-lvl">{f.level}</span><span className="u-aff"><AffinityIcon id={d.affinity} size={13} /></span>{f.n > 1 && <span className="foe-n">×{f.n}</span>}</div>
+                <div className="foe-name">{f.boss ? 'Boss' : d.name.split(' ')[0]}</div>
+              </div>
+            );
+          })}
+        </div>
+        {boss && spec.mode !== 'arena' && <p className="faint" style={{ margin: '8px 0 0' }}>Boss : insensible à l’étourdissement et au gel, plus fort sous 50 % de PV.</p>}
+      </Panel>
+
+      <Panel>
+        <div className="row between" style={{ marginBottom: 8 }}>
+          {save.teams.length > 1 ? (
+            <select className="prep-team" value={team.id} onChange={(e) => setTeamId(e.target.value)} aria-label="Équipe">
+              {save.teams.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+            </select>
+          ) : <b>{team.name}</b>}
+          <span className="muted">Puissance <b style={{ color: 'var(--gold-hi)' }}>{fmt(power)}</b></span>
+        </div>
+        <button className="mini-team prep-team-strip" onClick={() => push({ name: 'team' })} aria-label="Modifier l’équipe">
+          {members.map((h, i) => (
+            <div key={i} className="mini-slot">{h ? <HeroCard heroId={h.heroId} level={h.level} /> : <span className="faint">+</span>}{h && team.leader === h.uid && <span className="leader-crown">CHEF</span>}</div>
+          ))}
+        </button>
+      </Panel>
 
       <Panel title={info.rewardLabel}>
-        <RewardView reward={info.rewardPreview} />
-        {newHeroes?.map((id) => <p key={id} className="hint" style={{ marginTop: 10 }}>Nouveau héros débloqué : <b>{HERO_BY_ID[id].name}</b></p>)}
-        {info.notes.map((n, i) => <p key={i} className="faint" style={{ margin: '6px 0 0' }}>{n}</p>)}
+        <RewardInline reward={info.rewardPreview} />
+        {newHeroes?.map((id) => <p key={id} className="hint" style={{ marginTop: 8 }}>Nouveau héros : <b>{HERO_BY_ID[id].name}</b></p>)}
+        {info.notes.filter(Boolean).map((n, i) => <p key={i} className="faint" style={{ margin: '6px 0 0' }}>{n}</p>)}
       </Panel>
 
-      <Panel title="Équipe">
-        <div className="seg" style={{ marginBottom: 10 }}>
-          {save.teams.map((t) => <button key={t.id} className={t.id === team.id ? 'on' : ''} onClick={() => setTeamId(t.id)}>{t.name}</button>)}
+      {/* Barre d'action : toujours visible en bas, au-dessus de la navigation. */}
+      <div className="prep-bar">
+        {blocked && <div className="prep-why">{!count ? 'Équipe vide : touche l’équipe pour ajouter des héros.' : !start.ok ? start.reason : `Énergie ${save.energy.current}/${info.cost.amount} · +1 dans ${formatDuration(msToNextEnergy(save.energy, now))}`}</div>}
+        <div className="row" style={{ gap: 8 }}>
+          {(spec.mode === 'campaign' || spec.mode === 'dungeon') && (
+            <button className="btn secondary prep-sweep" disabled={!sweepOk.ok || maxRuns < 1 || !count} onClick={() => setSweepOpen(true)} title={sweepOk.ok ? 'Rejouer automatiquement sans combat' : sweepOk.reason}>Balayer</button>
+          )}
+          <button className="btn grow fight-btn" disabled={blocked} onClick={go}>
+            Combattre {info.cost.kind === 'energy' && <><Icon.energy size={18} /> {info.cost.amount}</>}{info.cost.kind === 'key' && '· 1 clé'}{info.cost.kind === 'ticket' && '· 1 ticket'}<span className="shine" />
+          </button>
         </div>
-        <div className="mini-team">
-          {members.map((h, i) => (
-            <div key={i} className="mini-slot">{h ? <HeroCard heroId={h.heroId} level={h.level} /> : <span className="faint">Vide</span>}{h && team.leader === h.uid && <span className="leader-crown">CHEF</span>}</div>
-          ))}
-        </div>
-        <div className="row between" style={{ marginTop: 10 }}>
-          <span className="muted">Puissance <b style={{ color: 'var(--gold-hi)' }}>{fmt(power)}</b></span>
-          <button className="btn secondary small" onClick={() => push({ name: 'team' })}>Modifier</button>
-        </div>
-      </Panel>
-
-      <button className="btn block fight-btn" style={{ marginTop: 16, minHeight: 56, fontSize: 18 }} disabled={!start.ok || energyShort || !count} onClick={go}>
-        Combattre {info.cost.kind === 'energy' && <><Icon.energy size={18} /> {info.cost.amount}</>}{info.cost.kind === 'key' && '· 1 clé'}{info.cost.kind === 'ticket' && '· 1 ticket'}<span className="shine" />
-      </button>
-      {(spec.mode === 'campaign' || spec.mode === 'dungeon') && (
-        <Panel title="Balayage">
-          {sweepOk.ok ? (
-            <>
-              <div className="row" style={{ gap: 6 }}>
-                {[1, 5, 10].map((n) => <button key={n} className="btn secondary small grow" disabled={maxRuns < 1 || !count} onClick={() => doSweep(Math.min(n, maxRuns))}>×{n}</button>)}
-                <button className="btn small grow" disabled={maxRuns < 1 || !count} onClick={() => doSweep(maxRuns)}>Max ({maxRuns})</button>
-              </div>
-            </>
-          ) : <p className="faint" style={{ margin: 0 }}>{sweepOk.reason}</p>}
-        </Panel>
+      </div>
+      {sweepOpen && (
+        <Modal onClose={() => setSweepOpen(false)}>
+          <h2>Balayer</h2>
+          <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>Rejoue ce niveau sans combattre, autant de fois que tu veux, contre de l’énergie.</p>
+          <div className="row" style={{ gap: 6 }}>
+            {[1, 5, 10].map((n) => <button key={n} className="btn secondary small grow" disabled={maxRuns < 1} onClick={() => { setSweepOpen(false); doSweep(Math.min(n, maxRuns)); }}>×{n}</button>)}
+            <button className="btn small grow" disabled={maxRuns < 1} onClick={() => { setSweepOpen(false); doSweep(maxRuns); }}>Max ({maxRuns})</button>
+          </div>
+          <button className="btn secondary block" style={{ marginTop: 10 }} onClick={() => setSweepOpen(false)}>Annuler</button>
+        </Modal>
       )}
       {summary && (
         <Modal onClose={() => setSummary(null)}>
@@ -139,8 +157,6 @@ export function Prep({ spec }: { spec: BattleSpec }) {
           </div>
         </Modal>
       )}
-      {!start.ok && <p className="faint" style={{ textAlign: 'center', marginTop: 8 }}>{start.reason}</p>}
-      {energyShort && <p className="faint" style={{ textAlign: 'center', marginTop: 8 }}>Énergie insuffisante ({save.energy.current}/{info.cost.amount}) · +1 dans {formatDuration(msToNextEnergy(save.energy, now))}</p>}
     </Screen>
   );
 }

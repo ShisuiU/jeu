@@ -3,6 +3,7 @@ import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
 import { activeEvents, bannerAvailable, claimMilestone, eventPoints, loginState, milestoneState, nextWeekly, trialsDone } from '../../game/events';
 import { claimLoginDay } from '../../game/loginEvent';
+import { goFor } from '../../game/goTo';
 import { HERO_BY_ID } from '../../data/heroes';
 import { RARITIES } from '../../data/rarities';
 import { HeroArt } from '../art/HeroArt';
@@ -75,7 +76,7 @@ function Tasks({ e }: { e: GameEvent }) {
               <div className="progress" style={{ margin: '5px 0 3px' }}><div style={{ width: `${Math.min(100, (st.value / t.target) * 100)}%` }} /></div>
               <div className="faint">{rewardText(t.reward)}</div>
             </div>
-            {st.claimed ? <span className="m-done">✓</span> : st.done ? <button className="btn small" onClick={() => claim((s) => claimEventTask(s, e.id, t.id))}>Réclamer</button> : <span className="m-count">{st.value}/{t.target}</span>}
+            {st.claimed ? <span className="m-done">✓</span> : st.done ? <button className="btn small" onClick={() => claim((s) => claimEventTask(s, e.id, t.id))}>Réclamer</button> : (() => { const go = goFor(save, t.key); return <span className="m-side"><span className="m-count">{st.value}/{t.target}</span>{go && ('route' in go ? <button className="m-go" onClick={() => useUI.getState().push(go.route)}>Y aller ›</button> : <span className="m-lock">{go.locked}</span>)}</span>; })()}
           </div>
         );
       })}

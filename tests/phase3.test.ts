@@ -57,11 +57,11 @@ describe('invocations', () => {
     const s = createNewSave(1); s.resources.shardPrimal = 0;
     expect(summon(s, 'primal', 1, seededRand(1), 1).ok).toBe(false);
   });
-  it('garantie : un légendaire au plus tard à la 60e invocation rare', () => {
+  it('garantie : un légendaire au plus tard à la 100e invocation rare', () => {
     for (let seed = 1; seed <= 20; seed++) {
       const s = rich();
       let got = -1;
-      for (let i = 1; i <= 60 && got < 0; i++) {
+      for (let i = 1; i <= 100 && got < 0; i++) {
         const r = summon(s, 'aeon', 1, seededRand(seed * 1000 + i), 1);
         if (r.results.some((x) => RARITIES[x.rarity].order >= RARITIES.legendary.order)) got = i;
       }
@@ -187,4 +187,22 @@ describe('équipement', () => {
 
 it('fragments nécessaires cohérents avec la rareté', () => {
   expect(RARITIES[HERO_BY_ID.azhar.rarity].fragmentsToSummon).toBeGreaterThan(RARITIES[HERO_BY_ID.brann.rarity].fragmentsToSummon);
+});
+
+describe('taux d’invocation (rééquilibrés, façon Raid)', () => {
+  it('invocation sacrée : surtout des épiques, un légendaire garanti au plus tard au 10e appel', () => {
+    const s = rich();
+    const counts: Record<string, number> = {};
+    let since = 0, worst = 0;
+    for (let i = 0; i < 400; i++) {
+      const r = summon(s, 'primal', 1, seededRand(7000 + i), 1);
+      const rar = r.results[0].rarity;
+      counts[rar] = (counts[rar] ?? 0) + 1;
+      since = RARITIES[rar].order >= RARITIES.legendary.order ? 0 : since + 1;
+      worst = Math.max(worst, since);
+    }
+    expect((counts.epic ?? 0) / 400).toBeGreaterThan(0.7);
+    expect(((counts.legendary ?? 0) + (counts.mythic ?? 0)) / 400).toBeLessThan(0.22);
+    expect(worst).toBeLessThan(10);
+  });
 });

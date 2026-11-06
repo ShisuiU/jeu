@@ -34,9 +34,14 @@ export function Combats() {
     { title: 'Expéditions', sub: (() => { const f = finishedExpeditions(save, now); const r = save.expeditions?.runs.length ?? 0; return f ? `${f} de retour : butin à récupérer` : r ? `${r} en cours` : `${EXPEDITION_SLOTS} missions par jour, même jeu fermé`; })(), art: 'seam_stalker', color: '#9fb7ff', route: { name: 'expeditions' }, feature: 'expeditions', dot: finishedExpeditions(save, now) > 0 || (save.expeditions?.runs.length ?? 0) + (save.expeditions?.done.length ?? 0) === 0 },
     { title: 'Arène', sub: `Ligue ${arenaTier(save.arena.rating).name} · ${tickets}/${ARENA.ticketsPerDay} tickets`, art: 'hollow_knight', color: '#ff6b7d', route: { name: 'arena' }, dot: tickets > 0, feature: 'arena' },
   ];
-  for (const ev of [...activeEvents(now)].reverse()) cards.unshift({
-    title: ev.name, sub: ev.cycle ? `Cette semaine · bonus ${BONUS_SHORT[ev.cycle.bonus.kind]} ×${String(ev.cycle.bonus.mult).replace('.', ',')}` : 'Événement spécial',
-    art: ev.cycle?.art ?? 'ash_lord', color: ev.color ?? '#ff3d6e', route: { name: 'events' }, dot: !save.flags[`seen_${ev.id}`] || eventClaimable(save, now, ev.id) > 0, feature: 'events',
+  // Une seule carte pour tous les événements en cours (l'écran Événements les sépare par onglets).
+  const evs = activeEvents(now);
+  const wk = evs.find((e) => e.cycle) ?? evs[0];
+  if (wk) cards.unshift({
+    title: evs.length > 1 ? 'Événements' : wk.name,
+    sub: [wk.cycle ? `${wk.name} · bonus ${BONUS_SHORT[wk.cycle.bonus.kind]} ×${String(wk.cycle.bonus.mult).replace('.', ',')}` : wk.name, evs.length > 1 ? `+${evs.length - 1} autre${evs.length > 2 ? 's' : ''}` : ''].filter(Boolean).join(' · '),
+    art: wk.cycle?.art ?? 'ash_lord', color: wk.color ?? '#ff3d6e', route: { name: 'events' }, feature: 'events',
+    dot: evs.some((e) => !save.flags[`seen_${e.id}`] || eventClaimable(save, now, e.id) > 0),
   });
   const open = cards.filter((c) => !c.feature || isUnlocked(save, c.feature));
   // Modes fermés : seul le prochain à s'ouvrir est montré (les autres sont annoncés en une ligne).

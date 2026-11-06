@@ -24,6 +24,13 @@ export const MIGRATIONS: Record<number, Migration> = {
   },
   // v5 : étoiles sur l'équipement ; un ancien objet reçoit autant d'étoiles que son rang de rareté (même puissance qu'avant).
   5: (s) => ({ ...s, equipment: (s.equipment ?? []).map((g: { rarity: string; stars?: number }) => ({ ...g, stars: g.stars ?? ({ common: 1, uncommon: 2, rare: 3, epic: 4, legendary: 5, mythic: 6 } as Record<string, number>)[g.rarity] ?? 1 })) }),
+  // v6 : l'invocation primordiale est retirée ; chaque éclat primordial devient 300 cristaux (une invocation épique).
+  6: (s) => {
+    const r = { ...(s.resources ?? {}) };
+    const n = Math.max(0, Number(r.shardPrimal) || 0);
+    r.crystals = (Number(r.crystals) || 0) + n * 300; r.shardPrimal = 0;
+    return { ...s, resources: r };
+  },
 };
 
 export class SaveFormatError extends Error {}

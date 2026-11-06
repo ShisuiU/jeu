@@ -23,7 +23,7 @@ export function BottomNav() {
   // L'onglet reste allumé quand on navigue dans ses sous-écrans.
   const tab = useUI((s) => s.tab);
   // Un sélecteur par pastille : chacun renvoie un booléen stable (sinon React redessine en boucle).
-  const summonDot = useGame((s) => !!s.save && (s.save.resources.shardAeon > 0 || s.save.resources.shardPrimal > 0 || !s.save.flags.gift_event_ash));
+  const summonDot = useGame((s) => !!s.save && (s.save.resources.shardAeon > 0 || !s.save.flags.gift_event_ash));
   // Chaque pastille indique l'onglet où se trouve l'action (pas de pastille vers un mode encore fermé).
   const combatsDot = useGame((s) => !!s.save && ((isUnlocked(s.save, 'worldboss') && s.save.worldBoss.keysUsed < WORLD_BOSS.keysPerDay) || (isUnlocked(s.save, 'arena') && s.save.arena.ticketsUsed < ARENA.ticketsPerDay) || (s.save.expeditions?.runs ?? []).some((r) => s.now >= r.endsAt)));
   const homeDot = useGame((s) => !!s.save && (canClaimDaily(s.save, s.now) || unreadMail(s.save.flags) || claimableCount(s.save) > 0 || (isUnlocked(s.save, 'events') && eventsDot(s.save, s.now))));

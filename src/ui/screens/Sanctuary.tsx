@@ -9,7 +9,7 @@ import { maxLevelForRank, powerOf } from '../../game/stats';
 import { heroTotalStats } from '../../game/heroStats';
 import { ascend, ascendCheck, awaken, awakenCheck, canImprove, elixirsToCap, rankUp, rankUpCheck, skillCheck, useElixirs as applyElixirs, type Check } from '../../game/upgrade';
 import { play } from '../../audio/sfx';
-import { Modal, Screen, fmt } from '../components/common';
+import { Screen, fmt } from '../components/common';
 import { CostView } from '../components/Cost';
 import { HeroStrip, useHeroOrder } from '../components/HeroStrip';
 import { HeroArt } from '../art/HeroArt';
@@ -17,6 +17,7 @@ import { Icon, ResourceIcon } from '../art/Icons';
 import { PlaceAmbient } from '../art/PlaceScene';
 import { HeroUpgrade } from './HeroUpgrade';
 import { Wallet } from '../components/Wallet';
+import { FeedPanel } from '../components/FeedPanel';
 
 // SANCTUAIRE — un héros à la fois, une ligne par amélioration.
 export function Sanctuary({ uid }: { uid?: string }) {
@@ -26,7 +27,6 @@ export function Sanctuary({ uid }: { uid?: string }) {
   const toast = useUI((s) => s.toast);
   const { defaultUid } = useHeroOrder();
   const [sel, setSel] = useState<string | undefined>(uid && save.heroes.some((h) => h.uid === uid) ? uid : defaultUid);
-  const [skills, setSkills] = useState(false);
   const h = save.heroes.find((x) => x.uid === sel) ?? save.heroes[0];
   if (!h) return <Screen title="Sanctuaire"><p className="muted">Aucun héros.</p></Screen>;
   const d = HERO_BY_ID[h.heroId];
@@ -47,43 +47,71 @@ export function Sanctuary({ uid }: { uid?: string }) {
   const skillNow = d.skills.reduce((a, s) => a + (h.skillLevels[s.id] ?? 1), 0);
   const skillReady = d.skills.some((s) => skillCheck(save, h, s.id).ok);
 
+  const [tab, setTab] = useState<'level' | 'rank' | 'ascend' | 'skills'>('level');
+  const TABS = [
+    { id: 'level', label: 'Niveau', dot: !!toCap && save.resources.xpElixir > 0 },
+    { id: 'rank', label: 'Rang', dot: rankUpCheck(save, h).ok },
+    { id: 'ascend', label: 'Ascension', dot: ascendCheck(save, h).ok || awakenCheck(save, h).ok },
+    { id: 'skills', label: 'Compétences', dot: skillReady },
+  ] as const;
+
   return (
     <Screen title="Sanctuaire" bg={<PlaceAmbient place="sanctuary" />}>
       <Coach id="sanct_level" target=".upg-line .ul-act" text="Les élixirs font monter le niveau : « Max » utilise tout ce qu’il faut." />
-      <Wallet ids={['gold', 'xpElixir', 'rankSigil', 'skillTome', 'potionMinor', 'potionGreater', 'potionSupreme', 'awakenEssence']} />
       <HeroStrip selected={h.uid} onSelect={setSel} dot={canImprove} />
 
       <button className="sanct-focus" onClick={() => push({ name: 'hero', uid: h.uid, heroId: h.heroId })} aria-label={`Fiche de ${d.name}`}>
         <div className="sf-art" style={{ ['--rc' as string]: RARITIES[d.rarity].color }}><HeroArt heroId={d.id} kind="portrait" /></div>
         <div className="sf-name">{d.name}</div>
-        <div className="sf-power">Puissance <b>{fmt(powerOf(heroTotalStats(save, h).total))}</b></div>
+        <div className="sf-power">Niv. <b>{h.level}</b>/{cap} · Puissance <b>{fmt(powerOf(heroTotalStats(save, h).total))}</b></div>
       </button>
 
-      <div className="upg-list">
-        <UpRow icon={<ResourceIcon icon="flask" color="#9bdc6a" size={20} />} label="Niveau" value={`${h.level}/${cap}`}
-          sub={h.level < cap ? <span>{save.resources.xpElixir} élixir(s)</span> : <span>Plafond du rang : montez de rang</span>}>
-          <button className="btn secondary small" disabled={!toCap || !save.resources.xpElixir} onClick={() => elixir(1)}>+1</button>
-          <button className="btn small" disabled={!toCap || !save.resources.xpElixir} onClick={() => elixir(toCap)}>Max</button>
-        </UpRow>
-        <CheckRow icon={<ResourceIcon icon="sigil" color="#ffd48a" size={20} />} label="Rang" value={`${h.rank}/${BALANCE.hero.maxRank}`} check={rankUpCheck(save, h)} max={h.rank >= BALANCE.hero.maxRank}
-          heroId={h.heroId} onGo={() => run((s) => rankUp(s, h.uid), `Rang ${h.rank + 1} !`)} />
-        <CheckRow icon={<ResourceIcon icon="potion" color="#6fa8ff" size={20} />} label="Ascension" value={`${h.ascension}/${BALANCE.hero.maxAscension}`} check={ascendCheck(save, h)} max={h.ascension >= BALANCE.hero.maxAscension}
-          heroId={h.heroId} onGo={() => run((s) => ascend(s, h.uid), `Ascension ${h.ascension + 1} !`)} />
-        <CheckRow icon={<ResourceIcon icon="essence" color="#ff9bb5" size={20} />} label="Éveil" value={`${h.awaken}/${BALANCE.hero.maxAwaken}`} check={awakenCheck(save, h)} max={h.awaken >= BALANCE.hero.maxAwaken}
-          heroId={h.heroId} onGo={() => run((s) => awaken(s, h.uid), `Éveil ${h.awaken + 1} !`)} />
-        <UpRow icon={<Icon.book size={20} />} label="Compétences" value={`${skillNow}/${skillMax}`} dot={skillReady}
-          sub={<span>{skillReady ? 'Amélioration possible' : 'Grimoires de compétence'}</span>}>
-          <button className="btn secondary small" onClick={() => setSkills(true)}>Voir</button>
-        </UpRow>
+      {/* Pages du Sanctuaire (comme une taverne) : une amélioration par page. */}
+      <div className="seg sanct-tabs" style={{ marginBottom: 10 }}>
+        {TABS.map((t) => <button key={t.id} className={tab === t.id ? 'on' : ''} onClick={() => setTab(t.id)}>{t.label}{t.dot && <span className="seg-dot" />}</button>)}
       </div>
 
-      {skills && (
-        <Modal onClose={() => setSkills(false)}>
-          <h2>Compétences · {d.name.split(' ')[0]}</h2>
+      {tab === 'level' && (
+        <>
+          <Wallet ids={['xpElixir', 'gold']} cols={2} />
+          <div className="upg-list">
+            <UpRow icon={<ResourceIcon icon="flask" color="#9bdc6a" size={20} />} label="Élixirs" value={`${h.level}/${cap}`}
+              sub={h.level < cap ? <span>{save.resources.xpElixir} élixir(s)</span> : <span>Plafond du rang : monte de rang</span>}>
+              <button className="btn secondary small" disabled={!toCap || !save.resources.xpElixir} onClick={() => elixir(1)}>+1</button>
+              <button className="btn small" disabled={!toCap || !save.resources.xpElixir} onClick={() => elixir(toCap)}>Max</button>
+            </UpRow>
+          </div>
+          <FeedPanel targetUid={h.uid} />
+        </>
+      )}
+      {tab === 'rank' && (
+        <>
+          <Wallet ids={['rankSigil', 'gold']} cols={2} />
+          <div className="upg-list">
+            <CheckRow icon={<ResourceIcon icon="sigil" color="#ffd48a" size={20} />} label="Rang" value={`${h.rank}/${BALANCE.hero.maxRank}`} check={rankUpCheck(save, h)} max={h.rank >= BALANCE.hero.maxRank}
+              heroId={h.heroId} onGo={() => run((s) => rankUp(s, h.uid), `Rang ${h.rank + 1} !`)} />
+          </div>
+          <p className="faint">Chaque rang relève le niveau maximum de {BALANCE.hero.levelsPerRank} niveaux et renforce le héros.</p>
+        </>
+      )}
+      {tab === 'ascend' && (
+        <>
+          <Wallet ids={['potionMinor', 'potionGreater', 'potionSupreme', 'awakenEssence', 'gold']} />
+          <div className="upg-list">
+            <CheckRow icon={<ResourceIcon icon="potion" color="#6fa8ff" size={20} />} label="Ascension" value={`${h.ascension}/${BALANCE.hero.maxAscension}`} check={ascendCheck(save, h)} max={h.ascension >= BALANCE.hero.maxAscension}
+              heroId={h.heroId} onGo={() => run((s) => ascend(s, h.uid), `Ascension ${h.ascension + 1} !`)} />
+            <CheckRow icon={<ResourceIcon icon="essence" color="#ff9bb5" size={20} />} label="Éveil" value={`${h.awaken}/${BALANCE.hero.maxAwaken}`} check={awakenCheck(save, h)} max={h.awaken >= BALANCE.hero.maxAwaken}
+              heroId={h.heroId} onGo={() => run((s) => awaken(s, h.uid), `Éveil ${h.awaken + 1} !`)} />
+          </div>
+          <p className="faint">L’éveil demande un doublon du héros (obtenu en l’invoquant à nouveau).</p>
+        </>
+      )}
+      {tab === 'skills' && (
+        <>
           <Wallet ids={['skillTome', 'gold']} cols={2} />
+          <div className="faint" style={{ margin: '0 0 6px' }}>Compétences {skillNow}/{skillMax}</div>
           <HeroUpgrade h={h} section="skills" />
-          <button className="btn secondary block" style={{ marginTop: 10 }} onClick={() => setSkills(false)}>Fermer</button>
-        </Modal>
+        </>
       )}
     </Screen>
   );

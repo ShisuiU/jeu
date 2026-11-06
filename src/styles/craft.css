@@ -582,3 +582,22 @@ body:has(.summon-bar) .toasts { bottom: calc(var(--nav-h) + var(--sab) + 96px); 
 .set-bubble:active { transform: scale(0.92); }
 .sb-n { position: absolute; right: -6px; bottom: -5px; padding: 0 4px; border-radius: 6px; font-size: 10.5px; font-weight: 800; line-height: 15px; color: #120e18; background: var(--sc); box-shadow: 0 1px 3px #000; }
 .sb-n.off { color: var(--text); background: #2a2532; border: 1px solid color-mix(in srgb, var(--sc) 50%, transparent); }
+
+/* ─── Sanctuaire en pages ; absorption de héros ─── */
+.seg-dot { display: inline-block; width: 7px; height: 7px; margin-left: 5px; border-radius: 50%; background: #ff4d5e; box-shadow: 0 0 6px #ff4d5e; vertical-align: 2px; }
+.sanct-tabs button { font-size: 12.5px; }
+.feed-slots { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+.feed-slot { position: relative; aspect-ratio: 3 / 4; border-radius: 4px; display: grid; place-items: center; font-size: 22px; color: var(--text-faint);
+  border: 1px dashed var(--edge-hi); background: rgba(12,10,16,0.55); overflow: hidden; }
+.feed-slot.full { border: 0; padding: 0; }
+.feed-slot.full .hero-card { position: absolute; inset: 0; aspect-ratio: auto; }
+.feed-slot.full .hero-card .name, .feed-slot.full .hero-card .meta, .feed-slot.full .hero-card .hc-id { display: none; }
+.feed-x { position: absolute; top: 2px; right: 3px; z-index: 3; font-size: 11px; color: #fff; text-shadow: 0 1px 2px #000; }
+.feed-preview { display: flex; justify-content: space-between; gap: 8px; margin-top: 10px; font-size: 13.5px; }
+.feed-preview b.up { color: #7bea8f; }
+.feed-preview .lack { color: var(--danger); }
+.feed-cand { position: relative; }
+.feed-val { position: absolute; left: 4px; bottom: 4px; z-index: 3; padding: 0 4px; border-radius: 3px; font-size: 11px; font-weight: 800; color: #b7f5a0; background: rgba(0,0,0,0.7); }
+.feed-cand .hero-card { width: 100%; }
+.sanct-tabs button { flex: 1 1 auto; padding: 0 4px; white-space: nowrap; }
+@media (max-width: 380px) { .sanct-tabs button { font-size: 11.5px; } }

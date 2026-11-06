@@ -23,7 +23,7 @@ export const DAILY_REWARDS: DailyRewardDef[] = Array.from({ length: 28 }, (_, i)
   if (day === 7) return { day, major: true, reward: { shardAeon: 1, crystals: 100 } };
   if (day === 14) return { day, major: true, reward: { shardAeon: 2, skillTome: 2 } };
   if (day === 21) return { day, major: true, reward: { shardAeon: 3, rankSigil: 2, crystals: 150 } };
-  if (day === 28) return { day, major: true, reward: { shardPrimal: 1, crystals: 250 } };
+  if (day === 28) return { day, major: true, reward: { crystals: 550 } };
   const r = { ...base[i % base.length] };
   // Montée douce au fil du cycle
   const scale = 1 + Math.floor(i / 7) * 0.25;

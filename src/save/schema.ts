@@ -10,7 +10,7 @@ import type { EnergyState } from '../game/energy';
 import type { GearRarity, GearSlot, GearStat, SetId } from '../data/equipment';
 
 /** Version actuelle du format de sauvegarde. Toute modification de structure ⇒ +1 et une migration. */
-export const SAVE_VERSION = 5;
+export const SAVE_VERSION = 6;
 
 export interface HeroInstance {
   uid: string;

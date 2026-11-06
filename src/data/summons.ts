@@ -43,13 +43,6 @@ export const BANNERS: BannerDef[] = [
     color: '#a64dff', glow: '#cf9dff',
   },
   {
-    id: 'primal', name: 'Invocation sacrée', subtitle: 'Éclats primordiaux : Épique garanti, Légendaire possible.',
-    cost: { resource: 'shardPrimal', amount: 1 },
-    rates: { epic: 90, legendary: 9, mythic: 1 },
-    pity: { rarity: 'legendary', every: 10 },
-    color: '#ffae2b', glow: '#ffd48a',
-  },
-  {
     id: 'event_ash', name: 'Faille de Cendre', subtitle: 'Événement : Mère Sulfura plus fréquente.',
     cost: { resource: 'shardEvent', amount: 1 },
     rates: { rare: 75, epic: 21.5, legendary: 3, mythic: 0.5 },

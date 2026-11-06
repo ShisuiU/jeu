@@ -435,3 +435,17 @@ body:has(.acc-prompt-ic) .toasts { visibility: hidden; }
 .unl-art { position: relative; height: 150px; margin: -6px -6px 10px; border-radius: 8px; overflow: hidden; -webkit-mask-image: linear-gradient(180deg, #000 60%, transparent); mask-image: linear-gradient(180deg, #000 60%, transparent); }
 .unl-art img { object-position: center 25%; }
 .unl-tag { width: fit-content; margin: 0 auto 4px; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #120e18; background: var(--gold-hi); }
+
+/* ─── Événement de connexion (héros exclusif) ─── */
+.login-hero { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; padding: 8px; border-radius: 8px; background: rgba(255,207,90,0.06); border: 1px solid color-mix(in srgb, var(--rc) 45%, transparent); }
+.lh-art { position: relative; width: 64px; height: 84px; flex-shrink: 0; border-radius: 6px; overflow: hidden; border: 1px solid var(--rc); }
+.lh-text { display: flex; flex-direction: column; gap: 2px; }
+.lh-text b { font-size: 16px; color: var(--gold-hi); }
+.lh-tag { width: fit-content; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 800; color: #120e18; background: #ffcf5a; }
+.login-grid .lg-hero { position: relative; width: 30px; height: 38px; border-radius: 4px; overflow: hidden; display: block; }
+.login-won { position: relative; width: 150px; height: 200px; margin: 0 auto 10px; border-radius: 10px; overflow: hidden; border: 2px solid var(--rc); box-shadow: 0 0 30px color-mix(in srgb, var(--rc) 60%, transparent); }
+.unl-art.hero { height: 220px; }
+.unl-art.hero img { object-position: center 15%; }
+.login-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.login-grid .daily-cell { min-width: 0; overflow: hidden; }
+body:has(.unl-tag) .toasts { visibility: hidden; }

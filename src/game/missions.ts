@@ -3,7 +3,7 @@ import { ACHIEVEMENTS } from '../data/achievements';
 import { dayKey, weekKey } from '../core/time';
 import type { SaveData } from '../save/schema';
 import { applyReward } from './rewards';
-import { activeEvents, milestoneState } from './events';
+import { activeEvents, loginState, milestoneState } from './events';
 
 /** Remet à zéro missions, clés de boss et tickets d'arène au changement de jour/semaine (mutation). */
 export function applyResets(s: SaveData, now: number): boolean {
@@ -117,6 +117,7 @@ export function eventClaimable(s: SaveData, now: number, eventId?: string): numb
     if (eventId && e.id !== eventId) continue;
     n += (e.tasks ?? []).filter((t) => { const st = eventTaskState(s, e.id, t.id); return st?.done && !st.claimed; }).length;
     n += (e.cycle?.milestones ?? []).filter((_, i) => milestoneState(s, e, i)?.ready).length;
+    if (e.login && loginState(s, e, now).ready) n++;
   }
   return n;
 }

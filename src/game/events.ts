@@ -4,6 +4,7 @@ import { BALANCE } from '../data/balance';
 import { CYCLE_EPOCH, CYCLE_THEMES, TRIAL_POINTS, TRIAL_REWARDS, cycleMilestones, type EventBonusKind } from '../data/eventCycle';
 import type { SaveData } from '../save/schema';
 import { applyReward } from './rewards';
+import { dayKey } from '../core/time';
 
 // Registre des événements : liste intégrée, remplacée par public/events.json quand il est disponible.
 let events: GameEvent[] = BUNDLED_EVENTS;
@@ -99,6 +100,15 @@ export function claimMilestone(s: SaveData, eventId: string, i: number, now: num
   return true;
 }
 export const trialsDone = (s: SaveData, e: GameEvent) => s.events[e.id]?.trials ?? 0;
+
+// ── Événement de connexion ─────────────────────────────────────────────────────────────────
+/** Jours réclamés, et si le cadeau du jour est disponible (un par jour de jeu, horloge de confiance). */
+export function loginState(s: SaveData, e: GameEvent, now: number) {
+  const days = e.login?.days ?? [];
+  const got = s.events[e.id]?.login ?? [];
+  const today = dayKey(now);
+  return { total: days.length, claimed: got.length, today: got.includes(today), ready: !!days.length && got.length < days.length && !got.includes(today) };
+}
 
 /** Une bannière « vedette » n'est ouverte que pendant un événement qui la liste. */
 export function bannerAvailable(id: string, now: number): boolean {

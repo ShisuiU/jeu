@@ -11,9 +11,14 @@ export interface EventTask { id: string; key: TrackKey; target: number; title: s
 /** Combat d'épreuve : ennemis du thème, au niveau du chapitre où en est le joueur. */
 export interface EventTrial { id: string; name: string; points: number; reward: Reward }
 export interface EventChallenge { id: string; name: string; description: string; waves: WaveEnemy[][]; reward: Reward }
+/** Calendrier de connexion d'un événement : un cadeau par jour de connexion (pas forcément consécutifs). */
+export interface LoginDay { reward: Reward; hero?: string }
+
 export interface GameEvent {
   id: string;
   name: string;
+  /** Nom court (onglets). */
+  short?: string;
   description: string;
   start: string; // ISO
   end: string;   // ISO
@@ -24,6 +29,8 @@ export interface GameEvent {
   /** Bonus de butin des donjons (multiplicateur). */
   dungeonBonus?: number;
   color?: string;
+  /** Événement de connexion : jours à réclamer, un par jour de jeu. */
+  login?: { days: LoginDay[] };
   /** Événement de la semaine (calendrier automatique) : champs ci-dessous. */
   cycle?: {
     theme: string;
@@ -38,7 +45,7 @@ export interface GameEvent {
 
 export const BUNDLED_EVENTS: GameEvent[] = [
   {
-    id: 'ev_ash_2026', name: 'La Faille de Cendre', color: '#ff3d6e',
+    id: 'ev_ash_2026', name: 'La Faille de Cendre', short: 'Faille de Cendre', color: '#ff3d6e',
     description: 'Une faille s’ouvre sur la Fosse : Mère Sulfura répond plus souvent à l’appel. Remplissez les objectifs pour gagner des éclats de faille.',
     start: '2026-11-01T00:00:00Z', end: '2027-01-31T23:59:59Z',
     banners: ['event_ash'],
@@ -58,5 +65,19 @@ export const BUNDLED_EVENTS: GameEvent[] = [
       ],
       reward: { shardEvent: 5, crystals: 150 },
     },
+  },
+  {
+    id: 'ev_dawn_2026', name: 'L’Appel des Sept Aubes', short: 'Sept Aubes', color: '#ffcf5a',
+    description: 'Connecte-toi 7 jours pendant l’événement : un cadeau chaque jour, et Élyra, héroïne exclusive, au septième.',
+    start: '2026-11-06T00:00:00Z', end: '2026-12-07T04:59:59Z',
+    login: { days: [
+      { reward: { gold: 10000 } },
+      { reward: { shardDim: 5 } },
+      { reward: { crystals: 150 } },
+      { reward: { xpElixir: 10 } },
+      { reward: { shardAeon: 1 } },
+      { reward: { crystals: 250, awakenEssence: 2 } },
+      { reward: {}, hero: 'elyra' },
+    ] },
   },
 ];

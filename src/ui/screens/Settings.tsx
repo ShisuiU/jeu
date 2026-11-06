@@ -19,6 +19,15 @@ export function Settings() {
         <input className="text-input" style={{ marginTop: 6 }} defaultValue={save.profile.name} maxLength={18}
           onBlur={(e) => { if (e.target.value.trim() && e.target.value !== save.profile.name) { setProfile({ name: e.target.value }); toast('Nom enregistré.', 'ok'); } }} />
       </Panel>
+      <Panel title="Apparence">
+        <div className="setting-row">
+          <div className="grow"><b>Visuel</b><div className="faint">« Classique » remet l’ancien visuel, à l’identique.</div></div>
+          <div className="seg" style={{ width: 170 }}>
+            <button className={st.theme !== 'classic' ? 'on' : ''} onClick={() => update({ theme: 'v2' })}>Nouveau</button>
+            <button className={st.theme === 'classic' ? 'on' : ''} onClick={() => update({ theme: 'classic' })}>Classique</button>
+          </div>
+        </div>
+      </Panel>
       <Panel title="Son et affichage">
         <div className="setting-row">
           <div className="grow"><b>Effets sonores</b><div className="faint">Sons d’interface synthétisés</div></div>

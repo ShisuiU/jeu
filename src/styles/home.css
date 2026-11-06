@@ -48,8 +48,8 @@
 @keyframes blink { 50% { opacity: 0.35; } }
 
 /* ─── Récompenses quotidiennes ─── */
-.daily-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
-.daily-cell { position: relative; aspect-ratio: 0.78; border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 4px 2px; font-size: 9.5px; font-weight: 700; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
+.daily-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; }
+.daily-cell { position: relative; min-width: 0; overflow: hidden; aspect-ratio: 0.78; border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 4px 2px; font-size: 9.5px; font-weight: 700; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
 .daily-cell svg { width: 20px; height: 20px; }
 .daily-cell .d { color: var(--text-faint); font-size: 9px; }
 .daily-cell.claimed { opacity: 0.38; }

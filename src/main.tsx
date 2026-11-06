@@ -13,6 +13,7 @@ import './styles/phase3.css';
 import './styles/craft.css';
 import './styles/fx.css';
 import './styles/summon.css';
+import './styles/theme-v2.css';
 import App from './App';
 import { setupPWA } from './pwa';
 import { fixViewport } from './viewport';

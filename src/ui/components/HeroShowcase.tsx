@@ -28,6 +28,7 @@ export function HeroShowcase({ heroId, h, onPrev, onNext, below }: { heroId: str
   const toast = useUI((s) => s.toast);
   const [pick, setPick] = useState<GearSlot | null>(null);
   const [open, setOpen] = useState<string | null>(null);
+  const [setsOpen, setSetsOpen] = useState(false);
   const def = HERO_BY_ID[heroId];
   const items = h ? heroGear(save, h.uid) : [];
   const bonus = gearBonus(items);
@@ -76,18 +77,46 @@ export function HeroShowcase({ heroId, h, onPrev, onNext, below }: { heroId: str
       {h && <Coach id="hero_gear" target=".sc-slot.empty" when={save.equipment.some((g) => !g.heroUid)} text="Touche un emplacement pour équiper un objet." />}
       {h && (
         <div className="sc-tools">
-          <div className="sc-sets">
-            {bonus.sets.filter((st) => st.active).map((st) => (
-              <span key={st.id} className="sc-setchip" style={{ ['--sc' as string]: SETS[st.id].color }} title={SETS[st.id].description}>
-                {SETS[st.id].name}{st.active > 1 ? ` ×${st.active}` : ''}
-              </span>
-            ))}
-            {!bonus.sets.some((st) => st.active) && <span className="faint">{items.length}/7 équipés</span>}
+          {/* Bulles d'ensemble (comme dans les jeux du genre) : actives en lumière, en cours estompées. Toucher = détail. */}
+          <div className="set-bubbles">
+            {bonus.sets.length === 0 && <span className="faint">{items.length}/7 objets</span>}
+            {[...bonus.sets].sort((x, y) => y.active - x.active || y.count - x.count).map((st) => {
+              const d = SETS[st.id];
+              return (
+                <button key={st.id} className={`set-bubble ${st.active ? 'on' : ''}`} style={{ ['--sc' as string]: d.color }} onClick={() => setSetsOpen(true)}
+                  aria-label={`${d.name} : ${st.active ? 'actif' : `${st.count % d.pieces} sur ${d.pieces}`}`}>
+                  <SetEmblem id={st.id} size={18} />
+                  {st.active > 1 && <span className="sb-n">×{st.active}</span>}
+                  {!st.active && <span className="sb-n off">{st.count % d.pieces}/{d.pieces}</span>}
+                </button>
+              );
+            })}
           </div>
           <button className="hs-upgrade" onClick={() => { let n = 0; mutate((s) => { n = autoEquip(s, h.uid); }); toast(n ? `${n} objet(s) équipé(s).` : 'Rien de mieux dans le sac.', n ? 'ok' : 'info'); }}>
             <Icon.gear size={13} /> Auto
           </button>
         </div>
+      )}
+      {setsOpen && h && (
+        <Modal onClose={() => setSetsOpen(false)}>
+          <h2>Ensembles</h2>
+          <div className="set-sum">
+            {[...bonus.sets].sort((x, y) => y.active - x.active || y.count - x.count).map((st) => {
+              const d = SETS[st.id];
+              return (
+                <div key={st.id} className={`set-row ${st.active ? 'on' : ''}`} style={{ ['--sc' as string]: d.color }}>
+                  <SetEmblem id={st.id} size={20} />
+                  <div className="grow">
+                    <div><b>{d.name}</b>{st.active > 1 && <span className="set-x"> ×{st.active}</span>}</div>
+                    <div className="set-bonus">{d.pieces} pièces : {d.description}</div>
+                  </div>
+                  <span className="set-state">{st.active ? 'Actif' : `${st.count % d.pieces}/${d.pieces}`}</span>
+                </div>
+              );
+            })}
+          </div>
+          <button className="btn secondary block" style={{ marginTop: 12 }} onClick={() => setSetsOpen(false)}>Fermer</button>
+        </Modal>
       )}
 
       {pick && h && (

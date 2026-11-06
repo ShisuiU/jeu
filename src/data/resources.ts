@@ -18,7 +18,7 @@ export const RESOURCES: Record<ResourceId, ResourceDef> = {
   crystals: { id: 'crystals', name: 'Cristaux d’Aeon', description: 'Ressource rare : recharge d’énergie, invocations spéciales. Obtenue uniquement en jouant.', icon: 'crystal', color: '#7fe7ff' },
   shardDim: { id: 'shardDim', name: 'Éclat terne', description: 'Invocation standard (Commun → Rare).', icon: 'shard', color: '#a9b0b8' },
   shardAeon: { id: 'shardAeon', name: 'Éclat d’Aeon', description: 'Invocation rare (Rare → Légendaire).', icon: 'shard', color: '#3d8bff' },
-  shardPrimal: { id: 'shardPrimal', name: 'Éclat primordial', description: 'Invocation légendaire (Épique → Mythique).', icon: 'shard', color: '#ffae2b' },
+  shardPrimal: { id: 'shardPrimal', name: 'Éclat primordial', description: 'Invocation sacrée : Épique garanti, Légendaire possible.', icon: 'shard', color: '#ffae2b' },
   shardEvent: { id: 'shardEvent', name: 'Éclat de faille', description: 'Invocation spéciale des événements.', icon: 'shard', color: '#ff3d6e' },
   xpElixir: { id: 'xpElixir', name: 'Élixir d’expérience', description: 'Donne de l’expérience à un héros.', icon: 'flask', color: '#9bdc6a' },
   skillTome: { id: 'skillTome', name: 'Grimoire de compétence', description: 'Améliore une compétence d’un héros.', icon: 'book', color: '#c7a0ff' },

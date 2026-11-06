@@ -229,6 +229,12 @@
 - Pastilles déplacées vers l’onglet où se trouve l’action (Accueil pour missions, courrier et événements)
 - Fiche héros : plus de bulles de texte au milieu
 
+## ✅ Version 1.26.0 — Nouveaux modes annoncés
+
+- Quand la campagne ouvre un mode, une fenêtre « Nouveau mode » le présente en une phrase avec « Y aller » ou « Plus tard » (une fois par mode, jamais pendant le tutoriel ; les parties existantes ne reçoivent pas de rafale)
+- Combats : une seule carte « Événements » pour tous les événements en cours
+- Fiche héros : l’encart Doublons n’apparaît que s’il y a un doublon à utiliser
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

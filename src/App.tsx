@@ -13,6 +13,7 @@ import { finishedExpeditions } from './game/expeditions';
 import { cloudWanted, loadCloud } from './cloud/account';
 import { AccountPrompt, CloudConflictModal } from './ui/screens/Account';
 import { inTutorial } from './ui/components/Coach';
+import { UnlockAnnounce } from './ui/components/UnlockAnnounce';
 import { BottomNav } from './ui/components/BottomNav';
 import { Toasts } from './ui/components/Toasts';
 import { Title } from './ui/screens/Title';
@@ -187,6 +188,7 @@ export default function App() {
           </div>
           {route.name !== 'battle' && <BottomNav />}
           <CloudConflictModal />
+          {(route.name === 'home' || route.name === 'combats' || route.name === 'campaign') && <UnlockAnnounce />}
           {route.name === 'home' && <AccountPrompt />}
           {route.name === 'home' && !save.flags.guide_done && <Guide />}
         </>

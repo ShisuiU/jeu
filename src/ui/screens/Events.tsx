@@ -1,7 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
-import { activeEvents, bannerAvailable, claimMilestone, eventPoints, milestoneState, nextWeekly, trialsDone } from '../../game/events';
+import { activeEvents, bannerAvailable, claimMilestone, eventPoints, loginState, milestoneState, nextWeekly, trialsDone } from '../../game/events';
+import { claimLoginDay } from '../../game/loginEvent';
+import { HERO_BY_ID } from '../../data/heroes';
+import { RARITIES } from '../../data/rarities';
+import { HeroArt } from '../art/HeroArt';
+import { msUntilReset } from '../../core/time';
+import { Modal } from '../components/common';
 import { claimEventTask, eventClaimable, eventTaskState } from '../../game/missions';
 import { canStart } from '../../game/modes';
 import { BONUS_LABEL, BONUS_SHORT } from '../../data/eventCycle';
@@ -35,7 +41,7 @@ export function Events() {
     <Screen title="Événements">
       {list.length > 1 && (
         <div className="seg" style={{ marginBottom: 12 }}>
-          {list.map((x) => { const n = eventClaimable(save, now, x.id); return <button key={x.id} className={x.id === e?.id ? 'on' : ''} onClick={() => setSel(x.id)}>{x.cycle ? 'Cette semaine' : x.name}{n > 0 && <span className="seg-count">{n}</span>}</button>; })}
+          {list.map((x) => { const n = eventClaimable(save, now, x.id); return <button key={x.id} className={x.id === e?.id ? 'on' : ''} onClick={() => setSel(x.id)}>{x.cycle ? 'Semaine' : x.short ?? x.name}{n > 0 && <span className="seg-count">{n}</span>}</button>; })}
         </div>
       )}
       {!e && <div className="hint">Aucun événement en cours.</div>}
@@ -160,6 +166,7 @@ function Special({ e }: { e: GameEvent }) {
           {e.banners?.filter((b) => bannerAvailable(b, now)).map((b) => <button key={b} className="chip active" onClick={() => push({ name: 'summon' })}>Invocation spéciale ›</button>)}
         </div>
       </div>
+      {e.login && <LoginCalendar e={e} />}
       <Tasks e={e} />
       {e.challenge && (
         <Panel title="Défi spécial">
@@ -170,5 +177,61 @@ function Special({ e }: { e: GameEvent }) {
         </Panel>
       )}
     </>
+  );
+}
+
+/** Calendrier de connexion : un cadeau par jour de jeu, le héros exclusif au dernier jour. */
+function LoginCalendar({ e }: { e: GameEvent }) {
+  const save = useGame((s) => s.save)!;
+  const now = useGame((s) => s.now);
+  const mutate = useGame((s) => s.mutate);
+  const [got, setGot] = useState<{ day: number; hero?: string; duplicate?: boolean } | null>(null);
+  const st = loginState(save, e, now);
+  const days = e.login!.days;
+  const heroDay = days.find((d) => d.hero);
+  const hero = heroDay?.hero ? HERO_BY_ID[heroDay.hero] : null;
+  const claim = () => { let r: ReturnType<typeof claimLoginDay> = { ok: false }; mutate((s) => { r = claimLoginDay(s, e.id, now); }); if (r.ok) { play(r.hero ? 'rare' : 'claim'); setGot({ day: r.day!, hero: r.hero, duplicate: r.duplicate }); } };
+  return (
+    <Panel title={`Connexion · ${st.claimed}/${st.total} jours`}>
+      {hero && (
+        <div className="login-hero" style={{ ['--rc' as string]: RARITIES[hero.rarity].color }}>
+          <div className="lh-art"><HeroArt heroId={hero.id} kind="portrait" /></div>
+          <div className="lh-text">
+            <span className="lh-tag">Exclusif · jour {days.indexOf(heroDay!) + 1}</span>
+            <b>{hero.name}</b>
+            <span className="faint">{RARITIES[hero.rarity].name} · ne s’obtient pas par invocation</span>
+          </div>
+        </div>
+      )}
+      <div className="daily-grid login-grid">
+        {days.map((d, i) => (
+          <div key={i} className={`daily-cell ${i < st.claimed ? 'claimed' : ''} ${i === st.claimed && st.ready ? 'current' : ''} ${d.hero ? 'major' : ''}`}>
+            <span className="d">J{i + 1}</span>
+            {d.hero ? <span className="lg-hero"><HeroArt heroId={d.hero} kind="portrait" /></span> : rewardMainIcon(d.reward)}
+            <span>{d.hero ? 'Héros' : Object.values(d.reward)[0]}</span>
+          </div>
+        ))}
+      </div>
+      <button className="btn block" style={{ marginTop: 12 }} disabled={!st.ready} onClick={claim}>
+        {st.claimed >= st.total ? 'Tous les cadeaux sont réclamés' : st.ready ? `Réclamer le jour ${st.claimed + 1}` : `Reviens demain · dans ${formatDuration(msUntilReset(now))}`}
+      </button>
+      {got && (
+        <Modal onClose={() => setGot(null)}>
+          {got.hero ? (
+            <>
+              <div className="login-won" style={{ ['--rc' as string]: RARITIES[HERO_BY_ID[got.hero].rarity].color }}><HeroArt heroId={got.hero} kind="portrait" /></div>
+              <h2>{HERO_BY_ID[got.hero].name}</h2>
+              <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>{got.duplicate ? 'Déjà à tes côtés : +1 doublon.' : 'rejoint tes Héritiers !'}</p>
+            </>
+          ) : (
+            <>
+              <h2>Jour {got.day}</h2>
+              <RewardView reward={days[got.day - 1].reward} />
+            </>
+          )}
+          <button className="btn block" style={{ marginTop: 14 }} onClick={() => setGot(null)}>Continuer</button>
+        </Modal>
+      )}
+    </Panel>
   );
 }

@@ -68,7 +68,7 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
             <button className="hs-upgrade" onClick={() => push({ name: 'sanctuary', uid: inst.uid })} aria-label="Améliorer au Sanctuaire">
               <Icon.temple size={14} /> Améliorer{canImprove(save, inst) && <span className="hs-dot" />}
             </button>
-          ) : <span className="hs-pill muted">Non obtenu</span>}
+          ) : <span className="hs-pill muted">{d.exclusive ? 'Exclusif · événement' : 'Non obtenu'}</span>}
         </div>
       </section>
       {inst && (save.heroCopies[inst.heroId] ?? 0) > 0 && <CopiesCard h={inst} />}

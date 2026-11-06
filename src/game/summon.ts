@@ -24,7 +24,8 @@ export function rollRarity(r: Rand, b: BannerDef, pityCount: number): { rarity: 
 
 export function pickHero(r: Rand, rarity: RarityId, b: BannerDef): string {
   if (b.featured && HERO_BY_ID[b.featured.heroId]?.rarity === rarity && r() < b.featured.share) return b.featured.heroId;
-  const pool = HEROES.filter((h) => h.rarity === rarity);
+  // Les héros exclusifs (événements) ne sortent jamais à l'invocation.
+  const pool = HEROES.filter((h) => h.rarity === rarity && !h.exclusive);
   return pool[Math.floor(r() * pool.length)].id;
 }
 

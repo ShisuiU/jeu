@@ -105,6 +105,8 @@ export interface SaveData {
     counters: Record<string, number>; claimed: string[]; challengeDone: boolean;
     /** Événement de la semaine : combats d'épreuve gagnés, paliers réclamés, chapitre de référence. */
     trials?: number; tiers?: number[]; chap?: number;
+    /** Événement de connexion : jours de jeu réclamés (clés de jour). */
+    login?: string[];
   }>;
   shop: { energyRefills: number };
   /** Expéditions (héros envoyés en mission, retour en temps réel). */

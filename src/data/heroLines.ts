@@ -112,6 +112,41 @@ export const HERO_LINES: Record<string, string[]> = {
     'Le bourg n’existe plus. Je dirai son nom quand même.',
     'Oyez, oyez ! Les Héritiers sont en marche !',
   ],
+  garrek: [
+    'Une chaîne de plus ou de moins, je la forge en une nuit.',
+    'Derrière moi, petit. La suie, ça protège.',
+    'J’ai forgé une clé, une fois. Meilleure idée de ma vie.',
+  ],
+  nyra: [
+    'Calibrage terminé. On peut y aller.',
+    'Ce fusil a cent réparations. Il ne m’a jamais lâchée.',
+    'Moins de bruit, plus de précision.',
+  ],
+  osric: [
+    'Le capitaine m’a appris à tenir. Je tiens.',
+    'Je n’ai pas d’éperons. J’ai un bouclier, c’est mieux.',
+    'Restez derrière moi. Enfin, si vous voulez bien.',
+  ],
+  tavi: [
+    'J’entends l’eau sous nos pieds. On ne mourra pas de soif.',
+    'Bois. Tu iras mieux.',
+    'Une source partagée ne tarit jamais.',
+  ],
+  mirelle: [
+    'Ma voix éteignait les âmes. Maintenant, elle les rallume.',
+    'Écoute bien. Cette chanson-là est pour toi.',
+    'Ce soir, personne ne part. C’est promis.',
+  ],
+  thalor: [
+    'Je ne bouge que pour une bonne raison. Vous en êtes une.',
+    'Mes fissures brillent. Ça veut dire que je suis vivant.',
+    'Une porte se garde. Des amis se protègent.',
+  ],
+  elyra: [
+    'Chaque matin, tu étais là. Je m’en souviens.',
+    'Une aube de plus, et le monde guérit un peu.',
+    'Je devais repartir. J’ai choisi de rester.',
+  ],
   ondine: [
     'Un point de travers, et tout se défait. Alors je couds droit.',
     'Il voulait un monde parfait. Je préfère le nôtre.',

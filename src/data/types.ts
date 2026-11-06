@@ -56,6 +56,8 @@ export interface HeroDef {
   /** Description visuelle : sert de cahier des charges pour les illustrations et de prompt de génération. */
   look: string;
   palette: [string, string, string];
+  /** Héros exclusif : jamais invoqué, obtenu uniquement par un événement. */
+  exclusive?: boolean;
 }
 
 export interface FactionDef {

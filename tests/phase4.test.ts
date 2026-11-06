@@ -75,7 +75,7 @@ describe('missions', () => {
 describe('événements', () => {
   it('fenêtre de dates, bannière et objectifs', () => {
     setEvents(BUNDLED_EVENTS);
-    expect(activeEvents(NOW).filter((e) => !e.cycle)).toHaveLength(1);
+    expect(activeEvents(NOW).filter((e) => !e.cycle).map((e) => e.id)).toEqual(['ev_ash_2026', 'ev_dawn_2026']);
     expect(activeEvents(Date.parse('2030-01-01')).filter((e) => !e.cycle)).toHaveLength(0);
     expect(bannerAvailable('event_ash', NOW)).toBe(true);
     expect(bannerAvailable('event_ash', Date.parse('2030-01-01'))).toBe(false);

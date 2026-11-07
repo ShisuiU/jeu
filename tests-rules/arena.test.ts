@@ -20,6 +20,8 @@ describe('sauvegardes et classements', () => {
     await assertSucceeds(setDoc(doc(t.authenticatedContext('a').firestore(), 'ranks/a'), { name: 'Alice', arena: 1 }));
     await assertSucceeds(getDocs(collection(t.unauthenticatedContext().firestore(), 'ranks')));
     await assertFails(setDoc(doc(t.authenticatedContext('b').firestore(), 'ranks/a'), { name: 'Pirate' }));
+    await assertFails(deleteDoc(doc(t.authenticatedContext('b').firestore(), 'ranks/a')));
+    await assertSucceeds(deleteDoc(doc(t.authenticatedContext('a').firestore(), 'ranks/a')));
   });
 });
 

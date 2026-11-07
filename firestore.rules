@@ -25,7 +25,9 @@ service cloud.firestore {
 
     match /ranks/{uid} {
       allow read: if true;
-      allow write: if isMe(uid) && shortText(request.resource.data.name, 18);
+      allow create, update: if isMe(uid) && shortText(request.resource.data.name, 18);
+      // Effacer sa ligne : « ne pas apparaître dans les classements », suppression du compte.
+      allow delete: if isMe(uid);
     }
 
     // ─── Arène réelle ───

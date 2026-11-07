@@ -64,13 +64,18 @@ service cloud.firestore {
         && (m.role == 'leader' || m.role == 'member');
     }
     function validGuild(g) {
-      return g.keys().hasOnly(['name', 'nameLower', 'tag', 'description', 'emblem', 'open', 'leader', 'members', 'count', 'createdAt', 'boss'])
+      return g.keys().hasOnly(['name', 'nameLower', 'tag', 'description', 'emblem', 'open', 'leader', 'officers', 'members', 'count', 'createdAt', 'boss'])
         && shortText(g.name, 20) && g.name.size() >= 3 && shortText(g.nameLower, 20) && shortText(g.tag, 4)
         && shortText(g.description, 120) && shortText(g.emblem, 40) && g.open is bool
         && g.members is map && g.count == g.members.size() && g.count <= 30
         && g.leader in g.members && g.members[g.leader].role == 'leader'
-        && g.boss.keys().hasOnly(['week', 'dmg']) && g.boss.week is string && g.boss.dmg is map;
+        && g.boss.keys().hasOnly(['week', 'dmg']) && g.boss.week is string && g.boss.dmg is map
+        // Adjoints : 5 au plus, tous membres, jamais le chef.
+        && (!('officers' in g) || (g.officers is list && g.officers.size() <= 5
+          && g.members.keys().hasAll(g.officers) && !(g.leader in g.officers)));
     }
+    function officersOf(g) { return 'officers' in g ? g.officers : []; }
+    function isOfficer(g) { return me() in officersOf(g); }
     function changed() { return request.resource.data.diff(resource.data).affectedKeys(); }
     function membersChanged() { return request.resource.data.members.diff(resource.data.members).affectedKeys(); }
     // Dégâts du boss : même semaine, seule sa propre ligne change ; nouvelle semaine : on repart de sa seule ligne.
@@ -98,15 +103,23 @@ service cloud.firestore {
           && validMember(request.resource.data.members[me()]) && request.resource.data.members[me()].role == 'member')
         // La quitter (le chef doit d'abord nommer un autre chef).
         || (me() in resource.data.members && resource.data.leader != me() && !(me() in request.resource.data.members)
-          && changed().hasOnly(['members', 'count']) && membersChanged().hasOnly([me()]))
+          && changed().hasOnly(['members', 'count', 'officers']) && membersChanged().hasOnly([me()])
+          && officersOf(request.resource.data).toSet() == officersOf(resource.data).toSet().difference([me()].toSet()))
         // Le chef : réglages et exclusions (pas d'ajout, les autres fiches ne changent pas).
         || (resource.data.leader == me() && request.resource.data.leader == me()
-          && changed().hasOnly(['name', 'nameLower', 'tag', 'description', 'emblem', 'open', 'members', 'count'])
+          && changed().hasOnly(['name', 'nameLower', 'tag', 'description', 'emblem', 'open', 'officers', 'members', 'count'])
           && resource.data.members.keys().hasAll(request.resource.data.members.keys())
           && request.resource.data.members.keys().toSet().intersection(membersChanged()).size() == 0)
+        // Un adjoint : présentation, ouverture, et exclusion de simples membres (ni le chef, ni un adjoint).
+        || (isOfficer(resource.data) && request.resource.data.leader == resource.data.leader
+          && changed().hasOnly(['description', 'open', 'members', 'count'])
+          && resource.data.members.keys().hasAll(request.resource.data.members.keys())
+          && request.resource.data.members.keys().toSet().intersection(membersChanged()).size() == 0
+          && !(resource.data.leader in membersChanged())
+          && officersOf(resource.data).toSet().intersection(membersChanged()).size() == 0)
         // Le chef nomme un autre membre chef à sa place.
         || (resource.data.leader == me() && request.resource.data.leader in resource.data.members && request.resource.data.leader != me()
-          && changed().hasOnly(['leader', 'members']) && membersChanged().hasOnly([me(), request.resource.data.leader])
+          && changed().hasOnly(['leader', 'members', 'officers']) && membersChanged().hasOnly([me(), request.resource.data.leader])
           && request.resource.data.members[me()].role == 'member'
           && request.resource.data.members[request.resource.data.leader].role == 'leader')
       );

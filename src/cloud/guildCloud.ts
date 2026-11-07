@@ -6,7 +6,7 @@ import { cloud } from './cloudCore';
 import { useGame } from '../state/store';
 import type { SaveData } from '../save/schema';
 import { GUILD_DESC_MAX, GUILD_MAX, CHAT_MAX } from '../data/guild';
-import { guildWeek, memberEntry, takePending, validGuildName, tagOf, type ChatMessage, type GuildDoc } from '../game/guild';
+import { OFFICERS_MAX, guildWeek, memberEntry, takePending, validGuildName, tagOf, type ChatMessage, type GuildDoc } from '../game/guild';
 
 // CLANS EN LIGNE — guilds/{gid} (fiche, membres, dégâts du boss de la semaine) et guilds/{gid}/chat.
 // Toutes les modifications passent par des transactions : deux joueurs qui rejoignent en même temps ne
@@ -74,7 +74,7 @@ export async function leaveGuild(gid: string): Promise<'left' | 'dissolved'> {
   await runTransaction(db, async (tx) => {
     const snap = await tx.get(gref(gid)); const cur = snap.data() as GuildDoc | undefined;
     if (!cur?.members[uid]) return;
-    tx.update(gref(gid), { [`members.${uid}`]: deleteField(), count: cur.count - 1 });
+    tx.update(gref(gid), { [`members.${uid}`]: deleteField(), count: cur.count - 1, ...(cur.officers?.includes(uid) ? { officers: cur.officers.filter((x) => x !== uid) } : {}) });
   });
   return 'left';
 }
@@ -84,7 +84,19 @@ export async function kickMember(gid: string, who: string): Promise<void> {
   await runTransaction(db, async (tx) => {
     const cur = (await tx.get(gref(gid))).data() as GuildDoc | undefined;
     if (!cur?.members[who]) return;
-    tx.update(gref(gid), { [`members.${who}`]: deleteField(), count: cur.count - 1 });
+    tx.update(gref(gid), { [`members.${who}`]: deleteField(), count: cur.count - 1, ...(cur.officers?.includes(who) ? { officers: cur.officers.filter((x) => x !== who) } : {}) });
+  });
+}
+
+/** Le chef nomme un adjoint, ou lui retire ce rôle. */
+export async function setOfficer(gid: string, who: string, on: boolean): Promise<void> {
+  const { db, uid } = ctx();
+  await runTransaction(db, async (tx) => {
+    const cur = (await tx.get(gref(gid))).data() as GuildDoc | undefined;
+    if (!cur?.members[who] || cur.leader !== uid || who === uid) return;
+    const list = (cur.officers ?? []).filter((x) => x !== who);
+    if (on && list.length >= OFFICERS_MAX) throw new Error(`${OFFICERS_MAX} adjoints au plus.`);
+    tx.update(gref(gid), { officers: on ? [...list, who] : list });
   });
 }
 
@@ -93,7 +105,7 @@ export async function promoteLeader(gid: string, who: string): Promise<void> {
   await runTransaction(db, async (tx) => {
     const cur = (await tx.get(gref(gid))).data() as GuildDoc | undefined;
     if (!cur?.members[who] || cur.leader !== uid) return;
-    tx.update(gref(gid), { leader: who, [`members.${uid}.role`]: 'member', [`members.${who}.role`]: 'leader' });
+    tx.update(gref(gid), { leader: who, [`members.${uid}.role`]: 'member', [`members.${who}.role`]: 'leader', officers: (cur.officers ?? []).filter((x) => x !== who) });
   });
 }
 

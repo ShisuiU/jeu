@@ -3,7 +3,7 @@ import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
 import { useAccount } from '../../cloud/account';
 import { GUILD_BOSS, GUILD_DESC_MAX, GUILD_MAX, GUILD_NAME_MAX, GUILD_TIERS, CHAT_MAX } from '../../data/guild';
-import { bossTotal, claimTier, claimableTiers, myBossDamage, triesLeft, type ChatMessage } from '../../game/guild';
+import { OFFICERS_MAX, ROLE_HELP, ROLE_NAMES, bossTotal, claimTier, claimableTiers, clanRights, myBossDamage, roleOf, triesLeft, type ChatMessage, type ClanRole, type GuildDoc } from '../../game/guild';
 import { HERO_BY_ID } from '../../data/heroes';
 import { play } from '../../audio/sfx';
 import { Modal, Panel, Screen, fmt } from '../components/common';
@@ -43,6 +43,7 @@ function FindGuild() {
   const [q, setQ] = useState('');
   const [create, setCreate] = useState<{ name: string; desc: string; open: boolean } | null>(null);
   const [busy, setBusy] = useState(false);
+  const [preview, setPreview] = useState<GuildWithId | null>(null);
   const load = useCallback((search: string) => {
     setErr(null); setList(null);
     gapi().then((g) => g.listGuilds(search)).then(setList).catch((e) => setErr(errMsg(e)));
@@ -73,6 +74,7 @@ function FindGuild() {
       {list && list.length === 0 && <p className="faint" style={{ textAlign: 'center' }}>{q ? 'Aucun clan de ce nom.' : 'Aucun clan ouvert pour l’instant : crée le premier !'}</p>}
       {list?.map((g) => (
         <div key={g.id} className="cl-card">
+          <button className="cl-open" onClick={() => setPreview(g)} aria-label={`Voir le clan ${g.name}`} />
           <span className="cl-emb"><HeroArt heroId={avatar(g.emblem)} /></span>
           <div className="grow" style={{ minWidth: 0 }}>
             <b>{g.name}</b> <span className="cl-tag">{g.tag}</span>
@@ -82,6 +84,8 @@ function FindGuild() {
           <button className="btn small" disabled={busy || !g.open || g.count >= GUILD_MAX} onClick={() => void join(g)}>Rejoindre</button>
         </div>
       ))}
+      {list && list.length > 0 && <p className="faint" style={{ textAlign: 'center' }}>Touche un clan pour voir ses membres.</p>}
+      {preview && <ClanPreview g={preview} busy={busy} onClose={() => setPreview(null)} onJoin={() => { const g = preview; setPreview(null); void join(g); }} />}
       {create && (
         <Modal onClose={() => setCreate(null)}>
           <h3 style={{ marginTop: 0 }}>Nouveau clan</h3>
@@ -125,7 +129,6 @@ function MyGuild({ gid, uid }: { gid: string; uid: string }) {
   const mine = myBossDamage(g, uid, now) + save.guild.pending;
   const claim = claimableTiers(save, g, uid, now);
   const tries = triesLeft(save, now);
-  const members = Object.entries(g.members).sort((a, b) => (a[1].role === 'leader' ? -1 : b[1].role === 'leader' ? 1 : b[1].power - a[1].power));
   const act = async (fn: (a: Api) => Promise<unknown>, ok: string) => { try { await fn(await gapi()); toast(ok, 'ok'); await refresh(); } catch (e) { toast(errMsg(e), 'error'); } };
   const leave = () => setConfirm({ text: leader && g.count === 1 ? `Tu es le dernier membre : ${g.name} sera dissous.` : `Quitter ${g.name} ?`, run: async () => {
     try { const a = await gapi(); await a.leaveGuild(gid); mutate((s) => { s.guild.id = ''; s.guild.name = ''; }); toast('Tu as quitté le clan.'); } catch (e) { toast(errMsg(e), 'error'); }
@@ -143,7 +146,7 @@ function MyGuild({ gid, uid }: { gid: string; uid: string }) {
       <div className="seg" style={{ marginBottom: 10 }}>
         <button className={tab === 'boss' ? 'on' : ''} onClick={() => setTab('boss')}>Boss{claim.length > 0 && <span className="seg-dot" />}</button>
         <button className={tab === 'chat' ? 'on' : ''} onClick={() => setTab('chat')}>Discussion</button>
-        <button className={tab === 'members' ? 'on' : ''} onClick={() => setTab('members')}>Membres</button>
+        <button className={tab === 'members' ? 'on' : ''} onClick={() => setTab('members')}>Membres · {g.count}</button>
       </div>
 
       {tab === 'boss' && (
@@ -178,33 +181,9 @@ function MyGuild({ gid, uid }: { gid: string; uid: string }) {
         </>
       )}
 
-      {tab === 'chat' && <Chat gid={gid} uid={uid} leader={leader} />}
+      {tab === 'chat' && <Chat gid={gid} uid={uid} leader={leader || roleOf(g, uid) === 'officer'} />}
 
-      {tab === 'members' && (
-        <Panel>
-          {members.map(([id, m]) => (
-            <div key={id} className="stat-row" style={{ alignItems: 'center' }}>
-              <span className="row" style={{ gap: 8, minWidth: 0 }}>
-                <span className="xp-ava" style={{ width: 36, height: 36, flexShrink: 0 }}><HeroArt heroId={avatar(m.avatar)} /></span>
-                <span style={{ minWidth: 0 }}><b>{m.name}</b>{m.role === 'leader' && <span className="cl-tag" style={{ marginLeft: 6 }}>Chef</span>}{id === uid && <span className="faint"> (toi)</span>}
-                  <div className="faint">Puissance {fmt(m.power)} · dégâts {fmt(myBossDamage(g, id, now))}</div></span>
-              </span>
-              {leader && id !== uid && (
-                <span className="row" style={{ gap: 4 }}>
-                  <button className="btn small secondary" onClick={() => setConfirm({ text: `Nommer ${m.name} chef du clan ? Tu deviendras membre.`, run: () => act((a) => a.promoteLeader(gid, id), `${m.name} est le nouveau chef.`) })}>Chef</button>
-                  <button className="btn small secondary" onClick={() => setConfirm({ text: `Exclure ${m.name} du clan ?`, run: () => act((a) => a.kickMember(gid, id), `${m.name} a été exclu.`) })}>Exclure</button>
-                </span>
-              )}
-            </div>
-          ))}
-          {leader && (
-            <div className="row" style={{ gap: 8, marginTop: 12 }}>
-              <button className="btn secondary grow" onClick={() => void act((a) => a.updateSettings(gid, { open: !g.open }), g.open ? 'Clan fermé.' : 'Clan ouvert.')}>{g.open ? 'Fermer le clan' : 'Ouvrir le clan'}</button>
-            </div>
-          )}
-          <button className="btn secondary block" style={{ marginTop: 10 }} onClick={leave}>Quitter le clan</button>
-        </Panel>
-      )}
+      {tab === 'members' && <Members g={g} uid={uid} now={now} act={act} confirm={setConfirm} leave={leave} />}
 
       {confirm && (
         <Modal onClose={() => setConfirm(null)}>
@@ -254,5 +233,117 @@ function Chat({ gid, uid, leader }: { gid: string; uid: string; leader: boolean 
         <button className="btn small" type="submit" disabled={sending || !text.trim()}>Envoyer</button>
       </form>
     </Panel>
+  );
+}
+
+const ROLE_ORDER: Record<ClanRole, number> = { leader: 0, officer: 1, member: 2 };
+
+/** Membres du clan : rôles, puissance, dégâts de la semaine ; toucher un membre ouvre sa fiche (actions selon ton rôle). */
+function Members({ g, uid, now, act, confirm, leave }: {
+  g: GuildWithId; uid: string; now: number;
+  act: (fn: (a: Api) => Promise<unknown>, ok: string) => Promise<void>;
+  confirm: (c: { text: string; run: () => Promise<void> }) => void; leave: () => void;
+}) {
+  const [sel, setSel] = useState<string | null>(null);
+  const [desc, setDesc] = useState<string | null>(null);
+  const me = roleOf(g, uid);
+  const list = Object.entries(g.members).sort((a, b) => ROLE_ORDER[roleOf(g, a[0])] - ROLE_ORDER[roleOf(g, b[0])] || b[1].power - a[1].power);
+  const officers = (g.officers ?? []).length;
+  const m = sel ? g.members[sel] : null;
+  const r = sel ? clanRights(g, uid, sel) : null;
+  return (
+    <>
+      <Panel title={`Membres · ${g.count}/${GUILD_MAX}`}>
+        <p className="faint" style={{ marginTop: 0 }}>Toi : <b className={`cl-role ${me}`}>{ROLE_NAMES[me]}</b> · {ROLE_HELP[me]} {me === 'leader' && 'Touche un membre pour lui donner un rôle.'}</p>
+        {list.map(([id, mm]) => {
+          const role = roleOf(g, id);
+          return (
+            <button key={id} className="cl-member" onClick={() => setSel(id)} aria-label={`Fiche de ${mm.name}`}>
+              <span className="xp-ava" style={{ width: 40, height: 40, flexShrink: 0 }}><HeroArt heroId={avatar(mm.avatar)} /></span>
+              <span className="grow" style={{ minWidth: 0, textAlign: 'left' }}>
+                <b>{mm.name}</b>{id === uid && <span className="faint"> (toi)</span>}
+                <div className="faint">Puissance {fmt(mm.power)} · dégâts de la semaine {fmt(myBossDamage(g, id, now))}</div>
+              </span>
+              {role !== 'member' && <span className={`cl-role ${role}`}>{ROLE_NAMES[role]}</span>}
+            </button>
+          );
+        })}
+      </Panel>
+      <Panel title="Rôles">
+        {(['leader', 'officer', 'member'] as ClanRole[]).map((k) => (
+          <div key={k} className="stat-row"><b className={`cl-role ${k}`}>{ROLE_NAMES[k]}{k === 'officer' ? ` · ${officers}/${OFFICERS_MAX}` : ''}</b><span className="faint" style={{ maxWidth: '62%', textAlign: 'right' }}>{ROLE_HELP[k]}</span></div>
+        ))}
+      </Panel>
+      {clanRights(g, uid, uid).settings && (
+        <Panel title="Réglages du clan">
+          <div className="row" style={{ gap: 8 }}>
+            <button className="btn secondary grow" onClick={() => void act((a) => a.updateSettings(g.id, { open: !g.open }), g.open ? 'Clan fermé.' : 'Clan ouvert.')}>{g.open ? 'Fermer le clan' : 'Ouvrir le clan'}</button>
+            <button className="btn secondary grow" onClick={() => setDesc(g.description)}>Présentation</button>
+          </div>
+        </Panel>
+      )}
+      <button className="btn secondary block" style={{ marginBottom: 12 }} onClick={leave}>Quitter le clan</button>
+
+      {m && sel && r && (
+        <Modal onClose={() => setSel(null)}>
+          <div className="row" style={{ gap: 12, marginBottom: 10 }}>
+            <span className="xp-ava" style={{ width: 64, height: 64, flexShrink: 0 }}><HeroArt heroId={avatar(m.avatar)} /></span>
+            <div style={{ minWidth: 0 }}>
+              <h3 style={{ margin: 0 }}>{m.name}</h3>
+              <span className={`cl-role ${roleOf(g, sel)}`}>{ROLE_NAMES[roleOf(g, sel)]}</span>
+            </div>
+          </div>
+          <div className="stat-row"><span>Puissance</span><b>{fmt(m.power)}</b></div>
+          <div className="stat-row"><span>Dégâts du boss cette semaine</span><b>{fmt(myBossDamage(g, sel, now))}</b></div>
+          <div className="stat-row"><span>Membre depuis</span><b>{new Date(m.joinedAt).toLocaleDateString('fr-FR')}</b></div>
+          <div className="cl-actions">
+            {r.officer && (roleOf(g, sel) === 'officer'
+              ? <button className="btn secondary" onClick={() => { setSel(null); void act((a) => a.setOfficer(g.id, sel, false), `${m.name} redevient membre.`); }}>Retirer le rôle d’adjoint</button>
+              : <button className="btn" onClick={() => { setSel(null); void act((a) => a.setOfficer(g.id, sel, true), `${m.name} est adjoint.`); }}>Nommer adjoint</button>)}
+            {r.leader && <button className="btn secondary" onClick={() => { setSel(null); confirm({ text: `Nommer ${m.name} chef du clan ? Tu deviendras simple membre.`, run: () => act((a) => a.promoteLeader(g.id, sel), `${m.name} est le nouveau chef.`) }); }}>Nommer chef</button>}
+            {r.kick && <button className="btn danger" onClick={() => { setSel(null); confirm({ text: `Exclure ${m.name} du clan ?`, run: () => act((a) => a.kickMember(g.id, sel), `${m.name} a été exclu.`) }); }}>Exclure</button>}
+            {!r.officer && !r.leader && !r.kick && <p className="faint" style={{ margin: 0, textAlign: 'center' }}>{sel === uid ? 'C’est toi !' : 'Seuls le chef et les adjoints gèrent les membres.'}</p>}
+          </div>
+          <button className="btn secondary block" style={{ marginTop: 10 }} onClick={() => setSel(null)}>Fermer</button>
+        </Modal>
+      )}
+      {desc != null && (
+        <Modal onClose={() => setDesc(null)}>
+          <h3 style={{ marginTop: 0 }}>Présentation du clan</h3>
+          <input className="text-input" maxLength={GUILD_DESC_MAX} value={desc} onChange={(e) => setDesc(e.target.value)} autoFocus aria-label="Présentation du clan" />
+          <div className="row" style={{ gap: 8, marginTop: 12 }}>
+            <button className="btn secondary grow" onClick={() => setDesc(null)}>Annuler</button>
+            <button className="btn grow" onClick={() => { const d = desc; setDesc(null); void act((a) => a.updateSettings(g.id, { description: d }), 'Présentation enregistrée.'); }}>Enregistrer</button>
+          </div>
+        </Modal>
+      )}
+    </>
+  );
+}
+
+/** Aperçu d'un clan avant de le rejoindre : présentation et membres. */
+export function ClanPreview({ g, onJoin, onClose, busy }: { g: GuildDoc & { id: string }; onJoin: () => void; onClose: () => void; busy: boolean }) {
+  const list = Object.entries(g.members).sort((a, b) => ROLE_ORDER[roleOf(g, a[0])] - ROLE_ORDER[roleOf(g, b[0])] || b[1].power - a[1].power);
+  const power = list.reduce((a, [, m]) => a + m.power, 0);
+  return (
+    <Modal onClose={onClose}>
+      <div className="row" style={{ gap: 12, marginBottom: 8 }}>
+        <span className="cl-emb big"><HeroArt heroId={avatar(g.emblem)} /></span>
+        <div style={{ minWidth: 0 }}><h3 style={{ margin: 0 }}>{g.name} <span className="cl-tag">{g.tag}</span></h3><div className="faint">{g.count}/{GUILD_MAX} membres · puissance totale {fmt(power)}</div></div>
+      </div>
+      {g.description && <p className="muted" style={{ marginTop: 0 }}>{g.description}</p>}
+      <div className="cl-preview-list">
+        {list.map(([id, m]) => (
+          <div key={id} className="stat-row" style={{ alignItems: 'center' }}>
+            <span className="row" style={{ gap: 8, minWidth: 0 }}><span className="xp-ava" style={{ width: 32, height: 32, flexShrink: 0 }}><HeroArt heroId={avatar(m.avatar)} /></span><b>{m.name}</b></span>
+            <span className="row" style={{ gap: 6 }}>{roleOf(g, id) !== 'member' && <span className={`cl-role ${roleOf(g, id)}`}>{ROLE_NAMES[roleOf(g, id)]}</span>}<span className="faint">{fmt(m.power)}</span></span>
+          </div>
+        ))}
+      </div>
+      <div className="row" style={{ gap: 8, marginTop: 12 }}>
+        <button className="btn secondary grow" onClick={onClose}>Fermer</button>
+        <button className="btn grow" disabled={busy || !g.open || g.count >= GUILD_MAX} onClick={onJoin}>{!g.open ? 'Clan fermé' : g.count >= GUILD_MAX ? 'Complet' : 'Rejoindre'}</button>
+      </div>
+    </Modal>
   );
 }

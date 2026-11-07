@@ -424,6 +424,14 @@
 - Sauvegardes plus légères : anciens fragments de héros et ancien réglage de visuel retirés à l’ouverture de la partie
 - Code inutilisé supprimé : décors dessinés remplacés par les illustrations, fonctions jamais appelées, mesure de l’écran de débogage, dossier vide
 
+## ✅ Version 1.49.0 — Clans : membres et rôles
+
+- Nouveau rôle **Adjoint** (5 au plus) : exclut les simples membres, change la présentation, ouvre ou ferme le clan, efface les messages. Le **Chef** nomme ou retire les adjoints et peut passer la main ; les **Membres** discutent et attaquent le boss
+- Onglet **Membres** refait (« Membres · 12 ») : rôle de chacun, puissance, dégâts de la semaine ; toucher un membre ouvre sa **fiche** (membre depuis, dégâts) avec les actions permises par ton rôle (Nommer adjoint, Retirer le rôle, Nommer chef, Exclure)
+- Tableau des rôles et ce que chacun peut faire ; réglages du clan (ouvrir/fermer, présentation) pour le chef et les adjoints
+- **Aperçu d’un clan avant de le rejoindre** : toucher un clan de la liste montre sa présentation, sa puissance totale et ses membres avec leurs rôles
+- Règles Firestore mises à jour (liste `officers`, 23 tests sur l’émulateur) : **à republier** ; test de bout en bout à trois joueurs (aperçu, adjoint, exclusion par l’adjoint, passation de chef)
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

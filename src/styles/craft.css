@@ -783,3 +783,16 @@ body:has(.battle-controls) .toasts { bottom: auto; top: calc(var(--sat, 0px) + 6
 .guest-opt.on { border-color: var(--brass); box-shadow: 0 0 10px rgba(217,179,106,0.35); }
 .guest-opt:disabled { opacity: 0.45; }
 .guest-opt .xp-ava { width: 64px; height: 64px; margin: 0 auto 3px; position: relative; }
+
+/* Clan : membres, rôles, aperçu */
+.cl-card { position: relative; }
+.cl-open { position: absolute; inset: 0; z-index: 0; background: none; border: 0; }
+.cl-card > *:not(.cl-open) { position: relative; z-index: 1; pointer-events: none; }
+.cl-card > button.btn { pointer-events: auto; }
+.cl-member { display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 0; border-bottom: 1px solid var(--edge); background: none; color: inherit; }
+.cl-member:last-child { border-bottom: 0; }
+.cl-role { display: inline-block; padding: 1px 7px; border-radius: 3px; font-size: 11px; font-weight: 800; border: 1px solid var(--edge); color: var(--text-dim); white-space: nowrap; }
+.cl-role.leader { color: var(--gold-hi); border-color: rgba(217,179,106,0.6); background: rgba(217,179,106,0.1); }
+.cl-role.officer { color: #c9d6ff; border-color: rgba(160,180,255,0.55); background: rgba(160,180,255,0.08); }
+.cl-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.cl-preview-list { max-height: 46vh; overflow-y: auto; }

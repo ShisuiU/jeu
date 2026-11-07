@@ -3,7 +3,7 @@ export type ResourceId =
   | 'shardDim' | 'shardAeon' | 'shardPrimal' | 'shardEvent'
   | 'xpElixir' | 'skillTome' | 'rankSigil'
   | 'potionMinor' | 'potionGreater' | 'potionSupreme'
-  | 'forgeOre' | 'awakenEssence';
+  | 'forgeOre' | 'awakenEssence' | 'masteryScroll';
 
 export interface ResourceDef {
   id: ResourceId;
@@ -27,6 +27,7 @@ export const RESOURCES: Record<ResourceId, ResourceDef> = {
   potionGreater: { id: 'potionGreater', name: 'Potion d’ascension majeure', description: 'Ascension des paliers intermédiaires.', icon: 'potion', color: '#6fa8ff' },
   potionSupreme: { id: 'potionSupreme', name: 'Potion d’ascension suprême', description: 'Ascension des derniers paliers.', icon: 'potion', color: '#ff6a9a' },
   forgeOre: { id: 'forgeOre', name: 'Minerai de forge', description: 'Améliore les équipements.', icon: 'ore', color: '#c08a5a' },
+  masteryScroll: { id: 'masteryScroll', name: 'Parchemin de maîtrise', description: 'Apprend les maîtrises d’un héros (Sanctuaire, à partir du niveau 20).', icon: 'mscroll', color: '#c78bff' },
   awakenEssence: { id: 'awakenEssence', name: 'Essence d’éveil', description: 'Éveille les héros les plus avancés.', icon: 'essence', color: '#ff9bb5' },
 };
 

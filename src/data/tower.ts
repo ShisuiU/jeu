@@ -19,7 +19,7 @@ export function towerWaves(floor: number): WaveEnemy[][] {
 }
 
 export function towerReward(floor: number): Reward {
-  if (floor % 10 === 0) return { crystals: 150 + floor * 5 + (floor === 50 ? 300 : 0), shardAeon: floor >= 30 ? 2 : 1 };
+  if (floor % 10 === 0) return { crystals: 150 + floor * 5 + (floor === 50 ? 300 : 0), shardAeon: floor >= 30 ? 2 : 1, masteryScroll: 4 };
   if (floor % 5 === 0) return { crystals: 60, skillTome: 1, potionMinor: 3 };
   return { gold: 1500 + floor * 200, crystals: 20 };
 }

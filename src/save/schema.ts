@@ -24,6 +24,8 @@ export interface HeroInstance {
   equipment: Partial<Record<string, string>>; // slot → uid d'équipement (phase 3)
   locked: boolean;
   obtainedAt: number;
+  /** Maîtrises apprises (identifiants), voir data/masteries.ts. */
+  masteries?: string[];
 }
 
 export interface GearItem {

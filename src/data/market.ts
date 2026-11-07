@@ -33,6 +33,7 @@ export const MARKET_POOL: MarketOfferDef[] = [
   { id: 'pgreater', reward: { potionGreater: 2 }, price: { resource: 'gold', amount: 30000 }, weight: 3, minChapter: 3 },
   { id: 'psupreme', reward: { potionSupreme: 1 }, price: { resource: 'gold', amount: 55000 }, weight: 2, minChapter: 5 },
   { id: 'ore', reward: { forgeOre: 40 }, price: { resource: 'gold', amount: 10000 }, weight: 5 },
+  { id: 'mscroll', reward: { masteryScroll: 2 }, price: { resource: 'gold', amount: 24000 }, weight: 4, minChapter: 2 },
   { id: 'essence', reward: { awakenEssence: 1 }, price: { resource: 'crystals', amount: 90 }, weight: 2, minChapter: 2 },
   { id: 'g_rare', gear: 'rare', price: { resource: 'gold', amount: 18000 }, weight: 4 },
   { id: 'g_epic', gear: 'epic', price: { resource: 'gold', amount: 45000 }, weight: 3, minChapter: 2 },

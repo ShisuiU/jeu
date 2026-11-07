@@ -345,6 +345,16 @@
 - Sanctuaire : les 5 onglets ne sont plus écrasés sur petit écran (défilement horizontal, l’onglet choisi se place en vue)
 - Onglet Ascension : le porte-monnaie (potions, essence, or) tient sur une seule ligne
 
+## ✅ Version 1.40.0 — Premier lancement plus clair (retours d’une critique)
+
+- Premier lancement : plus de calendrier de connexion avant l’histoire ; il reste dans le Courrier et s’ouvre seul une fois le tutoriel fini
+- Accueil : « Bienvenue dans le Monde Cousu » explique tout de suite que le joueur est le Lien, et lui demande son nom (« Lien » par défaut, à la place de « Héritier »)
+- Étoiles : conditions affichées avant chaque niveau de campagne (Victoire · 1 KO max · Aucun KO) avec le meilleur résultat, et la raison après le combat
+- Premier combat allégé : une seule bulle d’aide, placée en haut pour ne jamais cacher l’équipe ; les affinités sont expliquées à la préparation du 2ᵉ combat, AUTO au 2ᵉ combat (activer AUTO soi-même valide l’étape) ; jamais deux bulles à la fois
+- Textes coupés à 375 px corrigés : onglets de difficulté, chapitres (le chapitre en cours se place en vue), récompense du chapitre, noms des héros sur les petites cartes, nom du joueur en haut
+- Invocation : l’onglet Épique montre l’icône des cristaux (le « 300 » était le nombre de cristaux, pas des éclats)
+- Ce qui rend le jeu unique, mis en avant : avant chaque combat, « Ton équipe : X avantagés ▲ · Y désavantagés ▼ » ; au premier doublon, une fenêtre présente les Liens (famille et affinité) et le cycle des affinités
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

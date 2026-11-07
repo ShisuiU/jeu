@@ -55,7 +55,10 @@ export function Summon() {
           <button key={x.id} role="tab" aria-selected={x.id === bannerId} className={`shard-tab ${x.id === bannerId ? 'on' : ''}`} style={{ ['--bc' as string]: x.color, ['--bg2' as string]: x.glow }} onClick={() => { play('tap'); setBannerId(x.id); }}>
             <Crystal color={x.color} glow={x.glow} size={20} />
             <span>{SHORT[x.id] ?? x.name}</span>
-            <b>{fmt(save.resources[x.cost.resource])}</b>
+            {/* Invocation payée en cristaux : on montre l'icône des cristaux, pour ne pas confondre avec des éclats. */}
+            {x.cost.resource === 'crystals'
+              ? <b className="st-cost" aria-label={`${save.resources.crystals} cristaux`}><ResourceIcon icon={RESOURCES.crystals.icon} color={RESOURCES.crystals.color} size={11} />{fmt(save.resources.crystals)}</b>
+              : <b>{fmt(save.resources[x.cost.resource])}</b>}
           </button>
         ))}
       </div>

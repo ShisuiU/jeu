@@ -676,3 +676,44 @@ body:has(.modal-backdrop) .toasts, body:has(.sheet-backdrop) .toasts { bottom: a
 .sanct-tabs { justify-content: flex-start; }
 .sanct-tabs button { flex: 0 0 auto; padding: 0 10px; }
 @media (min-width: 380px) { .sanct-tabs button { flex: 1 0 auto; } }
+
+/* Conditions des étoiles (préparation) */
+.star-rules { display: flex; gap: 6px; margin: 6px 0 8px; flex-wrap: wrap; }
+.star-rules .sr { display: inline-flex; align-items: center; gap: 5px; padding: 3px 8px; border-radius: 99px; font-size: 12px; color: var(--text-dim); background: rgba(10,8,14,0.7); border: 1px solid var(--edge); }
+.star-rules .sr.got { color: var(--text); border-color: rgba(255,211,107,0.45); }
+.star-rules .sr-stars { display: inline-flex; gap: 1px; }
+.result-why { text-align: center; margin: -4px 16px 8px; font-size: 13px; }
+.guide-name { display: flex; flex-direction: column; gap: 4px; margin: 4px 0 12px; text-align: left; font-size: 12px; color: var(--text-dim); }
+.guide-name input { padding: 10px 12px; border-radius: 4px; border: 1px solid var(--edge-hi); background: rgba(0,0,0,0.35); color: var(--text); font-size: 16px; }
+.coach-bubble.top::after, .coach-bubble.top::before { display: none; }
+.coach-bubble.top { top: calc(var(--sat) + 12px) !important; }
+
+/* Textes coupés à 375 px (critique) */
+.camp-diff button { font-size: 13px; padding: 0 4px; letter-spacing: 0; }
+.camp-chaps { scroll-behavior: auto; -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent); mask-image: linear-gradient(90deg, #000 88%, transparent); }
+.chap-meta { flex-wrap: wrap; row-gap: 4px; }
+.chap-meta .nowrap { white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; }
+.chap-reward { margin-left: 8px; }
+.hero-card .name .n-short { display: none; }
+.mini-slot .hero-card .name .n-full, .feed-slot .hero-card .name .n-full { display: none; }
+.mini-slot .hero-card .name .n-short, .feed-slot .hero-card .name .n-short { display: inline; }
+.hero-grid .hero-card .name { -webkit-line-clamp: 3; }
+.shard-tab .st-cost { display: inline-flex; align-items: center; gap: 2px; }
+.aff-advice .aff-team { margin-top: 4px; font-size: 12.5px; }
+.aff-advice .aff-up { color: #7bea8f; }
+.aff-advice .aff-down { color: #ff8a7a; }
+.aff-advice { flex-direction: column; align-items: flex-start; }
+.bonds-intro-aff { display: flex; justify-content: center; align-items: center; gap: 6px; margin: 4px 0 8px; }
+.bonds-intro-aff span { display: inline-flex; align-items: center; gap: 6px; }
+.bonds-intro-aff b { color: var(--text-faint); font-size: 18px; }
+/* Barre du haut sur écran étroit : pastilles plus compactes, pour que le nom du joueur reste lisible. */
+@media (max-width: 400px) {
+  .top-bar .pill, .topbar .pill { padding-left: 6px; padding-right: 7px; gap: 3px; font-size: 12.5px; }
+  .top-bar .pill svg, .topbar .pill svg { width: 16px; height: 16px; }
+  .avatar-btn { gap: 6px; }
+  .player-name { font-size: 12.5px; }
+}
+.mini-slot .hero-card .name { font-family: var(--font-ui, inherit); text-transform: none; letter-spacing: 0; font-weight: 700; }
+.star-rules { flex-wrap: nowrap; overflow: hidden; }
+.star-rules .sr { white-space: nowrap; }
+.mini-slot .hero-card .lvl { display: none; }

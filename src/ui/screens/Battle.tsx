@@ -372,7 +372,7 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
             if (!alive.length) return null;
             const u = alive[(s.units.length * 7 + alive.length) % alive.length];
             const lines = HERO_LINES[u.refId];
-            return <div className="result-voice">« {lines[(u.hp + s.units.length) % lines.length | 0]} »<span>{HERO_BY_ID[u.refId]?.name.split(' ')[0]}</span></div>;
+            return <div className="result-voice">« {lines[(u.hp + s.units.length) % lines.length | 0]} »<span>{HERO_BY_ID[u.refId]?.name.split(/[ ,]/)[0]}</span></div>;
           })()}
           {result.lines.map((l, i) => <div key={i} className="chip active" style={{ margin: '6px auto', display: 'flex', width: 'fit-content', textAlign: 'center' }}>{l}</div>)}
           {result.won && spec.mode === 'campaign' && (

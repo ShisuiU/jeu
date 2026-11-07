@@ -126,6 +126,8 @@ export interface ArenaOpponent {
   name: string;
   heroes: { heroId: string; level: number; slot: number }[];
   power: number;
+  /** Reflet d'un vrai joueur du classement en ligne (nom et puissance réels). Sinon : Héritier imaginaire. */
+  real?: boolean;
 }
 
 export function createHeroInstance(heroId: string, now: number): HeroInstance {

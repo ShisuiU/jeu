@@ -60,6 +60,10 @@ const CH1: StageDef[] = [
     ],
     after: [
       { speaker: 'elowen', text: 'Tu l’as senti ? Quand nous combattons ensemble, nos éclats chantent. Tu es le Lien dont parlaient les anciens.' },
+      { speaker: 'player', text: 'Je ne sais pas encore ce que ça veut dire. Mais je ne vous laisserai pas tomber.' },
+      { speaker: 'elowen', text: 'Alors dis-nous ton nom. Ici, un nom, c’est ce que le Néant ne peut pas prendre.' },
+      { speaker: 'player', text: '{nom}.' },
+      { speaker: 'elowen', text: '{nom}… Les éclats s’en souviendront. Nous aussi.' },
     ],
   },
   {
@@ -137,7 +141,7 @@ const CH1: StageDef[] = [
     after: [
       { speaker: 'narrator', text: 'La cloche se brise. Le silence se déchire, et le vent revient sur les remparts.' },
       { speaker: 'aldric', text: 'Les noms… ils sont revenus sur mon bouclier. Tous les trois cents. Je vous dois plus que ma vie.' },
-      { speaker: 'aldric', text: 'Mon épée est à toi, Lien. Valcrest se souviendra de cette nuit.' },
+      { speaker: 'aldric', text: 'Mon épée est à toi, {nom}. Valcrest se souviendra de cette nuit.' },
       { speaker: 'elowen', text: 'Écoutez… À l’est, les arbres hurlent. Le Néant a atteint Sylvaran.' },
       { speaker: 'narrator', text: 'Aldric Vaunt rejoint les Héritiers. Fin du chapitre 1.' },
     ],

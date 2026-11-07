@@ -12,7 +12,9 @@ export const ARENA_TIERS = [
   { id: 'diamond', name: 'Diamant', min: 1900, color: '#c7a0ff', reward: { gold: 9000, crystals: 50, shardAeon: 1 } as Reward },
 ];
 
-export const ARENA_NAMES = ['Vespera', 'Kaël le Gris', 'Ordre de Myrrhe', 'Les Veilleurs', 'Dame Ysolde', 'Le Clan Rouge', 'Orvan', 'Sœurs d’Astre', 'Tamsin', 'Hadrik', 'Les Sans-Nom', 'Liora'];
+// Héritiers imaginaires (sans compte ou sans joueur en ligne de puissance proche). Aucun nom de héros du jeu.
+export const ARENA_NAMES = ['Vespera', 'Kaël le Gris', 'Ordre de Myrrhe', 'Les Veilleurs', 'Dame Ombreline', 'Le Clan Rouge', 'Orvan', 'Sœurs d’Astre', 'Hadrik', 'Les Sans-Nom', 'Liora',
+  'Maître Ancel', 'La Garde Cendrée', 'Ysmé la Lente', 'Corbeau-Sel', 'Les Fils du Gué', 'Thibalt', 'Nuée d’Opale', 'Brisemont', 'Sixte', 'Les Lanternes', 'Aube-Grise'];
 
 export function arenaTier(rating: number) {
   return [...ARENA_TIERS].reverse().find((t) => rating >= t.min)!;

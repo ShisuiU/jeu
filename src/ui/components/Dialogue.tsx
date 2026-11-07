@@ -5,13 +5,19 @@ import { ENEMIES } from '../../data/enemies';
 import { HeroArt } from '../art/HeroArt';
 import { EnemyArt } from '../art/EnemyArt';
 import { play } from '../../audio/sfx';
+import { useGame } from '../../state/store';
+
+/** Le joueur (le Lien) dans l'histoire : orateur « player », et « {nom} » remplacé par son nom. */
+export const PLAYER_SPEAKER = 'player';
+export const withName = (text: string, name: string) => text.replace(/\{nom\}/g, name);
 
 // Scène de dialogue : portrait de l'orateur, texte qui s'écrit, toucher pour continuer.
 export function Dialogue({ lines, onDone }: { lines: DialogueLine[]; onDone: () => void }) {
   const [i, setI] = useState(0);
   const [shown, setShown] = useState(0);
+  const playerName = useGame((s) => s.save?.profile.name?.trim() || 'Lien');
   const line = lines[i];
-  const full = line?.text ?? '';
+  const full = withName(line?.text ?? '', playerName);
   useEffect(() => {
     setShown(0);
     const id = setInterval(() => setShown((n) => { if (n >= full.length) { clearInterval(id); return n; } return n + 2; }), 22);
@@ -20,8 +26,9 @@ export function Dialogue({ lines, onDone }: { lines: DialogueLine[]; onDone: () 
   if (!line) return null;
   const hero = HERO_BY_ID[line.speaker];
   const enemy = ENEMIES[line.speaker];
-  const narrator = !hero && !enemy;
-  const name = hero?.name ?? enemy?.name ?? '';
+  const me = line.speaker === PLAYER_SPEAKER;
+  const narrator = !hero && !enemy && !me;
+  const name = me ? playerName : hero?.name ?? enemy?.name ?? '';
   const next = () => {
     if (shown < full.length) { setShown(full.length); return; }
     play('tap');
@@ -29,13 +36,13 @@ export function Dialogue({ lines, onDone }: { lines: DialogueLine[]; onDone: () 
   };
   return (
     <div className="dialogue" onClick={next}>
-      {!narrator && (
+      {!narrator && !me && (
         <div className={`dlg-portrait ${enemy ? 'enemy' : ''}`} key={line.speaker}>
           {hero ? <HeroArt heroId={hero.id} kind="full" /> : <EnemyArt enemyId={enemy!.id} />}
         </div>
       )}
-      <div className={`dlg-box ${narrator ? 'narrator' : ''}`}>
-        {!narrator && <div className="dlg-name">{name}{hero && <span> · {hero.title}</span>}</div>}
+      <div className={`dlg-box ${narrator ? 'narrator' : ''} ${me ? 'player' : ''}`}>
+        {!narrator && <div className="dlg-name">{name}{hero && <span> · {hero.title}</span>}{me && <span> · le Lien</span>}</div>}
         <div className="dlg-text">{full.slice(0, shown)}<span style={{ opacity: 0 }}>{full.slice(shown)}</span></div>
         <div className="dlg-foot"><span>{i + 1}/{lines.length}</span><span className="tap-start" style={{ fontSize: 11 }}>TOUCHER ▸</span></div>
       </div>

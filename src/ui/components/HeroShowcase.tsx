@@ -32,7 +32,7 @@ export function HeroShowcase({ heroId, h, onPrev, onNext, below }: { heroId: str
   const def = HERO_BY_ID[heroId];
   const items = h ? heroGear(save, h.uid) : [];
   const bonus = gearBonus(items);
-  const owners = Object.fromEntries(save.heroes.map((x) => [x.uid, HERO_BY_ID[x.heroId].name.split(' ')[0]]));
+  const owners = Object.fromEntries(save.heroes.map((x) => [x.uid, HERO_BY_ID[x.heroId].name.split(/[ ,]/)[0]]));
   const candidates = pick && h ? save.equipment.filter((g) => g.slot === pick && g.heroUid !== h.uid)
     .sort((a, b) => (a.heroUid ? 1 : 0) - (b.heroUid ? 1 : 0) || GEAR_RARITIES[b.rarity].order - GEAR_RARITIES[a.rarity].order || b.level - a.level) : [];
 

@@ -53,7 +53,7 @@ export function Campaign() {
           <h2 style={{ fontSize: 22 }}>{c.name}</h2>
           <p className="muted" style={{ fontSize: 13, margin: '6px 0' }}>{c.intro}</p>
           <div className="row chap-meta"><span className="nowrap"><Icon.star size={16} /> <b>{st.stars}</b><span className="faint"> / {st.max}</span></span>
-            {reward && <span className="faint chap-reward">Récompense : {HERO_BY_ID[reward].name.split(' ')[0]}</span>}
+            {reward && <span className="faint chap-reward">Récompense : {HERO_BY_ID[reward].name.split(/[ ,]/)[0]}</span>}
             <span className="chip" style={{ marginLeft: 'auto' }}>{DIFFICULTIES[diff].name}{DIFFICULTIES[diff].levelAdd ? ` · +${DIFFICULTIES[diff].levelAdd}` : ''}</span>
           </div>
         </div>

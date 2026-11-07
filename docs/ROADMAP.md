@@ -405,7 +405,14 @@
 - Combat : sur un boss aux PV gigantesques, poisons et brûlures sont plafonnés (sinon un pourcentage de ses PV écrasait tout)
 - Règles Firestore des clans et de leur discussion (`guilds/{gid}`, `guilds/{gid}/chat`) dans `firestore.rules`, vérifiées sur l’émulateur ; test de bout en bout à deux joueurs (création, adhésion, discussion, boss, exclusion)
 
+## ✅ Version 1.47.0 — Multijoueur (3/3) : les amis
+
+- **Amis** (Menu → Entre joueurs → Amis, compte nécessaire) : chacun a un **code ami** de 6 caractères (sans 0/O ni 1/I) ; on ajoute un ami avec son code, il accepte la demande. 30 amis au plus
+- **Cadeaux d’énergie** : chaque jour, 10 énergie à envoyer à chaque ami (« Tout envoyer »), et leurs cadeaux à recevoir (« Tout recevoir », 20 par jour au plus)
+- **Renfort d’un ami** : en campagne et en donjon, le meilleur héros d’un ami (avec son équipement) peut prendre une place libre de l’équipe pour un combat, une fois par jour et par ami
+- Fiche publique `profiles/{uid}` (nom, avatar, niveau, puissance, héros prêté), codes `codes/{code}`, amitiés `friendships/{a_b}` ; supprimer son compte efface aussi tout cela
+- Règles Firestore des amis dans `firestore.rules` (19 tests sur l’émulateur au total) ; test de bout en bout à deux joueurs (code, demande, acceptation, cadeau, renfort en combat)
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale
-- Amis (en cours)

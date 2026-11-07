@@ -7,7 +7,7 @@ import { HERO_BY_ID } from '../../data/heroes';
 import { HERO_LINES } from '../../data/heroLines';
 import { createBattle, beginTurn, performAction, unitById, availableSkills, targetKind, validTargets, hpPct, shieldOf, predictOrder } from '../../game/battle/engine';
 import { chooseAction } from '../../game/battle/ai';
-import { STATUS_INFO, type Action, type BattleState, type Unit } from '../../game/battle/types';
+import { STATUS_INFO, type Action, type BattleState, type Unit, type UnitSetup } from '../../game/battle/types';
 import { effectiveCooldown } from '../../game/battle/skillMods';
 import { teamSetups } from '../../game/campaign';
 import { applyMode, nextSpec, payMode, resolveMode, type BattleSpec, type ModeResult } from '../../game/modes';
@@ -36,7 +36,7 @@ interface Popup { id: number; text: string; cls: string }
 const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
 let popSeq = 0;
 
-export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: string; seed: number }) {
+export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId: string; seed: number; guest?: UnitSetup }) {
   const save = useGame((s) => s.save)!;
   const secondFight = Object.values(save.progress.campaign).some((p) => p.clears > 0);
   const mutate = useGame((s) => s.mutate);
@@ -45,7 +45,10 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
 
   const [initial] = useState(() => {
     const team = save.teams.find((t) => t.id === teamId) ?? save.teams[0];
-    const allies = teamSetups(save, team);
+    // Renfort d'un ami : son héros prend la première place libre de l'équipe.
+    const own = teamSetups(save, team);
+    const free = [0, 1, 2, 3, 4].find((i) => !own.some((a) => a.slot === i));
+    const allies = guest && free != null ? [...own, { ...guest, slot: free }] : own;
     const info = resolveMode(save, spec);
     return { team, allies, info, battle: createBattle(allies, info.waves, { seed, leaderUid: team.leader, turnLimit: info.turnLimit }) };
   });
@@ -219,7 +222,7 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
     if (foe?.real && foe.uid) { const me = useGame.getState().save!; void loadCloud().then((c) => c.postArenaLog(foe.uid!, me, won, playerTeamPower(me))).catch(() => {}); }
     let res: ModeResult | null = null;
     mutate((d) => {
-      res = applyMode(d, spec, { won, alliesDead: dead, participants: initial.allies.map((a) => a.heroUid!), bossDamage: boss ? { dealt: boss.base.hp - Math.max(0, boss.hp), max: boss.base.hp } : undefined }, Date.now());
+      res = applyMode(d, spec, { won, alliesDead: dead, participants: initial.allies.map((a) => a.heroUid).filter((u): u is string => !!u), bossDamage: boss ? { dealt: boss.base.hp - Math.max(0, boss.hp), max: boss.base.hp } : undefined }, Date.now());
     });
     setResult(res);
     const ok = (res as ModeResult | null)?.won;
@@ -276,7 +279,7 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
     let r: { ok: boolean; reason?: string } = { ok: false };
     mutate((d) => { r = payMode(d, spec, useGame.getState().now); });
     if (!r.ok) { toast(r.reason ?? 'Impossible.', 'error'); return; }
-    replace({ name: 'battle', spec, teamId, seed: Date.now() });
+    replace({ name: 'battle', spec, teamId, seed: Date.now() }); // le renfort d'un ami ne vaut que pour un combat
   };
   const next = result?.won ? nextSpec(useGame.getState().save!, spec) : null;
   const backTo = (): Route['name'] => ({ campaign: 'campaign', dungeon: 'dungeons', tower: 'tower', worldboss: 'worldboss', arena: 'arena', guildboss: 'guild', challenge: 'events' } as const)[spec.mode];

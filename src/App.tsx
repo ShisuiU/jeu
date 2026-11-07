@@ -48,6 +48,7 @@ const Expeditions = L(() => import('./ui/screens/Expeditions'), 'Expeditions');
 const Market = L(() => import('./ui/screens/Market'), 'Market');
 const Camp = L(() => import('./ui/screens/Camp'), 'Camp');
 const Guild = L(() => import('./ui/screens/Guild'), 'Guild');
+const Friends = L(() => import('./ui/screens/Friends'), 'Friends');
 const Ranks = L(() => import('./ui/screens/Ranks'), 'Ranks');
 const Missions = L(() => import('./ui/screens/Missions'), 'Missions');
 const Events = L(() => import('./ui/screens/Events'), 'Events');
@@ -85,7 +86,8 @@ function renderRoute(r: Route) {
     case 'account': return <Saves mode={r.mode} />;
     case 'stage': return <Stage key={r.stageId} stageId={r.stageId} />;
     case 'prep': return <Prep key={JSON.stringify(r.spec)} spec={r.spec} />;
-    case 'battle': return <Battle key={r.seed} spec={r.spec} teamId={r.teamId} seed={r.seed} />;
+    case 'battle': return <Battle key={r.seed} spec={r.spec} teamId={r.teamId} seed={r.seed} guest={r.guest} />;
+    case 'friends': return <Friends />;
   }
 }
 

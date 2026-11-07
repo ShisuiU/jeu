@@ -772,3 +772,14 @@ body:has(.battle-controls) .toasts { bottom: auto; top: calc(var(--sat, 0px) + 6
 .cl-msg-h { display: flex; align-items: baseline; gap: 6px; font-size: 12px; }
 .cl-msg-t { font-size: 14px; line-height: 1.35; overflow-wrap: anywhere; white-space: pre-wrap; }
 .cl-del { margin-left: auto; padding: 0 4px; font-size: 15px; line-height: 1; color: var(--text-faint); }
+
+/* Amis */
+.fr-code { font-family: ui-monospace, Menlo, monospace; font-size: 22px; letter-spacing: 0.18em; color: var(--gold-hi); }
+.fr-input { text-transform: uppercase; letter-spacing: 0.12em; }
+.fr-manage { margin: 4px 0 12px; }
+.fr-manage summary { cursor: pointer; padding: 6px 0; }
+.guest-pick { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; }
+.guest-opt { flex: 0 0 auto; width: 74px; padding: 4px; border-radius: var(--radius); border: 1px solid var(--edge); background: rgba(0,0,0,0.25); text-align: center; font-size: 11px; }
+.guest-opt.on { border-color: var(--brass); box-shadow: 0 0 10px rgba(217,179,106,0.35); }
+.guest-opt:disabled { opacity: 0.45; }
+.guest-opt .xp-ava { width: 64px; height: 64px; margin: 0 auto 3px; position: relative; }

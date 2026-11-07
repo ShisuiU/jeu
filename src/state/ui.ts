@@ -20,7 +20,8 @@ export type Route =
   | { name: 'sanctuary'; uid?: string }
   | { name: 'stage'; stageId: string }
   | { name: 'prep'; spec: BattleSpec }
-  | { name: 'battle'; spec: BattleSpec; teamId: string; seed: number }
+  | { name: 'battle'; spec: BattleSpec; teamId: string; seed: number; guest?: import('../game/battle/types').UnitSetup }
+  | { name: 'friends' }
   | { name: 'dungeons' }
   | { name: 'dungeon'; dungeonId: string }
   | { name: 'tower' }

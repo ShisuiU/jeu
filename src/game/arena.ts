@@ -10,11 +10,6 @@ import { heroTotalStats } from './heroStats';
 
 const FRONT_ROLES = ['defender', 'attacker', 'assassin'];
 
-/** Niveau de référence du joueur : moyenne de ses 5 meilleurs héros. */
-export function playerLevel(s: SaveData): number {
-  const lv = s.heroes.map((h) => h.level).sort((a, b) => b - a).slice(0, 5);
-  return Math.max(1, Math.round(lv.reduce((a, v) => a + v, 0) / Math.max(1, lv.length)));
-}
 
 /** Puissance de l'équipe active du joueur (avec équipement). */
 export function playerTeamPower(s: SaveData): number {

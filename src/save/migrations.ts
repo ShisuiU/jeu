@@ -20,7 +20,8 @@ export const MIGRATIONS: Record<number, Migration> = {
       if (!d || !n || n <= 0) continue;
       copies[id] = (copies[id] ?? 0) + Math.max(1, Math.ceil(n / DUPLICATE_FRAGMENTS[d.rarity]));
     }
-    return { ...s, heroFragments: {}, heroCopies: copies, bonds: s.bonds ?? { faction: {}, affinity: {} } };
+    const { heroFragments: _old, ...rest } = s; void _old;
+    return { ...rest, heroCopies: copies, bonds: s.bonds ?? { faction: {}, affinity: {} } };
   },
   // v5 : étoiles sur l'équipement ; un ancien objet reçoit autant d'étoiles que son rang de rareté (même puissance qu'avant).
   5: (s) => ({ ...s, equipment: (s.equipment ?? []).map((g: { rarity: string; stars?: number }) => ({ ...g, stars: g.stars ?? ({ common: 1, uncommon: 2, rare: 3, epic: 4, legendary: 5, mythic: 6 } as Record<string, number>)[g.rarity] ?? 1 })) }),
@@ -65,6 +66,9 @@ export function migrateSave(raw: unknown): SaveData {
   const defaults = createNewSave(typeof s.createdAt === 'number' ? s.createdAt : Date.now());
   // Les listes « métier » ne sont pas remplacées par les valeurs par défaut :
   const merged: SaveData = fillDefaults({ ...s, heroes: s.heroes, teams: s.teams ?? defaults.teams }, defaults);
+  // Données devenues inutiles (anciens fragments de héros, ancien réglage de visuel) : retirées des sauvegardes.
+  delete (merged as { heroFragments?: unknown }).heroFragments;
+  delete (merged.settings as { theme?: unknown }).theme;
   merged.equipment = (merged.equipment ?? []).map((g) => (g.heroUid && !s.heroes.some((h: { uid: string }) => h.uid === g.heroUid) ? { ...g, heroUid: null } : g));
   // Nettoyage : héros dont la définition n'existe plus (contenu retiré) et équipes pointant vers des héros absents.
   merged.heroes = merged.heroes.filter((h) => h && HERO_BY_ID[h.heroId]);

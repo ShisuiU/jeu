@@ -281,5 +281,3 @@ export function stopMusic() {
   if (timer) { clearInterval(timer); timer = null; }
   applyVolume();
 }
-
-export function currentMusicMode() { return mode; }

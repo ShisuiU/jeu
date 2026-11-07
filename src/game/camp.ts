@@ -24,7 +24,6 @@ export function campRates(s: SaveData): Required<Pick<Reward, 'gold' | 'xpElixir
 
 const since = (s: SaveData) => s.camp?.since ?? s.createdAt;
 export const campElapsed = (s: SaveData, now: number) => Math.max(0, Math.min(CAMP_MAX_HOURS * H, now - since(s)));
-export const campFull = (s: SaveData, now: number) => campElapsed(s, now) >= CAMP_MAX_HOURS * H;
 export const campMsToFull = (s: SaveData, now: number) => CAMP_MAX_HOURS * H - campElapsed(s, now);
 
 /** Butin accumulé (arrondi à l'unité inférieure). */

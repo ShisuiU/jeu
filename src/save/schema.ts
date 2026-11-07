@@ -68,7 +68,6 @@ export interface Settings {
   music: boolean;
   musicVolume: number;
   /** Visuel : « v2 » (grimoire, par défaut) ou « classic » (l'ancien, inchangé). */
-  theme: 'v2' | 'classic';
   /** Apparaître dans les classements en ligne (compte requis). */
   showInRanks: boolean;
 }
@@ -81,8 +80,6 @@ export interface SaveData {
   revision: number;
   profile: { name: string; level: number; xp: number; avatarHeroId: string };
   resources: Record<ResourceId, number>;
-  /** Ancien système (avant v4) : converti en copies à la migration, gardé vide. */
-  heroFragments: Record<string, number>;
   /** Doublons d'invocation : copies d'un héros possédé, à utiliser (éveil, lien de famille, lien d'affinité). */
   heroCopies: Record<string, number>;
   /** Niveaux des liens (0 à 10) : chaque niveau donne +1 % PV, ATQ et DÉF aux héros concernés. */
@@ -182,7 +179,6 @@ export function createNewSave(now: number = Date.now()): SaveData {
     revision: 0,
     profile: { name: 'Héritier', level: 1, xp: 0, avatarHeroId: STARTER_HEROES[0] },
     resources,
-    heroFragments: {},
     heroCopies: {},
     bonds: { faction: {}, affinity: {} },
     energy: { current: BALANCE.energy.max, lastTick: now },
@@ -199,7 +195,7 @@ export function createNewSave(now: number = Date.now()): SaveData {
     daily: { lastLoginDay: null, cycleIndex: 0, totalLogins: 0 },
     progress: { campaign: {}, dungeons: {}, tower: { floor: 0 } },
     stats: { battlesWon: 0, battlesLost: 0, summons: 0 },
-    settings: { sound: true, volume: 0.6, reducedMotion: false, battleSpeed: 1, autoBattleDefault: false, music: true, musicVolume: 0.35, theme: 'v2', showInRanks: true },
+    settings: { sound: true, volume: 0.6, reducedMotion: false, battleSpeed: 1, autoBattleDefault: false, music: true, musicVolume: 0.35, showInRanks: true },
     flags: {},
     resets: { day: '', week: '' },
     missions: { daily: { counters: {}, claimed: [], bonus: false }, weekly: { counters: {}, claimed: [], bonus: false } },

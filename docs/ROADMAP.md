@@ -418,6 +418,12 @@
 - Vérification du multijoueur sur le vrai serveur (Arène réelle, clans, amis) : tout fonctionne
 - Correctif : les règles Firestore empêchaient d’effacer sa propre ligne de classement (option « ne pas apparaître dans les classements », suppression du compte). Nouvelles règles à publier
 
+## ✅ Version 1.48.0 — Ménage : réglages et données inutiles
+
+- Paramètres allégés : plus de réglage « Apparence » (l’ancien visuel « Classique » est retiré, le visuel actuel est le seul), plus de champ « Nom » en double (il se change sur la carte du joueur du Menu), plus d’informations techniques (position de l’écran, version de sauvegarde, reculs d’horloge). Restent : Son, Jeu (vitesse, combat auto, animations réduites) et Application (installation, version, mise à jour, guide)
+- Sauvegardes plus légères : anciens fragments de héros et ancien réglage de visuel retirés à l’ouverture de la partie
+- Code inutilisé supprimé : décors dessinés remplacés par les illustrations, fonctions jamais appelées, mesure de l’écran de débogage, dossier vide
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

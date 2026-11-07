@@ -83,13 +83,6 @@ export async function wipeMain(): Promise<void> {
   try { localStorage.removeItem(LS_MIRROR); } catch { /* */ }
 }
 
-export async function wipeAll(): Promise<void> {
-  const d = await db();
-  await d.clear('slots');
-  await d.clear('backups');
-  try { localStorage.removeItem(LS_MIRROR); } catch { /* */ }
-}
-
 /** Demande au navigateur de ne pas effacer les données en cas de manque d'espace. */
 export async function requestPersistence(): Promise<boolean> {
   try {

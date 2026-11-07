@@ -3,7 +3,7 @@ import { CHAPTER_HEROES } from './heroesChapters';
 import { EXTRA_HEROES } from './heroesExtra';
 
 // Première collection : 15 héros. Pour en ajouter, il suffit d'ajouter une entrée ici
-// (et, optionnellement, ses illustrations dans public/assets/heroes/<id>/).
+// (ses illustrations sont dans src/assets/heroes/<id>/).
 
 const up = (...u: string[]) => u;
 

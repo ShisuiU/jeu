@@ -78,11 +78,6 @@ export function Stars({ rarity }: { rarity: RarityId }) {
   return <span className="stars">{Array.from({ length: r.order }, (_, i) => <Icon.star key={i} size={10} color={r.color} />)}</span>;
 }
 
-export function RarityTag({ rarity }: { rarity: RarityId }) {
-  const r = RARITIES[rarity];
-  return <span className="chip" style={{ color: r.glow, borderColor: r.color + '88', background: r.color + '22' }}>{r.name}</span>;
-}
-
 export function Toggle({ on, onChange, label }: { on: boolean; onChange: (v: boolean) => void; label: string }) {
   return <button role="switch" aria-checked={on} aria-label={label} className={`toggle ${on ? 'on' : ''}`} onClick={() => onChange(!on)} />;
 }

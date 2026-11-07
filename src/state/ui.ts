@@ -75,8 +75,3 @@ export const useUI = create<UIState>((set, get) => ({
   },
   dismiss: (id) => set({ toasts: get().toasts.filter((t) => t.id !== id) }),
 }));
-
-/** Pour les modes pas encore développés : message honnête, pas de faux écran. */
-export function comingSoon(feature: string, phase: number) {
-  useUI.getState().toast(`${feature} : arrive en phase ${phase} du développement.`);
-}

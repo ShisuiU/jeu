@@ -294,6 +294,17 @@
   - protégés : héros verrouillés, dans une équipe, en expédition ou en avatar ; l’équipement des héros absorbés retourne au sac
 - **Invocation primordiale retirée** : les récompenses qui donnaient des éclats primordiaux donnent désormais 300 cristaux par éclat (une invocation épique) ; les éclats déjà possédés sont convertis automatiquement (sauvegarde v6)
 
+## ✅ Version 1.34.0 — Huit nouveaux héros
+
+- 8 héros de plus à invoquer (38 en tout), surtout des raretés modestes pour varier les tirages :
+  - Commun : **Pia Mousse-Claire** (soigneuse, Sylvaran, Lunaire), **Dorn Lame-Grise** (attaquant, Valcrest, Néant)
+  - Peu commun : **Lio Rouage-d’Or** (soutien : boucliers et vitesse, Prisme, Solaire), **Vesk Croc-de-Braise** (assassin à brûlures, Cendre, Solaire)
+  - Rare : **Fenn Pas-de-Loup** (assassin et son loup, poison et vol de vie, Sylvaran, Tellurique), **Nakht Bouclier-de-Bronze** (défenseur provocateur et étourdissant, Akkar, Tellurique), **Kiro** (assassin qui ignore la défense et ralentit, Prisme, Néant)
+  - Épique : **Odalie Voix-de-Givre** (contrôleuse qui gèle et repousse la jauge, Valcrest, Lunaire ; chef : +15 % VIT pour Valcrest)
+- Chacun a son illustration, son histoire, sa citation et ses répliques
+- Nouveau succès : posséder 32 héros
+- Test : chaque héros a bien son portrait, son illustration en pied et ses répliques
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

@@ -3,12 +3,13 @@ import { progressKey } from '../data/campaign';
 
 // DÉBLOCAGE PROGRESSIF — comme dans les jeux du genre, les modes s'ouvrent au fil de la campagne :
 // le joueur découvre une chose à la fois au lieu d'avoir tout le jeu devant lui dès la première minute.
-export type Feature = 'expeditions' | 'events' | 'dungeons' | 'worldboss' | 'arena' | 'tower';
+export type Feature = 'expeditions' | 'events' | 'market' | 'dungeons' | 'worldboss' | 'arena' | 'tower';
 
 /** Niveau de campagne (mode normal) à terminer pour ouvrir chaque mode. */
 export const UNLOCK_AT: Record<Feature, string> = {
   expeditions: '1-3',
   events: '1-3',
+  market: '1-6',
   dungeons: '1-5',
   worldboss: '1-8',
   arena: '1-10',

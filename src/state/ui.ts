@@ -30,6 +30,7 @@ export type Route =
   | { name: 'events' }
   | { name: 'combats' }
   | { name: 'expeditions' }
+  | { name: 'market' }
   | { name: 'account'; mode?: 'register' };
 
 export type Tab = 'home' | 'collection' | 'summon' | 'combats' | 'menu';

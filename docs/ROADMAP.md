@@ -305,6 +305,15 @@
 - Nouveau succès : posséder 32 héros
 - Test : chaque héros a bien son portrait, son illustration en pied et ses répliques
 
+## ✅ Version 1.35.0 — Marché
+
+- Bilan de l’économie : un joueur gratuit qui joue chaque jour gagne environ 270 cristaux (≈ une invocation épique) et 0,4 éclat d’Aeon par jour ; c’est dans la norme des grands jeux du genre, rien à corriger d’urgence
+- **Marché** (nouveau lieu de l’accueil, ouvert après le niveau 1-6, annoncé une fois) :
+  - 6 offres par jour, une seule fois chacune, surtout payées en or (l’or s’accumulait sans usage) : éclats ternes, élixirs, grimoires, sceaux de rang, potions d’ascension, minerai, équipements rares à légendaires (stats visibles avant d’acheter)
+  - quelques offres en cristaux : éclat d’Aeon (180), essence d’éveil (90), équipement légendaire (250)
+  - les offres avancées n’apparaissent qu’avec la progression dans l’histoire ; nouvelles offres chaque jour, ou « Renouveler » jusqu’à 3 fois par jour (20, 40, 80 cristaux)
+- Les messages en bas de l’écran passent en haut quand une fenêtre est ouverte, pour ne plus jamais cacher ses boutons
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

@@ -14,7 +14,8 @@ import { play } from '../../audio/sfx';
 // ANNONCE D'UN NOUVEAU MODE — quand la campagne ouvre un mode, une fenêtre le présente en une phrase,
 // avec un bouton pour y aller. Une seule fois par mode, jamais pendant le tutoriel ni en combat.
 
-const INFO: Record<Feature, { title: string; text: string; art: string; route: Route }> = {
+const INFO: Record<Feature, { title: string; text: string; art: string; hero?: boolean; route: Route }> = {
+  market: { title: 'Marché', text: 'Chaque jour, 6 offres à acheter avec ton or : éclats, élixirs, potions et équipements.', art: 'lio', hero: true, route: { name: 'market' } },
   expeditions: { title: 'Expéditions', text: 'Envoie des héros en mission : ils reviennent avec du butin, même jeu fermé.', art: 'seam_stalker', route: { name: 'expeditions' } },
   events: { title: 'Événements', text: 'Chaque semaine, un nouvel événement : objectifs, épreuve et récompenses.', art: 'hollow_knight', route: { name: 'events' } },
   dungeons: { title: 'Donjons', text: 'Équipement et matériaux d’amélioration, étage après étage.', art: 'forge_golem', route: { name: 'dungeons' } },
@@ -64,8 +65,8 @@ export function UnlockAnnounce() {
   const close = (go: boolean) => { mutate((s) => { s.flags[flag(f)] = true; }); setF(null); if (go) useUI.getState().push(i.route); };
   return (
     <Modal onClose={() => close(false)}>
-      <div className="unl-art"><EnemyArt enemyId={i.art} /></div>
-      <div className="unl-tag">Nouveau mode</div>
+      {i.hero ? <div className="unl-art hero"><HeroArt heroId={i.art} kind="full" /></div> : <div className="unl-art"><EnemyArt enemyId={i.art} /></div>}
+      <div className="unl-tag">{i.hero ? 'Nouveau lieu' : 'Nouveau mode'}</div>
       <h2>{i.title}</h2>
       <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>{i.text}</p>
       <button className="btn block" onClick={() => close(true)}>Y aller</button>

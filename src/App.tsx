@@ -44,6 +44,7 @@ const WorldBoss = L(() => import('./ui/screens/Modes'), 'WorldBoss');
 const Arena = L(() => import('./ui/screens/Modes'), 'Arena');
 const Combats = L(() => import('./ui/screens/Combats'), 'Combats');
 const Expeditions = L(() => import('./ui/screens/Expeditions'), 'Expeditions');
+const Market = L(() => import('./ui/screens/Market'), 'Market');
 const Missions = L(() => import('./ui/screens/Missions'), 'Missions');
 const Events = L(() => import('./ui/screens/Events'), 'Events');
 
@@ -73,6 +74,7 @@ function renderRoute(r: Route) {
     case 'events': return <Events />;
     case 'combats': return <Combats />;
     case 'expeditions': return <Expeditions />;
+    case 'market': return <Market />;
     case 'account': return <Saves mode={r.mode} />;
     case 'stage': return <Stage key={r.stageId} stageId={r.stageId} />;
     case 'prep': return <Prep key={JSON.stringify(r.spec)} spec={r.spec} />;

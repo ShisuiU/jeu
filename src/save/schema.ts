@@ -112,7 +112,7 @@ export interface SaveData {
     /** Événement de connexion : jours de jeu réclamés (clés de jour). */
     login?: string[];
   }>;
-  shop: { energyRefills: number };
+  shop: { energyRefills: number; market?: { day: string; refreshes: number; offers: { id: string; reward?: Partial<Record<string, number>>; gear?: GearItem; price: { resource: 'gold' | 'crystals'; amount: number }; bought: boolean }[] } };
   /** Expéditions (héros envoyés en mission, retour en temps réel). */
   expeditions: ExpeditionState;
 }

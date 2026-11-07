@@ -1,3 +1,4 @@
+import { dayKey } from '../../core/time';
 import { Coach } from '../components/Coach';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
@@ -39,6 +40,7 @@ export function Home() {
   const places = [
     { label: 'Sanctuaire', icon: Icon.temple, dot: teamHeroes.some((h) => canImprove(save, h)), go: () => push({ name: 'sanctuary' }) },
     { label: 'Forge', icon: Icon.forge, dot: false, go: () => push({ name: 'gear' }) },
+    { label: 'Marché', icon: Icon.bag, dot: isUnlocked(save, 'market') && save.shop.market?.day !== dayKey(now), go: () => (isUnlocked(save, 'market') ? push({ name: 'market' }) : useUI.getState().toast(`Marché : ${unlockText('market').toLowerCase()} de la campagne.`)) },
   ];
 
   return (

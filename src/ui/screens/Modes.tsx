@@ -89,7 +89,7 @@ export function Tower() {
   const done = cur >= TOWER_FLOORS;
   const floors = Array.from({ length: 8 }, (_, i) => next + 3 - i).filter((f) => f >= 1 && f <= TOWER_FLOORS);
   return (
-    <Screen title="Tour des Âges">
+    <Screen title="Tour des Âges" right={<RanksBtn tab="tower" />}>
       <Panel>
         <div className="row between"><span>Étage atteint : <b style={{ color: 'var(--gold-hi)' }}>{cur}</b> / {TOWER_FLOORS}</span><span className="row" style={{ gap: 6 }}><span className="faint">Sans énergie</span><InfoButton title="Tour des Âges">Chaque étage se conquiert une seule fois. Tous les 10 étages, une Sentinelle garde le passage avec de grosses récompenses.</InfoButton></span></div>
         <div className="progress" style={{ marginTop: 8 }}><div style={{ width: `${(cur / TOWER_FLOORS) * 100}%` }} /></div>
@@ -117,7 +117,7 @@ export function WorldBoss() {
   const push = useUI((s) => s.push);
   const keys = WORLD_BOSS.keysPerDay - save.worldBoss.keysUsed;
   return (
-    <Screen title="Boss mondial">
+    <Screen title="Boss mondial" right={<RanksBtn tab="boss" />}>
       <div className="mode-hero boss" style={{ ['--mc' as string]: '#ffcc66' }}>
         <div className="mh-art"><EnemyArt enemyId={WORLD_BOSS.enemy} /></div>
         <div className="mh-info"><div className="faint">BOSS MONDIAL</div><b style={{ fontSize: 18 }}>{WORLD_BOSS.name}</b></div>
@@ -157,7 +157,7 @@ export function Arena() {
     if (save.arena.opponents.length === 0) mutate((s) => { s.arena.opponents = generateOpponents(s, seededRand(Date.now())); });
   }, [save.arena.opponents.length, mutate]);
   return (
-    <Screen title="Arène">
+    <Screen title="Arène" right={<RanksBtn tab="arena" />}>
       <Panel>
         <div className="row between">
           <div><div className="faint">LIGUE</div><b style={{ fontSize: 20, color: tier.color }}>{tier.name}</b></div>
@@ -190,4 +190,9 @@ export function Arena() {
       </Panel>
     </Screen>
   );
+}
+
+/** Raccourci vers le classement du mode. */
+function RanksBtn({ tab }: { tab: 'arena' | 'tower' | 'boss' }) {
+  return <button className="btn secondary small" onClick={() => useUI.getState().push({ name: 'ranks', tab })}>Classement</button>;
 }

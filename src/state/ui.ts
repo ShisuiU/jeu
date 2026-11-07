@@ -31,6 +31,7 @@ export type Route =
   | { name: 'combats' }
   | { name: 'expeditions' }
   | { name: 'market' }
+  | { name: 'ranks'; tab?: 'arena' | 'tower' | 'boss' | 'power' }
   | { name: 'account'; mode?: 'register' };
 
 export type Tab = 'home' | 'collection' | 'summon' | 'combats' | 'menu';

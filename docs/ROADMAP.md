@@ -314,7 +314,13 @@
   - les offres avancées n’apparaissent qu’avec la progression dans l’histoire ; nouvelles offres chaque jour, ou « Renouveler » jusqu’à 3 fois par jour (20, 40, 80 cristaux)
 - Les messages en bas de l’écran passent en haut quand une fenêtre est ouverte, pour ne plus jamais cacher ses boutons
 
+## ✅ Version 1.36.0 — Classements en ligne
+
+- **Classements** (Menu → Classements, et bouton « Classement » dans l’Arène, la Tour et le Boss mondial) : les 50 meilleurs Héritiers en Arène (points), Tour (étage), Boss mondial (meilleurs dégâts) et Puissance d’équipe
+- Il faut un compte pour y figurer ; on peut choisir de ne plus apparaître. Seuls le nom, l’avatar et les scores sont publiés (document Firestore `ranks/{uid}`, mis à jour avec la sauvegarde en ligne)
+- Règles Firestore à ajouter : lecture pour tous, écriture par le propriétaire uniquement (sans cela, l’écran affiche « pas encore ouverts »)
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale
-- Synchronisation cloud facultative (interface `SyncProvider` prête), classements, arène entre joueurs, guildes
+- Arène entre joueurs, guildes

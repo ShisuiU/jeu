@@ -3,7 +3,8 @@ import {
   initializeAuth, indexedDBLocalPersistence, browserLocalPersistence, onAuthStateChanged, createUserWithEmailAndPassword,
   signInWithEmailAndPassword, sendPasswordResetEmail, signOut, deleteUser, reauthenticateWithCredential, EmailAuthProvider, type Auth,
 } from 'firebase/auth';
-import { getFirestore, doc, getDoc, setDoc, deleteDoc, runTransaction, type Firestore } from 'firebase/firestore/lite';
+import { getFirestore, doc, getDoc, setDoc, deleteDoc, runTransaction, collection, query, orderBy, limit, getDocs, type Firestore } from 'firebase/firestore/lite';
+import { rankEntry, type RankEntry, type RankField } from '../game/ranks';
 import { FIREBASE_CONFIG } from './config';
 import { useAccount, setCloudWanted } from './account';
 import { useGame } from '../state/store';
@@ -89,7 +90,35 @@ async function upload(uid: string, s: SaveData) {
   await setDoc(saveRef(uid), payloadOf(s));
   writeMeta(uid, s);
   lastPushAt = Date.now();
+  void publishRank(uid, s);
 }
+
+// CLASSEMENTS — document ranks/{uid} : pseudo, avatar et meilleurs scores, publié avec la sauvegarde.
+// Règles Firestore : lecture pour tous, écriture uniquement par le propriétaire du document.
+const rankRef = (uid: string) => doc(db, 'ranks', uid);
+let lastRank = '';
+export async function publishRank(uid: string, s: SaveData) {
+  try {
+    if (!s.settings.showInRanks) { if (lastRank !== 'off') { await deleteDoc(rankRef(uid)); lastRank = 'off'; } return; }
+    const e = rankEntry(s);
+    const key = JSON.stringify({ ...e, updatedAt: 0 });
+    if (key === lastRank) return;
+    await setDoc(rankRef(uid), e);
+    lastRank = key;
+  } catch { /* les classements ne doivent jamais gêner la sauvegarde */ }
+}
+/** Publie tout de suite (ex. réglage changé). */
+export async function publishRankNow() {
+  ensure(); const u = auth.currentUser; const s = useGame.getState().save;
+  if (u && s) { lastRank = ''; await publishRank(u.uid, s); }
+}
+/** Les 50 meilleurs d'un classement. */
+export async function fetchRanks(field: RankField): Promise<(RankEntry & { uid: string })[]> {
+  ensure();
+  const snap = await getDocs(query(collection(db, 'ranks'), orderBy(field, 'desc'), limit(50)));
+  return snap.docs.map((d) => ({ ...(d.data() as RankEntry), uid: d.id }));
+}
+export const currentUid = () => { ensure(); return auth.currentUser?.uid ?? null; };
 
 async function adopt(uid: string, remote: SaveData) {
   await replaceSave(remote, 'synchronisation');
@@ -158,6 +187,7 @@ export async function pushNow(): Promise<void> {
     });
     if (conflict) { void syncNow('online'); return; }
     writeMeta(u.uid, local); lastPushAt = Date.now();
+    void publishRank(u.uid, local);
     st.set({ status: 'ok', lastSync: Date.now(), error: null });
   } catch (e) {
     st.set({ status: navigator.onLine ? 'error' : 'offline', error: errText(e) });
@@ -190,6 +220,7 @@ export async function deleteAccount(password?: string) {
   ensure(); const u = auth.currentUser; if (!u) return;
   if (password && u.email) await reauthenticateWithCredential(u, EmailAuthProvider.credential(u.email, password));
   await deleteDoc(saveRef(u.uid));
+  await deleteDoc(rankRef(u.uid)).catch(() => {});
   await deleteUser(u);
   try { localStorage.removeItem(metaKey(u.uid)); } catch { /* */ }
   setCloudWanted(false);

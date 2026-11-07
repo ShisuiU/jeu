@@ -67,6 +67,8 @@ export interface Settings {
   musicVolume: number;
   /** Visuel : « v2 » (grimoire, par défaut) ou « classic » (l'ancien, inchangé). */
   theme: 'v2' | 'classic';
+  /** Apparaître dans les classements en ligne (compte requis). */
+  showInRanks: boolean;
 }
 
 export interface SaveData {
@@ -176,7 +178,7 @@ export function createNewSave(now: number = Date.now()): SaveData {
     daily: { lastLoginDay: null, cycleIndex: 0, totalLogins: 0 },
     progress: { campaign: {}, dungeons: {}, tower: { floor: 0 } },
     stats: { battlesWon: 0, battlesLost: 0, summons: 0 },
-    settings: { sound: true, volume: 0.6, reducedMotion: false, battleSpeed: 1, autoBattleDefault: false, music: true, musicVolume: 0.35, theme: 'v2' },
+    settings: { sound: true, volume: 0.6, reducedMotion: false, battleSpeed: 1, autoBattleDefault: false, music: true, musicVolume: 0.35, theme: 'v2', showInRanks: true },
     flags: {},
     resets: { day: '', week: '' },
     missions: { daily: { counters: {}, claimed: [], bonus: false }, weekly: { counters: {}, claimed: [], bonus: false } },

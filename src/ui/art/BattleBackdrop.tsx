@@ -3,7 +3,7 @@ import { enemyArtUrl } from './EnemyArt';
 import { heroArtUrl } from './HeroArt';
 
 // DÉCORS DE COMBAT — un ciel, une ligne d'horizon et un sol par région du Monde Cousu.
-type Region = 'valcrest' | 'sylvaran' | 'prism' | 'akkar' | 'ash' | 'astral' | 'heart' | 'seams';
+type Region = 'valcrest' | 'sylvaran' | 'prism' | 'akkar' | 'ash' | 'astral' | 'heart' | 'seams' | 'abyss';
 const PALETTES: Record<Region, { sky: [string, string, string]; ground: [string, string]; accent: string; rift: string; glow: string }> = {
   valcrest: { sky: ['#140b22', '#3a1636', '#1a0d14'], ground: ['#241a26', '#151018'], accent: '#d4a64a', rift: '#b98cff', glow: '#b98cff' },
   sylvaran: { sky: ['#07140c', '#16301c', '#0c1a10'], ground: ['#14241a', '#0a140c'], accent: '#9bbf5a', rift: '#c9f25a', glow: '#9bbf5a' },
@@ -13,6 +13,7 @@ const PALETTES: Record<Region, { sky: [string, string, string]; ground: [string,
   astral: { sky: ['#06041a', '#1a1040', '#0a0620'], ground: ['#14102a', '#0a0814'], accent: '#c7b6ff', rift: '#efe6ff', glow: '#b07cff' },
   heart: { sky: ['#0a0614', '#2a1440', '#140a20'], ground: ['#1e1428', '#0e0a14'], accent: '#ffcc66', rift: '#ffffff', glow: '#ff9bb5' },
   seams: { sky: ['#0a0912', '#1c1a2e', '#0e0c16'], ground: ['#1a1822', '#0c0b12'], accent: '#e0d6ff', rift: '#c9d4ff', glow: '#9fb7ff' },
+  abyss: { sky: ['#04080c', '#0c1e26', '#060c10'], ground: ['#0a161c', '#04080a'], accent: '#7fd8d0', rift: '#b8f0ea', glow: '#5fc8c0' },
 };
 
 function Skyline({ region, p }: { region: Region; p: typeof PALETTES[Region] }) {
@@ -45,6 +46,7 @@ const REGION_ART: Record<Region, () => string | undefined> = {
   astral: () => enemyArtUrl('dead_constellation'),
   heart: () => enemyArtUrl('voice_of_void'),
   seams: () => enemyArtUrl('weaver_of_ages'),
+  abyss: () => enemyArtUrl('leviathan_oblivion'),
 };
 
 export function PaintedBackdrop({ src, blur = 4, dim = 0.55, position = 'center' }: { src: string; blur?: number; dim?: number; position?: string }) {

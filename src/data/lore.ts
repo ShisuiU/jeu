@@ -46,6 +46,14 @@ export const LORE: LoreEntry[] = [
     ],
   },
   {
+    id: 'oublis',
+    title: 'La Mer des Oublis',
+    text: [
+      "Sous le Monde Cousu s'étend une mer sans fond. Tout ce qui est oublié finit par y sombrer : les noms, les villes effacées, les époques dont plus personne ne se souvient.",
+      "Un seul phare la tient à distance, sur le rivage gris. Tant que sa flamme brûle, la mer ne monte pas. Et au plus profond, quelque chose de très ancien se nourrit de chaque oubli.",
+    ],
+  },
+  {
     id: 'secret',
     title: 'Ce que personne ne sait',
     text: [

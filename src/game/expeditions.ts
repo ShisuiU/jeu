@@ -35,6 +35,7 @@ const PLACES: { place: string; region: string; art: string; focus: Reward }[] = 
   { place: 'Les forges de Cendre', region: 'ash', art: 'ash_lord', focus: { forgeOre: 18, awakenEssence: 0.05 } },
   { place: 'L’Observatoire', region: 'astral', art: 'dead_constellation', focus: { crystals: 8, potionGreater: 0.25 } },
   { place: 'Les Marches recousues', region: 'seams', art: 'weaver_of_ages', focus: { shardDim: 0.35, crystals: 5 } },
+  { place: 'Le Rivage gris', region: 'abyss', art: 'brine_siren', focus: { masteryScroll: 0.12, crystals: 4 } },
 ];
 const DURATIONS = [60, 240, 480, 720];
 const DUR_MULT = [1, 3, 5.5, 7.5];

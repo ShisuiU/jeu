@@ -81,4 +81,19 @@ export const REGION_ENEMIES: Record<string, EnemyDef> = {
      sk('wa_2', 'Grande découture', 'special', 3, 'Attaque tous les ennemis et vide leur jauge de tour (30 %).', [D(1.8, 'allEnemies'), { kind: 'turnMeter', target: 'allEnemies', delta: -0.3 }]),
      sk('wa_3', 'Trame parfaite', 'ultimate', 5, 'Attaque tous les ennemis, 35 % d’étourdir.', [D(2.2, 'allEnemies'), ST('stun', 0.35, 1, 'allEnemies')])],
     { boss: true }),
+
+  // ─── Chapitre 9 : La Mer des Oublis ───
+  drowned_sentinel: e('drowned_sentinel', 'Sentinelle noyée', 'defender', 'lunar', 0.8, 86, 'knight', ['#1a2226', '#7fd8d0'], 'Garde remonté des profondeurs, armure rongée de coquillages, une ancre rouillée en guise de bouclier.',
+    [sk('dsn_1', 'Coup d’ancre', 'basic', 0, 'Frappe (DÉF), réduit la VIT (30 %).', [D(1.8, 'enemy', { scaling: 'def' }), ST('spdDown', 0.3, 2, 'enemy', 0.25)]), sk('dsn_2', 'Mur d’écume', 'special', 4, 'Bouclier sur ses alliés et provocation.', [{ kind: 'shield', target: 'allAllies', pctMaxHp: 0.15, turns: 2 }, ST('taunt', 1, 2, 'self')])]),
+  brine_siren: e('brine_siren', 'Sirène d’amertume', 'controller', 'lunar', 0.66, 110, 'cantor', ['#0e1420', '#bfe0ff'], 'Chanteuse pâle aux cheveux d’algues, dont la voix fait oublier aux marins leur propre nom.',
+    [sk('bsn_1', 'Chant creux', 'basic', 0, 'Frappe, réduit l’ATQ (40 %).', [D(2.8), ST('atkDown', 0.4, 2, 'enemy', 0.25)]), sk('bsn_2', 'Berceuse des noyés', 'special', 4, 'Attaque tous les ennemis, 30 % de les geler.', [D(1.3, 'allEnemies'), ST('freeze', 0.3, 1, 'allEnemies')])]),
+  abyss_angler: e('abyss_angler', 'Pêcheur des abysses', 'assassin', 'void', 0.66, 120, 'hound', ['#0a0814', '#b27bff'], 'Prédateur des grands fonds qui attire ses proies avec un leurre de lumière violette.',
+    [sk('aan_1', 'Mâchoires', 'basic', 0, 'Mord deux fois.', [D(1.8, 'enemy', { hits: 2 })]), sk('aan_2', 'Leurre', 'special', 3, 'Frappe en ignorant 30 % de la DÉF.', [D(3.8, 'enemy', { ignoreDefPct: 0.3 })])]),
+  tide_knight: e('tide_knight', 'Chevalier des marées', 'attacker', 'lunar', 0.74, 108, 'knight', ['#0c1a2a', '#7fe0e0'], 'Chevalier en armure de nacre, cape d’eau gelée et trident de corail.',
+    [sk('tkn_1', 'Trident', 'basic', 0, 'Frappe et réduit la DÉF (35 %).', [D(3.3), ST('defDown', 0.35, 2, 'enemy', 0.3)]), sk('tkn_2', 'Lame de fond', 'special', 3, 'Attaque tous les ennemis et réduit leur jauge (15 %).', [D(1.6, 'allEnemies'), { kind: 'turnMeter', target: 'allEnemies', delta: -0.15 }])]),
+  leviathan_oblivion: e('leviathan_oblivion', 'Le Léviathan des Oublis', 'controller', 'void', 1.1, 104, 'wyrm', ['#060a10', '#7fd8d0'], 'Serpent de mer colossal dont les écailles portent des milliers de noms qui s’effacent.',
+    [sk('lvo_1', 'Morsure de l’oubli', 'basic', 0, 'Frappe et réduit l’ATQ (40 %).', [D(3.4), ST('atkDown', 0.4, 2, 'enemy', 0.3)]),
+     sk('lvo_2', 'Grande marée', 'special', 3, 'Attaque tous les ennemis, 40 % de les geler.', [D(1.8, 'allEnemies'), ST('freeze', 0.4, 1, 'allEnemies')]),
+     sk('lvo_3', 'Engloutir les noms', 'ultimate', 5, 'Attaque tous les ennemis et vide leur jauge (30 %), se soigne de 10 %.', [D(2.2, 'allEnemies'), { kind: 'turnMeter', target: 'allEnemies', delta: -0.3 }, { kind: 'heal', target: 'self', pctMaxHp: 0.1 }])],
+    { boss: true, bias: { hp: 1.1 } }),
 };

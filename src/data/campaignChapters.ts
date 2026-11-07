@@ -1,7 +1,7 @@
 import type { ChapterDef, DialogueLine, StageDef, WaveEnemy } from './campaign';
 import type { Reward } from './resources';
 
-// CHAPITRES 2 À 8 — vagues générées par règles (niveau, composition croissante), histoire écrite à la main.
+// CHAPITRES 2 À 9 — vagues générées par règles (niveau, composition croissante), histoire écrite à la main.
 interface ChapterCfg {
   n: number; name: string; region: string; backdrop: ChapterDef['backdrop']; intro: string;
   levelStart: number; pool: [string, string, string]; elite: string; boss: string; heroReward: string; midHero?: string;
@@ -9,9 +9,9 @@ interface ChapterCfg {
 }
 
 /** Puissance des ennemis par chapitre (calibrée par simulation, voir tests/balance.chapters.test.ts). */
-const POWER: Record<number, number> = { 2: 1.6, 3: 1.85, 4: 2.55, 5: 2.6, 6: 2.8, 7: 2.8, 8: 3.9 };
+const POWER: Record<number, number> = { 2: 1.6, 3: 1.85, 4: 2.55, 5: 2.6, 6: 2.8, 7: 2.8, 8: 3.9, 9: 3.6 };
 /** Ajustement du boss (certains kits sont plus redoutables que d'autres). */
-const BOSS_ADJ: Record<number, number> = { 2: 1, 3: 0.85, 4: 0.62, 5: 1.05, 6: 1, 7: 0.9, 8: 0.66 };
+const BOSS_ADJ: Record<number, number> = { 2: 1, 3: 0.85, 4: 0.62, 5: 1.05, 6: 1, 7: 0.9, 8: 0.66, 9: 0.78 };
 export const CHAPTER_POWER = (n: number, i: number) => Math.round(POWER[n] * (1 + (i - 1) * 0.01) * (i === 10 ? BOSS_ADJ[n] : 1) * 100) / 100;
 
 const L = (speaker: string, text: string): DialogueLine => ({ speaker, text });
@@ -156,6 +156,30 @@ const CFGS: ChapterCfg[] = [
       10: {
         before: [L('weaver_of_ages', 'J’AI RECOUSU VOTRE MONDE APRÈS LA FRACTURE. IL EST PLEIN DE NŒUDS ET DE DÉCHIRURES. JE VAIS LE REFAIRE. PARFAIT.'), L('ondine', 'Maître, un monde parfait n’a personne dedans. Je reste avec eux.'), L('aldric', 'Héritiers ! Pour chaque fil de travers !')],
         after: [L('narrator', 'Le Tisserand lâche ses aiguilles. Les fils se figent, puis se renouent d’eux-mêmes : de travers, mais solides.'), L('ondine', 'Il ne savait pas qu’un monde pouvait se recoudre tout seul.'), L('liran', 'Les Échos reviennent. Ils ont des noms, maintenant.'), L('solenne', 'Le Monde Cousu tient. Il y aura d’autres déchirures, Lien. Et nous serons là.')],
+      },
+    },
+  },
+  {
+    n: 9, name: 'La Mer des Oublis', region: 'Le Rivage gris', backdrop: 'abyss', levelStart: 60,
+    intro: 'Sous le Monde Cousu, une mer sans fond recueille tout ce qui a été oublié. Depuis que les Échos ont retrouvé leur nom, elle monte.',
+    pool: ['drowned_sentinel', 'brine_siren', 'abyss_angler'], elite: 'tide_knight', boss: 'leviathan_oblivion', heroReward: 'corentin', midHero: 'maren',
+    names: ['Le bord du monde', 'Les filets vides', 'Le phare éteint', 'La jetée des noyés', 'La lanterne de Maren', 'Les épaves chantantes', 'Le récif des noms', 'La cloche engloutie', 'La fosse des Oublis', 'Le Léviathan des Oublis'],
+    story: {
+      1: { before: [L('narrator', 'Sous le Monde Cousu, une mer sans fond recueille tout ce qui a été oublié. Depuis que les Échos ont retrouvé leur nom, elle monte.'), L('liran', 'Je les entends encore. Pas les Échos : ceux d’en dessous.'), L('aldric', 'Alors descendons les chercher.')] },
+      3: { before: [L('narrator', 'Au bout du rivage, un phare ne brille plus. Ses marches sont couvertes de sel et de noms effacés.'), L('solenne', 'Un phare, pour guider qui ? Il n’y a plus de bateaux.'), L('ondine', 'Il guidait les souvenirs. Mon maître le craignait.')] },
+      5: {
+        before: [L('narrator', 'Une petite lumière tremble au sommet du phare. Quelqu’un la protège de ses mains.'), L('maren', 'N’approchez pas ! Si la flamme s’éteint, la mer avalera tout le rivage.'), L('elowen', 'Nous ne sommes pas là pour l’éteindre. Laisse-nous t’aider.')],
+        after: [L('maren', 'Vous avez repoussé la marée. Personne n’y était arrivé depuis douze ans.'), L('maren', 'Je m’appelle Maren. La lanterne vous suivra, et moi avec.')],
+      },
+      7: { before: [L('narrator', 'Sur le récif, des milliers de coquillages murmurent des noms. Certains sont ceux des Héritiers.'), L('kaedra', 'Le mien est là. Gravé à côté de celui de ma mère.'), L('maren', 'La mer garde ce que le monde oublie. Elle voudrait nous garder aussi.')] },
+      8: {
+        before: [L('corentin', 'Retournez à la surface. La cloche a sonné pour moi il y a cent ans : je n’ai plus de nom à rendre.'), L('aldric', 'Cette armure… C’est celle de la Première Garde de Valcrest.'), L('corentin', 'Le Léviathan m’a pris mon nom. Il prendra les vôtres.')],
+        after: [L('corentin', 'Vous vous battez comme si vos noms valaient la peine d’être gardés.'), L('solenne', 'Le tien aussi, chevalier. Viens le reprendre.')],
+      },
+      9: { before: [L('narrator', 'La fosse des Oublis : une obscurité si profonde que la lanterne de Maren n’en éclaire que le bord.'), L('liran', 'Des milliers de voix. Elles disent toutes la même chose : souvenez-vous de nous.'), L('maren', 'Alors on se souviendra. Tenez la lumière haute.')] },
+      10: {
+        before: [L('leviathan_oblivion', 'TOUT CE QUI EST OUBLIÉ M’APPARTIENT. VOS NOMS, VOS VILLES, VOS ÂGES. BIENTÔT, LE MONDE ENTIER.'), L('corentin', 'Pas le mien. Plus maintenant.'), L('aldric', 'Héritiers ! Pour tous ceux qu’on a oubliés !')],
+        after: [L('narrator', 'Le Léviathan s’enfonce dans la fosse. La mer redescend, et sur le rivage, des noms reviennent à la surface comme des coquillages.'), L('corentin', 'Sire Corentin de la Première Garde. C’est mon nom. Je le garde, et je vous le prête.'), L('maren', 'La lanterne brûle sans trembler, maintenant.'), L('solenne', 'Chaque oubli est une faille. Nous les refermerons toutes, Lien.')],
       },
     },
   },

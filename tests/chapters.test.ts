@@ -6,11 +6,11 @@ import { createNewSave } from '../src/save/schema';
 import { isStageUnlocked, applyStageResult } from '../src/game/campaign';
 
 describe('chapitres', () => {
-  it('8 chapitres de 10 niveaux, identifiants uniques', () => {
-    expect(CHAPTERS).toHaveLength(8);
+  it('9 chapitres de 10 niveaux, identifiants uniques', () => {
+    expect(CHAPTERS).toHaveLength(9);
     const ids = CHAPTERS.flatMap((c) => c.stages.map((s) => s.id));
-    expect(ids).toHaveLength(80);
-    expect(new Set(ids).size).toBe(80);
+    expect(ids).toHaveLength(90);
+    expect(new Set(ids).size).toBe(90);
     for (const c of CHAPTERS) expect(c.stages[9].boss).toBe(true);
   });
   it('tous les ennemis, orateurs et héros récompensés existent', () => {

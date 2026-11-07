@@ -640,3 +640,23 @@ body:has(.modal-backdrop) .toasts, body:has(.sheet-backdrop) .toasts { bottom: a
 .rk-row.top .rk-pos { font-size: 17px; }
 .rk-name { display: flex; flex-direction: column; min-width: 0; }
 .rk-name b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ─── Maîtrises ─── */
+.sanct-tabs { overflow-x: auto; scrollbar-width: none; }
+.sanct-tabs::-webkit-scrollbar { display: none; }
+.ms-tree { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.ms-col { display: flex; flex-direction: column; gap: 6px; }
+.ms-head { text-align: center; font-size: 12px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--mc); padding-bottom: 2px; border-bottom: 1px solid color-mix(in srgb, var(--mc) 45%, transparent); }
+.ms-node { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 4px 7px; min-height: 84px; border-radius: 4px; text-align: center;
+  border: 1px solid var(--edge); background: rgba(12,10,16,0.82); color: var(--text-dim); }
+.ms-node.t4 { min-height: 92px; border-style: double; border-width: 3px; }
+.ms-node.on { border-color: var(--mc); background: color-mix(in srgb, var(--mc) 18%, rgba(12,10,16,0.9)); color: var(--text); box-shadow: 0 0 10px color-mix(in srgb, var(--mc) 35%, transparent); }
+.ms-node.ready { border-color: color-mix(in srgb, var(--mc) 70%, transparent); color: var(--text); animation: msPulse 2s ease-in-out infinite; }
+.ms-node.locked { opacity: 0.55; }
+@keyframes msPulse { 50% { box-shadow: 0 0 12px color-mix(in srgb, var(--mc) 45%, transparent); } }
+.ms-tier { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 800; background: rgba(0,0,0,0.45); border: 1px solid color-mix(in srgb, var(--mc) 60%, transparent); color: var(--mc); }
+.ms-name { font-size: 12px; font-weight: 800; line-height: 1.1; }
+.ms-text { font-size: 10.5px; line-height: 1.2; color: var(--text-faint); }
+.ms-node.on .ms-text { color: var(--text-dim); }
+.ms-lock { position: absolute; top: 5px; right: 5px; color: var(--text-faint); }
+@media (prefers-reduced-motion: reduce) { .ms-node.ready { animation: none; } }

@@ -28,4 +28,4 @@ export const WEEKLY_MISSIONS: MissionDef[] = [
   { id: 'w_arena', key: 'arenaWin', target: 10, title: 'Gagner 10 combats d’arène', reward: { crystals: 100, shardDim: 3 } },
   { id: 'w_upgrade', key: 'heroUpgrade', target: 5, title: 'Améliorer 5 fois un héros (rang, ascension, compétence)', reward: { awakenEssence: 2 } },
 ];
-export const WEEKLY_BONUS: Reward = { shardAeon: 2, crystals: 200 };
+export const WEEKLY_BONUS: Reward = { shardAeon: 2, crystals: 200, masteryScroll: 6 };

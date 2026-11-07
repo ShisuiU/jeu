@@ -5,6 +5,7 @@ import { heroXpToNext, addHeroXp } from './progression';
 import { maxLevelForRank } from './stats';
 import { busyHeroes } from './expeditions';
 import { track } from './missions';
+import { masteryScrollsSpent } from './masteries';
 
 // ABSORPTION DE HÉROS (comme la taverne des grands jeux du genre) : on sacrifie des héros dont on n'a plus
 // besoin pour donner leur expérience à un autre. Valeur = base selon la rareté + 80 % de l'expérience investie.
@@ -61,6 +62,8 @@ export function feedHeroes(s: SaveData, targetUid: string, uids: string[]): { ok
   if (s.resources.gold < p.gold) return { ok: false, reason: 'Or insuffisant.' };
   s.resources.gold -= p.gold;
   for (const g of s.equipment) if (g.heroUid && uids.includes(g.heroUid)) g.heroUid = null;
+  // Les parchemins investis dans les maîtrises des héros absorbés sont rendus.
+  for (const h of food) if (h) s.resources.masteryScroll += masteryScrollsSpent(h);
   s.heroes = s.heroes.filter((h) => !uids.includes(h.uid));
   const before = t.level;
   addHeroXp(t, p.xp);

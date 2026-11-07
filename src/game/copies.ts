@@ -1,3 +1,4 @@
+import { addMasteryBonus } from './masteries';
 import { HERO_BY_ID } from '../data/heroes';
 import { HEROES } from '../data/heroes';
 import type { HeroInstance, SaveData } from '../save/schema';
@@ -46,7 +47,7 @@ export function giveCopy(s: SaveData, heroId: string, kind: BondKind): boolean {
 
 /** Bonus total d'un héros : équipement + liens. Utilisé partout (fiche, combat, puissance). */
 export function heroBonus(s: SaveData, h: HeroInstance): GearBonus {
-  const b = gearBonus(s.equipment.filter((g) => g.heroUid === h.uid));
+  const b = addMasteryBonus(gearBonus(s.equipment.filter((g) => g.heroUid === h.uid)), h);
   const p = bondPct(s, h.heroId);
   if (!p) return b;
   return { ...b, pct: { ...b.pct, hp: b.pct.hp + p, atk: b.pct.atk + p, def: b.pct.def + p } };

@@ -320,6 +320,16 @@
 - Il faut un compte pour y figurer ; on peut choisir de ne plus apparaître. Seuls le nom, l’avatar et les scores sont publiés (document Firestore `ranks/{uid}`, mis à jour avec la sauvegarde en ligne)
 - Règles Firestore à ajouter : lecture pour tous, écriture par le propriétaire uniquement (sans cela, l’écran affiche « pas encore ouverts »)
 
+## ✅ Version 1.37.0 — Maîtrises
+
+- Nouvel onglet **Maîtrises** au Sanctuaire : 3 branches (Offensive, Défensive, Soutien) de 4 paliers, dès le niveau 20 du héros
+  - Offensive : ATQ +5 %, critique +5 %, dégâts critiques +12 %, ultime « Soif de sang » (vol de vie 8 %)
+  - Défensive : PV +5 %, DÉF +6 %, RÉS +15, ultime « Second souffle » (2 % des PV max par tour)
+  - Soutien : VIT +4, PRÉ +15, PV et DÉF +3 %, ultime « Initiative » (15 % de jauge au départ)
+  - 2 maîtrises ultimes au plus par héros : il faut choisir ; réinitialisation contre 100 cristaux (parchemins rendus)
+- Nouvelle ressource : **Parchemin de maîtrise** (bonus des missions hebdomadaires, Boss mondial Difficile et plus, paliers de la Tour, Marché)
+- Absorber un héros rend les parchemins investis dans ses maîtrises
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

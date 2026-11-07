@@ -18,6 +18,8 @@ import { PlaceAmbient } from '../art/PlaceScene';
 import { HeroUpgrade } from './HeroUpgrade';
 import { Wallet } from '../components/Wallet';
 import { FeedPanel } from '../components/FeedPanel';
+import { MasteryPanel } from '../components/MasteryPanel';
+import { canLearnAny } from '../../game/masteries';
 
 // SANCTUAIRE — un héros à la fois, une ligne par amélioration.
 export function Sanctuary({ uid }: { uid?: string }) {
@@ -47,12 +49,13 @@ export function Sanctuary({ uid }: { uid?: string }) {
   const skillNow = d.skills.reduce((a, s) => a + (h.skillLevels[s.id] ?? 1), 0);
   const skillReady = d.skills.some((s) => skillCheck(save, h, s.id).ok);
 
-  const [tab, setTab] = useState<'level' | 'rank' | 'ascend' | 'skills'>('level');
+  const [tab, setTab] = useState<'level' | 'rank' | 'ascend' | 'skills' | 'mastery'>('level');
   const TABS = [
     { id: 'level', label: 'Niveau', dot: !!toCap && save.resources.xpElixir > 0 },
     { id: 'rank', label: 'Rang', dot: rankUpCheck(save, h).ok },
     { id: 'ascend', label: 'Ascension', dot: ascendCheck(save, h).ok || awakenCheck(save, h).ok },
     { id: 'skills', label: 'Compétences', dot: skillReady },
+    { id: 'mastery', label: 'Maîtrises', dot: canLearnAny(save, h) },
   ] as const;
 
   return (
@@ -106,6 +109,13 @@ export function Sanctuary({ uid }: { uid?: string }) {
           <p className="faint">L’éveil demande un doublon du héros (obtenu en l’invoquant à nouveau).</p>
         </>
       )}
+      {tab === 'mastery' && (
+        <>
+          <Wallet ids={['masteryScroll', 'gold']} cols={2} />
+          <div style={{ marginTop: 8 }}><MasteryPanel h={h} /></div>
+        </>
+      )}
+
       {tab === 'skills' && (
         <>
           <Wallet ids={['skillTome', 'gold']} cols={2} />

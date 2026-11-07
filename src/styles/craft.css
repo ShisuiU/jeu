@@ -623,3 +623,20 @@ body:has(.summon-bar) .toasts { bottom: calc(var(--nav-h) + var(--sab) + 96px); 
 body:has(.modal-backdrop) .toasts, body:has(.sheet-backdrop) .toasts { bottom: auto; top: calc(var(--sat, 0px) + 10px); }
 .mk-cost { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding: 8px 10px; border-radius: 4px; background: rgba(0,0,0,0.3); border: 1px solid var(--edge); }
 .mk-cost .mk-price { font-size: 15px; }
+
+/* ─── Classements ─── */
+.rk-tabs { margin-bottom: 10px; }
+.rk-me { display: flex; align-items: center; gap: 10px; padding: 10px; margin-bottom: 10px; border-radius: 4px; border: 1px solid var(--brass, var(--edge-hi)); background: rgba(40,30,16,0.55); }
+.rk-me .faint { font-size: 12.5px; }
+.rk-av { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; flex-shrink: 0; border: 1px solid var(--edge-hi); }
+.rk-val { text-align: right; display: flex; flex-direction: column; align-items: flex-end; font-variant-numeric: tabular-nums; }
+.rk-val b { font-size: 16px; color: var(--gold-hi); }
+.rk-val small { font-size: 11px; color: var(--text-faint); }
+.rk-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.rk-row { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 4px; background: rgba(12,10,16,0.75); border: 1px solid var(--edge); }
+.rk-row.me { border-color: var(--gold-hi); background: rgba(60,44,18,0.55); }
+.rk-pos { width: 24px; text-align: center; font-weight: 800; color: var(--text-dim); font-variant-numeric: tabular-nums; }
+.rk-row.top1 .rk-pos { color: #ffd45a; } .rk-row.top2 .rk-pos { color: #d6dbe0; } .rk-row.top3 .rk-pos { color: #d69a5a; }
+.rk-row.top .rk-pos { font-size: 17px; }
+.rk-name { display: flex; flex-direction: column; min-width: 0; }
+.rk-name b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

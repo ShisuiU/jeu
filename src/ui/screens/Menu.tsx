@@ -15,6 +15,7 @@ export function Menu() {
     { title: 'Ma partie', items: [
       { label: 'Sac', icon: 'bag', route: { name: 'inventory' } },
       { label: 'Codex', icon: 'book', route: { name: 'codex' } },
+      { label: 'Classements', icon: 'star', route: { name: 'ranks' } },
     ] },
     { title: 'Système', items: [
       { label: 'Sauvegarde et compte', icon: 'save', route: { name: 'saves' }, dot: !useAccount.getState().user && !cloudWanted() && save.stats.battlesWon >= 3 },

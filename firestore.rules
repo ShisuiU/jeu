@@ -7,6 +7,8 @@ rules_version = '2';
 // ranks/{uid}        : les classements (pseudo, avatar, scores), lisibles par tous.
 // defenses/{uid}     : l'équipe de défense d'Arène de chaque joueur, lisible par les joueurs connectés.
 // defenses/{uid}/log : le journal des attaques reçues ; chaque attaquant y écrit son propre combat.
+// guilds/{gid}       : un clan (30 membres au plus), lisible par les joueurs connectés.
+// guilds/{gid}/chat  : la discussion du clan, réservée à ses membres.
 
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -46,6 +48,75 @@ service cloud.firestore {
           && request.resource.data.won is bool
           && request.resource.data.points is int && request.resource.data.points >= 0 && request.resource.data.points <= 20
           && request.resource.data.at == request.time;
+      }
+    }
+
+    // ─── Clans ───
+    function me() { return request.auth.uid; }
+    function validMember(m) {
+      return m.keys().hasOnly(['name', 'avatar', 'power', 'role', 'joinedAt'])
+        && shortText(m.name, 18) && shortText(m.avatar, 40) && m.power is number && m.joinedAt is number
+        && (m.role == 'leader' || m.role == 'member');
+    }
+    function validGuild(g) {
+      return g.keys().hasOnly(['name', 'nameLower', 'tag', 'description', 'emblem', 'open', 'leader', 'members', 'count', 'createdAt', 'boss'])
+        && shortText(g.name, 20) && g.name.size() >= 3 && shortText(g.nameLower, 20) && shortText(g.tag, 4)
+        && shortText(g.description, 120) && shortText(g.emblem, 40) && g.open is bool
+        && g.members is map && g.count == g.members.size() && g.count <= 30
+        && g.leader in g.members && g.members[g.leader].role == 'leader'
+        && g.boss.keys().hasOnly(['week', 'dmg']) && g.boss.week is string && g.boss.dmg is map;
+    }
+    function changed() { return request.resource.data.diff(resource.data).affectedKeys(); }
+    function membersChanged() { return request.resource.data.members.diff(resource.data.members).affectedKeys(); }
+    // Dégâts du boss : même semaine, seule sa propre ligne change ; nouvelle semaine : on repart de sa seule ligne.
+    function bossOk() {
+      let b = request.resource.data.boss;
+      let o = resource.data.boss;
+      return b == o
+        || (b.week == o.week && b.dmg.diff(o.dmg).affectedKeys().hasOnly([me()]) && b.dmg[me()] is number && b.dmg[me()] >= o.dmg.get(me(), 0))
+        || (b.week > o.week && b.dmg.keys().hasOnly([me()]));
+    }
+    match /guilds/{gid} {
+      allow read: if signedIn();
+      allow create: if signedIn() && validGuild(request.resource.data)
+        && request.resource.data.leader == me() && request.resource.data.members.keys().hasOnly([me()])
+        && validMember(request.resource.data.members[me()]);
+      allow update: if signedIn() && validGuild(request.resource.data) && (
+        // Un membre met à jour sa fiche et ses dégâts de boss.
+        (me() in resource.data.members && me() in request.resource.data.members
+          && changed().hasOnly(['members', 'boss']) && membersChanged().hasOnly([me()])
+          && validMember(request.resource.data.members[me()])
+          && request.resource.data.members[me()].role == resource.data.members[me()].role && bossOk())
+        // Rejoindre un clan ouverte qui a de la place.
+        || (!(me() in resource.data.members) && resource.data.open == true
+          && changed().hasOnly(['members', 'count']) && membersChanged().hasOnly([me()])
+          && validMember(request.resource.data.members[me()]) && request.resource.data.members[me()].role == 'member')
+        // La quitter (le chef doit d'abord nommer un autre chef).
+        || (me() in resource.data.members && resource.data.leader != me() && !(me() in request.resource.data.members)
+          && changed().hasOnly(['members', 'count']) && membersChanged().hasOnly([me()]))
+        // Le chef : réglages et exclusions (pas d'ajout, les autres fiches ne changent pas).
+        || (resource.data.leader == me() && request.resource.data.leader == me()
+          && changed().hasOnly(['name', 'nameLower', 'tag', 'description', 'emblem', 'open', 'members', 'count'])
+          && resource.data.members.keys().hasAll(request.resource.data.members.keys())
+          && request.resource.data.members.keys().toSet().intersection(membersChanged()).size() == 0)
+        // Le chef nomme un autre membre chef à sa place.
+        || (resource.data.leader == me() && request.resource.data.leader in resource.data.members && request.resource.data.leader != me()
+          && changed().hasOnly(['leader', 'members']) && membersChanged().hasOnly([me(), request.resource.data.leader])
+          && request.resource.data.members[me()].role == 'member'
+          && request.resource.data.members[request.resource.data.leader].role == 'leader')
+      );
+      // Le dernier membre (le chef) peut dissoudre le clan.
+      allow delete: if signedIn() && resource.data.leader == me() && resource.data.count == 1;
+
+      function guild() { return get(/databases/$(database)/documents/guilds/$(gid)).data; }
+      match /chat/{mid} {
+        allow read: if signedIn() && me() in guild().members;
+        allow create: if signedIn() && me() in guild().members
+          && request.resource.data.keys().hasOnly(['uid', 'name', 'text', 'at'])
+          && request.resource.data.uid == me() && shortText(request.resource.data.name, 18)
+          && request.resource.data.text is string && request.resource.data.text.size() >= 1 && request.resource.data.text.size() <= 200
+          && request.resource.data.at == request.time;
+        allow delete: if signedIn() && (resource.data.uid == me() || guild().leader == me());
       }
     }
   }

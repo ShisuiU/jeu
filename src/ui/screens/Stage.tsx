@@ -131,7 +131,7 @@ export function Prep({ spec }: { spec: BattleSpec }) {
             <button className="btn secondary prep-sweep" disabled={!sweepOk.ok || maxRuns < 1 || !count} onClick={() => setSweepOpen(true)} title={sweepOk.ok ? 'Rejouer automatiquement sans combat' : sweepOk.reason}>Balayer</button>
           )}
           <button className="btn grow fight-btn" disabled={blocked} onClick={go}>
-            Combattre {info.cost.kind === 'energy' && <><Icon.energy size={18} /> {info.cost.amount}</>}{info.cost.kind === 'key' && '· 1 clé'}{info.cost.kind === 'ticket' && '· 1 ticket'}<span className="shine" />
+            Combattre {info.cost.kind === 'energy' && <><Icon.energy size={18} /> {info.cost.amount}</>}{info.cost.kind === 'key' && '· 1 clé'}{info.cost.kind === 'ticket' && '· 1 ticket'}{info.cost.kind === 'try' && '· 1 essai'}<span className="shine" />
           </button>
         </div>
       </div>

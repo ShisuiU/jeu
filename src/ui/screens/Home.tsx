@@ -34,6 +34,7 @@ export function Home() {
   const shortcuts = [
     { label: 'Missions', icon: Icon.scroll, dot: claimableCount(save) > 0, go: () => push({ name: 'missions' }) },
     { label: 'Événements', icon: Icon.calendar, dot: isUnlocked(save, 'events') && eventsDot(save, now), go: () => (isUnlocked(save, 'events') ? push({ name: 'events' }) : useUI.getState().toast(`Événements : ${unlockText('events').toLowerCase()} de la campagne.`)) },
+    { label: 'Clan', icon: Icon.team, dot: false, go: () => (isUnlocked(save, 'guild') ? push({ name: 'guild' }) : useUI.getState().toast(`Clan : ${unlockText('guild').toLowerCase()} de la campagne.`)) },
     { label: 'Courrier', icon: Icon.mail, dot: unreadMail(save.flags) || canClaimDaily(save, now), go: () => push({ name: 'mail' }) },
   ];
 

@@ -30,6 +30,7 @@ export function buildUnit(setup: UnitSetup, side: 'ally' | 'enemy', idx: number)
   return {
     id: `${side}${idx}`, side, slot: setup.slot, kind: 'enemy', refId: e.id, name: e.name, level: setup.level,
     affinity: e.affinity, role: e.role, isBoss: !!e.boss, base, hp: base.hp, tm: 0,
-    cooldowns: initialCooldowns(e.skills, {}), statuses: [], skills: e.skills, skillLevels: {}, alive: true, flags: {},
+    // Boss aux PV gigantesques (boss de clan) : poisons et brûlures plafonnés, sinon un % de ses PV écraserait tout.
+    cooldowns: initialCooldowns(e.skills, {}), statuses: [], skills: e.skills, skillLevels: {}, alive: true, flags: (setup.hpMult ?? 0) >= 500 ? { dotCap: 1 } : {},
   };
 }

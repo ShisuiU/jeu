@@ -69,7 +69,7 @@ function ensure() {
     connectFirestoreEmulator(db, '127.0.0.1', 8080);
   }
 }
-/** Accès partagé pour les autres modules en ligne (guildes, amis). */
+/** Accès partagé pour les autres modules en ligne (clans, amis). */
 export function cloud() { ensure(); return { db, uid: auth.currentUser?.uid ?? null }; }
 
 /** Démarre la surveillance du compte (connexion persistée d'une session à l'autre). */
@@ -278,6 +278,9 @@ export async function deleteAccount(password?: string) {
   if (password && u.email) await reauthenticateWithCredential(u, EmailAuthProvider.credential(u.email, password));
   await deleteDoc(saveRef(u.uid));
   await deleteDoc(rankRef(u.uid)).catch(() => {});
+  // Clan : on la quitte (le chef seul la dissout).
+  const gid = useGame.getState().save?.guild.id;
+  if (gid) await import('./guildCloud').then((a) => a.leaveGuild(gid)).catch(() => {});
   // Défense d'Arène et son journal.
   await getDocs(collection(db, 'defenses', u.uid, 'log')).then((l) => Promise.all(l.docs.map((d) => deleteDoc(d.ref)))).catch(() => {});
   await deleteDoc(defenseRef(u.uid)).catch(() => {});

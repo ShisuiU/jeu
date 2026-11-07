@@ -18,13 +18,19 @@ export type TargetId = 'enemy' | 'allEnemies' | 'self' | 'ally' | 'allAllies' | 
 
 /** Effet élémentaire d'une compétence. Le moteur de combat (phase 2) interprète ces effets. */
 export type SkillEffect =
-  | { kind: 'damage'; target: TargetId; mult: number; scaling?: 'atk' | 'def' | 'hp'; hits?: number; ignoreDefPct?: number; lifestealPct?: number }
+  | { kind: 'damage'; target: TargetId; mult: number; scaling?: 'atk' | 'def' | 'hp'; hits?: number; ignoreDefPct?: number; lifestealPct?: number;
+      /** Combo : dégâts accrus (bonusPct, 0,5 par défaut) si la cible porte l'un de ces effets. */
+      bonusVs?: StatusId[]; bonusPct?: number;
+      /** Achèvement : +50 % de dégâts si la cible est sous ce pourcentage de PV (0,3 = 30 %). */
+      executeBelow?: number }
   | { kind: 'status'; target: TargetId; status: StatusId; chance: number; turns: number; value?: number }
   | { kind: 'heal'; target: TargetId; pctMaxHp: number }
   | { kind: 'shield'; target: TargetId; pctMaxHp: number; turns: number }
   | { kind: 'cleanse'; target: TargetId }
   | { kind: 'turnMeter'; target: TargetId; delta: number }
-  | { kind: 'revive'; target: TargetId; pctMaxHp: number };
+  | { kind: 'revive'; target: TargetId; pctMaxHp: number }
+  /** Retire les bonus (ATQ, DÉF, VIT, bouclier, régénération) des cibles. */
+  | { kind: 'dispel'; target: TargetId };
 
 export interface SkillDef {
   id: string;

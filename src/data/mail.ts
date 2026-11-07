@@ -7,7 +7,7 @@ export interface MailDef { id: string; title: string; text: string; reward: Rewa
 export const MAIL: MailDef[] = [
   {
     id: 'mail_v03', from: 'Le Concordat', title: 'L’appel des Héritiers',
-    text: 'Le portail d’invocation est ouvert et la forge du Mur Blanc rallumée. Voici de quoi renforcer vos premiers héros.',
+    text: 'Le portail d’invocation est ouvert et la forge du Mur Blanc rallumée. Voici de quoi renforcer tes premiers héros.',
     reward: { rankSigil: 3, potionMinor: 10, xpElixir: 20, forgeOre: 60, skillTome: 3, shardAeon: 2 },
   },
 ];

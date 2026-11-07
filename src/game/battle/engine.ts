@@ -4,7 +4,7 @@ import { nextRandom } from '../../core/rng';
 import type { SkillDef, SkillEffect, StatId, StatusId, TargetId } from '../../data/types';
 import { buildUnit } from './setup';
 import { effectiveCooldown, skillMods, type SkillMods } from './skillMods';
-import { DEBUFFS, type Action, type BattleState, type Unit, type UnitSetup } from './types';
+import { BUFFS, DEBUFFS, type Action, type BattleState, type Unit, type UnitSetup } from './types';
 
 // MOTEUR DE COMBAT — tour par tour à jauge de vitesse.
 // Chaque unité remplit sa jauge (TM) proportionnellement à sa vitesse ; la première à 1000 agit.
@@ -194,6 +194,10 @@ function dealDamage(s: BattleState, source: Unit, target: Unit, effect: Extract<
   if (single && target.slot >= 3 && alliesOf(s, target).some((a) => a.slot < 3)) dmg *= 0.85;
   if (source.faction === 'ash' && source.side === 'ally' && s.synergy.ash) dmg *= 1 + 0.3 * (1 - hpPct(source));
   if ((skill.id === 'sulfura_3' || skill.id === 'nerissa_3') && hasStatus(target, 'burn')) dmg *= 1.5;
+  // Combos : une cible déjà affaiblie par un allié encaisse plus ; achèvement des cibles presque à terre.
+  let combo = false;
+  if (effect.bonusVs?.some((st) => hasStatus(target, st))) { dmg *= 1 + (effect.bonusPct ?? 0.5); combo = true; }
+  if (effect.executeBelow && hpPct(target) < effect.executeBelow) { dmg *= 1.5; combo = true; }
   dmg = Math.max(1, Math.round(dmg));
 
   // Bouclier
@@ -207,7 +211,7 @@ function dealDamage(s: BattleState, source: Unit, target: Unit, effect: Extract<
   target.statuses = target.statuses.filter((x) => x.status !== 'shield' || x.value > 0);
   const hpDmg = dmg - absorbed;
   target.hp -= hpDmg;
-  s.events.push({ kind: 'damage', source: source.id, target: target.id, amount: dmg, crit, strong: aff > 1, weak: aff < 1, absorbed });
+  s.events.push({ kind: 'damage', source: source.id, target: target.id, amount: dmg, crit, strong: aff > 1, weak: aff < 1, absorbed, ...(combo ? { combo } : {}) });
   if (target.isBoss && !target.flags.enraged && hpPct(target) < 0.5) target.flags.enraged = 1;
   if (target.hp <= 0) kill(s, target, source);
   const ls = (effect.lifestealPct ?? 0) + mods.lifesteal + (source.flags.leech ?? 0) / 100;
@@ -399,6 +403,13 @@ export function performAction(s: BattleState, action: Action): void {
         break;
       case 'cleanse':
         for (const t of targets) cleanse(s, t);
+        break;
+      case 'dispel':
+        for (const t of targets) {
+          const before = t.statuses.length;
+          t.statuses = t.statuses.filter((x) => !BUFFS.includes(x.status));
+          if (t.statuses.length !== before) s.events.push({ kind: 'dispel', target: t.id });
+        }
         break;
       case 'turnMeter':
         for (const t of targets) applyTm(s, actor, t, e.delta >= 0 ? e.delta + mods.tm : e.delta);

@@ -54,7 +54,7 @@ export function migrateSave(raw: unknown): SaveData {
   if (!raw || typeof raw !== 'object') throw new SaveFormatError('Sauvegarde vide ou illisible.');
   let s: any = raw;
   if (typeof s.version !== 'number' || s.version < 1) throw new SaveFormatError('Version de sauvegarde inconnue.');
-  if (s.version > SAVE_VERSION) throw new SaveFormatError(`Cette sauvegarde provient d'une version plus récente du jeu (v${s.version}). Mettez le jeu à jour.`);
+  if (s.version > SAVE_VERSION) throw new SaveFormatError(`Cette sauvegarde provient d'une version plus récente du jeu (v${s.version}). Mets le jeu à jour.`);
   if (!Array.isArray(s.heroes)) throw new SaveFormatError('Liste de héros manquante.');
   while (s.version < SAVE_VERSION) {
     const m = MIGRATIONS[s.version + 1];

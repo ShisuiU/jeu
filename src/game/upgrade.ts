@@ -64,7 +64,7 @@ export function useElixirs(s: SaveData, heroUid: string, count: number): { used:
 export function rankUpCheck(s: SaveData, h: HeroInstance): Check {
   const cost: Cost = { rankSigil: h.rank, gold: U.rankGold * h.rank };
   if (h.rank >= BALANCE.hero.maxRank) return { ok: false, reason: 'Rang maximum.', cost };
-  if (h.level < maxLevelForRank(h.rank)) return { ok: false, reason: `Atteignez le niveau ${maxLevelForRank(h.rank)}.`, cost };
+  if (h.level < maxLevelForRank(h.rank)) return { ok: false, reason: `Atteins le niveau ${maxLevelForRank(h.rank)}.`, cost };
   const r = affordable(s, h, cost);
   return { ok: !r, reason: r, cost };
 }

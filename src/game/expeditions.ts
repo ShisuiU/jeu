@@ -104,7 +104,7 @@ export function startExpedition(s: SaveData, offerId: string, heroUids: string[]
   const o = ex.offers.find((x) => x.id === offerId);
   if (!o) return { ok: false, reason: 'Expédition introuvable.' };
   if (ex.done.includes(offerId) || ex.runs.some((r) => r.offerId === offerId)) return { ok: false, reason: 'Expédition déjà lancée aujourd’hui.' };
-  if (heroUids.length !== o.size) return { ok: false, reason: `Choisissez ${o.size} héros.` };
+  if (heroUids.length !== o.size) return { ok: false, reason: `Choisis ${o.size} héros.` };
   const busy = busyHeroes(s);
   if (heroUids.some((u) => busy.has(u) || !s.heroes.some((h) => h.uid === u))) return { ok: false, reason: 'Un héros est déjà en expédition.' };
   ex.runs.push({ offerId, heroUids: [...heroUids], startAt: now, endsAt: now + o.minutes * 60_000, offer: o });

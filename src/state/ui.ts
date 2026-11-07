@@ -67,7 +67,8 @@ export const useUI = create<UIState>((set, get) => ({
     const id = ++tid;
     set({ toasts: [...get().toasts.slice(-2), { id, text, kind, action }] });
     if (kind === 'error') play('error');
-    setTimeout(() => get().dismiss(id), action ? 12000 : ms);
+    // Un message avec bouton reste un peu plus, mais jamais longtemps : il ne doit pas cacher l'écran.
+    setTimeout(() => get().dismiss(id), action ? Math.max(ms, 4500) : ms);
   },
   dismiss: (id) => set({ toasts: get().toasts.filter((t) => t.id !== id) }),
 }));

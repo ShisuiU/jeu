@@ -13,8 +13,12 @@ const GROUPS: { title: string; ids: string[] }[] = [
   { title: 'Forge', ids: ['forgeOre'] },
 ];
 
+// Toujours affichées ; le reste n'apparaît qu'une fois possédé (un Sac plein de « 0 » noie l'utile).
+const ALWAYS = ['gold', 'crystals'];
+
 export function Inventory() {
   const save = useGame((s) => s.save)!;
+  const hidden = GROUPS.flatMap((g) => g.ids).filter((id) => !ALWAYS.includes(id) && !(save.resources[id as keyof typeof save.resources] > 0)).length;
   const toast = useUI((s) => s.toast);
   const push = useUI((s) => s.push);
   return (
@@ -40,10 +44,10 @@ export function Inventory() {
           })}
         </Panel>
       )}
-      {GROUPS.map((g) => (
+      {GROUPS.map((g) => ({ g, list: RESOURCE_LIST.filter((r) => g.ids.includes(r.id) && (ALWAYS.includes(r.id) || save.resources[r.id] > 0)) })).filter((x) => x.list.length).map(({ g, list }) => (
         <Panel key={g.title} title={g.title}>
           <div className="res-grid">
-            {RESOURCE_LIST.filter((r) => g.ids.includes(r.id)).map((r) => (
+            {list.map((r) => (
               <button key={r.id} className="res-cell" onClick={() => toast(`${r.name} : ${r.description}`)}>
                 <ResourceIcon icon={r.icon} color={r.color} size={30} />
                 <div className="grow">
@@ -55,6 +59,7 @@ export function Inventory() {
           </div>
         </Panel>
       ))}
+      {hidden > 0 && <div className="hint" style={{ textAlign: 'center' }}>{hidden} objet{hidden > 1 ? 's' : ''} pas encore obtenu{hidden > 1 ? 's' : ''} : ils apparaîtront ici.</div>}
     </Screen>
   );
 }

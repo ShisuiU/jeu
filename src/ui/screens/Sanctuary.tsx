@@ -20,6 +20,7 @@ import { Wallet } from '../components/Wallet';
 import { FeedPanel } from '../components/FeedPanel';
 import { MasteryPanel } from '../components/MasteryPanel';
 import { canLearnAny } from '../../game/masteries';
+import { MASTERY_TIERS } from '../../data/masteries';
 
 // SANCTUAIRE — un héros à la fois, une ligne par amélioration.
 export function Sanctuary({ uid }: { uid?: string }) {
@@ -57,6 +58,9 @@ export function Sanctuary({ uid }: { uid?: string }) {
     { id: 'skills', label: 'Compétences', dot: skillReady },
     { id: 'mastery', label: 'Maîtrises', dot: canLearnAny(save, h) },
   ] as const;
+  // Les Maîtrises n'apparaissent qu'une fois un héros au niveau 20 (avant, la page ne servirait à rien).
+  const masteryOpen = save.heroes.some((x) => x.level >= MASTERY_TIERS[1].minLevel || (x.masteries?.length ?? 0) > 0);
+  const tabs = TABS.filter((t) => t.id !== 'mastery' || masteryOpen);
 
   return (
     <Screen title="Sanctuaire" bg={<PlaceAmbient place="sanctuary" />}>
@@ -71,7 +75,7 @@ export function Sanctuary({ uid }: { uid?: string }) {
 
       {/* Pages du Sanctuaire (comme une taverne) : une amélioration par page. */}
       <div className="seg sanct-tabs" style={{ marginBottom: 10 }}>
-        {TABS.map((t) => <button key={t.id} className={tab === t.id ? 'on' : ''} onClick={(e) => { setTab(t.id); e.currentTarget.scrollIntoView({ block: 'nearest', inline: 'center' }); }}>{t.label}{t.dot && <span className="seg-dot" />}</button>)}
+        {tabs.map((t) => <button key={t.id} className={tab === t.id ? 'on' : ''} onClick={(e) => { setTab(t.id); e.currentTarget.scrollIntoView({ block: 'nearest', inline: 'center' }); }}>{t.label}{t.dot && <span className="seg-dot" />}</button>)}
       </div>
 
       {tab === 'level' && (

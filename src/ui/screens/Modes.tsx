@@ -65,7 +65,7 @@ export function Dungeon({ dungeonId }: { dungeonId: string }) {
           const open = f <= best + 1;
           return (
             <button key={f} className={`stage-node ${open ? '' : 'locked'} ${f <= best ? 'cleared' : ''} ${f === DUNGEON_FLOORS ? 'boss' : ''}`}
-              onClick={() => (open ? push({ name: 'prep', spec: { mode: 'dungeon', dungeonId: d.id, floor: f } }) : toast('Terminez l’étage précédent.'))}>
+              onClick={() => (open ? push({ name: 'prep', spec: { mode: 'dungeon', dungeonId: d.id, floor: f } }) : toast('Termine l’étage précédent.'))}>
               <span className="sn-idx">{f}</span>
               <div className="grow" style={{ textAlign: 'left' }}>
                 <div className="sn-name">Étage {f}</div>
@@ -106,7 +106,7 @@ export function Tower() {
       </div>
       {!done ? (
         <button className="btn block" style={{ marginTop: 14, minHeight: 54 }} onClick={() => push({ name: 'prep', spec: { mode: 'tower', floor: next } })}>Monter à l’étage {next}<span className="shine" /></button>
-      ) : <div className="hint" style={{ marginTop: 14 }}>Vous avez conquis la Tour des Âges !</div>}
+      ) : <div className="hint" style={{ marginTop: 14 }}>Tu as conquis la Tour des Âges !</div>}
     </Screen>
   );
 }
@@ -124,7 +124,7 @@ export function WorldBoss() {
       </div>
       <Panel>
         <div className="row between"><span>Clés : <b style={{ color: 'var(--gold-hi)' }}>{keys}</b> / {WORLD_BOSS.keysPerDay}</span><span className="faint">Renouvellement dans {formatDuration(msUntilReset(now))}</span></div>
-        <div className="row" style={{ marginTop: 6, gap: 6 }}><span className="faint grow">{WORLD_BOSS.turnLimit} actions pour frapper le plus fort possible</span><InfoButton title={WORLD_BOSS.name}>Infligez un maximum de dégâts en {WORLD_BOSS.turnLimit} actions. Paliers de récompense à {DAMAGE_CHESTS.join(', ')} % de ses PV. Le Colosse est immunisé à l’étourdissement et au gel.</InfoButton></div>
+        <div className="row" style={{ marginTop: 6, gap: 6 }}><span className="faint grow">{WORLD_BOSS.turnLimit} actions pour frapper le plus fort possible</span><InfoButton title={WORLD_BOSS.name}>Inflige un maximum de dégâts en {WORLD_BOSS.turnLimit} actions. Paliers de récompense à {DAMAGE_CHESTS.join(', ')} % de ses PV. Le Colosse est immunisé à l’étourdissement et au gel.</InfoButton></div>
       </Panel>
       {BOSS_TIERS.map((t) => {
         const best = save.worldBoss.best[t.id] ?? 0;

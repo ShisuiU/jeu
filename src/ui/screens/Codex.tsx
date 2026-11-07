@@ -48,6 +48,9 @@ export function Codex() {
             <div className="lore"><p>Solaire ▸ Tellurique ▸ Lunaire ▸ Solaire. Une affinité avantagée inflige +30 % de dégâts ; désavantagée, −20 %. Le Néant est neutre.</p></div>
             {Object.values(AFFINITIES).map((a) => <div key={a.id} className="stat-row"><b style={{ color: a.color }}>{a.name}</b><span className="faint">{a.description}</span></div>)}
           </Panel>
+          <Panel title="Combos">
+            <div className="lore"><p>Certaines compétences frappent plus fort une cible déjà affaiblie (empoisonnée, gelée, DÉF réduite, provoquée…) : « Combo ! » s’affiche. L’<b>achèvement</b> ajoute +50 % de dégâts contre une cible sous 30 % de ses PV. D’autres compétences <b>retirent les bonus</b> d’un ennemi. Associe les héros qui posent un effet à ceux qui en profitent.</p></div>
+          </Panel>
           <Panel title="Rôles">{ROLE_LIST.map((r) => <div key={r.id} className="stat-row"><b>{r.name}</b><span className="faint" style={{ maxWidth: '65%', textAlign: 'right' }}>{r.description}</span></div>)}</Panel>
           <Panel title="Raretés">{RARITY_LIST.map((r) => <div key={r.id} className="stat-row"><b style={{ color: r.color }}>{r.name}</b><span className="faint">Rang de départ {r.startRank} · stats ×{r.statMult}</span></div>)}</Panel>
         </>

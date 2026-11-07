@@ -161,7 +161,7 @@ export function resolveMode(s: SaveData, spec: BattleSpec): ModeInfo {
 export function canStart(s: SaveData, spec: BattleSpec): { ok: boolean; reason?: string } {
   switch (spec.mode) {
     case 'campaign': return isStageUnlocked(s, spec.difficulty, STAGE_BY_ID[spec.stageId]) ? { ok: true } : { ok: false, reason: 'Niveau verrouillé.' };
-    case 'dungeon': return spec.floor <= Math.min(DUNGEON_FLOORS, (s.progress.dungeons[spec.dungeonId]?.bestFloor ?? 0) + 1) ? { ok: true } : { ok: false, reason: 'Terminez l’étage précédent.' };
+    case 'dungeon': return spec.floor <= Math.min(DUNGEON_FLOORS, (s.progress.dungeons[spec.dungeonId]?.bestFloor ?? 0) + 1) ? { ok: true } : { ok: false, reason: 'Termine l’étage précédent.' };
     case 'tower': return spec.floor === s.progress.tower.floor + 1 && spec.floor <= TOWER_FLOORS ? { ok: true } : { ok: false, reason: 'Étage indisponible.' };
     case 'worldboss': return s.worldBoss.keysUsed < WORLD_BOSS.keysPerDay ? { ok: true } : { ok: false, reason: 'Plus de clés aujourd’hui.' };
     case 'arena': return s.arena.ticketsUsed >= ARENA.ticketsPerDay ? { ok: false, reason: 'Plus de tickets aujourd’hui.' } : s.arena.opponents.some((o) => o.id === spec.opponentId) ? { ok: true } : { ok: false, reason: 'Adversaire introuvable.' };
@@ -169,7 +169,7 @@ export function canStart(s: SaveData, spec: BattleSpec): { ok: boolean; reason?:
       const e = activeEvents(s.time.highWater).find((x) => x.id === spec.eventId);
       if (e?.cycle && spec.trial != null) {
         const done = trialsDone(s, e);
-        return spec.trial === done && done < e.cycle.trials.length ? { ok: true } : { ok: false, reason: spec.trial < done ? 'Épreuve déjà réussie.' : 'Réussissez l’épreuve précédente.' };
+        return spec.trial === done && done < e.cycle.trials.length ? { ok: true } : { ok: false, reason: spec.trial < done ? 'Épreuve déjà réussie.' : 'Réussis l’épreuve précédente.' };
       }
       if (!e?.challenge) return { ok: false, reason: 'Événement terminé.' };
       return s.events[e.id]?.challengeDone ? { ok: false, reason: 'Défi déjà réussi.' } : { ok: true };

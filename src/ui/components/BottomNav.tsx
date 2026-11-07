@@ -4,8 +4,6 @@ import { canClaimDaily } from '../../game/daily';
 import { Icon } from '../art/Icons';
 import { unreadMail } from '../screens/Mail';
 import { claimableCount, eventsDot } from '../../game/missions';
-import { WORLD_BOSS } from '../../data/worldBoss';
-import { ARENA } from '../../data/arena';
 import { isUnlocked } from '../../game/unlocks';
 import { newCopies } from '../../game/copies';
 import { cloudWanted, useAccount } from '../../cloud/account';
@@ -23,12 +21,15 @@ export function BottomNav() {
   // L'onglet reste allumé quand on navigue dans ses sous-écrans.
   const tab = useUI((s) => s.tab);
   // Un sélecteur par pastille : chacun renvoie un booléen stable (sinon React redessine en boucle).
-  const summonDot = useGame((s) => !!s.save && (s.save.resources.shardAeon > 0 || !s.save.flags.gift_event_ash));
-  // Chaque pastille indique l'onglet où se trouve l'action (pas de pastille vers un mode encore fermé).
-  const combatsDot = useGame((s) => !!s.save && ((isUnlocked(s.save, 'worldboss') && s.save.worldBoss.keysUsed < WORLD_BOSS.keysPerDay) || (isUnlocked(s.save, 'arena') && s.save.arena.ticketsUsed < ARENA.ticketsPerDay) || (s.save.expeditions?.runs ?? []).some((r) => s.now >= r.endsAt)));
+  // Une pastille = quelque chose à RÉCUPÉRER (pas « une activité est possible », sinon tout clignote tout le temps).
+  // Invoquer : cadeau d'événement, ou de quoi faire un appel ×10 d'éclats d'Aeon.
+  const summonDot = useGame((s) => !!s.save && (s.save.resources.shardAeon >= 10 || (isUnlocked(s.save, 'events') && !s.save.flags.gift_event_ash)));
+  // Combats : une expédition revenue (butin qui attend). Les clés et tickets du jour restent signalés sur les cartes.
+  const combatsDot = useGame((s) => !!s.save && (s.save.expeditions?.runs ?? []).some((r) => s.now >= r.endsAt));
   const homeDot = useGame((s) => !!s.save && (canClaimDaily(s.save, s.now) || unreadMail(s.save.flags) || claimableCount(s.save) > 0 || (isUnlocked(s.save, 'events') && eventsDot(s.save, s.now))));
   const heroesDot = useGame((s) => !!s.save && newCopies(s.save));
-  const menuDot = useGame((s) => !!s.save && !useAccount.getState().user && !cloudWanted() && s.save.stats.battlesWon >= 3);
+  // Menu : invitation à protéger sa partie, jusqu'à la première visite de l'écran Sauvegarde.
+  const menuDot = useGame((s) => !!s.save && !s.save.flags.saves_seen && !useAccount.getState().user && !cloudWanted() && s.save.stats.battlesWon >= 3);
   const dots: Partial<Record<Tab, boolean>> = { home: homeDot, collection: heroesDot, summon: summonDot, combats: combatsDot, menu: menuDot };
   return (
     <nav className="bottom-nav">

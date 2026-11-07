@@ -61,7 +61,7 @@ export async function flushSave(): Promise<void> {
   } catch (e) {
     const first = !saveStatus.error;
     saveStatus.error = e instanceof Error ? e.message : String(e);
-    if (first) useUI.getState().toast('Échec de la sauvegarde automatique. Exportez votre partie (Menu → Sauvegarde).', 'error');
+    if (first) useUI.getState().toast('Échec de la sauvegarde automatique. Exporte ta partie (Menu → Sauvegarde).', 'error');
   }
 }
 

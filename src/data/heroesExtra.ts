@@ -9,8 +9,8 @@ export const EXTRA_HEROES: HeroDef[] = [
     id: 'garrek', name: 'Garrek Main-de-Suie', title: 'Forgeron des Chaînes',
     faction: 'ash', rarity: 'common', role: 'defender', affinity: 'telluric', baseSpd: 91, bias: { def: 1.06 },
     skills: [
-      { id: 'garrek_1', name: 'Marteau de chaîne', slot: 'basic', cooldown: 0, description: 'Frappe un ennemi (dégâts basés sur la DÉF). 20 % de chances de réduire son ATQ de 25 % pendant 2 tours.',
-        effects: [{ kind: 'damage', target: 'enemy', mult: 1.6, scaling: 'def' }, { kind: 'status', target: 'enemy', status: 'atkDown', chance: 0.2, turns: 2, value: 0.25 }], upgrades: up('+10 % dégâts') },
+      { id: 'garrek_1', name: 'Marteau de chaîne', slot: 'basic', cooldown: 0, description: 'Frappe un ennemi (dégâts basés sur la DÉF). 20 % de chances de réduire son ATQ de 25 % pendant 2 tours. Combo : +50 % de dégâts s’il est provoqué.',
+        effects: [{ kind: 'damage', target: 'enemy', mult: 1.6, scaling: 'def', bonusVs: ['taunt'] }, { kind: 'status', target: 'enemy', status: 'atkDown', chance: 0.2, turns: 2, value: 0.25 }], upgrades: up('+10 % dégâts') },
       { id: 'garrek_2', name: 'Enclume vivante', slot: 'special', cooldown: 4, description: 'Provoque tous les ennemis pendant 1 tour et augmente sa DÉF de 40 % pendant 2 tours.',
         effects: [{ kind: 'status', target: 'allEnemies', status: 'taunt', chance: 1, turns: 1 }, { kind: 'status', target: 'self', status: 'defUp', chance: 1, turns: 2, value: 0.4 }], upgrades: up('Recharge -1') },
     ],
@@ -25,8 +25,8 @@ export const EXTRA_HEROES: HeroDef[] = [
     skills: [
       { id: 'nyra_1', name: 'Tir calibré', slot: 'basic', cooldown: 0, description: 'Frappe un ennemi.',
         effects: [{ kind: 'damage', target: 'enemy', mult: 3.1 }], upgrades: up('+10 % dégâts') },
-      { id: 'nyra_2', name: 'Salve de drones', slot: 'special', cooldown: 4, description: 'Attaque tous les ennemis.',
-        effects: [{ kind: 'damage', target: 'allEnemies', mult: 1.7 }], upgrades: up('+10 % dégâts', 'Recharge -1') },
+      { id: 'nyra_2', name: 'Salve de drones', slot: 'special', cooldown: 4, description: 'Attaque tous les ennemis. Combo : +50 % de dégâts sur ceux dont la DÉF est réduite.',
+        effects: [{ kind: 'damage', target: 'allEnemies', mult: 1.7, bonusVs: ['defDown'] }], upgrades: up('+10 % dégâts', 'Recharge -1') },
     ],
     lore: "Nyra réglait les capteurs des tours du Prisme. Quand les tours se sont mises à tirer sur les réfugiés, elle a repris la main sur un seul canon et l'a retourné. Elle porte depuis son dernier fusil, réparé cent fois.",
     quote: '« Un seul tir. Bien placé. C’est tout ce qu’il faut. »',
@@ -124,8 +124,8 @@ export const EXTRA_HEROES: HeroDef[] = [
     skills: [
       { id: 'pia_1', name: 'Fleur de lune', slot: 'basic', cooldown: 0, description: 'Frappe un ennemi et rend 5 % de ses PV max à l’allié le plus blessé.',
         effects: [{ kind: 'damage', target: 'enemy', mult: 2.0 }, { kind: 'heal', target: 'lowestAlly', pctMaxHp: 0.05 }], upgrades: up('+5 % soins') },
-      { id: 'pia_2', name: 'Cataplasme de mousse', slot: 'special', cooldown: 3, description: 'Rend 14 % de leurs PV max à tous les alliés.',
-        effects: [{ kind: 'heal', target: 'allAllies', pctMaxHp: 0.14 }], upgrades: up('+5 % soins', 'Recharge -1') },
+      { id: 'pia_2', name: 'Cataplasme de mousse', slot: 'special', cooldown: 3, description: 'Rend 14 % de leurs PV max à tous les alliés et retire leurs malus.',
+        effects: [{ kind: 'heal', target: 'allAllies', pctMaxHp: 0.14 }, { kind: 'cleanse', target: 'allAllies' }], upgrades: up('+5 % soins', 'Recharge -1') },
     ],
     lore: "Pia n'a jamais quitté sa forêt avant la Fracture. Elle connaît chaque herbe des Pierres Levées, mais rien du monde. Elle apprend vite, et elle soigne tout le monde, même ceux qui ne disent pas merci.",
     quote: '« Ça va piquer un peu. Après, ça ira mieux. Promis. »',
@@ -136,8 +136,8 @@ export const EXTRA_HEROES: HeroDef[] = [
     id: 'dorn', name: 'Dorn Lame-Grise', title: 'Mercenaire sans bannière',
     faction: 'valcrest', rarity: 'common', role: 'attacker', affinity: 'void', baseSpd: 98, bias: { atk: 1.05 },
     skills: [
-      { id: 'dorn_1', name: 'Taille ébréchée', slot: 'basic', cooldown: 0, description: 'Frappe un ennemi.',
-        effects: [{ kind: 'damage', target: 'enemy', mult: 3.2 }], upgrades: up('+10 % dégâts') },
+      { id: 'dorn_1', name: 'Taille ébréchée', slot: 'basic', cooldown: 0, description: 'Frappe un ennemi. Achèvement : +50 % de dégâts s’il a moins de 30 % de ses PV.',
+        effects: [{ kind: 'damage', target: 'enemy', mult: 3.2, executeBelow: 0.3 }], upgrades: up('+10 % dégâts') },
       { id: 'dorn_2', name: 'Moulinet du vétéran', slot: 'special', cooldown: 4, description: 'Attaque tous les ennemis. 30 % de chances de réduire leur DÉF de 25 % pendant 2 tours.',
         effects: [{ kind: 'damage', target: 'allEnemies', mult: 1.6 }, { kind: 'status', target: 'allEnemies', status: 'defDown', chance: 0.3, turns: 2, value: 0.25 }], upgrades: up('+10 % dégâts', 'Recharge -1') },
     ],

@@ -47,7 +47,7 @@ export function Prep({ spec }: { spec: BattleSpec }) {
   const boss = info.waves.flat().some((w) => w.kind === 'enemy' && ENEMIES[w.refId]?.boss);
 
   const go = () => {
-    if (!count) { toast('Votre équipe est vide : ajoutez des héros dans l’écran Équipe.', 'error'); return; }
+    if (!count) { toast('Ton équipe est vide : ajoute des héros dans l’écran Équipe.', 'error'); return; }
     let r: { ok: boolean; reason?: string } = { ok: false };
     mutate((d) => { r = payMode(d, spec, now); });
     if (!r.ok) { toast(r.reason ?? 'Impossible.', 'error'); return; }

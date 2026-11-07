@@ -74,7 +74,7 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
   }, []);
   useEffect(() => {
     if (phase !== 'fight') return;
-    try { if (!localStorage.getItem('aeonfall.tip.unitInfo')) { localStorage.setItem('aeonfall.tip.unitInfo', '1'); setTimeout(() => useUI.getState().toast('Astuce : maintenez le doigt sur une carte pour voir ses effets.'), 1500); } } catch { /* ignoré */ }
+    try { if (!localStorage.getItem('aeonfall.tip.unitInfo')) { localStorage.setItem('aeonfall.tip.unitInfo', '1'); setTimeout(() => useUI.getState().toast('Astuce : garde le doigt appuyé sur une carte pour voir ses effets.'), 1500); } } catch { /* ignoré */ }
   }, [phase]); // eslint-disable-line react-hooks/exhaustive-deps
   const autoRef = useRef(auto); autoRef.current = auto;
   const speedRef = useRef(speed); speedRef.current = speed;
@@ -131,7 +131,7 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
           if (e.crit) { setFlash(true); setTimeout(() => setFlash(false), 140); }
           if (!soundOnce.has('hit:' + e.source)) { soundOnce.add('hit:' + e.source); playImpact(f, { crit: ev.some((x) => x.kind === 'damage' && x.source === e.source && x.crit), many: ev.filter((x) => x.kind === 'damage' && x.source === e.source).length > 1 }); }
           if (f.weapon === 'blunt' || e.crit) heavy.add(e.target);
-          hit.add(e.target); addPopup(e.target, `${e.crit ? 'CRIT ' : ''}-${e.amount}${e.strong ? ' ▲' : e.weak ? ' ▼' : ''}`, `dmg ${e.crit ? 'crit' : ''} ${e.strong ? 'strong' : ''} ${e.weak ? 'weak' : ''}`); pause = true; break;
+          hit.add(e.target); if (e.combo) addPopup(e.target, 'Combo !', 'buff'); addPopup(e.target, `${e.crit ? 'CRIT ' : ''}-${e.amount}${e.strong ? ' ▲' : e.weak ? ' ▼' : ''}`, `dmg ${e.crit ? 'crit' : ''} ${e.strong ? 'strong' : ''} ${e.weak ? 'weak' : ''}`); pause = true; break;
         }
         case 'dot': hit.add(e.target); addPopup(e.target, `-${e.amount}`, e.status === 'poison' ? 'poison' : 'burn'); addVfx(e.target, `impact w-none e-${e.status === 'poison' ? 'poison' : 'fire'} small`, e.status === 'poison' ? '#8be04e' : '#ff8a3a'); if (!soundOnce.has('dot' + e.status)) { soundOnce.add('dot' + e.status); playDot(e.status); } pause = true; break;
         case 'heal': if (e.amount > 0) { addPopup(e.target, `+${e.amount}`, 'heal'); addVfx(e.target, 'healfx', '#7bea8f'); if (!soundOnce.has('heal')) { soundOnce.add('heal'); playHeal(); } } pause = true; break;
@@ -145,6 +145,7 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
         case 'undying': addPopup(e.target, 'Ce qui ne meurt pas', 'buff'); break;
         case 'extraTurn': addPopup(e.target, 'Tour bonus !', 'buff'); break;
         case 'cleanse': break;
+        case 'dispel': addPopup(e.target, 'Bonus retirés', 'debuff'); addVfx(e.target, 'cursefx', '#c7b6ff'); break;
         case 'wave': setBanner({ text: `Vague ${e.wave} / ${s.totalWaves}`, side: 'wave' }); play('open'); force(); await wait(1100 / speedRef.current); setBanner(null); break;
       }
     }
@@ -337,7 +338,7 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
         </div>
         <div className={`skill-info ${awaiting && active && selSkill ? '' : 'idle'}`} style={{ height: infoH }}>
           {awaiting && active && selSkill ? <SkillInfoBody unit={active} sk={selSkill} onLaunch={targetKind(selSkill) === 'none' ? () => act() : undefined} />
-            : <span>{finished.current ? '' : auto ? 'Combat automatique : touchez AUTO pour reprendre la main.' : awaiting ? 'Choisissez une compétence.' : 'Tour adverse…'}</span>}
+            : <span>{finished.current ? '' : auto ? 'Combat automatique : touche AUTO pour reprendre la main.' : awaiting ? 'Choisis une compétence.' : 'Tour adverse…'}</span>}
         </div>
         <div className="ctrl-row">
           <div className="ctrl-col">
@@ -389,7 +390,7 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
                 {result.newHeroes.map((id) => (
                   <div key={id} className="new-hero">
                     <div style={{ width: 110 }}><HeroCard heroId={id} level={1} /></div>
-                    <div><div className="faint">NOUVEL HÉRITIER</div><b style={{ fontSize: 17 }}>{HERO_BY_ID[id].name}</b><div className="muted">rejoint votre collection ! Ajoutez-le à une équipe dans l’écran Équipe.</div></div>
+                    <div><div className="faint">NOUVEL HÉRITIER</div><b style={{ fontSize: 17 }}>{HERO_BY_ID[id].name}</b><div className="muted">rejoint ta collection ! Ajoute-le à une équipe dans l’écran Équipe.</div></div>
                   </div>
                 ))}
                 <RewardView reward={{ ...result.reward, ...Object.fromEntries(Object.entries(result.loot).map(([k, v]) => [k, (result.reward[k as keyof typeof result.reward] ?? 0) + (v ?? 0)])) }} />
@@ -417,9 +418,9 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
               </>
             ) : (
               <div className="hint">
-                {spec.mode === 'arena' ? 'L’équipe adverse l’emporte cette fois. Choisissez un adversaire plus accessible ou renforcez vos héros (niveau, équipement, rang).'
-                  : spec.mode === 'worldboss' ? 'Aucun palier de dégâts atteint. Renforcez vos héros pour infliger plus de dégâts avant la fin du temps imparti.'
-                  : 'Les ennemis l’emportent cette fois. Pistes : rejouez des combats plus simples pour gagner de l’expérience, utilisez les élixirs et l’équipement, placez un défenseur en première ligne et un soigneur en seconde ligne.'}
+                {spec.mode === 'arena' ? 'L’équipe adverse l’emporte cette fois. Choisis un adversaire plus accessible ou renforce tes héros (niveau, équipement, rang).'
+                  : spec.mode === 'worldboss' ? 'Aucun palier de dégâts atteint. Renforce tes héros pour infliger plus de dégâts avant la fin du temps imparti.'
+                  : 'Les ennemis l’emportent cette fois. Pistes : rejoue des combats plus simples pour gagner de l’expérience, utilise les élixirs et l’équipement, place un défenseur en première ligne et un soigneur en seconde ligne.'}
               </div>
             )}
             {result.accountLevelsGained > 0 && <div className="chip active" style={{ margin: '10px auto 0', display: 'flex', width: 'fit-content' }}>Niveau de compte {useGame.getState().save!.profile.level} ! +2 000 or, +30 énergie</div>}
@@ -458,7 +459,7 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
                   ))}
                 </div>
               )}
-              <p className="faint" style={{ margin: '10px 0 0', textAlign: 'center' }}>Touchez pour fermer</p>
+              <p className="faint" style={{ margin: '10px 0 0', textAlign: 'center' }}>Touche pour fermer</p>
             </div>
           </div>
         );

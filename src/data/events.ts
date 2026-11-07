@@ -46,7 +46,7 @@ export interface GameEvent {
 export const BUNDLED_EVENTS: GameEvent[] = [
   {
     id: 'ev_ash_2026', name: 'La Faille de Cendre', short: 'Faille de Cendre', color: '#ff3d6e',
-    description: 'Une faille s’ouvre sur la Fosse : Mère Sulfura répond plus souvent à l’appel. Remplissez les objectifs pour gagner des éclats de faille.',
+    description: 'Une faille s’ouvre sur la Fosse : Mère Sulfura répond plus souvent à l’appel. Remplis les objectifs pour gagner des éclats de faille.',
     start: '2026-11-01T00:00:00Z', end: '2027-01-31T23:59:59Z',
     banners: ['event_ash'],
     dungeonBonus: 1.5,

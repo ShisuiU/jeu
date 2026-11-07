@@ -38,16 +38,16 @@ const writeMeta = (uid: string, s: SaveData) => { try { localStorage.setItem(met
 
 const ERR: Record<string, string> = {
   'auth/invalid-email': 'Adresse e-mail invalide.',
-  'auth/missing-email': 'Indiquez votre adresse e-mail.',
-  'auth/email-already-in-use': 'Un compte existe déjà avec cette adresse. Connectez-vous.',
+  'auth/missing-email': 'Indique ton adresse e-mail.',
+  'auth/email-already-in-use': 'Un compte existe déjà avec cette adresse. Connecte-toi.',
   'auth/weak-password': 'Mot de passe trop court (6 caractères minimum).',
-  'auth/missing-password': 'Indiquez un mot de passe.',
+  'auth/missing-password': 'Indique un mot de passe.',
   'auth/invalid-credential': 'E-mail ou mot de passe incorrect.',
   'auth/wrong-password': 'E-mail ou mot de passe incorrect.',
   'auth/user-not-found': 'Aucun compte avec cette adresse.',
-  'auth/too-many-requests': 'Trop d’essais. Réessayez dans quelques minutes.',
+  'auth/too-many-requests': 'Trop d’essais. Réessaie dans quelques minutes.',
   'auth/network-request-failed': 'Pas de connexion Internet.',
-  'auth/requires-recent-login': 'Par sécurité, confirmez votre mot de passe.',
+  'auth/requires-recent-login': 'Par sécurité, confirme ton mot de passe.',
   'permission-denied': 'Accès refusé par le serveur.',
   'unavailable': 'Serveur injoignable (hors ligne ?).',
 };

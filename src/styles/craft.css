@@ -717,3 +717,6 @@ body:has(.modal-backdrop) .toasts, body:has(.sheet-backdrop) .toasts { bottom: a
 .star-rules { flex-wrap: nowrap; overflow: hidden; }
 .star-rules .sr { white-space: nowrap; }
 .mini-slot .hero-card .lvl { display: none; }
+
+/* Combat : les messages passent en haut, sous le titre, pour ne jamais cacher les compétences. */
+body:has(.battle-controls) .toasts { bottom: auto; top: calc(var(--sat, 0px) + 64px); }

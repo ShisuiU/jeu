@@ -47,7 +47,7 @@ export function DailyBody() {
       <Panel title={can ? `Récompense du jour ${DAILY_REWARDS[idx].day}` : 'Prochaine récompense'}>
         <RewardView reward={DAILY_REWARDS[idx].reward} />
         <button className="btn block" style={{ marginTop: 14 }} disabled={!can} onClick={onClaim}>
-          {can ? <>Réclamer<span className="shine" /></> : `Revenez dans ${formatDuration(msUntilReset(now))}`}
+          {can ? <>Réclamer<span className="shine" /></> : `Reviens dans ${formatDuration(msUntilReset(now))}`}
         </button>
       </Panel>
       {got && (

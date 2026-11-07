@@ -99,7 +99,7 @@ export function Expeditions() {
   };
 
   return (
-    <Screen title="Expéditions" right={<InfoButton title="Expéditions">Envoyez des héros à travers les failles. Ils reviennent après le temps indiqué, même jeu fermé, avec du butin. Un héros de l’affinité, du rôle ou de la famille demandés donne +30 % ; une équipe plus puissante rapporte jusqu’à ×1,3. Les héros en expédition peuvent toujours combattre. 4 nouvelles expéditions chaque jour.</InfoButton>}>
+    <Screen title="Expéditions" right={<InfoButton title="Expéditions">Envoie des héros à travers les failles. Ils reviennent après le temps indiqué, même jeu fermé, avec du butin. Un héros de l’affinité, du rôle ou de la famille demandés donne +30 % ; une équipe plus puissante rapporte jusqu’à ×1,3. Les héros en expédition peuvent toujours combattre. 4 nouvelles expéditions chaque jour.</InfoButton>}>
       <p className="faint" style={{ marginTop: 0 }}>Nouvelles expéditions dans {formatDuration(msUntilReset(now))}</p>
       <div className="ex-list">
         {oldRuns.map((r) => card(r.offer))}

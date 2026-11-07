@@ -355,6 +355,15 @@
 - Invocation : l’onglet Épique montre l’icône des cristaux (le « 300 » était le nombre de cristaux, pas des éclats)
 - Ce qui rend le jeu unique, mis en avant : avant chaque combat, « Ton équipe : X avantagés ▲ · Y désavantagés ▼ » ; au premier doublon, une fenêtre présente les Liens (famille et affinité) et le cycle des affinités
 
+## ✅ Version 1.41.0 — Moins d’alertes, combat plus riche, tutoiement partout (critique complète, points 1 à 4)
+
+- Alertes : une pastille d’onglet ne s’allume que s’il y a quelque chose à récupérer (Combats : une expédition revenue ; Invoquer : cadeau d’événement ou 10 éclats d’Aeon ; Menu : jusqu’à la première visite de la Sauvegarde). Les clés et tickets du jour restent signalés sur les cartes
+- Messages : « missions accomplies » au plus une fois toutes les 3 minutes, jamais au chargement d’une partie ni sur l’écran des missions, et disparaît en 4 s (12 s avant) ; en combat, les messages s’affichent en haut et ne cachent plus les compétences
+- Moins de systèmes affichés d’un coup : le Sac masque les objets jamais obtenus ; l’onglet Maîtrises du Sanctuaire apparaît quand un héros atteint le niveau 20
+- Combat : nouvelles mécaniques **combo** (dégâts accrus sur une cible empoisonnée, gelée, provoquée, à DÉF réduite…), **achèvement** (+50 % sous 30 % de PV) et **retrait des bonus** ennemis. Les 9 héros Communs et Peu communs ont gagné un effet propre (Corvin, Brann, Torvald, Maëlis, Isel, Garrek, Nyra, Pia, Dorn) ; « Combo ! » et « Bonus retirés » s’affichent ; l’IA en tient compte ; page « Combos » dans le Codex
+- Terrain de combat resserré : les deux équipes plus proches et des cartes un peu plus grandes
+- Tutoiement partout : une cinquantaine de phrases au « vous » corrigées (astuces, erreurs, Sauvegarde, compte, combat…)
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

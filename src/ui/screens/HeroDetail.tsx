@@ -118,7 +118,7 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
 
       {inst && (
         <button className="btn secondary block" style={{ marginTop: 14 }} disabled={save.profile.avatarHeroId === d.id}
-          onClick={() => { setProfile({ avatarHeroId: d.id }); toast(`${d.name} est maintenant votre avatar.`, 'ok'); }}>
+          onClick={() => { setProfile({ avatarHeroId: d.id }); toast(`${d.name} est maintenant ton avatar.`, 'ok'); }}>
           {save.profile.avatarHeroId === d.id ? 'Avatar actuel' : 'Choisir comme avatar'}
         </button>
       )}

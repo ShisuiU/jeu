@@ -90,7 +90,7 @@ export function Gear({ gearUid }: { gearUid?: string }) {
             {SLOTS.map((s) => {
               const g = items.find((x) => x.slot === s.id);
               return g ? <GearCard key={s.id} g={g} onClick={() => setOpen(g.uid)} />
-                : <GearSlotEmpty key={s.id} slot={s.id} onClick={() => toast('Emplacement vide : équipez un objet depuis la fiche du héros.')} />;
+                : <GearSlotEmpty key={s.id} slot={s.id} onClick={() => toast('Emplacement vide : équipe un objet depuis la fiche du héros.')} />;
             })}
           </div>
         </>
@@ -109,7 +109,7 @@ export function Gear({ gearUid }: { gearUid?: string }) {
           <ListControls sortOptions={GEAR_SORTS} sort={prefs.sort} onSort={(x) => setPrefs({ ...prefs, sort: x })}
             groups={GEAR_GROUPS} filters={prefs.filters} onFilters={(f) => setPrefs({ ...prefs, filters: f })}
             count={(f) => pool.filter((g) => gearMatches(f, g)).length} />
-          {free.length === 0 && <p className="muted" style={{ textAlign: 'center' }}>{save.equipment.length === 0 ? 'Aucun équipement pour l’instant : gagnez des combats pour en obtenir.' : pool.length ? 'Aucun objet ne correspond à ces filtres.' : 'Aucun objet libre ici.'}</p>}
+          {free.length === 0 && <p className="muted" style={{ textAlign: 'center' }}>{save.equipment.length === 0 ? 'Aucun équipement pour l’instant : gagne des combats pour en obtenir.' : pool.length ? 'Aucun objet ne correspond à ces filtres.' : 'Aucun objet libre ici.'}</p>}
           <div className="gear-grid">
             {free.map((g) => <GearCard key={g.uid} g={g} onClick={() => setOpen(g.uid)} />)}
           </div>

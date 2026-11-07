@@ -101,7 +101,7 @@ export default function App() {
     initSaveSystem()
       .then(() => setReady(true))
       .then(() => loadEvents(import.meta.env.BASE_URL))
-      .catch((e) => setError(`Impossible d’accéder au stockage : ${e instanceof Error ? e.message : e}. Désactivez la navigation privée.`));
+      .catch((e) => setError(`Impossible d’accéder au stockage : ${e instanceof Error ? e.message : e}. Désactive la navigation privée.`));
   }, []);
 
   // Horloge du jeu : énergie, renouvellements quotidiens.
@@ -126,16 +126,22 @@ export default function App() {
     if (!started) return;
     let prev = useGame.getState().save ? claimableCount(useGame.getState().save!) : 0;
     let lastSave = useGame.getState().save;
+    let lastToast = 0;
     const unsub = useGame.subscribe((st) => {
       if (!st.save || st.save === lastSave) return;
+      // Partie chargée (code, fichier, compte) : on repart du nouveau compte, sans message.
+      const swapped = !lastSave || lastSave.createdAt !== st.save.createdAt;
       lastSave = st.save;
       const n = claimableCount(st.save);
       // Pendant le tutoriel du début, pas de message par-dessus les éléments à toucher.
       const tutorial = inTutorial(st.save);
-      if (n > prev && !tutorial) {
+      // Au plus un message toutes les 3 minutes, et jamais sur l'écran des missions : la pastille suffit ensuite.
+      const quiet = Date.now() - lastToast < 180_000 || useUI.getState().stack.at(-1)?.name === 'missions';
+      if (n > prev && !tutorial && !swapped && !quiet) {
+        lastToast = Date.now();
         const ui = useUI.getState();
         ui.toast(n - prev > 1 ? `${n - prev} missions accomplies : récompenses à réclamer.` : 'Mission accomplie : récompense à réclamer.', 'ok',
-          { label: 'Voir', run: () => useUI.getState().push({ name: 'missions' }) }, 4500);
+          { label: 'Voir', run: () => useUI.getState().push({ name: 'missions' }) }, 4000);
       }
       prev = n;
       const nav = navigator as Navigator & { setAppBadge?: (n: number) => Promise<void>; clearAppBadge?: () => Promise<void> };

@@ -1,7 +1,7 @@
 import { AFFINITIES } from '../../data/affinities';
 import type { SkillDef } from '../../data/types';
 import { availableSkills, hpPct, rand, shieldOf, targetKind, validTargets } from './engine';
-import { DEBUFFS, type Action, type BattleState, type Unit } from './types';
+import { BUFFS, DEBUFFS, type Action, type BattleState, type Unit } from './types';
 
 // IA du combat automatique (et des ennemis). Règles simples mais cohérentes :
 //  • résurrection seulement si un allié est tombé ; soins seulement si quelqu'un est blessé ;
@@ -16,6 +16,8 @@ function usefulness(s: BattleState, u: Unit, sk: SkillDef): boolean {
   const dead = s.units.filter((x) => x.side === u.side && !x.alive);
   const kinds = new Set(sk.effects.map((e) => e.kind));
   if (kinds.has('revive')) return dead.length > 0;
+  // Retrait de bonus seul : utile seulement si un ennemi en porte.
+  if (kinds.has('dispel') && !kinds.has('damage')) return s.units.some((x) => x.side !== u.side && x.alive && x.statuses.some((st) => BUFFS.includes(st.status)));
   if (kinds.has('damage')) return true;
   if (kinds.has('heal') && !kinds.has('cleanse')) return allies.some((a) => hpPct(a) < 0.7);
   if (kinds.has('heal') && kinds.has('cleanse')) return allies.some((a) => hpPct(a) < 0.75 || a.statuses.some((x) => DEBUFFS.includes(x.status) && x.status !== 'taunt'));
@@ -34,6 +36,12 @@ function scoreEnemyTarget(s: BattleState, u: Unit, t: Unit, sk: SkillDef): numbe
   if (t.slot >= 3 && s.units.some((x) => x.side === t.side && x.alive && x.slot < 3)) score -= 0.25;
   const hasDebuff = sk.effects.some((e) => e.kind === 'status' && DEBUFFS.includes(e.status));
   if (hasDebuff && t.isBoss) score += 0.4;
+  // Combos : viser la cible affaiblie qui déclenche le bonus, et achever celles presque à terre.
+  for (const e of sk.effects) {
+    if (e.kind === 'damage' && e.bonusVs?.some((st) => t.statuses.some((x) => x.status === st))) score += 0.7;
+    if (e.kind === 'damage' && e.executeBelow && hpPct(t) < e.executeBelow) score += 0.6;
+    if (e.kind === 'dispel' && t.statuses.some((x) => BUFFS.includes(x.status))) score += 0.6;
+  }
   if (u.side === 'enemy') score += rand(s) * 0.8;
   return score;
 }

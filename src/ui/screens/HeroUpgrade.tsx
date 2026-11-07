@@ -150,7 +150,7 @@ export function HeroGear({ h }: { h: HeroInstance }) {
       {pick && (
         <Modal onClose={() => setPick(null)}>
           <h2>Choisir : {SLOTS.find((s) => s.id === pick)!.name}</h2>
-          {candidates.length === 0 && <p className="muted" style={{ textAlign: 'center' }}>Aucun objet de ce type. Gagnez des combats de campagne pour en obtenir.</p>}
+          {candidates.length === 0 && <p className="muted" style={{ textAlign: 'center' }}>Aucun objet de ce type. Gagne des combats de campagne pour en obtenir.</p>}
           <div className="gear-grid">
             {candidates.map((g) => <GearCard key={g.uid} g={g} owner={g.heroUid ? owners[g.heroUid] : undefined} onClick={() => { setOpen(g.uid); setPick(null); }} />)}
           </div>

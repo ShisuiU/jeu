@@ -29,7 +29,7 @@ export function Campaign() {
       <div className="seg camp-diff" style={{ marginBottom: 10 }}>
         {DIFFICULTY_ORDER.map((d) => {
           const open = isStageUnlocked(save, d, CHAPTERS[0].stages[0]);
-          return <button key={d} className={`${diff === d ? 'on' : ''} ${open ? '' : 'locked'}`} aria-disabled={!open} onClick={() => { if (!open) { toast(`${DIFFICULTIES[d].name} : terminez d’abord le chapitre 1 en ${DIFFICULTIES[DIFFICULTY_ORDER[DIFFICULTY_ORDER.indexOf(d) - 1]].name}.`); return; } setDiff(d); setChap(latest(d)); }}>{DIFFICULTIES[d].name}</button>;
+          return <button key={d} className={`${diff === d ? 'on' : ''} ${open ? '' : 'locked'}`} aria-disabled={!open} onClick={() => { if (!open) { toast(`${DIFFICULTIES[d].name} : termine d’abord le chapitre 1 en ${DIFFICULTIES[DIFFICULTY_ORDER[DIFFICULTY_ORDER.indexOf(d) - 1]].name}.`); return; } setDiff(d); setChap(latest(d)); }}>{DIFFICULTIES[d].name}</button>;
         })}
       </div>
       <div className="chips camp-chaps" style={{ marginBottom: 12 }} ref={(el) => { const a = el?.querySelector<HTMLElement>('.chip.active'); if (a && el && (a.offsetLeft + a.offsetWidth > el.scrollLeft + el.clientWidth || a.offsetLeft < el.scrollLeft)) el.scrollLeft = a.offsetLeft - el.clientWidth / 2 + a.offsetWidth / 2; }}>
@@ -38,7 +38,7 @@ export function Campaign() {
           const done = stageProgress(save, diff, x.stages[9].id).clears > 0;
           return (
             <button key={x.n} className={`chip ${chap === x.n ? 'active' : ''}`} style={open ? undefined : { opacity: 0.45 }}
-              onClick={() => (open ? setChap(x.n) : toast(`Chapitre ${x.n} : battez d’abord le boss du chapitre ${x.n - 1}.`))}>
+              onClick={() => (open ? setChap(x.n) : toast(`Chapitre ${x.n} : bats d’abord le boss du chapitre ${x.n - 1}.`))}>
               {!open && <Icon.lock size={12} />}Ch. {x.n}{done && ' ✓'}
             </button>
           );
@@ -66,7 +66,7 @@ export function Campaign() {
           const lv = Math.max(...stage.waves.flat().map((w) => w.level)) + DIFFICULTIES[diff].levelAdd;
           return (
             <button key={stage.id} className={`stage-node ${unlocked ? '' : 'locked'} ${p.clears ? 'cleared' : ''} ${stage.boss ? 'boss' : ''}`}
-              onClick={() => unlocked ? push({ name: 'prep', spec: { mode: 'campaign', stageId: stage.id, difficulty: diff } }) : toast('Terminez d’abord le niveau précédent.')}>
+              onClick={() => unlocked ? push({ name: 'prep', spec: { mode: 'campaign', stageId: stage.id, difficulty: diff } }) : toast('Termine d’abord le niveau précédent.')}>
               <span className="sn-idx">{stage.boss ? <Icon.skull size={20} /> : stage.index}</span>
               <div className="grow" style={{ textAlign: 'left', minWidth: 0 }}>
                 <div className="sn-name">{stage.name}</div>

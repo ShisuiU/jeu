@@ -37,6 +37,8 @@ export function Saves({ mode }: { mode?: 'register' } = {}) {
 
   const refresh = () => listBackups().then(setBackups).catch(() => setBackups([]));
   useEffect(() => { void refresh(); }, []);
+  // Première visite : la pastille « protège ta partie » du Menu s'éteint.
+  useEffect(() => { if (!useGame.getState().save?.flags.saves_seen) useGame.getState().mutate((s) => { s.flags.saves_seen = true; }); }, []);
 
   const exported = () => exportSave(save);
 
@@ -57,7 +59,7 @@ export function Saves({ mode }: { mode?: 'register' } = {}) {
   };
 
   const copy = async () => {
-    try { await navigator.clipboard.writeText(exported()); toast('Code de sauvegarde copié. Collez-le dans Notes ou un mail.', 'ok'); }
+    try { await navigator.clipboard.writeText(exported()); toast('Code de sauvegarde copié. Colle-le dans Notes ou un mail.', 'ok'); }
     catch { setCode(exported()); toast('Copie automatique impossible : le code est affiché ci-dessous.', 'error'); }
   };
 
@@ -102,7 +104,7 @@ export function Saves({ mode }: { mode?: 'register' } = {}) {
       </Panel>
 
       <Panel title="Importer">
-        <textarea className="text-area" placeholder="Collez ici un code de sauvegarde (AEONFALL1:…)" value={code} onChange={(e) => setCode(e.target.value)} />
+        <textarea className="text-area" placeholder="Colle ici un code de sauvegarde (AEONFALL1:…)" value={code} onChange={(e) => setCode(e.target.value)} />
         <div className="row" style={{ gap: 8, marginTop: 8 }}>
           <button className="btn grow" disabled={!code.trim()} onClick={() => tryImport(code)}>Charger le code</button>
           <button className="btn secondary grow" onClick={() => fileRef.current?.click()}>Ouvrir un fichier</button>
@@ -144,7 +146,7 @@ export function Saves({ mode }: { mode?: 'register' } = {}) {
       {resetStep > 0 && (
         <Modal onClose={() => { setResetStep(0); setResetText(''); }}>
           <h2>Nouvelle partie</h2>
-          <p className="muted" style={{ textAlign: 'center' }}>Toute la progression actuelle sera remplacée. Elle restera récupérable dans les copies de secours. Tapez <b>EFFACER</b> pour confirmer.</p>
+          <p className="muted" style={{ textAlign: 'center' }}>Toute la progression actuelle sera remplacée. Elle restera récupérable dans les copies de secours. Tape <b>EFFACER</b> pour confirmer.</p>
           <input className="text-input" value={resetText} onChange={(e) => setResetText(e.target.value)} placeholder="EFFACER" autoCapitalize="characters" />
           <div className="row" style={{ gap: 8, marginTop: 14 }}>
             <button className="btn secondary grow" onClick={() => { setResetStep(0); setResetText(''); }}>Annuler</button>

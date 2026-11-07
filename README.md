@@ -4,7 +4,7 @@ RPG mobile de collection de héros au tour par tour, univers original mêlant fa
 science-fiction et civilisations antiques. Conçu pour iPhone, jouable **hors ligne**, **gratuit**,
 sans App Store ni serveur : c'est une application web progressive (PWA) qu'on installe depuis Safari.
 
-> État : **version 1.44.0** (Nouvelle musique, menus rangés) — histoire en 9 chapitres (90 niveaux, 4 difficultés), 40 héros, invocations, améliorations, maîtrises, équipement, marché, donjons (15 étages), tour (100 étages), camp (butin d’absence), boss mondial, arène, missions, expéditions, un événement différent chaque semaine, comptes et classements en ligne.
+> État : **version 1.45.0** (Multijoueur : l’Arène réelle) — histoire en 9 chapitres (90 niveaux, 4 difficultés), 40 héros, invocations, améliorations, maîtrises, équipement, marché, donjons (15 étages), tour (100 étages), camp (butin d’absence), boss mondial, arène, missions, expéditions, un événement différent chaque semaine, comptes et classements en ligne.
 
 **Jouer : https://jeu-aeonfall.vercel.app/** (adresse principale, hébergée par Vercel). Secours : https://shisuiu.github.io/jeu/ (GitHub Pages). Voir [docs/ROADMAP.md](docs/ROADMAP.md).
 
@@ -37,6 +37,7 @@ Alternative : Cloudflare Pages (commande de build `npm run build`, dossier `dist
 npm install
 npm run dev       # serveur local (accessible depuis l'iPhone sur le même Wi-Fi)
 npm test          # tests unitaires (sauvegarde, horloge, énergie, statistiques…)
+npm run test:rules  # règles de sécurité Firestore, sur l’émulateur Firebase (Java requis)
 npm run build     # version de production dans dist/
 npm run preview   # tester la version de production
 npm run icons     # régénérer les icônes PNG depuis public/icons/icon.svg

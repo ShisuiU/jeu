@@ -3,7 +3,11 @@ import {
   initializeAuth, indexedDBLocalPersistence, browserLocalPersistence, onAuthStateChanged, createUserWithEmailAndPassword,
   signInWithEmailAndPassword, sendPasswordResetEmail, signOut, deleteUser, reauthenticateWithCredential, EmailAuthProvider, type Auth,
 } from 'firebase/auth';
-import { getFirestore, doc, getDoc, setDoc, deleteDoc, runTransaction, collection, query, orderBy, limit, getDocs, type Firestore } from 'firebase/firestore/lite';
+import { getFirestore, doc, getDoc, setDoc, deleteDoc, runTransaction, collection, query, orderBy, limit, getDocs, where, addDoc, serverTimestamp, connectFirestoreEmulator, type Firestore, type Timestamp } from 'firebase/firestore/lite';
+import { connectAuthEmulator } from 'firebase/auth';
+import { defenseDoc, defensePoints, type ArenaDefense } from '../game/arena';
+import { isUnlocked } from '../game/unlocks';
+import type { ArenaLogEntry } from '../save/schema';
 import { rankEntry, type RankEntry, type RankField } from '../game/ranks';
 import { FIREBASE_CONFIG } from './config';
 import { useAccount, setCloudWanted } from './account';
@@ -59,7 +63,14 @@ function ensure() {
   auth = initializeAuth(app, { persistence: [indexedDBLocalPersistence, browserLocalPersistence] });
   auth.languageCode = 'fr';
   db = getFirestore(app);
+  // Tests de bout en bout : émulateurs Firebase locaux (jamais dans la version publiée).
+  if (import.meta.env.VITE_FIREBASE_EMULATOR) {
+    connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
+    connectFirestoreEmulator(db, '127.0.0.1', 8080);
+  }
 }
+/** Accès partagé pour les autres modules en ligne (guildes, amis). */
+export function cloud() { ensure(); return { db, uid: auth.currentUser?.uid ?? null }; }
 
 /** Démarre la surveillance du compte (connexion persistée d'une session à l'autre). */
 export function startCloud() {
@@ -91,6 +102,7 @@ async function upload(uid: string, s: SaveData) {
   writeMeta(uid, s);
   lastPushAt = Date.now();
   void publishRank(uid, s);
+  void publishDefense(uid, s);
 }
 
 // CLASSEMENTS — document ranks/{uid} : pseudo, avatar et meilleurs scores, publié avec la sauvegarde.
@@ -119,6 +131,51 @@ export async function fetchRanks(field: RankField): Promise<(RankEntry & { uid: 
   return snap.docs.map((d) => ({ ...(d.data() as RankEntry), uid: d.id }));
 }
 export const currentUid = () => { ensure(); return auth.currentUser?.uid ?? null; };
+
+// ARÈNE RÉELLE — defenses/{uid} : l'équipe de défense (publiée avec la sauvegarde, et quand on la change).
+// defenses/{uid}/log : chaque attaquant y inscrit son combat ; le défenseur le lit et l'applique à son classement.
+const defenseRef = (uid: string) => doc(db, 'defenses', uid);
+let lastDefense = '';
+export async function publishDefense(uid: string, s: SaveData, force = false) {
+  try {
+    if (!s.settings.showInRanks || !isUnlocked(s, 'arena')) { if (lastDefense !== 'off') { await deleteDoc(defenseRef(uid)); lastDefense = 'off'; } return; }
+    const d = defenseDoc(s, Date.now());
+    const key = JSON.stringify({ ...d, updatedAt: 0 });
+    if (key === lastDefense && !force) return;
+    await setDoc(defenseRef(uid), d);
+    lastDefense = key;
+  } catch { /* l'Arène en ligne ne doit jamais gêner la sauvegarde */ }
+}
+export async function publishDefenseNow() {
+  ensure(); const u = auth.currentUser; const s = useGame.getState().save;
+  if (u && s) await publishDefense(u.uid, s, true);
+}
+/** Défenses de puissance proche (de 50 % à 170 % de la sienne), sans la sienne. */
+export async function fetchDefenses(power: number): Promise<ArenaDefense[]> {
+  ensure(); const me = auth.currentUser?.uid;
+  const snap = await getDocs(query(collection(db, 'defenses'), where('power', '>=', Math.floor(power * 0.5)), where('power', '<=', Math.ceil(power * 1.7)), orderBy('power'), limit(40)));
+  return snap.docs.filter((d) => d.id !== me).map((d) => ({ ...(d.data() as Omit<ArenaDefense, 'uid'>), uid: d.id }));
+}
+export async function fetchDefense(uid: string): Promise<ArenaDefense | null> {
+  ensure(); const snap = await getDoc(defenseRef(uid));
+  return snap.exists() ? { ...(snap.data() as Omit<ArenaDefense, 'uid'>), uid } : null;
+}
+/** Inscrit le combat dans le journal du défenseur. */
+export async function postArenaLog(defUid: string, s: SaveData, attackerWon: boolean, power: number) {
+  ensure(); const u = auth.currentUser; if (!u) return;
+  await addDoc(collection(db, 'defenses', defUid, 'log'), {
+    attacker: u.uid, name: (s.profile.name || 'Lien').trim().slice(0, 18), avatar: s.profile.avatarHeroId, power: Math.round(power),
+    won: attackerWon, points: defensePoints(attackerWon), at: serverTimestamp(),
+  });
+}
+/** Les 30 derniers combats reçus ; les plus anciens (au-delà de 30) sont effacés du serveur. */
+export async function fetchMyLog(): Promise<ArenaLogEntry[]> {
+  ensure(); const u = auth.currentUser; if (!u) return [];
+  const snap = await getDocs(query(collection(db, 'defenses', u.uid, 'log'), orderBy('at', 'desc'), limit(60)));
+  const all = snap.docs.map((d) => { const x = d.data() as Omit<ArenaLogEntry, 'id' | 'at'> & { at: Timestamp | null }; return { ...x, id: d.id, at: x.at ? x.at.toMillis() : Date.now() }; });
+  for (const old of snap.docs.slice(30)) void deleteDoc(old.ref).catch(() => {});
+  return all.slice(0, 30);
+}
 
 async function adopt(uid: string, remote: SaveData) {
   await replaceSave(remote, 'synchronisation');
@@ -221,6 +278,9 @@ export async function deleteAccount(password?: string) {
   if (password && u.email) await reauthenticateWithCredential(u, EmailAuthProvider.credential(u.email, password));
   await deleteDoc(saveRef(u.uid));
   await deleteDoc(rankRef(u.uid)).catch(() => {});
+  // Défense d'Arène et son journal.
+  await getDocs(collection(db, 'defenses', u.uid, 'log')).then((l) => Promise.all(l.docs.map((d) => deleteDoc(d.ref)))).catch(() => {});
+  await deleteDoc(defenseRef(u.uid)).catch(() => {});
   await deleteUser(u);
   try { localStorage.removeItem(metaKey(u.uid)); } catch { /* */ }
   setCloudWanted(false);

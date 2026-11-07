@@ -1,0 +1,52 @@
+rules_version = '2';
+
+// RÈGLES FIRESTORE D'AEONFALL — à copier en entier dans la console Firebase
+// (Firestore Database → Règles → remplacer tout le texte → Publier).
+//
+// saves/{uid}        : la sauvegarde de chaque compte, privée.
+// ranks/{uid}        : les classements (pseudo, avatar, scores), lisibles par tous.
+// defenses/{uid}     : l'équipe de défense d'Arène de chaque joueur, lisible par les joueurs connectés.
+// defenses/{uid}/log : le journal des attaques reçues ; chaque attaquant y écrit son propre combat.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isMe(uid) { return signedIn() && request.auth.uid == uid; }
+    function shortText(v, max) { return v is string && v.size() <= max; }
+
+    match /saves/{uid} {
+      allow read, write: if isMe(uid);
+    }
+
+    match /ranks/{uid} {
+      allow read: if true;
+      allow write: if isMe(uid) && shortText(request.resource.data.name, 18);
+    }
+
+    // ─── Arène réelle ───
+    function validDefense(d) {
+      return d.keys().hasOnly(['name', 'avatar', 'level', 'power', 'rating', 'team', 'updatedAt'])
+        && shortText(d.name, 18) && shortText(d.avatar, 40)
+        && d.power is number && d.rating is number && d.level is number
+        && d.team is list && d.team.size() >= 1 && d.team.size() <= 5
+        && d.updatedAt is number;
+    }
+    match /defenses/{uid} {
+      allow read: if signedIn();
+      allow create, update: if isMe(uid) && validDefense(request.resource.data);
+      allow delete: if isMe(uid);
+
+      match /log/{id} {
+        allow read, delete: if isMe(uid);
+        allow create: if signedIn() && !isMe(uid)
+          && request.resource.data.keys().hasOnly(['attacker', 'name', 'avatar', 'power', 'won', 'points', 'at'])
+          && request.resource.data.attacker == request.auth.uid
+          && shortText(request.resource.data.name, 18) && shortText(request.resource.data.avatar, 40)
+          && request.resource.data.power is number
+          && request.resource.data.won is bool
+          && request.resource.data.points is int && request.resource.data.points >= 0 && request.resource.data.points <= 20
+          && request.resource.data.at == request.time;
+      }
+    }
+  }
+}

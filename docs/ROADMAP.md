@@ -387,7 +387,16 @@
 - **Combats** : la campagne en grand, les autres modes en grille de deux : tout tient sans défiler ; la carte Événements n’est plus en double (le raccourci de l’Accueil suffit) ; le compteur des donjons affiche bien 15 étages
 - **Menu** : une carte du joueur en haut (avatar, nom modifiable, niveau, et le bilan de la partie : héros, histoire, Tour, Arène, victoires, invocations) ; la pastille du Menu suit la même règle que la barre du bas
 
+## ✅ Version 1.45.0 — Multijoueur (1/3) : l’Arène réelle
+
+- Avec un compte, ton **équipe de défense** est publiée en ligne (document `defenses/{uid}`) : héros, niveaux, rangs, ascension, éveil, compétences et équipement. Tu choisis quelle équipe défend dans l’Arène
+- Les adversaires « Joueur » sont les **vraies équipes** d’autres joueurs de puissance proche (de 50 % à 170 % de la tienne) ; sans compte, sans réseau ou sans joueur proche, des Héritiers imaginaires annoncés comme tels
+- **Journal de défense** : chaque attaque est inscrite chez le défenseur (`defenses/{uid}/log`). Une défense qui gagne rapporte 3 points, une défense battue en coûte 6 ; un message résume les combats reçus depuis la dernière visite
+- **Vengeance** : un bouton « Venger » contre chaque joueur qui a battu ta défense (une fois par combat)
+- Supprimer son compte efface aussi sa défense et son journal ; ne pas apparaître dans les classements retire aussi la défense
+- Règles de sécurité dans `firestore.rules` (à publier dans la console Firebase), vérifiées par des tests sur l’émulateur (`npm run test:rules`) ; test de bout en bout à deux joueurs sur les émulateurs
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale
-- Arène entre joueurs, guildes
+- Guildes et amis (en cours)

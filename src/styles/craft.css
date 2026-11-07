@@ -660,3 +660,19 @@ body:has(.modal-backdrop) .toasts, body:has(.sheet-backdrop) .toasts { bottom: a
 .ms-node.on .ms-text { color: var(--text-dim); }
 .ms-lock { position: absolute; top: 5px; right: 5px; color: var(--text-faint); }
 @media (prefers-reduced-motion: reduce) { .ms-node.ready { animation: none; } }
+/* Porte-monnaie à 5 cases (Ascension) : plus compact pour tenir sur une ligne, même sur petit écran. */
+.wallet[style*="repeat(5"] .wallet-item { gap: 3px; padding-left: 2px; padding-right: 2px; font-size: 12px; }
+
+/* Finitions de lisibilité (audit) : rien sous 11 px, contrastes suffisants. */
+.pill small { font-size: 11px; }
+.ss-bag small { font-size: 11px; }
+.leader-crown { font-size: 11px; }
+.mini-slot .hero-card .name { font-size: 11px; -webkit-line-clamp: 1; }
+.ms-text { font-size: 11px; }
+.ms-node.locked { opacity: 1; color: var(--text-faint); border-color: rgba(255,255,255,0.08); background: rgba(8,7,11,0.85); }
+.ms-node.locked .ms-name { color: #a39b8c; }
+.ms-node.locked .ms-text { color: var(--text-faint); }
+.ms-node.locked .ms-tier { filter: saturate(0.4); }
+.sanct-tabs { justify-content: flex-start; }
+.sanct-tabs button { flex: 0 0 auto; padding: 0 10px; }
+@media (min-width: 380px) { .sanct-tabs button { flex: 1 0 auto; } }

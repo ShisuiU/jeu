@@ -103,6 +103,7 @@ async function upload(uid: string, s: SaveData) {
   lastPushAt = Date.now();
   void publishRank(uid, s);
   void publishDefense(uid, s);
+  void import('./friendsCloud').then((m) => m.publishProfile(s)).catch(() => {});
 }
 
 // CLASSEMENTS — document ranks/{uid} : pseudo, avatar et meilleurs scores, publié avec la sauvegarde.
@@ -278,7 +279,9 @@ export async function deleteAccount(password?: string) {
   if (password && u.email) await reauthenticateWithCredential(u, EmailAuthProvider.credential(u.email, password));
   await deleteDoc(saveRef(u.uid));
   await deleteDoc(rankRef(u.uid)).catch(() => {});
-  // Clan : on la quitte (le chef seul la dissout).
+  // Amis : fiche, code et amitiés.
+  await import('./friendsCloud').then((m) => m.deleteSocial()).catch(() => {});
+  // Clan : on le quitte (le chef seul le dissout).
   const gid = useGame.getState().save?.guild.id;
   if (gid) await import('./guildCloud').then((a) => a.leaveGuild(gid)).catch(() => {});
   // Défense d'Arène et son journal.

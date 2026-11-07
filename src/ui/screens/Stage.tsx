@@ -1,7 +1,11 @@
 import { Coach } from '../components/Coach';
 import { AffinityIcon } from '../art/Identity';
 import type { AffinityId } from '../../data/types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useAccount } from '../../cloud/account';
+import { canBorrow, markBorrowed } from '../../game/friends';
+import type { UnitSetup } from '../../game/battle/types';
+import type { FriendRow } from '../../cloud/friendsCloud';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
 import { ENEMIES } from '../../data/enemies';
@@ -37,6 +41,10 @@ export function Prep({ spec }: { spec: BattleSpec }) {
   const [teamId, setTeamId] = useState(save.activeTeamId);
   const [summary, setSummary] = useState<(SweepSummary & { count: number }) | null>(null);
   const [sweepOpen, setSweepOpen] = useState(false);
+  // Renfort d'un ami (campagne et donjons) : son meilleur héros prend une place libre, une fois par jour et par ami.
+  const user = useAccount((st) => st.user);
+  const [lenders, setLenders] = useState<FriendRow[]>(friendCache ?? []);
+  const [guestOf, setGuestOf] = useState<string | null>(null);
   const sweepOk = canSweep(save, spec);
   const team = save.teams.find((t) => t.id === teamId) ?? save.teams[0];
   const members = team.slots.map((u) => save.heroes.find((h) => h.uid === u));
@@ -46,13 +54,27 @@ export function Prep({ spec }: { spec: BattleSpec }) {
   const newHeroes = spec.mode === 'campaign' && info.firstTime ? STAGE_BY_ID[spec.stageId].firstClear.heroes : undefined;
   const boss = info.waves.flat().some((w) => w.kind === 'enemy' && ENEMIES[w.refId]?.boss);
 
+  const guestOk = (spec.mode === 'campaign' || spec.mode === 'dungeon') && !!user && count < 5;
+  useEffect(() => {
+    if (!guestOk || friendCache) return;
+    let alive = true;
+    import('../../cloud/friendsCloud').then((a) => a.listFriends()).then((rows) => {
+      friendCache = rows.filter((r) => r.f.status === 'ok' && r.profile?.lend && HERO_BY_ID[r.profile.lend.refId]);
+      if (alive) setLenders(friendCache);
+    }).catch(() => {});
+    return () => { alive = false; };
+  }, [guestOk]);
+  const guestRow = guestOf ? lenders.find((r) => r.uid === guestOf) : undefined;
   const go = () => {
     if (!count) { toast('Ton équipe est vide : ajoute des héros dans l’écran Équipe.', 'error'); return; }
     let r: { ok: boolean; reason?: string } = { ok: false };
     mutate((d) => { r = payMode(d, spec, now); });
     if (!r.ok) { toast(r.reason ?? 'Impossible.', 'error'); return; }
     if (team.id !== save.activeTeamId) setActiveTeam(team.id);
-    replace({ name: 'battle', spec, teamId: team.id, seed: Date.now() });
+    const l = guestRow?.profile?.lend;
+    const guest: UnitSetup | undefined = l ? { kind: 'hero', refId: l.refId, slot: 0, level: l.level, rank: l.rank, ascension: l.ascension, awaken: l.awaken, skillLevels: l.skillLevels, gear: l.gear } : undefined;
+    if (guest && guestRow) mutate((d) => { markBorrowed(d, guestRow.uid, Date.now()); });
+    replace({ name: 'battle', spec, teamId: team.id, seed: Date.now(), guest });
   };
 
   const doSweep = (count: number) => {
@@ -117,6 +139,22 @@ export function Prep({ spec }: { spec: BattleSpec }) {
         </button>
       </Panel>
 
+      {guestOk && lenders.length > 0 && (
+        <Panel title="Renfort d’un ami">
+          <div className="guest-pick">
+            {lenders.map((r) => {
+              const l = r.profile!.lend!; const used = !canBorrow(save, r.uid, now);
+              return (
+                <button key={r.uid} className={`guest-opt ${guestOf === r.uid ? 'on' : ''}`} disabled={used} onClick={() => setGuestOf(guestOf === r.uid ? null : r.uid)} aria-label={`Renfort : ${HERO_BY_ID[l.refId].name} de ${r.profile!.name}`}>
+                  <div className="xp-ava"><HeroArt heroId={l.refId} /><span className="u-lvl">{l.level}</span></div>
+                  <div className="faint">{used ? 'Déjà venu' : r.profile!.name}</div>
+                </button>
+              );
+            })}
+          </div>
+          <p className="faint" style={{ margin: '6px 0 0' }}>{guestRow ? `${HERO_BY_ID[guestRow.profile!.lend!.refId].name} rejoint ton équipe pour ce combat.` : 'Choisis le héros d’un ami : il prend une place libre de ton équipe pour ce combat.'}</p>
+        </Panel>
+      )}
       <Panel title={info.rewardLabel}>
         <RewardInline reward={info.rewardPreview} />
         {newHeroes?.map((id) => <p key={id} className="hint" style={{ marginTop: 8 }}>Nouveau héros : <b>{HERO_BY_ID[id].name}</b></p>)}
@@ -165,6 +203,9 @@ export function Prep({ spec }: { spec: BattleSpec }) {
 }
 
 /** Ancienne route « stage » (campagne Normal). */
+/** Amis qui prêtent un héros (chargés une fois par session). */
+let friendCache: FriendRow[] | null = null;
+
 export function Stage({ stageId }: { stageId: string }) {
   return <Prep spec={{ mode: 'campaign', stageId, difficulty: 'normal' }} />;
 }

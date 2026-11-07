@@ -9,6 +9,9 @@ rules_version = '2';
 // defenses/{uid}/log : le journal des attaques reçues ; chaque attaquant y écrit son propre combat.
 // guilds/{gid}       : un clan (30 membres au plus), lisible par les joueurs connectés.
 // guilds/{gid}/chat  : la discussion du clan, réservée à ses membres.
+// profiles/{uid}     : la fiche publique d'un joueur pour ses amis (nom, avatar, niveau, héros prêté).
+// codes/{code}       : le code ami d'un joueur (pour l'ajouter).
+// friendships/{a_b}  : une amitié entre deux joueurs (demande, cadeaux d'énergie du jour).
 
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -118,6 +121,51 @@ service cloud.firestore {
           && request.resource.data.at == request.time;
         allow delete: if signedIn() && (resource.data.uid == me() || guild().leader == me());
       }
+    }
+
+    // ─── Amis ───
+    function validProfile(d) {
+      return d.keys().hasOnly(['name', 'avatar', 'level', 'power', 'code', 'lend', 'updatedAt'])
+        && shortText(d.name, 18) && shortText(d.avatar, 40) && d.level is number && d.power is number
+        && d.code is string && d.code.size() >= 6 && d.code.size() <= 8
+        && (d.lend == null || d.lend is map) && d.updatedAt is number;
+    }
+    match /profiles/{uid} {
+      allow read: if signedIn();
+      allow create, update: if isMe(uid) && validProfile(request.resource.data);
+      allow delete: if isMe(uid);
+    }
+    match /codes/{code} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.keys().hasOnly(['uid']) && request.resource.data.uid == me()
+        && code.size() >= 6 && code.size() <= 8;
+      allow delete: if signedIn() && resource.data.uid == me();
+    }
+    function validFriendship(d) {
+      return d.keys().hasOnly(['users', 'from', 'status', 'gifts', 'claims', 'createdAt'])
+        && d.users is list && d.users.size() == 2 && d.users[0] < d.users[1]
+        && d.from in d.users && (d.status == 'pending' || d.status == 'ok')
+        && d.gifts is map && d.claims is map && d.createdAt is number;
+    }
+    match /friendships/{pid} {
+      allow read: if signedIn() && me() in resource.data.users;
+      allow create: if signedIn() && validFriendship(request.resource.data)
+        && pid == request.resource.data.users[0] + '_' + request.resource.data.users[1]
+        && me() in request.resource.data.users && request.resource.data.from == me()
+        && request.resource.data.status == 'pending'
+        && request.resource.data.gifts.size() == 0 && request.resource.data.claims.size() == 0;
+      allow update: if signedIn() && me() in resource.data.users && validFriendship(request.resource.data)
+        && request.resource.data.users == resource.data.users && request.resource.data.from == resource.data.from && (
+          // Accepter une demande reçue.
+          (resource.data.status == 'pending' && resource.data.from != me() && changed().hasOnly(['status']) && request.resource.data.status == 'ok')
+          // Envoyer son cadeau d'énergie du jour.
+          || (resource.data.status == 'ok' && changed().hasOnly(['gifts'])
+            && request.resource.data.gifts.diff(resource.data.gifts).affectedKeys().hasOnly([me()]) && request.resource.data.gifts[me()] is string)
+          // Recevoir le cadeau de l'ami.
+          || (resource.data.status == 'ok' && changed().hasOnly(['claims'])
+            && request.resource.data.claims.diff(resource.data.claims).affectedKeys().hasOnly([me()]) && request.resource.data.claims[me()] is string)
+        );
+      allow delete: if signedIn() && me() in resource.data.users;
     }
   }
 }

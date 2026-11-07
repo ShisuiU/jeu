@@ -121,6 +121,8 @@ export interface SaveData {
   }>;
   /** Clan : identifiant (vide = aucune), essais du boss du jour, dégâts pas encore envoyés, paliers récupérés. */
   guild: { id: string; name: string; day: string; tries: number; week: string; pending: number; claimed: number[] };
+  /** Amis : cadeaux reçus aujourd'hui, amis dont le héros a déjà été emprunté aujourd'hui. */
+  friends: { day: string; claims: number; borrowed: string[] };
   /** Camp des Héritiers : début de l'accumulation du butin d'absence. */
   camp: { since: number };
   shop: { energyRefills: number; market?: { day: string; refreshes: number; offers: { id: string; reward?: Partial<Record<string, number>>; gear?: GearItem; price: { resource: 'gold' | 'crystals'; amount: number }; bought: boolean }[] } };
@@ -206,6 +208,7 @@ export function createNewSave(now: number = Date.now()): SaveData {
     worldBoss: { keysUsed: 0, best: {} },
     events: {},
     guild: { id: '', name: '', day: '', tries: 0, week: '', pending: 0, claimed: [] },
+    friends: { day: '', claims: 0, borrowed: [] },
     camp: { since: now },
     shop: { energyRefills: 0 },
     expeditions: { day: '', offers: [], runs: [], done: [] },

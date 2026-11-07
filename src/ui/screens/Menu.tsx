@@ -21,6 +21,9 @@ export function Menu() {
     { title: 'Ma partie', items: [
       { label: 'Sac', icon: 'bag', route: { name: 'inventory' } },
       { label: 'Codex', icon: 'book', route: { name: 'codex' } },
+    ] },
+    { title: 'Entre joueurs', items: [
+      { label: 'Amis', icon: 'heroes', route: { name: 'friends' } },
       { label: 'Classements', icon: 'star', route: { name: 'ranks' } },
     ] },
     { title: 'Système', items: [

@@ -728,3 +728,14 @@ body:has(.battle-controls) .toasts { bottom: auto; top: calc(var(--sat, 0px) + 6
 /* Dialogue : quand le joueur (le Lien) parle, sa bulle se distingue (pas de portrait, liseré doré). */
 .dlg-box.player { border-color: var(--brass); box-shadow: 0 0 18px rgba(217,179,106,0.22); }
 .dlg-box.player .dlg-name { color: var(--gold-hi); }
+
+/* Camp des Héritiers : un feu qui grandit avec le butin. */
+.camp-fire { position: relative; height: 92px; margin: 6px auto 10px; width: 120px; }
+.camp-fire::after { content: ''; position: absolute; left: 50%; bottom: 4px; width: 96px; height: 14px; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(ellipse, rgba(255,150,60,0.45), transparent 70%); }
+.camp-fire span { position: absolute; left: 50%; bottom: 10px; width: 34px; height: 58px; margin-left: -17px; border-radius: 50% 50% 45% 45% / 65% 65% 35% 35%;
+  background: radial-gradient(ellipse at 50% 80%, #ffe29a, #ff9a3c 45%, rgba(255,80,30,0) 72%); filter: blur(0.5px); transform-origin: 50% 100%; animation: camp-flame 1.6s ease-in-out infinite; opacity: 0.85; }
+.camp-fire span:nth-child(2) { width: 24px; height: 42px; margin-left: -30px; animation-delay: -0.5s; opacity: 0.7; }
+.camp-fire span:nth-child(3) { width: 24px; height: 46px; margin-left: 6px; animation-delay: -1s; opacity: 0.7; }
+.camp-fire.full span { animation-duration: 1.1s; }
+@keyframes camp-flame { 0%, 100% { transform: scaleY(1) rotate(-2deg); } 50% { transform: scaleY(1.12) rotate(2deg); } }
+@media (prefers-reduced-motion: reduce) { .camp-fire span { animation: none; } }

@@ -116,6 +116,8 @@ export interface SaveData {
     /** Événement de connexion : jours de jeu réclamés (clés de jour). */
     login?: string[];
   }>;
+  /** Camp des Héritiers : début de l'accumulation du butin d'absence. */
+  camp: { since: number };
   shop: { energyRefills: number; market?: { day: string; refreshes: number; offers: { id: string; reward?: Partial<Record<string, number>>; gear?: GearItem; price: { resource: 'gold' | 'crystals'; amount: number }; bought: boolean }[] } };
   /** Expéditions (héros envoyés en mission, retour en temps réel). */
   expeditions: ExpeditionState;
@@ -190,6 +192,7 @@ export function createNewSave(now: number = Date.now()): SaveData {
     arena: { rating: 1000, wins: 0, losses: 0, ticketsUsed: 0, opponents: [] },
     worldBoss: { keysUsed: 0, best: {} },
     events: {},
+    camp: { since: now },
     shop: { energyRefills: 0 },
     expeditions: { day: '', offers: [], runs: [], done: [] },
   };

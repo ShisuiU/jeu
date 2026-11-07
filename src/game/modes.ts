@@ -51,7 +51,7 @@ export interface ModeResult extends BattleResult {
 }
 
 const toSetups = (waves: WaveEnemy[][], levelAdd = 0, statMult = 1): UnitSetup[][] =>
-  waves.map((w) => w.map((e) => ({ kind: 'enemy' as const, refId: e.enemy, slot: e.slot, level: e.level + levelAdd, hpMult: e.hpMult, statMult })));
+  waves.map((w) => w.map((e) => ({ kind: 'enemy' as const, refId: e.enemy, slot: e.slot, level: e.level + levelAdd, hpMult: e.hpMult, statMult: statMult * (e.statMult ?? 1) })));
 
 function scaleReward(r: Reward, m: number): Reward {
   const o: Reward = {};
@@ -114,7 +114,7 @@ export function resolveMode(s: SaveData, spec: BattleSpec): ModeInfo {
     }
     case 'tower':
       return {
-        title: `Tour des Âges · Étage ${spec.floor}`, subtitle: spec.floor % 10 === 0 ? 'Étage gardé par une Sentinelle' : 'Ascension', region: 'heart', waves: toSetups(towerWaves(spec.floor)),
+        title: `Tour des Âges · Étage ${spec.floor}`, subtitle: spec.floor % 10 === 0 ? (spec.floor > 50 ? 'Étage gardé par un boss de chapitre' : 'Étage gardé par une Sentinelle') : spec.floor > 50 ? 'Les Sommets' : 'Ascension', region: 'heart', waves: toSetups(towerWaves(spec.floor)),
         cost: { kind: 'free', amount: 0 }, rewardPreview: towerReward(spec.floor), rewardLabel: 'Récompense de l’étage', notes: ['Sans énergie'], firstTime: true,
       };
     case 'worldboss': {

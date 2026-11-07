@@ -372,6 +372,14 @@
 - Les adversaires imaginaires ne portent plus de noms de héros du jeu (Ysolde, Tamsin) ; 22 noms au lieu de 12
 - Prénoms courts : plus de virgule collée (« Thalor, » → « Thalor ») sur les cartes et les listes
 
+## ✅ Version 1.43.0 — Fin de jeu plus longue et butin d’absence (critique complète, point 7)
+
+- **Camp des Héritiers** (nouveau lieu de l’Accueil, ouvert après le niveau 1-4) : pendant l’absence, le butin s’accumule jusqu’à 12 h, même jeu fermé (or, élixirs, minerai, cristaux), et grandit avec l’avancée dans la campagne. Pastille quand 4 h de butin attendent
+- **Tour des Âges : 100 étages** au lieu de 50. Les Sommets (51 à 100) mélangent les ennemis de toutes les régions, plus forts à chaque étage (+15 % par étage), avec un boss de chapitre tous les 10 étages (Roi-Scorpion, Seigneur de Cendre, Constellation morte, Tisserand des Âges, Léviathan). Récompenses : cristaux, éclats d’Aeon, parchemins de maîtrise, essence d’éveil
+- **Donjons : 15 étages** au lieu de 10 ; les étages 11 à 15 (niveaux 42 à 58) ont des ennemis renforcés et de meilleures récompenses
+- Équilibrage vérifié par simulation : une équipe au maximum sans équipement passe l’étage 70 de la Tour mais pas le 100 (il faut l’équipement et les maîtrises), et l’étage 13 de chaque donjon
+- Nouveaux succès : Tour étage 75 et sommet (100), donjon étage 15
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

@@ -1,4 +1,6 @@
 import { CHAPTERS, STAGE_BY_ID, type DialogueLine, type DifficultyId, type WaveEnemy } from '../data/campaign';
+import { GUILD_BOSS, GUILD_TIERS } from '../data/guild';
+import { addPending, triesLeft, useTry } from './guild';
 import { DUNGEON_BY_ID, DUNGEON_FLOORS, dungeonEnergy, dungeonWaves } from '../data/dungeons';
 import { TOWER_FLOORS, towerReward, towerWaves } from '../data/tower';
 import { BOSS_TIERS, DAMAGE_CHESTS, WORLD_BOSS } from '../data/worldBoss';
@@ -25,9 +27,10 @@ export type BattleSpec =
   | { mode: 'tower'; floor: number }
   | { mode: 'worldboss'; tier: string }
   | { mode: 'arena'; opponentId: string }
+  | { mode: 'guildboss' }
   | { mode: 'challenge'; eventId: string; trial?: number };
 
-export type CostKind = 'energy' | 'key' | 'ticket' | 'free';
+export type CostKind = 'energy' | 'key' | 'ticket' | 'try' | 'free';
 
 export interface ModeInfo {
   title: string;
@@ -126,6 +129,13 @@ export function resolveMode(s: SaveData, spec: BattleSpec): ModeInfo {
         notes: [`Paliers de dégâts : ${DAMAGE_CHESTS.join(' / ')} %`, `Meilleur score : ${Math.round(s.worldBoss.best[t.id] ?? 0)} %`], firstTime: false,
       };
     }
+    case 'guildboss':
+      return {
+        title: `Boss de clan · ${GUILD_BOSS.name}`, subtitle: `${s.guild.name || 'Ton clan'} · ${GUILD_BOSS.turnLimit} actions`, region: 'astral',
+        waves: [[{ kind: 'enemy', refId: GUILD_BOSS.enemy, slot: 1, level: GUILD_BOSS.level, hpMult: GUILD_BOSS.hpMult }]], turnLimit: GUILD_BOSS.turnLimit,
+        cost: { kind: 'try', amount: 1 }, rewardPreview: GUILD_TIERS[0].reward, rewardLabel: 'Premier palier du clan (chaque palier atteint donne une récompense)',
+        notes: [`Tes dégâts s’ajoutent à ceux de ton clan`, `${triesLeft(s, s.time.highWater)}/${GUILD_BOSS.triesPerDay} essais aujourd’hui`], firstTime: false,
+      };
     case 'arena': {
       const i = s.arena.opponents.findIndex((o) => o.id === spec.opponentId);
       const o = s.arena.opponents[i];
@@ -165,6 +175,7 @@ export function canStart(s: SaveData, spec: BattleSpec): { ok: boolean; reason?:
     case 'dungeon': return spec.floor <= Math.min(DUNGEON_FLOORS, (s.progress.dungeons[spec.dungeonId]?.bestFloor ?? 0) + 1) ? { ok: true } : { ok: false, reason: 'Termine l’étage précédent.' };
     case 'tower': return spec.floor === s.progress.tower.floor + 1 && spec.floor <= TOWER_FLOORS ? { ok: true } : { ok: false, reason: 'Étage indisponible.' };
     case 'worldboss': return s.worldBoss.keysUsed < WORLD_BOSS.keysPerDay ? { ok: true } : { ok: false, reason: 'Plus de clés aujourd’hui.' };
+    case 'guildboss': return !s.guild.id ? { ok: false, reason: 'Rejoins d’abord un clan.' } : triesLeft(s, s.time.highWater) > 0 ? { ok: true } : { ok: false, reason: 'Plus d’essais aujourd’hui.' };
     case 'arena': return s.arena.ticketsUsed >= ARENA.ticketsPerDay ? { ok: false, reason: 'Plus de tickets aujourd’hui.' } : s.arena.opponents.some((o) => o.id === spec.opponentId) ? { ok: true } : { ok: false, reason: 'Adversaire introuvable.' };
     case 'challenge': {
       const e = activeEvents(s.time.highWater).find((x) => x.id === spec.eventId);
@@ -187,6 +198,7 @@ export function payMode(s: SaveData, spec: BattleSpec, now: number): { ok: boole
   if (info.cost.kind === 'energy' && !payEnergy(s, info.cost.amount, now)) return { ok: false, reason: 'Énergie insuffisante.' };
   if (info.cost.kind === 'key') s.worldBoss.keysUsed += 1;
   if (info.cost.kind === 'ticket') s.arena.ticketsUsed += 1;
+  if (info.cost.kind === 'try') useTry(s, now);
   return { ok: true };
 }
 
@@ -241,6 +253,15 @@ export function applyMode(s: SaveData, spec: BattleSpec, o: Outcome, now: number
       return res;
     }
 
+    case 'guildboss': {
+      const res = empty(true);
+      const dealt = Math.round(o.bossDamage?.dealt ?? 0);
+      addPending(s, dealt, now);
+      res.damage = { dealt, pct: Math.min(100, (dealt / Math.max(1, o.bossDamage?.max ?? 1)) * 100), chests: 0 };
+      res.won = dealt > 0;
+      res.lines.push(`Dégâts : ${dealt.toLocaleString('fr-FR')} · ajoutés aux dégâts du clan`);
+      return res;
+    }
     case 'worldboss': {
       const t = BOSS_TIERS.find((x) => x.id === spec.tier)!;
       const res = empty(true);

@@ -314,7 +314,8 @@ export function beginTurn(s: BattleState): Unit | null {
       if (st.status === 'poison' || st.status === 'burn') {
         const pct = st.status === 'poison' ? 0.05 : 0.04;
         const src = s.units.find((x) => x.id === st.sourceId);
-        const amount = Math.max(1, Math.round(u.base.hp * pct * (u.isBoss ? 0.5 : 1)));
+        let amount = Math.max(1, Math.round(u.base.hp * pct * (u.isBoss ? 0.5 : 1)));
+        if (u.flags.dotCap) amount = Math.min(amount, Math.round((src ? eff(s, src, 'atk') : 1000) * 1.5));
         u.hp -= amount;
         s.events.push({ kind: 'dot', target: u.id, amount, status: st.status });
         if (u.hp <= 0) kill(s, u, src ?? null);

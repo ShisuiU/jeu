@@ -396,7 +396,16 @@
 - Supprimer son compte efface aussi sa défense et son journal ; ne pas apparaître dans les classements retire aussi la défense
 - Règles de sécurité dans `firestore.rules` (à publier dans la console Firebase), vérifiées par des tests sur l’émulateur (`npm run test:rules`) ; test de bout en bout à deux joueurs sur les émulateurs
 
+## ✅ Version 1.46.0 — Multijoueur (2/3) : les clans
+
+- **Clans** (lieu « Clan » sur l’Accueil, ouvert après le niveau 1-10, compte nécessaire) : chercher un clan par son nom ou parmi les clans ouverts, le rejoindre, ou créer le sien (nom, présentation, ouvert ou fermé). 30 membres au plus
+- **Discussion de clan** : les 50 derniers messages, actualisés toutes les 8 s ; chacun peut effacer ses messages, le chef tous
+- **Boss de clan** chaque semaine (la Constellation morte, 40 actions, 2 essais par jour) : les dégâts de tous les membres s’additionnent ; 6 paliers de 250 000 à 15 millions, chacun récompense tous les membres qui ont attaqué dans la semaine. Les dégâts sont gardés dans la sauvegarde tant qu’ils ne sont pas envoyés (rien ne se perd hors ligne)
+- **Chef** : exclure un membre, ouvrir ou fermer le clan, nommer un autre chef ; le dernier membre peut dissoudre le clan
+- Combat : sur un boss aux PV gigantesques, poisons et brûlures sont plafonnés (sinon un pourcentage de ses PV écrasait tout)
+- Règles Firestore des clans et de leur discussion (`guilds/{gid}`, `guilds/{gid}/chat`) dans `firestore.rules`, vérifiées sur l’émulateur ; test de bout en bout à deux joueurs (création, adhésion, discussion, boss, exclusion)
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale
-- Guildes et amis (en cours)
+- Amis (en cours)

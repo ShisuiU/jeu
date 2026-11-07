@@ -15,6 +15,7 @@ import { play } from '../../audio/sfx';
 // avec un bouton pour y aller. Une seule fois par mode, jamais pendant le tutoriel ni en combat.
 
 const INFO: Record<Feature, { title: string; text: string; art: string; hero?: boolean; route: Route }> = {
+  guild: { title: 'Clans', text: 'Rejoins d’autres joueurs : une discussion, et un boss de clan chaque semaine dont les dégâts s’additionnent. Il faut un compte.', art: 'dead_constellation', route: { name: 'guild' } },
   camp: { title: 'Camp des Héritiers', text: 'Pendant ton absence, tes héros rapportent de l’or, des élixirs et des cristaux. Jusqu’à 12 h de butin, même jeu fermé.', art: 'torvald', hero: true, route: { name: 'camp' } },
   market: { title: 'Marché', text: 'Chaque jour, 6 offres à acheter avec ton or : éclats, élixirs, potions et équipements.', art: 'lio', hero: true, route: { name: 'market' } },
   expeditions: { title: 'Expéditions', text: 'Envoie des héros en mission : ils reviennent avec du butin, même jeu fermé.', art: 'seam_stalker', route: { name: 'expeditions' } },

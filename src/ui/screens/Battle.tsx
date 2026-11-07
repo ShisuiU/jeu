@@ -214,6 +214,8 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
     const boss = s.units.find((u) => u.side === 'enemy' && u.isBoss);
     // Arène réelle : le combat s'inscrit dans le journal du défenseur (il verra qui l'a attaqué).
     const foe = spec.mode === 'arena' ? useGame.getState().save?.arena.opponents.find((x) => x.id === spec.opponentId) : undefined;
+    // Boss de clan : les dégâts partent tout de suite au clan (sinon ils attendent dans la sauvegarde).
+    if (spec.mode === 'guildboss') { const gid = useGame.getState().save?.guild.id; if (gid) setTimeout(() => { void import('../../cloud/guildCloud').then((a) => a.syncMe(gid)).catch(() => {}); }, 300); }
     if (foe?.real && foe.uid) { const me = useGame.getState().save!; void loadCloud().then((c) => c.postArenaLog(foe.uid!, me, won, playerTeamPower(me))).catch(() => {}); }
     let res: ModeResult | null = null;
     mutate((d) => {
@@ -277,7 +279,7 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
     replace({ name: 'battle', spec, teamId, seed: Date.now() });
   };
   const next = result?.won ? nextSpec(useGame.getState().save!, spec) : null;
-  const backTo = (): Route['name'] => ({ campaign: 'campaign', dungeon: 'dungeons', tower: 'tower', worldboss: 'worldboss', arena: 'arena', challenge: 'events' } as const)[spec.mode];
+  const backTo = (): Route['name'] => ({ campaign: 'campaign', dungeon: 'dungeons', tower: 'tower', worldboss: 'worldboss', arena: 'arena', guildboss: 'guild', challenge: 'events' } as const)[spec.mode];
   const cost = initial.info.cost;
 
   const order = s.outcome === 'running' ? predictOrder(s, 7) : [];
@@ -375,7 +377,7 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
 
       {phase === 'result' && result && (
         <div className="result-overlay">
-          <div className={`result-title ${result.won ? 'win' : 'lose'}`}>{spec.mode === 'worldboss' ? 'COMBAT TERMINÉ' : result.won ? 'VICTOIRE' : 'DÉFAITE'}</div>
+          <div className={`result-title ${result.won ? 'win' : 'lose'}`}>{spec.mode === 'worldboss' || spec.mode === 'guildboss' ? 'COMBAT TERMINÉ' : result.won ? 'VICTOIRE' : 'DÉFAITE'}</div>
           {result.won && (() => {
             // Un héros encore debout dit un mot (choisi selon le combat, toujours le même pour ce combat).
             const alive = s.units.filter((u) => u.side === 'ally' && u.alive && u.kind === 'hero' && HERO_LINES[u.refId]);
@@ -438,7 +440,7 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
           <div className="result-actions">
             <button className="btn secondary grow" onClick={() => popTo(backTo())}>Retour</button>
             {spec.mode !== 'tower' && spec.mode !== 'challenge' && (
-              <button className="btn secondary grow" onClick={retry}>{result.won ? 'Rejouer' : 'Réessayer'} {cost.kind === 'energy' && <><Icon.energy size={16} />{cost.amount}</>}{cost.kind === 'key' && ' (1 clé)'}{cost.kind === 'ticket' && ' (1 ticket)'}</button>
+              <button className="btn secondary grow" onClick={retry}>{result.won ? 'Rejouer' : 'Réessayer'} {cost.kind === 'energy' && <><Icon.energy size={16} />{cost.amount}</>}{cost.kind === 'key' && ' (1 clé)'}{cost.kind === 'ticket' && ' (1 ticket)'}{cost.kind === 'try' && ' (1 essai)'}</button>
             )}
             {(spec.mode === 'tower' || (spec.mode === 'challenge' && spec.trial != null)) && !result.won && <button className="btn secondary grow" onClick={retry}>Réessayer</button>}
             {next && <button className="btn grow" onClick={() => replace({ name: 'prep', spec: next })}>Suivant</button>}

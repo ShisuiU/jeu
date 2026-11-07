@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
 import { DUNGEONS, DUNGEON_BY_ID, DUNGEON_FLOORS, dungeonEnergy, dungeonLevel } from '../../data/dungeons';
@@ -6,7 +6,8 @@ import { TOWER_FLOORS, towerLevel, towerReward, towerStatMult } from '../../data
 import { BOSS_TIERS, DAMAGE_CHESTS, WORLD_BOSS } from '../../data/worldBoss';
 import { ARENA, ARENA_TIERS, arenaTier } from '../../data/arena';
 import { HERO_BY_ID } from '../../data/heroes';
-import { arenaPlayers, generateOpponents, setArenaPlayers } from '../../game/arena';
+import { applyDefenseLog, arenaDefenses, defenseTeam, generateOpponents, opponentFromDefense, playerTeamPower, setArenaDefenses } from '../../game/arena';
+import type { ArenaLogEntry } from '../../save/schema';
 import { loadCloud, useAccount } from '../../cloud/account';
 import { seededRand } from '../../game/gear';
 import { dungeonBonus } from '../../game/events';
@@ -152,26 +153,53 @@ export function Arena() {
   const now = useGame((s) => s.now);
   const mutate = useGame((s) => s.mutate);
   const push = useUI((s) => s.push);
+  const toast = useUI((s) => s.toast);
   const tier = arenaTier(save.arena.rating);
   const tickets = ARENA.ticketsPerDay - save.arena.ticketsUsed;
   const user = useAccount((s) => s.user);
+  const [online, setOnline] = useState<'idle' | 'loading' | 'ok' | 'error'>('idle');
   useEffect(() => {
     if (save.arena.opponents.length === 0) mutate((s) => { s.arena.opponents = generateOpponents(s, seededRand(Date.now())); });
   }, [save.arena.opponents.length, mutate]);
-  // Avec un compte : les adversaires deviennent les reflets de vrais joueurs du classement (une fois par session).
+  // Avec un compte : publication de ta défense, journal des attaques reçues, et vraies équipes adverses.
   useEffect(() => {
-    if (!user || !navigator.onLine || arenaPlayers().length) return;
+    if (!user || !navigator.onLine) return;
     let alive = true;
+    setOnline('loading');
     loadCloud().then(async (c) => {
-      const me = c.currentUid();
-      const list = (await c.fetchRanks('power')).filter((p) => p.uid !== me);
-      setArenaPlayers(list);
-      const cur = useGame.getState().save!.arena.opponents;
-      if (alive && arenaPlayers().length && !cur.some((o) => o.real)) mutate((s) => { s.arena.opponents = generateOpponents(s, seededRand(Date.now())); });
-    }).catch(() => { /* hors ligne ou classements fermés : on garde les adversaires imaginaires */ });
+      await c.publishDefenseNow();
+      const log = await c.fetchMyLog();
+      if (alive && log.length) {
+        let r = { won: 0, lost: 0, delta: 0 };
+        mutate((s) => { r = applyDefenseLog(s, log); });
+        if (r.won + r.lost) toast(`Ta défense : ${r.won} victoire${r.won > 1 ? 's' : ''}, ${r.lost} défaite${r.lost > 1 ? 's' : ''} (${r.delta >= 0 ? '+' : ''}${r.delta} points).`, r.delta >= 0 ? 'ok' : 'info');
+      }
+      if (!arenaDefenses().length) {
+        setArenaDefenses(await c.fetchDefenses(playerTeamPower(useGame.getState().save!)));
+        const cur = useGame.getState().save!.arena.opponents;
+        if (alive && arenaDefenses().length && !cur.some((o) => o.real)) mutate((s) => { s.arena.opponents = generateOpponents(s, seededRand(Date.now())); });
+      }
+      if (alive) setOnline('ok');
+    }).catch(() => { if (alive) setOnline('error'); });
     return () => { alive = false; };
-  }, [user, mutate]);
+  }, [user, mutate]); // eslint-disable-line react-hooks/exhaustive-deps
   const anyReal = save.arena.opponents.some((o) => o.real);
+  const defTeam = defenseTeam(save);
+  const setDefense = (id: string) => {
+    mutate((s) => { s.arena.defenseTeamId = id; });
+    if (user) void loadCloud().then((c) => c.publishDefenseNow()).then(() => toast('Défense publiée.', 'ok')).catch(() => toast('Défense enregistrée ; elle sera publiée à la prochaine connexion.'));
+  };
+  const revenge = async (e: ArenaLogEntry) => {
+    if (tickets <= 0) { toast('Plus de tickets aujourd’hui.', 'error'); return; }
+    try {
+      const c = await loadCloud();
+      const d = await c.fetchDefense(e.attacker);
+      if (!d) { toast(`${e.name} n’a plus d’équipe de défense en ligne.`); return; }
+      const op = opponentFromDefense(d, e.id);
+      mutate((s) => { s.arena.opponents = [...s.arena.opponents.filter((o) => !o.revenge), op]; });
+      push({ name: 'prep', spec: { mode: 'arena', opponentId: op.id } });
+    } catch { toast('Serveur injoignable pour le moment.', 'error'); }
+  };
   return (
     <Screen title="Arène" right={<RanksBtn tab="arena" />}>
       <Panel>
@@ -187,14 +215,14 @@ export function Arena() {
       </Panel>
       <p className="hint" style={{ margin: '0 0 10px' }}>
         {anyReal
-          ? 'Les adversaires marqués « Joueur » sont de vrais Héritiers du classement en ligne : leur nom et leur puissance sont réels, leur équipe est un reflet mené par leur avatar.'
-          : user ? 'Aucun joueur en ligne de ta puissance pour l’instant : l’Arène t’oppose des Héritiers imaginaires, calibrés sur ta puissance.'
-            : 'Ces adversaires sont des Héritiers imaginaires, calibrés sur ta puissance. Crée un compte (Menu → Sauvegarde) pour affronter les reflets de vrais joueurs.'}
+          ? 'Les adversaires « Joueur » sont les vraies équipes de défense d’autres joueurs : leurs héros, niveaux, rangs, compétences et équipement.'
+          : user ? (online === 'loading' ? 'Recherche de joueurs de ta puissance…' : online === 'error' ? 'Serveur injoignable : l’Arène t’oppose des Héritiers imaginaires.' : 'Aucun joueur en ligne de ta puissance pour l’instant : l’Arène t’oppose des Héritiers imaginaires, calibrés sur ta puissance.')
+            : 'Ces adversaires sont des Héritiers imaginaires. Crée un compte (Menu → Sauvegarde) pour affronter les vraies équipes d’autres joueurs, et publier la tienne.'}
       </p>
       {save.arena.opponents.map((o, i) => (
         <Panel key={o.id}>
           <div className="row between" style={{ marginBottom: 8 }}>
-            <div><b>{o.name}</b> <span className={`ar-tag ${o.real ? 'real' : ''}`}>{o.real ? 'Joueur' : 'Imaginaire'}</span><div className="faint">{['Accessible', 'Équilibré', 'Redoutable'][i]} · puissance {fmt(o.power)}</div></div>
+            <div><b>{o.name}</b> <span className={`ar-tag ${o.real ? 'real' : ''}`}>{o.revenge ? 'Vengeance' : o.real ? 'Joueur' : 'Imaginaire'}</span><div className="faint">{o.revenge ? 'A battu ta défense' : ['Accessible', 'Équilibré', 'Redoutable'][i]} · puissance {fmt(o.power)}</div></div>
             <button className="btn small" disabled={tickets <= 0} onClick={() => push({ name: 'prep', spec: { mode: 'arena', opponentId: o.id } })}>Défier</button>
           </div>
           <div className="row" style={{ gap: 6 }}>
@@ -205,6 +233,29 @@ export function Arena() {
           <div className="faint" style={{ marginTop: 4 }}>{o.heroes.map((h) => HERO_BY_ID[h.heroId].name.split(/[ ,]/)[0]).join(', ')}</div>
         </Panel>
       ))}
+      <Panel title="Ta défense">
+        <p className="faint" style={{ marginTop: 0 }}>{user ? 'L’équipe que les autres joueurs affrontent quand ils te défient. Une défense qui gagne te rapporte des points ; une défaite t’en coûte un peu.' : 'Avec un compte, cette équipe sera publiée : les autres joueurs l’affronteront.'}</p>
+        <div className="seg" style={{ marginBottom: 8, flexWrap: 'wrap' }}>
+          {save.teams.map((t) => <button key={t.id} className={t.id === defTeam.id ? 'on' : ''} onClick={() => setDefense(t.id)}>{t.name}</button>)}
+        </div>
+        <div className="row" style={{ gap: 6 }}>
+          {defTeam.slots.map((u, k) => { const h = save.heroes.find((x) => x.uid === u); return h ? <div key={k} className="xp-ava" style={{ width: 46, height: 46, position: 'relative' }}><HeroArt heroId={h.heroId} /><span className="u-lvl">{h.level}</span></div> : null; })}
+        </div>
+        {!save.settings.showInRanks && user && <p className="hint" style={{ marginBottom: 0 }}>Tu as choisi de ne pas apparaître dans les classements : ta défense n’est pas publiée.</p>}
+      </Panel>
+      {save.arena.log.length > 0 && (
+        <Panel title="Journal de défense">
+          {save.arena.log.slice(0, 10).map((e) => (
+            <div key={e.id} className="stat-row" style={{ alignItems: 'center' }}>
+              <span className="row" style={{ gap: 8, minWidth: 0 }}>
+                <span className="xp-ava" style={{ width: 34, height: 34, flexShrink: 0 }}><HeroArt heroId={HERO_BY_ID[e.avatar] ? e.avatar : 'torvald'} /></span>
+                <span style={{ minWidth: 0 }}><b>{e.name}</b><div className="faint">{e.won ? `a battu ta défense · −${e.points}` : `a perdu contre ta défense · +${e.points}`} · {ago(now - e.at)}</div></span>
+              </span>
+              {e.won && (save.arena.revenged.includes(e.id) ? <span className="faint">Vengé</span> : <button className="btn small secondary" onClick={() => void revenge(e)}>Venger</button>)}
+            </div>
+          ))}
+        </Panel>
+      )}
       <Panel title="Ligues et récompenses de victoire">
         {ARENA_TIERS.map((t) => (
           <div key={t.id} className="stat-row"><b style={{ color: t.color }}>{t.name}</b><span className="faint">dès {t.min} · {Object.entries(t.reward).map(([k, v]) => `${v} ${k === 'gold' ? 'or' : k === 'crystals' ? 'cristaux' : k === 'shardAeon' ? 'éclat d’Aeon' : 'éclat terne'}`).join(', ')}</span></div>
@@ -213,6 +264,8 @@ export function Arena() {
     </Screen>
   );
 }
+
+const ago = (ms: number) => { const m = Math.floor(ms / 60000); return m < 60 ? `il y a ${Math.max(1, m)} min` : m < 1440 ? `il y a ${Math.floor(m / 60)} h` : `il y a ${Math.floor(m / 1440)} j`; };
 
 /** Raccourci vers le classement du mode. */
 function RanksBtn({ tab }: { tab: 'arena' | 'tower' | 'boss' }) {

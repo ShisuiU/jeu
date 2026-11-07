@@ -130,8 +130,9 @@ export function resolveMode(s: SaveData, spec: BattleSpec): ModeInfo {
       const i = s.arena.opponents.findIndex((o) => o.id === spec.opponentId);
       const o = s.arena.opponents[i];
       return {
-        title: `Arène · ${o?.name ?? '?'}`, subtitle: `Classement ${s.arena.rating}`, region: 'valcrest',
-        waves: [(o?.heroes ?? []).map((h) => ({ kind: 'hero' as const, refId: h.heroId, slot: h.slot, level: h.level }))],
+        title: `Arène · ${o?.name ?? '?'}`, subtitle: o?.revenge ? 'Vengeance' : o?.real ? 'Défense d’un vrai joueur' : `Classement ${s.arena.rating}`, region: 'valcrest',
+        // Vrai joueur : son équipe complète (rangs, ascension, éveil, compétences, équipement).
+        waves: [(o?.heroes ?? []).map((h) => ({ kind: 'hero' as const, refId: h.heroId, slot: h.slot, level: h.level, rank: h.rank, ascension: h.ascension, awaken: h.awaken, skillLevels: h.skillLevels, gear: h.gear }))],
         cost: { kind: 'ticket', amount: 1 }, rewardPreview: scaleReward(arenaTier(s.arena.rating).reward, eventBonus(s.time.highWater, 'arena')), rewardLabel: eventBonus(s.time.highWater, 'arena') > 1 ? 'Récompense de victoire (bonus d’événement)' : 'Récompense de victoire',
         notes: [`Victoire : +${ratingDelta(true, Math.max(0, i))} points · Défaite : ${ratingDelta(false, 0)}`], firstTime: false,
       };
@@ -257,9 +258,12 @@ export function applyMode(s: SaveData, spec: BattleSpec, o: Outcome, now: number
 
     case 'arena': {
       const i = s.arena.opponents.findIndex((x) => x.id === spec.opponentId);
+      const foe = s.arena.opponents[i];
       const res = empty(o.won);
       track(s, 'arenaFight');
-      const delta = ratingDelta(o.won, Math.max(0, i));
+      // Vengeance : une seule fois par combat du journal, points d'un adversaire « équilibré ».
+      if (foe?.revenge && !s.arena.revenged.includes(foe.revenge)) s.arena.revenged = [foe.revenge, ...s.arena.revenged].slice(0, 40);
+      const delta = ratingDelta(o.won, Math.min(2, Math.max(0, foe?.revenge ? 1 : i)));
       s.arena.rating = Math.max(0, s.arena.rating + delta);
       res.rating = { delta, rating: s.arena.rating };
       if (o.won) {

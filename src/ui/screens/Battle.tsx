@@ -14,6 +14,8 @@ import { applyMode, nextSpec, payMode, resolveMode, type BattleSpec, type ModeRe
 import { heroXpToNext } from '../../game/progression';
 import { play } from '../../audio/sfx';
 import { playMusic } from '../../audio/music';
+import { loadCloud } from '../../cloud/account';
+import { playerTeamPower } from '../../game/arena';
 import { ENEMIES } from '../../data/enemies';
 import { playCast, playDeath, playDot, playHeal, playImpact, playRevive, playShield, playStatus } from '../../audio/battleSfx';
 import { skillFx, type SkillFx } from '../fx/skillFx';
@@ -210,6 +212,9 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
     const won = s.outcome === 'won';
     const dead = s.units.filter((u) => u.side === 'ally' && !u.alive).length;
     const boss = s.units.find((u) => u.side === 'enemy' && u.isBoss);
+    // Arène réelle : le combat s'inscrit dans le journal du défenseur (il verra qui l'a attaqué).
+    const foe = spec.mode === 'arena' ? useGame.getState().save?.arena.opponents.find((x) => x.id === spec.opponentId) : undefined;
+    if (foe?.real && foe.uid) { const me = useGame.getState().save!; void loadCloud().then((c) => c.postArenaLog(foe.uid!, me, won, playerTeamPower(me))).catch(() => {}); }
     let res: ModeResult | null = null;
     mutate((d) => {
       res = applyMode(d, spec, { won, alliesDead: dead, participants: initial.allies.map((a) => a.heroUid!), bossDamage: boss ? { dealt: boss.base.hp - Math.max(0, boss.hp), max: boss.base.hp } : undefined }, Date.now());

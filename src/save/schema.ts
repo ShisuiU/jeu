@@ -107,7 +107,10 @@ export interface SaveData {
   resets: { day: string; week: string };
   missions: { daily: MissionProgress; weekly: MissionProgress };
   achievements: string[];
-  arena: { rating: number; wins: number; losses: number; ticketsUsed: number; opponents: ArenaOpponent[] };
+  arena: { rating: number; wins: number; losses: number; ticketsUsed: number; opponents: ArenaOpponent[];
+    /** Équipe publiée en défense (par défaut : l'équipe active). */ defenseTeamId: string;
+    /** Journal de défense déjà compté dans le classement (date du dernier combat appliqué). */ logSeen: number;
+    log: ArenaLogEntry[]; revenged: string[] };
   worldBoss: { keysUsed: number; best: Record<string, number> };
   events: Record<string, {
     counters: Record<string, number>; claimed: string[]; challengeDone: boolean;
@@ -126,11 +129,19 @@ export interface SaveData {
 export interface ArenaOpponent {
   id: string;
   name: string;
-  heroes: { heroId: string; level: number; slot: number }[];
+  /** Héros adverses. Pour un vrai joueur : son équipe complète (rangs, ascension, compétences, équipement). */
+  heroes: { heroId: string; level: number; slot: number; rank?: number; ascension?: number; awaken?: number; skillLevels?: Record<string, number>; gear?: import('../game/gear').GearBonus }[];
   power: number;
-  /** Reflet d'un vrai joueur du classement en ligne (nom et puissance réels). Sinon : Héritier imaginaire. */
+  /** Équipe de défense d'un vrai joueur (son compte : uid). Sinon : Héritier imaginaire. */
   real?: boolean;
+  uid?: string;
+  avatar?: string;
+  /** Vengeance : rejoue contre quelqu'un qui a battu ta défense. */
+  revenge?: string;
 }
+
+/** Combat reçu par ta défense d'Arène (journal en ligne, copié sur l'appareil). */
+export interface ArenaLogEntry { id: string; attacker: string; name: string; avatar: string; power: number; won: boolean; points: number; at: number }
 
 export function createHeroInstance(heroId: string, now: number): HeroInstance {
   const def = HERO_BY_ID[heroId];
@@ -189,7 +200,7 @@ export function createNewSave(now: number = Date.now()): SaveData {
     resets: { day: '', week: '' },
     missions: { daily: { counters: {}, claimed: [], bonus: false }, weekly: { counters: {}, claimed: [], bonus: false } },
     achievements: [],
-    arena: { rating: 1000, wins: 0, losses: 0, ticketsUsed: 0, opponents: [] },
+    arena: { rating: 1000, wins: 0, losses: 0, ticketsUsed: 0, opponents: [], defenseTeamId: '', logSeen: 0, log: [], revenged: [] },
     worldBoss: { keysUsed: 0, best: {} },
     events: {},
     camp: { since: now },

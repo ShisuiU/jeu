@@ -16,7 +16,6 @@ function valid(e: unknown): e is GameEvent {
 }
 
 export function setEvents(list: GameEvent[]) { events = list.filter(valid); }
-export function getEvents() { return events; }
 export function activeEvents(now: number): GameEvent[] {
   const list = events.filter((e) => Date.parse(e.start) <= now && now <= Date.parse(e.end));
   const w = weeklyEvent(now);

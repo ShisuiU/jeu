@@ -15,13 +15,6 @@ function measureInset(side: 'top' | 'bottom'): number {
   return v;
 }
 
-export function viewportInfo() {
-  const portrait = window.innerHeight >= window.innerWidth;
-  const screenH = portrait ? Math.max(screen.height, screen.width) : Math.min(screen.height, screen.width);
-  return { app: standalone(), screenH, innerH: window.innerHeight, gap: screenH - window.innerHeight, top: measureInset('top'), bottom: measureInset('bottom'),
-    reserved: document.documentElement.classList.contains('ios-bottom-reserved') };
-}
-
 export function fixViewport() {
   const apply = () => {
     const portrait = window.innerHeight >= window.innerWidth;

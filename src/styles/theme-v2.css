@@ -1,7 +1,6 @@
 /* ─────────────────────────────────────────────────────────────────────────────
-   VISUEL « GRIMOIRE DU MONDE COUSU » (v2) — actif quand .app porte la classe theme-v2.
-   Paramètres → Apparence → « Classique » retire la classe : on retrouve exactement l'ancien visuel,
-   puisque tout ce fichier ne s'applique qu'à .theme-v2.
+   VISUEL « GRIMOIRE DU MONDE COUSU » — .app porte toujours la classe theme-v2 (l'ancien visuel
+   « Classique » et son réglage ont été retirés).
    Images : src/assets/theme/ (fond peint, motif de filigrane, pierre), générées pour le jeu.
    ───────────────────────────────────────────────────────────────────────────── */
 .theme-v2 {

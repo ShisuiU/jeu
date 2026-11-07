@@ -81,10 +81,6 @@ export function payEnergy(s: SaveData, amount: number, now: number): boolean {
   return true;
 }
 
-export function payStage(s: SaveData, stage: StageDef, now: number, diff: DifficultyId = 'normal'): boolean {
-  return payEnergy(s, stageEnergy(stage, diff), now);
-}
-
 export function starsFor(alliesDead: number): number {
   return alliesDead === 0 ? 3 : alliesDead === 1 ? 2 : 1;
 }

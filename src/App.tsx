@@ -196,7 +196,7 @@ export default function App() {
   };
 
   return (
-    <div data-tab={tab} className={`app ${save?.settings.reducedMotion ? 'reduced-motion' : ''} ${save?.settings.theme === 'classic' ? '' : 'theme-v2'}`} onPointerDown={unlockAudio} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+    <div data-tab={tab} className={`app ${save?.settings.reducedMotion ? 'reduced-motion' : ''} theme-v2`} onPointerDown={unlockAudio} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
       {!started || !save ? (
         <Title ready={ready && !!save} onStart={start} error={error} />
       ) : (

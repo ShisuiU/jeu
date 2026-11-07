@@ -20,7 +20,7 @@ describe('doublons de héros', () => {
     const per: Record<string, number> = {};
     for (const d of dups) per[d.heroId] = (per[d.heroId] ?? 0) + 1;
     for (const [id, n] of Object.entries(per)) expect(copiesOf(s, id)).toBe(n);
-    expect(Object.keys(s.heroFragments)).toHaveLength(0);
+    expect('heroFragments' in s).toBe(false);
   });
 
   it('offrir un doublon à la famille renforce tous les héros de cette famille', () => {
@@ -65,7 +65,7 @@ describe('conversion des anciennes sauvegardes (v3 → v4)', () => {
     expect(s.heroCopies.brann).toBe(2);
     expect(s.heroCopies.aldric).toBe(1); // reste arrondi au supérieur
     expect(s.heroCopies.idris).toBeUndefined();
-    expect(s.heroFragments).toEqual({});
+    expect('heroFragments' in s).toBe(false);
     expect(s.bonds).toEqual({ faction: {}, affinity: {} });
   });
 });

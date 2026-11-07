@@ -22,9 +22,3 @@ export const LocalOnlyProvider: SyncProvider = {
   push: async () => {},
 };
 
-/** Choisit la sauvegarde à conserver en cas de divergence entre local et distant. */
-export function resolveConflict(local: SaveData, remote: SaveData): SaveData {
-  if (local.saveId !== remote.saveId) return local; // parties différentes : on ne remplace jamais silencieusement
-  if (remote.revision !== local.revision) return remote.revision > local.revision ? remote : local;
-  return remote.updatedAt > local.updatedAt ? remote : local;
-}

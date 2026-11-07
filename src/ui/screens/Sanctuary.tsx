@@ -71,7 +71,7 @@ export function Sanctuary({ uid }: { uid?: string }) {
 
       {/* Pages du Sanctuaire (comme une taverne) : une amélioration par page. */}
       <div className="seg sanct-tabs" style={{ marginBottom: 10 }}>
-        {TABS.map((t) => <button key={t.id} className={tab === t.id ? 'on' : ''} onClick={() => setTab(t.id)}>{t.label}{t.dot && <span className="seg-dot" />}</button>)}
+        {TABS.map((t) => <button key={t.id} className={tab === t.id ? 'on' : ''} onClick={(e) => { setTab(t.id); e.currentTarget.scrollIntoView({ block: 'nearest', inline: 'center' }); }}>{t.label}{t.dot && <span className="seg-dot" />}</button>)}
       </div>
 
       {tab === 'level' && (
@@ -99,7 +99,7 @@ export function Sanctuary({ uid }: { uid?: string }) {
       )}
       {tab === 'ascend' && (
         <>
-          <Wallet ids={['potionMinor', 'potionGreater', 'potionSupreme', 'awakenEssence', 'gold']} />
+          <Wallet ids={['potionMinor', 'potionGreater', 'potionSupreme', 'awakenEssence', 'gold']} cols={5} />
           <div className="upg-list">
             <CheckRow icon={<ResourceIcon icon="potion" color="#6fa8ff" size={20} />} label="Ascension" value={`${h.ascension}/${BALANCE.hero.maxAscension}`} check={ascendCheck(save, h)} max={h.ascension >= BALANCE.hero.maxAscension}
               heroId={h.heroId} onGo={() => run((s) => ascend(s, h.uid), `Ascension ${h.ascension + 1} !`)} />

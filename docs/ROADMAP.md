@@ -338,6 +338,13 @@
 - Nouveau décor de combat (les abysses), une page du Codex, une nouvelle expédition (le Rivage gris, riche en parchemins de maîtrise), un succès de chapitre
 - Équilibrage par simulation : au-delà du niveau maximum des héros, une équipe au maximum sans équipement gagne le boss environ une fois sur deux ; l’équipement et les maîtrises font la différence
 
+## ✅ Version 1.39.0 — Finitions
+
+- Audit d’accessibilité (axe-core) étendu aux nouveaux écrans (Marché, Classements, Ascension, Maîtrises) : 0 problème sur tout le jeu
+- Maîtrises verrouillées plus lisibles (contraste suffisant), textes à 11 px minimum partout (compteur d’énergie, Sac de la Forge, badge « Chef », noms des héros en préparation de combat)
+- Sanctuaire : les 5 onglets ne sont plus écrasés sur petit écran (défilement horizontal, l’onglet choisi se place en vue)
+- Onglet Ascension : le porte-monnaie (potions, essence, or) tient sur une seule ligne
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

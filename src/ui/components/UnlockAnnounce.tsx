@@ -54,7 +54,7 @@ export function UnlockAnnounce() {
         {heroId && <div className="unl-art hero"><HeroArt heroId={heroId} kind="full" /></div>}
         <div className="unl-tag">Nouvel événement</div>
         <h2>{e.name}</h2>
-        <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>{heroId ? `Connecte-toi ${e.login!.days.length} jours : un cadeau chaque jour, et ${HERO_BY_ID[heroId].name.split(' ')[0]}, héroïne exclusive, au dernier.` : e.description}</p>
+        <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>{heroId ? `Connecte-toi ${e.login!.days.length} jours : un cadeau chaque jour, et ${HERO_BY_ID[heroId].name.split(/[ ,]/)[0]}, héroïne exclusive, au dernier.` : e.description}</p>
         <button className="btn block" onClick={() => close(true)}>Voir l’événement</button>
         <button className="btn secondary block" style={{ marginTop: 8 }} onClick={() => close(false)}>Plus tard</button>
       </Modal>

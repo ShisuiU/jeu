@@ -93,7 +93,7 @@ export function Prep({ spec }: { spec: BattleSpec }) {
             return (
               <div key={f.refId} className={`foe ${f.boss ? 'boss' : ''}`} title={d.name}>
                 <div className="foe-art">{f.isHero ? <HeroArt heroId={f.refId} /> : <EnemyArt enemyId={f.refId} />}<span className="u-lvl">{f.level}</span><span className="u-aff"><AffinityIcon id={d.affinity} size={13} /></span>{f.n > 1 && <span className="foe-n">×{f.n}</span>}</div>
-                <div className="foe-name">{f.boss ? 'Boss' : d.name.split(' ')[0]}</div>
+                <div className="foe-name">{f.boss ? 'Boss' : d.name.split(/[ ,]/)[0]}</div>
               </div>
             );
           })}
@@ -153,7 +153,7 @@ export function Prep({ spec }: { spec: BattleSpec }) {
           <RewardView reward={summary.reward} />
           {summary.gear.length > 0 && <div className="gear-grid" style={{ marginTop: 10 }}>{summary.gear.slice(0, 8).map((g) => <GearCard key={g.uid} g={g} />)}</div>}
           {summary.gear.length > 8 && <p className="faint">+ {summary.gear.length - 8} autre(s) équipement(s)</p>}
-          {summary.levelUps.length > 0 && <p className="hint" style={{ marginTop: 10 }}>Niveau supérieur : {summary.levelUps.map((l) => `${HERO_BY_ID[l.heroId].name.split(' ')[0]} (${l.to})`).join(', ')}</p>}
+          {summary.levelUps.length > 0 && <p className="hint" style={{ marginTop: 10 }}>Niveau supérieur : {summary.levelUps.map((l) => `${HERO_BY_ID[l.heroId].name.split(/[ ,]/)[0]} (${l.to})`).join(', ')}</p>}
           <div className="row" style={{ gap: 8, marginTop: 12 }}>
             <button className="btn secondary grow" onClick={() => setSummary(null)}>Fermer</button>
             <button className="btn grow" disabled={maxRuns < 1} onClick={() => doSweep(Math.min(summary.count, maxRuns))}>Encore ×{Math.min(summary.count, Math.max(1, maxRuns))}</button>

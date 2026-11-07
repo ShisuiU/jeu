@@ -16,7 +16,7 @@ describe('chapitres', () => {
   it('tous les ennemis, orateurs et héros récompensés existent', () => {
     for (const c of CHAPTERS) for (const st of c.stages) {
       for (const w of st.waves) for (const e of w) expect(ENEMIES[e.enemy], `${st.id} ${e.enemy}`).toBeTruthy();
-      for (const l of [...(st.before ?? []), ...(st.after ?? [])]) expect(l.speaker === 'narrator' || !!HERO_BY_ID[l.speaker] || !!ENEMIES[l.speaker], `${st.id} ${l.speaker}`).toBe(true);
+      for (const l of [...(st.before ?? []), ...(st.after ?? [])]) expect(l.speaker === 'narrator' || l.speaker === 'player' || !!HERO_BY_ID[l.speaker] || !!ENEMIES[l.speaker], `${st.id} ${l.speaker}`).toBe(true);
       for (const h of st.firstClear.heroes ?? []) expect(HERO_BY_ID[h]).toBeTruthy();
     }
   });

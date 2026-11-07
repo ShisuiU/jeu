@@ -46,7 +46,7 @@ function CopiesModal({ h, onClose }: { h: HeroInstance; onClose: () => void }) {
   const n = copiesOf(save, h.heroId);
   const aw = awakenCheck(save, h);
   const awMax = h.awaken >= BALANCE.hero.maxAwaken;
-  const first = d.name.split(' ')[0];
+  const first = d.name.split(/[ ,]/)[0];
   const done = (msg: string) => { play('rare'); toast(msg, 'ok'); };
 
   const bond = (kind: BondKind) => {

@@ -6,7 +6,8 @@ import { TOWER_FLOORS, towerLevel, towerReward } from '../../data/tower';
 import { BOSS_TIERS, DAMAGE_CHESTS, WORLD_BOSS } from '../../data/worldBoss';
 import { ARENA, ARENA_TIERS, arenaTier } from '../../data/arena';
 import { HERO_BY_ID } from '../../data/heroes';
-import { generateOpponents } from '../../game/arena';
+import { arenaPlayers, generateOpponents, setArenaPlayers } from '../../game/arena';
+import { loadCloud, useAccount } from '../../cloud/account';
 import { seededRand } from '../../game/gear';
 import { dungeonBonus } from '../../game/events';
 import { formatDuration, msUntilReset } from '../../core/time';
@@ -153,9 +154,24 @@ export function Arena() {
   const push = useUI((s) => s.push);
   const tier = arenaTier(save.arena.rating);
   const tickets = ARENA.ticketsPerDay - save.arena.ticketsUsed;
+  const user = useAccount((s) => s.user);
   useEffect(() => {
     if (save.arena.opponents.length === 0) mutate((s) => { s.arena.opponents = generateOpponents(s, seededRand(Date.now())); });
   }, [save.arena.opponents.length, mutate]);
+  // Avec un compte : les adversaires deviennent les reflets de vrais joueurs du classement (une fois par session).
+  useEffect(() => {
+    if (!user || !navigator.onLine || arenaPlayers().length) return;
+    let alive = true;
+    loadCloud().then(async (c) => {
+      const me = c.currentUid();
+      const list = (await c.fetchRanks('power')).filter((p) => p.uid !== me);
+      setArenaPlayers(list);
+      const cur = useGame.getState().save!.arena.opponents;
+      if (alive && arenaPlayers().length && !cur.some((o) => o.real)) mutate((s) => { s.arena.opponents = generateOpponents(s, seededRand(Date.now())); });
+    }).catch(() => { /* hors ligne ou classements fermés : on garde les adversaires imaginaires */ });
+    return () => { alive = false; };
+  }, [user, mutate]);
+  const anyReal = save.arena.opponents.some((o) => o.real);
   return (
     <Screen title="Arène" right={<RanksBtn tab="arena" />}>
       <Panel>
@@ -169,10 +185,16 @@ export function Arena() {
         </div>
         <p className="faint" style={{ marginBottom: 0 }}>Nouveaux tickets dans {formatDuration(msUntilReset(now))}</p>
       </Panel>
+      <p className="hint" style={{ margin: '0 0 10px' }}>
+        {anyReal
+          ? 'Les adversaires marqués « Joueur » sont de vrais Héritiers du classement en ligne : leur nom et leur puissance sont réels, leur équipe est un reflet mené par leur avatar.'
+          : user ? 'Aucun joueur en ligne de ta puissance pour l’instant : l’Arène t’oppose des Héritiers imaginaires, calibrés sur ta puissance.'
+            : 'Ces adversaires sont des Héritiers imaginaires, calibrés sur ta puissance. Crée un compte (Menu → Sauvegarde) pour affronter les reflets de vrais joueurs.'}
+      </p>
       {save.arena.opponents.map((o, i) => (
         <Panel key={o.id}>
           <div className="row between" style={{ marginBottom: 8 }}>
-            <div><b>{o.name}</b><div className="faint">{['Accessible', 'Équilibré', 'Redoutable'][i]} · puissance {fmt(o.power)}</div></div>
+            <div><b>{o.name}</b> <span className={`ar-tag ${o.real ? 'real' : ''}`}>{o.real ? 'Joueur' : 'Imaginaire'}</span><div className="faint">{['Accessible', 'Équilibré', 'Redoutable'][i]} · puissance {fmt(o.power)}</div></div>
             <button className="btn small" disabled={tickets <= 0} onClick={() => push({ name: 'prep', spec: { mode: 'arena', opponentId: o.id } })}>Défier</button>
           </div>
           <div className="row" style={{ gap: 6 }}>
@@ -180,7 +202,7 @@ export function Arena() {
               <div key={h.slot} className="xp-ava" style={{ width: 46, height: 46, position: 'relative' }}><HeroArt heroId={h.heroId} /><span className="u-lvl">{h.level}</span></div>
             ))}
           </div>
-          <div className="faint" style={{ marginTop: 4 }}>{o.heroes.map((h) => HERO_BY_ID[h.heroId].name.split(' ')[0]).join(', ')}</div>
+          <div className="faint" style={{ marginTop: 4 }}>{o.heroes.map((h) => HERO_BY_ID[h.heroId].name.split(/[ ,]/)[0]).join(', ')}</div>
         </Panel>
       ))}
       <Panel title="Ligues et récompenses de victoire">

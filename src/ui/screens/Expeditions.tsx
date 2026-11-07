@@ -130,7 +130,7 @@ export function Expeditions() {
               return (
                 <HeroCard key={h.uid} heroId={h.heroId} level={h.level} selected={sel}
                   badge={isBusy ? 'En route' : condMet(offer.cond, [h.heroId]) ? '+30 %' : undefined}
-                  onClick={() => { if (isBusy) { toast(`${HERO_BY_ID[h.heroId].name.split(' ')[0]} est déjà en expédition.`); return; } setPicked(sel ? picked.filter((x) => x !== h.uid) : picked.length < offer.size ? [...picked, h.uid] : [...picked.slice(1), h.uid]); }} />
+                  onClick={() => { if (isBusy) { toast(`${HERO_BY_ID[h.heroId].name.split(/[ ,]/)[0]} est déjà en expédition.`); return; } setPicked(sel ? picked.filter((x) => x !== h.uid) : picked.length < offer.size ? [...picked, h.uid] : [...picked.slice(1), h.uid]); }} />
               );
             })}
           </div>

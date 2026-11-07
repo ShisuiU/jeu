@@ -78,7 +78,7 @@ export function FeedPanel({ targetUid }: { targetUid: string }) {
         <Modal onClose={() => setConfirm(false)}>
           <h2>Absorber {valid.length} héros ?</h2>
           <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>
-            {valid.map((u) => HERO_BY_ID[save.heroes.find((h) => h.uid === u)!.heroId].name.split(' ')[0]).join(', ')} disparaîtront définitivement.
+            {valid.map((u) => HERO_BY_ID[save.heroes.find((h) => h.uid === u)!.heroId].name.split(/[ ,]/)[0]).join(', ')} disparaîtront définitivement.
             {' '}Niveau {p.from} → {p.to}, pour {fmt(p.gold)} or.
           </p>
           <div className="row" style={{ gap: 8 }}>

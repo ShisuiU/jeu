@@ -364,6 +364,14 @@
 - Terrain de combat resserré : les deux équipes plus proches et des cartes un peu plus grandes
 - Tutoiement partout : une cinquantaine de phrases au « vous » corrigées (astuces, erreurs, Sauvegarde, compte, combat…)
 
+## ✅ Version 1.42.0 — Le joueur dans l’histoire, une Arène honnête (critique complète, points 5 et 6)
+
+- Le Lien parle : nouvel orateur « joueur » dans les dialogues (bulle dorée à son nom, « · le Lien »), et les héros l’appellent par le nom choisi au début
+- Dès le premier niveau, Elowen demande son nom au joueur ; une réplique du joueur ou à son nom dans chaque chapitre (2 à 9), et une réponse à la Voix du Néant au boss du chapitre 7
+- Arène : avec un compte, les adversaires sont les reflets de vrais joueurs du classement en ligne de puissance proche (nom et puissance réels, équipe menée par leur avatar), marqués « Joueur » ; sinon, des Héritiers imaginaires marqués « Imaginaire », avec une phrase qui l’explique
+- Les adversaires imaginaires ne portent plus de noms de héros du jeu (Ysolde, Tamsin) ; 22 noms au lieu de 12
+- Prénoms courts : plus de virgule collée (« Thalor, » → « Thalor ») sur les cartes et les listes
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

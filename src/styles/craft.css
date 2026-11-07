@@ -720,3 +720,11 @@ body:has(.modal-backdrop) .toasts, body:has(.sheet-backdrop) .toasts { bottom: a
 
 /* Combat : les messages passent en haut, sous le titre, pour ne jamais cacher les compétences. */
 body:has(.battle-controls) .toasts { bottom: auto; top: calc(var(--sat, 0px) + 64px); }
+
+/* Arène : vrai joueur ou adversaire imaginaire, annoncé honnêtement. */
+.ar-tag { display: inline-block; margin-left: 4px; padding: 0 6px; border-radius: 3px; font-size: 11px; font-weight: 700; vertical-align: 1px; color: var(--text-faint); border: 1px solid var(--edge); }
+.ar-tag.real { color: #9fe0b0; border-color: rgba(120,210,150,0.5); background: rgba(120,210,150,0.08); }
+
+/* Dialogue : quand le joueur (le Lien) parle, sa bulle se distingue (pas de portrait, liseré doré). */
+.dlg-box.player { border-color: var(--brass); box-shadow: 0 0 18px rgba(217,179,106,0.22); }
+.dlg-box.player .dlg-name { color: var(--gold-hi); }

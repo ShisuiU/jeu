@@ -112,7 +112,7 @@ export function Summon() {
           {(Object.entries(b.rates) as [RarityId, number][]).map(([r, v]) => (
             <div key={r} className="stat-row">
               <b style={{ color: RARITIES[r].color }}>{RARITIES[r].name}</b>
-              <span>{v} % <span className="faint">· {HEROES.filter((h) => h.rarity === r).map((h) => h.name.split(' ')[0]).join(', ')}</span></span>
+              <span>{v} % <span className="faint">· {HEROES.filter((h) => h.rarity === r).map((h) => h.name.split(/[ ,]/)[0]).join(', ')}</span></span>
             </div>
           ))}
           {b.featured && <p className="faint">{HERO_BY_ID[b.featured.heroId].name} : {Math.round(b.featured.share * 100)} % des tirages {RARITIES[HERO_BY_ID[b.featured.heroId].rarity].name.toLowerCase()}s.</p>}

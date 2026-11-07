@@ -122,7 +122,7 @@ export function HeroGear({ h }: { h: HeroInstance }) {
   const [open, setOpen] = useState<string | null>(null);
   const items = heroGear(save, h.uid);
   const bonus = gearBonus(items);
-  const owners = Object.fromEntries(save.heroes.map((x) => [x.uid, HERO_BY_ID[x.heroId].name.split(' ')[0]]));
+  const owners = Object.fromEntries(save.heroes.map((x) => [x.uid, HERO_BY_ID[x.heroId].name.split(/[ ,]/)[0]]));
   const candidates = pick ? save.equipment.filter((g) => g.slot === pick && g.heroUid !== h.uid).sort((a, b) => (a.heroUid ? 1 : 0) - (b.heroUid ? 1 : 0) || b.level - a.level) : [];
   return (
     <>

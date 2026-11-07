@@ -10,9 +10,30 @@ import { playerTeamPower } from './arena';
 export interface GuildMember { name: string; avatar: string; power: number; role: 'leader' | 'member'; joinedAt: number }
 export interface GuildDoc {
   name: string; nameLower: string; tag: string; description: string; emblem: string; open: boolean;
-  leader: string; members: Record<string, GuildMember>; count: number; createdAt: number;
+  leader: string; /** Adjoints (5 au plus). */ officers?: string[]; members: Record<string, GuildMember>; count: number; createdAt: number;
   boss: { week: string; dmg: Record<string, number> };
 }
+// Rôles : Chef (un seul), Adjoints (5 au plus), Membres.
+export type ClanRole = 'leader' | 'officer' | 'member';
+export const OFFICERS_MAX = 5;
+export const ROLE_NAMES: Record<ClanRole, string> = { leader: 'Chef', officer: 'Adjoint', member: 'Membre' };
+export const ROLE_HELP: Record<ClanRole, string> = {
+  leader: 'Nomme les adjoints et le prochain chef, exclut, règle le clan.',
+  officer: 'Exclut les simples membres, change la présentation, ouvre ou ferme le clan.',
+  member: 'Discute et attaque le boss de clan.',
+};
+export const roleOf = (g: GuildDoc, uid: string): ClanRole => (g.leader === uid ? 'leader' : (g.officers ?? []).includes(uid) ? 'officer' : 'member');
+/** Ce que « me » peut faire à « who ». */
+export function clanRights(g: GuildDoc, me: string, who: string) {
+  const mine = roleOf(g, me), theirs = roleOf(g, who), self = me === who;
+  return {
+    kick: !self && (mine === 'leader' || (mine === 'officer' && theirs === 'member')),
+    officer: !self && mine === 'leader' && theirs !== 'leader' && (theirs === 'officer' || (g.officers ?? []).length < OFFICERS_MAX),
+    leader: !self && mine === 'leader',
+    settings: mine === 'leader' || mine === 'officer',
+  };
+}
+
 export interface ChatMessage { id: string; uid: string; name: string; text: string; at: number }
 
 export function validGuildName(name: string): string | null {

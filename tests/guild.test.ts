@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createNewSave } from '../src/save/schema';
-import { addPending, bossTotal, claimTier, claimableTiers, guildWeek, takePending, triesLeft, useTry, validGuildName, tagOf, type GuildDoc } from '../src/game/guild';
+import { addPending, bossTotal, claimTier, claimableTiers, clanRights, guildWeek, roleOf, takePending, triesLeft, useTry, validGuildName, tagOf, type GuildDoc } from '../src/game/guild';
 import { GUILD_BOSS, GUILD_TIERS } from '../src/data/guild';
 import { canStart, resolveMode } from '../src/game/modes';
 
@@ -47,5 +47,26 @@ describe('clans (règles locales)', () => {
     expect(claimableTiers(s, g, 'b', T0)).toEqual([1]);
     // Semaine suivante : les dégâts de l'ancienne semaine ne comptent plus.
     expect(bossTotal(g, T0 + 8 * DAY)).toBe(0);
+  });
+});
+
+describe('clans : rôles', () => {
+  const g = (officers: string[] = []): GuildDoc => ({
+    name: 'C', nameLower: 'c', tag: 'C', description: '', emblem: 'aldric', open: true, leader: 'a', officers, count: 3, createdAt: 1, boss: { week: 'w', dmg: {} },
+    members: { a: { name: 'A', avatar: 'aldric', power: 1, role: 'leader', joinedAt: 1 }, b: { name: 'B', avatar: 'aldric', power: 1, role: 'member', joinedAt: 1 }, c: { name: 'C', avatar: 'aldric', power: 1, role: 'member', joinedAt: 1 } },
+  });
+  it('Chef, Adjoint, Membre', () => {
+    expect(roleOf(g(['b']), 'a')).toBe('leader');
+    expect(roleOf(g(['b']), 'b')).toBe('officer');
+    expect(roleOf(g(['b']), 'c')).toBe('member');
+    expect(roleOf({ ...g(), officers: undefined }, 'b')).toBe('member'); // anciens clans
+  });
+  it('droits selon le rôle', () => {
+    expect(clanRights(g(['b']), 'a', 'b')).toMatchObject({ kick: true, officer: true, leader: true });
+    expect(clanRights(g(['b']), 'b', 'c')).toMatchObject({ kick: true, officer: false, leader: false, settings: true });
+    expect(clanRights(g(['b']), 'b', 'a').kick).toBe(false);
+    expect(clanRights(g(['b', 'c']), 'b', 'c').kick).toBe(false); // un adjoint n'exclut pas un adjoint
+    expect(clanRights(g(['b']), 'c', 'b')).toMatchObject({ kick: false, settings: false });
+    expect(clanRights(g(['b', 'x', 'y', 'z', 'w']), 'a', 'c').officer).toBe(false); // 5 adjoints au plus
   });
 });

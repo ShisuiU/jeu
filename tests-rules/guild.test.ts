@@ -71,6 +71,37 @@ describe('clans : rejoindre, quitter, chef', () => {
   });
 });
 
+describe('clans : adjoints', () => {
+  it('le chef nomme et retire des adjoints ; pas les membres', async () => {
+    await seed(guild({ members: { a: m('leader'), b: m('member'), c: m('member') }, count: 3 }));
+    await assertFails(updateDoc(doc(db('b'), 'guilds/g'), { officers: ['b'] }));
+    await assertSucceeds(updateDoc(doc(db('a'), 'guilds/g'), { officers: ['b'] }));
+    await assertFails(updateDoc(doc(db('a'), 'guilds/g'), { officers: ['a'] })); // le chef n'est pas adjoint
+    await assertFails(updateDoc(doc(db('a'), 'guilds/g'), { officers: ['z'] })); // pas un membre
+    await assertFails(updateDoc(doc(db('b'), 'guilds/g'), { officers: ['b', 'c'] })); // un adjoint ne nomme pas
+    await assertSucceeds(updateDoc(doc(db('a'), 'guilds/g'), { officers: [] }));
+  });
+  it('un adjoint exclut un simple membre, règle le clan, mais n’exclut ni le chef ni un adjoint', async () => {
+    await seed(guild({ members: { a: m('leader'), b: m('member'), c: m('member'), d: m('member') }, count: 4, officers: ['b', 'd'] }));
+    await assertFails(updateDoc(doc(db('b'), 'guilds/g'), { 'members.d': deleteField(), count: 3, officers: ['b'] }));
+    await assertFails(updateDoc(doc(db('b'), 'guilds/g'), { 'members.a': deleteField(), count: 3 }));
+    await assertSucceeds(updateDoc(doc(db('b'), 'guilds/g'), { description: 'Par l’adjoint', open: false }));
+    await assertSucceeds(updateDoc(doc(db('b'), 'guilds/g'), { 'members.c': deleteField(), count: 3 }));
+    await assertFails(updateDoc(doc(db('b'), 'guilds/g'), { name: 'Renommé' }));
+  });
+  it('un adjoint qui part se retire de la liste ; le chef exclut un adjoint', async () => {
+    await seed(guild({ members: { a: m('leader'), b: m('member'), c: m('member') }, count: 3, officers: ['b', 'c'] }));
+    await assertFails(updateDoc(doc(db('b'), 'guilds/g'), { 'members.b': deleteField(), count: 2 })); // reste adjoint fantôme
+    await assertSucceeds(updateDoc(doc(db('b'), 'guilds/g'), { 'members.b': deleteField(), count: 2, officers: ['c'] }));
+    await assertSucceeds(updateDoc(doc(db('a'), 'guilds/g'), { 'members.c': deleteField(), count: 1, officers: [] }));
+  });
+  it('nommer un adjoint chef : il quitte la liste des adjoints', async () => {
+    await seed(guild({ members: { a: m('leader'), b: m('member') }, count: 2, officers: ['b'] }));
+    await assertFails(updateDoc(doc(db('a'), 'guilds/g'), { leader: 'b', 'members.a.role': 'member', 'members.b.role': 'leader' }));
+    await assertSucceeds(updateDoc(doc(db('a'), 'guilds/g'), { leader: 'b', 'members.a.role': 'member', 'members.b.role': 'leader', officers: [] }));
+  });
+});
+
 describe('discussion de clan', () => {
   it('réservée aux membres, messages à leur nom', async () => {
     await seed(guild({ members: { a: m('leader'), b: m('member') }, count: 2 }));

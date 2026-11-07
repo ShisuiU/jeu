@@ -380,6 +380,13 @@
 - Équilibrage vérifié par simulation : une équipe au maximum sans équipement passe l’étage 70 de la Tour mais pas le 100 (il faut l’équipement et les maîtrises), et l’étage 13 de chaque donjon
 - Nouveaux succès : Tour étage 75 et sommet (100), donjon étage 15
 
+## ✅ Version 1.44.0 — Nouvelle musique et rangement (critique complète, points 8 et 9)
+
+- **Musique entièrement recomposée** (toujours générée en direct, sans fichier, hors ligne) : un vrai petit compositeur avec tonalité, grille d’accords, tempo, basse, arpèges, mélodie (un motif propre à chaque morceau, varié au fil des sections) et réverbération
+- Un morceau par lieu : Accueil (harpe, nappe, flûte), Invocation (cloches de verre, chœur), Combat avec une couleur par région (Valcrest, Sylvaran, Prisme, Akkar en mode oriental, Abîme, Concordat, Cœur, Coutures, Mer des Oublis : tambours, ostinato, cuivres ou synthé) et un thème de Boss plus rapide et plus lourd qui démarre à l’arrivée de la vague du boss
+- **Combats** : la campagne en grand, les autres modes en grille de deux : tout tient sans défiler ; la carte Événements n’est plus en double (le raccourci de l’Accueil suffit) ; le compteur des donjons affiche bien 15 étages
+- **Menu** : une carte du joueur en haut (avatar, nom modifiable, niveau, et le bilan de la partie : héros, histoire, Tour, Arène, victoires, invocations) ; la pastille du Menu suit la même règle que la barre du bas
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

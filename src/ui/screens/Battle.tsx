@@ -13,6 +13,8 @@ import { teamSetups } from '../../game/campaign';
 import { applyMode, nextSpec, payMode, resolveMode, type BattleSpec, type ModeResult } from '../../game/modes';
 import { heroXpToNext } from '../../game/progression';
 import { play } from '../../audio/sfx';
+import { playMusic } from '../../audio/music';
+import { ENEMIES } from '../../data/enemies';
 import { playCast, playDeath, playDot, playHeal, playImpact, playRevive, playShield, playStatus } from '../../audio/battleSfx';
 import { skillFx, type SkillFx } from '../fx/skillFx';
 import { AffinityIcon, affinityEdge } from '../art/Identity';
@@ -67,6 +69,9 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
   const [heavyHits, setHeavyHits] = useState<Set<string>>(new Set());
   const measureRef = useRef<HTMLDivElement>(null);
   const [infoH, setInfoH] = useState(64);
+  // Musique : la couleur de la région ; le thème du boss dès que sa vague arrive.
+  const bossWave = initial.info.waves.findIndex((w) => w.some((e) => e.kind === 'enemy' && ENEMIES[e.refId]?.boss));
+  useEffect(() => { if (save.settings.music) playMusic(bossWave === 0 ? 'boss' : 'battle', initial.info.region); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   useLayoutEffect(() => {
     const el = measureRef.current; if (!el) return;
     let m = 0; el.querySelectorAll<HTMLElement>('.skill-info').forEach((x) => { m = Math.max(m, x.offsetHeight); });
@@ -146,7 +151,7 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
         case 'extraTurn': addPopup(e.target, 'Tour bonus !', 'buff'); break;
         case 'cleanse': break;
         case 'dispel': addPopup(e.target, 'Bonus retirés', 'debuff'); addVfx(e.target, 'cursefx', '#c7b6ff'); break;
-        case 'wave': setBanner({ text: `Vague ${e.wave} / ${s.totalWaves}`, side: 'wave' }); play('open'); force(); await wait(1100 / speedRef.current); setBanner(null); break;
+        case 'wave': if (bossWave >= 0 && e.wave - 1 >= bossWave && useGame.getState().save?.settings.music) playMusic('boss', initial.info.region); setBanner({ text: `Vague ${e.wave} / ${s.totalWaves}`, side: 'wave' }); play('open'); force(); await wait(1100 / speedRef.current); setBanner(null); break;
       }
     }
     if (hit.size) { setHits(hit); setHeavyHits(heavy); }

@@ -6,7 +6,7 @@ import { useUI, type Route } from './state/ui';
 import { initSaveSystem } from './save/saveManager';
 import { loadEvents } from './game/events';
 import { configureAudio, play, unlockAudio } from './audio/sfx';
-import { configureMusic, playMusic, stopMusic } from './audio/music';
+import { configureMusic, playMusic, resumeMusic, stopMusic } from './audio/music';
 import { canClaimDaily } from './game/daily';
 import { claimableCount } from './game/missions';
 import { finishedExpeditions } from './game/expeditions';
@@ -116,9 +116,10 @@ export default function App() {
   useEffect(() => { if (save) configureAudio({ enabled: save.settings.sound, volume: save.settings.volume }); }, [save?.settings.sound, save?.settings.volume]);
   useEffect(() => { if (save) configureMusic({ enabled: save.settings.music, volume: save.settings.musicVolume }); }, [save?.settings.music, save?.settings.musicVolume]);
   // Musique : ambiance au menu, pulsation en combat ; coupée quand l'app passe en arrière-plan.
-  useEffect(() => { if (started && save?.settings.music) playMusic(route.name === 'battle' ? 'battle' : 'menu'); }, [started, route.name, save?.settings.music]);
+  // Le combat choisit lui-même son morceau (région, boss) ; ailleurs : Accueil, ou Invocation à l'Autel.
+  useEffect(() => { if (started && save?.settings.music && route.name !== 'battle') playMusic(route.name === 'summon' ? 'summon' : 'menu'); }, [started, route.name, save?.settings.music]);
   useEffect(() => {
-    const onVis = () => { if (document.visibilityState === 'hidden') stopMusic(); else if (started && useGame.getState().save?.settings.music) playMusic(useUI.getState().stack.at(-1)?.name === 'battle' ? 'battle' : 'menu'); };
+    const onVis = () => { if (document.visibilityState === 'hidden') stopMusic(); else if (started && useGame.getState().save?.settings.music) resumeMusic(); };
     document.addEventListener('visibilitychange', onVis);
     return () => document.removeEventListener('visibilitychange', onVis);
   }, [started]);

@@ -739,3 +739,20 @@ body:has(.battle-controls) .toasts { bottom: auto; top: calc(var(--sat, 0px) + 6
 .camp-fire.full span { animation-duration: 1.1s; }
 @keyframes camp-flame { 0%, 100% { transform: scaleY(1) rotate(-2deg); } 50% { transform: scaleY(1.12) rotate(2deg); } }
 @media (prefers-reduced-motion: reduce) { .camp-fire span { animation: none; } }
+
+/* Combats : grille de deux pour les modes (la campagne reste en grand). */
+.combat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.combat-card.compact { height: 118px; flex-direction: column; align-items: stretch; justify-content: flex-end; gap: 0; padding: 0 10px 9px; background: rgba(10,8,14,0.9); }
+.combat-card.compact .cc-art { inset: 0; width: auto; -webkit-mask-image: linear-gradient(180deg, #000 30%, transparent 92%); mask-image: linear-gradient(180deg, #000 30%, transparent 92%); opacity: 0.85; }
+.combat-card.compact .cc-text { position: relative; z-index: 1; margin: 0; flex: 0 0 auto; }
+.combat-card.compact .cc-title { font-size: 15px; line-height: 1.15; }
+.combat-card.compact .cc-sub { font-size: 11.5px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* Menu : carte du joueur. */
+.profile-card { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 12px; margin-bottom: 14px; border-radius: var(--radius); background-color: var(--stone); background-image: var(--grain); border: 1px solid var(--edge); }
+.pc-ava { width: 62px; height: 62px; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--brass); flex-shrink: 0; }
+.pc-name { font-family: var(--font-title); font-size: 18px; color: var(--gold-hi); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pc-stats { flex-basis: 100%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.pc-stats > div { display: flex; flex-direction: column; align-items: center; padding: 6px 4px; border-radius: 3px; background: rgba(0,0,0,0.25); border: 1px solid var(--edge); }
+.pc-stats b { font-size: 14px; }
+.pc-stats span { font-size: 11px; color: var(--text-faint); }

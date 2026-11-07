@@ -1,14 +1,11 @@
 import { useGame } from '../../state/store';
 import { useUI, type Route } from '../../state/ui';
 import { CHAPTERS } from '../../data/campaign';
-import { DUNGEONS } from '../../data/dungeons';
+import { DUNGEONS, DUNGEON_FLOORS } from '../../data/dungeons';
 import { TOWER_FLOORS } from '../../data/tower';
 import { WORLD_BOSS } from '../../data/worldBoss';
 import { ARENA, arenaTier } from '../../data/arena';
 import { chapterStars, isStageUnlocked } from '../../game/campaign';
-import { activeEvents } from '../../game/events';
-import { eventClaimable } from '../../game/missions';
-import { BONUS_SHORT } from '../../data/eventCycle';
 import { EXPEDITION_SLOTS, finishedExpeditions } from '../../game/expeditions';
 import { Screen } from '../components/common';
 import { EnemyArt } from '../art/EnemyArt';
@@ -28,21 +25,13 @@ export function Combats() {
   const tickets = ARENA.ticketsPerDay - save.arena.ticketsUsed;
   const cards: { title: string; sub: string; art: string; color: string; route: Route; dot?: boolean; feature?: Feature }[] = [
     { title: 'Campagne', sub: `Chapitre ${chap.n} · ${chap.name} · ★ ${st.stars}/${st.max}`, art: chap.stages[9].waves[1]?.find((w) => w.hpMult)?.enemy ?? 'herald', color: '#d9b36a', route: { name: 'campaign' } },
-    { title: 'Donjons', sub: `Meilleur étage ${bestDungeon}/10`, art: 'forge_golem', color: '#ff9a3c', route: { name: 'dungeons' }, feature: 'dungeons' },
+    { title: 'Donjons', sub: `Meilleur étage ${bestDungeon}/${DUNGEON_FLOORS}`, art: 'forge_golem', color: '#ff9a3c', route: { name: 'dungeons' }, feature: 'dungeons' },
     { title: 'Tour des Âges', sub: `Étage ${save.progress.tower.floor}/${TOWER_FLOORS}`, art: 'tower_sentinel', color: '#b98cff', route: { name: 'tower' }, feature: 'tower' },
     { title: 'Boss mondial', sub: `${WORLD_BOSS.name} · ${keys}/${WORLD_BOSS.keysPerDay} clés`, art: WORLD_BOSS.enemy, color: '#ffcc66', route: { name: 'worldboss' }, dot: keys > 0, feature: 'worldboss' },
     { title: 'Expéditions', sub: (() => { const f = finishedExpeditions(save, now); const r = save.expeditions?.runs.length ?? 0; return f ? `${f} de retour : butin à récupérer` : r ? `${r} en cours` : `${EXPEDITION_SLOTS} missions par jour, même jeu fermé`; })(), art: 'seam_stalker', color: '#9fb7ff', route: { name: 'expeditions' }, feature: 'expeditions', dot: finishedExpeditions(save, now) > 0 || (save.expeditions?.runs.length ?? 0) + (save.expeditions?.done.length ?? 0) === 0 },
     { title: 'Arène', sub: `Ligue ${arenaTier(save.arena.rating).name} · ${tickets}/${ARENA.ticketsPerDay} tickets`, art: 'hollow_knight', color: '#ff6b7d', route: { name: 'arena' }, dot: tickets > 0, feature: 'arena' },
   ];
-  // Une seule carte pour tous les événements en cours (l'écran Événements les sépare par onglets).
-  const evs = activeEvents(now);
-  const wk = evs.find((e) => e.cycle) ?? evs[0];
-  if (wk) cards.unshift({
-    title: evs.length > 1 ? 'Événements' : wk.name,
-    sub: [wk.cycle ? `${wk.name} · bonus ${BONUS_SHORT[wk.cycle.bonus.kind]} ×${String(wk.cycle.bonus.mult).replace('.', ',')}` : wk.name, evs.length > 1 ? `+${evs.length - 1} autre${evs.length > 2 ? 's' : ''}` : ''].filter(Boolean).join(' · '),
-    art: wk.cycle?.art ?? 'ash_lord', color: wk.color ?? '#ff3d6e', route: { name: 'events' }, feature: 'events',
-    dot: evs.some((e) => !save.flags[`seen_${e.id}`] || eventClaimable(save, now, e.id) > 0),
-  });
+  // Les événements n'ont qu'une entrée : le raccourci « Événements » de l'Accueil.
   const open = cards.filter((c) => !c.feature || isUnlocked(save, c.feature));
   // Modes fermés : seul le prochain à s'ouvrir est montré (les autres sont annoncés en une ligne).
   const closedAll = cards.filter((c) => c.feature && !isUnlocked(save, c.feature)).sort((a, b) => unlockOrder(a.feature!) - unlockOrder(b.feature!));
@@ -50,8 +39,9 @@ export function Combats() {
   const later = new Set(closedAll.slice(1).map((c) => c.feature)).size;
   return (
     <Screen title="Combats">
+      {/* La campagne en grand ; les autres modes en grille de deux, pour tout voir sans défiler. */}
       <div className="combat-list">
-        {open.map((c) => (
+        {open.slice(0, 1).map((c) => (
           <button key={c.title} className="combat-card" style={{ ['--mc' as string]: c.color }} onClick={() => push(c.route)}>
             <div className="cc-art"><EnemyArt enemyId={c.art} /></div>
             <div className="cc-text">
@@ -62,6 +52,20 @@ export function Combats() {
             <Icon.back size={18} />
           </button>
         ))}
+        {open.length > 1 && (
+          <div className="combat-grid">
+            {open.slice(1).map((c) => (
+              <button key={c.title} className="combat-card compact" style={{ ['--mc' as string]: c.color }} onClick={() => push(c.route)}>
+                <div className="cc-art"><EnemyArt enemyId={c.art} /></div>
+                <div className="cc-text">
+                  <div className="cc-title">{c.title}</div>
+                  <div className="cc-sub">{c.sub}</div>
+                </div>
+                {c.dot && <span className="badge-dot" style={{ top: 8, right: 8 }} />}
+              </button>
+            ))}
+          </div>
+        )}
         {/* Modes encore fermés : rangés en bas, avec le niveau qui les ouvre (un seul nom de mode à la fois, pas de détails). */}
         {closed.map((c) => (
           <button key={c.title} className="combat-card locked" style={{ ['--mc' as string]: '#5a5364' }} onClick={() => toast(`${c.title} : ${unlockText(c.feature!).toLowerCase()} de la campagne.`)}>

@@ -152,6 +152,46 @@ export const HERO_LINES: Record<string, string[]> = {
     'Il voulait un monde parfait. Je préfère le nôtre.',
     'Les étoiles se cousent avec patience. Et du fil solide.',
   ],
+  pia: [
+    'Tu saignes ? Viens par là, j’ai ce qu’il faut.',
+    'Celle-ci soigne. Celle-là… non, celle-là, on ne la touche pas.',
+    'La lune fait pousser les meilleures herbes.',
+  ],
+  dorn: [
+    'Paie-moi en soupe chaude, ça ira.',
+    'Six seigneurs. Vous êtes les premiers à ne pas fuir.',
+    'L’épée est ébréchée. Moi aussi. On fait encore le travail.',
+  ],
+  lio: [
+    'Attends, je resserre un boulon et on y va.',
+    'Mes drones t’ont à l’œil. Gentiment.',
+    'Ce bras ? Version trois. Bien meilleure que l’originale.',
+  ],
+  vesk: [
+    'Ta bourse est bien lourde. Je pourrais t’aider à la porter.',
+    'Les toits, c’est mon royaume.',
+    'Je n’ai rien pris. Enfin… presque rien.',
+  ],
+  fenn: [
+    'Frêne a senti quelque chose. On y va.',
+    'Une piste, une proie. C’est simple.',
+    'La forêt se souvient. Moi aussi.',
+  ],
+  nakht: [
+    'Vingt ans devant une porte. Je sais attendre.',
+    'Derrière le bouclier. Tous.',
+    'Le soleil se lève sur le sable. Il se lèvera encore.',
+  ],
+  kiro: [
+    'Chut. Ils ne m’entendront pas venir.',
+    'Je suis déjà derrière eux.',
+    'Effacé. Pas disparu.',
+  ],
+  odalie: [
+    'La sentence est rendue. Avançons.',
+    'Le froid garde l’esprit clair.',
+    'J’ai jugé l’Église. Je peux juger n’importe qui.',
+  ],
 };
 
 /** Réplique suivante d'un héros (la citation de sa fiche, puis ses trois répliques). */

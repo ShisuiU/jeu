@@ -1,18 +1,29 @@
+import { HERO_LINES } from '../src/data/heroLines';
 import { describe, expect, it } from 'vitest';
 import { HEROES, HERO_BY_ID } from '../src/data/heroes';
 import { computeStats, maxLevelForRank, powerOf } from '../src/game/stats';
 import { RARITIES } from '../src/data/rarities';
 import { FACTIONS } from '../src/data/factions';
 
+const ART = Object.keys(import.meta.glob('../src/assets/heroes/*/*.webp'));
+const hasArt = (id: string, kind: string) => ART.includes(`../src/assets/heroes/${id}/${kind}.webp`);
+
 describe('données des héros', () => {
-  it('30 héros aux identifiants uniques et cohérents', () => {
-    expect(HEROES).toHaveLength(30);
-    expect(new Set(HEROES.map((h) => h.id)).size).toBe(30);
+  it('38 héros aux identifiants uniques et cohérents', () => {
+    expect(HEROES).toHaveLength(38);
+    expect(new Set(HEROES.map((h) => h.id)).size).toBe(38);
     const skillIds = HEROES.flatMap((h) => h.skills.map((s) => s.id));
     expect(new Set(skillIds).size).toBe(skillIds.length);
     for (const h of HEROES) {
       expect(FACTIONS[h.faction]).toBeTruthy();
       expect(h.skills.some((s) => s.slot === 'basic')).toBe(true);
+    }
+  });
+  it('chaque héros a son illustration (portrait et en pied) et ses répliques', () => {
+    for (const h of HEROES) {
+      expect(hasArt(h.id, 'portrait'), h.id).toBe(true);
+      expect(hasArt(h.id, 'full'), h.id).toBe(true);
+      expect((HERO_LINES[h.id] ?? []).length, h.id).toBeGreaterThanOrEqual(3);
     }
   });
   it('les six raretés et six factions sont représentées', () => {

@@ -19,7 +19,8 @@ export const ACHIEVEMENTS: AchievementDef[] = [
   { id: 'a_heroes12', title: 'Posséder 12 héros', reward: { shardAeon: 1 }, progress: (s) => [s.heroes.length, 12] },
   { id: 'a_heroes15', title: 'Posséder 15 héros', reward: { crystals: 300 }, progress: (s) => [s.heroes.length, 15] },
   { id: 'a_heroes21', title: 'Posséder 21 héros', reward: { crystals: 600 }, progress: (s) => [s.heroes.length, 21] },
-  { id: 'a_heroes23', title: 'Posséder les 23 héros', reward: { crystals: 900 }, progress: (s) => [s.heroes.length, 23] },
+  { id: 'a_heroes23', title: 'Posséder 23 héros', reward: { crystals: 900 }, progress: (s) => [s.heroes.length, 23] },
+  { id: 'a_heroes32', title: 'Posséder 32 héros', reward: { crystals: 1200, shardAeon: 3 }, progress: (s) => [s.heroes.length, 32] },
   ...[2, 3, 4, 5, 6, 7, 8].map((n): AchievementDef => ({
     id: `a_ch${n}`, title: `Terminer le chapitre ${n} (Normal)`,
     reward: n >= 7 ? { crystals: 1100 } : { crystals: 200 + n * 50, shardAeon: 1 },

@@ -413,6 +413,11 @@
 - Fiche publique `profiles/{uid}` (nom, avatar, niveau, puissance, héros prêté), codes `codes/{code}`, amitiés `friendships/{a_b}` ; supprimer son compte efface aussi tout cela
 - Règles Firestore des amis dans `firestore.rules` (19 tests sur l’émulateur au total) ; test de bout en bout à deux joueurs (code, demande, acceptation, cadeau, renfort en combat)
 
+## ✅ Version 1.47.1 — Correctif des règles des classements
+
+- Vérification du multijoueur sur le vrai serveur (Arène réelle, clans, amis) : tout fonctionne
+- Correctif : les règles Firestore empêchaient d’effacer sa propre ligne de classement (option « ne pas apparaître dans les classements », suppression du compte). Nouvelles règles à publier
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

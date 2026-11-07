@@ -14,6 +14,7 @@ const TEAMS: Record<number, string[]> = {
   6: ['varkhaal', 'ysolde', 'nerissa', 'orin', 'tamsin'],
   7: ['varkhaal', 'ysolde', 'nerissa', 'orin', 'caelum'],
   8: ['varkhaal', 'ysolde', 'nerissa', 'orin', 'solenne'],
+  9: ['varkhaal', 'ysolde', 'nerissa', 'orin', 'solenne'],
 };
 function team(n: number, lv: number): UnitSetup[] {
   return TEAMS[n].map((id, i) => {
@@ -36,4 +37,13 @@ describe('équilibrage des chapitres 2 à 8 (simulation)', () => {
       expect(rate(n, 5, -8)).toBeLessThan(0.8);
     });
   }
+  // Chapitre 9 : au-delà du niveau maximum des héros (60). Une équipe au maximum, sans équipement ni maîtrises,
+  // doit pouvoir le terminer parfois : l'équipement et les maîtrises font la différence.
+  it('chapitre 9 : difficile mais faisable avec une équipe au maximum', () => {
+    expect(rate(9, 1, 0, 10)).toBeGreaterThanOrEqual(0.8);
+    const boss = rate(9, 10, 0, 20);
+    expect(boss).toBeGreaterThanOrEqual(0.2);
+    expect(boss).toBeLessThanOrEqual(0.7);
+    expect(rate(9, 9, 0, 20)).toBeLessThan(rate(8, 9, 0, 20));
+  });
 });

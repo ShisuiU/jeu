@@ -192,6 +192,16 @@ export const HERO_LINES: Record<string, string[]> = {
     'Le froid garde l’esprit clair.',
     'J’ai jugé l’Église. Je peux juger n’importe qui.',
   ],
+  maren: [
+    'La flamme tient. Tant qu’elle tient, on avance.',
+    'Douze ans seule devant cette lanterne. Je ne suis plus seule.',
+    'La mer reprend ce qu’on oublie. Alors souvenez-vous de tout.',
+  ],
+  corentin: [
+    'Première Garde, à vos ordres. Cent ans de retard, mais présent.',
+    'Derrière mon bouclier. La marée ne passera pas.',
+    'J’ai retrouvé mon nom. Je n’en demandais pas tant.',
+  ],
 };
 
 /** Réplique suivante d'un héros (la citation de sa fiche, puis ses trois répliques). */

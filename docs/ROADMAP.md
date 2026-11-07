@@ -330,6 +330,14 @@
 - Nouvelle ressource : **Parchemin de maîtrise** (bonus des missions hebdomadaires, Boss mondial Difficile et plus, paliers de la Tour, Marché)
 - Absorber un héros rend les parchemins investis dans ses maîtrises
 
+## ✅ Version 1.38.0 — Chapitre 9 : la Mer des Oublis
+
+- Nouveau chapitre (10 niveaux, 4 difficultés) après les Coutures du Monde : sous le Monde Cousu, une mer recueille tout ce qui est oublié, et elle monte
+- 5 nouveaux ennemis illustrés : Sentinelle noyée, Sirène d’amertume, Pêcheur des abysses, Chevalier des marées et le boss, le **Léviathan des Oublis** (gel, vol de jauge, soin)
+- 2 nouveaux héros : **Maren Chante-Houle** (Épique, soigneuse, rejoint au niveau 9-5) et **Sire Corentin le Noyé** (Légendaire, défenseur, récompense du boss)
+- Nouveau décor de combat (les abysses), une page du Codex, une nouvelle expédition (le Rivage gris, riche en parchemins de maîtrise), un succès de chapitre
+- Équilibrage par simulation : au-delà du niveau maximum des héros, une équipe au maximum sans équipement gagne le boss environ une fois sur deux ; l’équipement et les maîtrises font la différence
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

@@ -7,7 +7,7 @@ export type Speaker = string; // id de héros, id d'ennemi, ou 'narrator'
 
 export interface DialogueLine { speaker: Speaker; text: string }
 
-export interface WaveEnemy { enemy: string; level: number; slot: number; hpMult?: number }
+export interface WaveEnemy { enemy: string; level: number; slot: number; hpMult?: number; /** Puissance supplémentaire (sommets de la Tour). */ statMult?: number }
 
 export interface StageDef {
   id: string; // "1-1"

@@ -7,6 +7,7 @@ import { claimableCount, eventsDot } from '../../game/missions';
 import { isUnlocked } from '../../game/unlocks';
 import { newCopies } from '../../game/copies';
 import { cloudWanted, useAccount } from '../../cloud/account';
+import { campElapsed } from '../../game/camp';
 
 const ITEMS: { tab: Tab; label: string; icon: keyof typeof Icon }[] = [
   { tab: 'home', label: 'Accueil', icon: 'home' },
@@ -26,7 +27,7 @@ export function BottomNav() {
   const summonDot = useGame((s) => !!s.save && (s.save.resources.shardAeon >= 10 || (isUnlocked(s.save, 'events') && !s.save.flags.gift_event_ash)));
   // Combats : une expédition revenue (butin qui attend). Les clés et tickets du jour restent signalés sur les cartes.
   const combatsDot = useGame((s) => !!s.save && (s.save.expeditions?.runs ?? []).some((r) => s.now >= r.endsAt));
-  const homeDot = useGame((s) => !!s.save && (canClaimDaily(s.save, s.now) || unreadMail(s.save.flags) || claimableCount(s.save) > 0 || (isUnlocked(s.save, 'events') && eventsDot(s.save, s.now))));
+  const homeDot = useGame((s) => !!s.save && (canClaimDaily(s.save, s.now) || unreadMail(s.save.flags) || claimableCount(s.save) > 0 || (isUnlocked(s.save, 'events') && eventsDot(s.save, s.now)) || (isUnlocked(s.save, 'camp') && campElapsed(s.save, s.now) >= 4 * 3600_000)));
   const heroesDot = useGame((s) => !!s.save && newCopies(s.save));
   // Menu : invitation à protéger sa partie, jusqu'à la première visite de l'écran Sauvegarde.
   const menuDot = useGame((s) => !!s.save && !s.save.flags.saves_seen && !useAccount.getState().user && !cloudWanted() && s.save.stats.battlesWon >= 3);

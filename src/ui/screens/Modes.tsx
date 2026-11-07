@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
 import { DUNGEONS, DUNGEON_BY_ID, DUNGEON_FLOORS, dungeonEnergy, dungeonLevel } from '../../data/dungeons';
-import { TOWER_FLOORS, towerLevel, towerReward } from '../../data/tower';
+import { TOWER_FLOORS, towerLevel, towerReward, towerStatMult } from '../../data/tower';
 import { BOSS_TIERS, DAMAGE_CHESTS, WORLD_BOSS } from '../../data/worldBoss';
 import { ARENA, ARENA_TIERS, arenaTier } from '../../data/arena';
 import { HERO_BY_ID } from '../../data/heroes';
@@ -92,14 +92,14 @@ export function Tower() {
   return (
     <Screen title="Tour des Âges" right={<RanksBtn tab="tower" />}>
       <Panel>
-        <div className="row between"><span>Étage atteint : <b style={{ color: 'var(--gold-hi)' }}>{cur}</b> / {TOWER_FLOORS}</span><span className="row" style={{ gap: 6 }}><span className="faint">Sans énergie</span><InfoButton title="Tour des Âges">Chaque étage se conquiert une seule fois. Tous les 10 étages, une Sentinelle garde le passage avec de grosses récompenses.</InfoButton></span></div>
+        <div className="row between"><span>Étage atteint : <b style={{ color: 'var(--gold-hi)' }}>{cur}</b> / {TOWER_FLOORS}</span><span className="row" style={{ gap: 6 }}><span className="faint">Sans énergie</span><InfoButton title="Tour des Âges">Chaque étage se conquiert une seule fois. Tous les 10 étages, une Sentinelle garde le passage avec de grosses récompenses. Au-delà du 50ᵉ, les Sommets : les ennemis de toutes les régions, plus forts à chaque étage, et un boss de chapitre tous les 10 étages.</InfoButton></span></div>
         <div className="progress" style={{ marginTop: 8 }}><div style={{ width: `${(cur / TOWER_FLOORS) * 100}%` }} /></div>
       </Panel>
       <div className="tower">
         {floors.map((f) => (
           <div key={f} className={`tower-floor ${f <= cur ? 'done' : f === next && !done ? 'next' : 'future'} ${f % 10 === 0 ? 'boss' : ''}`}>
             <span className="tf-n">{f}</span>
-            <span className="grow">{f % 10 === 0 ? 'Sentinelle' : `Ennemis niv. ${towerLevel(f)}`}</span>
+            <span className="grow">{f % 10 === 0 ? (f > 50 ? 'Boss des Sommets' : 'Sentinelle') : `Ennemis niv. ${towerLevel(f)}${f > 50 ? ` · puissance +${Math.round((towerStatMult(f) - 1) * 100)} %` : ''}`}</span>
             <span className="row" style={{ gap: 4 }}>{rewardMainIcon(towerReward(f), 18)}</span>
             {f <= cur && <span className="chip active">✓</span>}
           </div>

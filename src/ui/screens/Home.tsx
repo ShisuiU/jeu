@@ -15,6 +15,7 @@ import { WorldScene, Particles } from '../art/Scene';
 import { Icon } from '../art/Icons';
 import { TopBar } from '../components/TopBar';
 import { unreadMail } from './Mail';
+import { campElapsed } from '../../game/camp';
 
 // ACCUEIL — l'illustration du chef d'équipe en plein écran, les lieux (Sanctuaire, Forge),
 // trois raccourcis, la campagne.
@@ -40,6 +41,7 @@ export function Home() {
   const places = [
     { label: 'Sanctuaire', icon: Icon.temple, dot: teamHeroes.some((h) => canImprove(save, h)), go: () => push({ name: 'sanctuary' }) },
     { label: 'Forge', icon: Icon.forge, dot: false, go: () => push({ name: 'gear' }) },
+    { label: 'Camp', icon: Icon.gift, dot: isUnlocked(save, 'camp') && campElapsed(save, now) >= 4 * 3600_000, go: () => (isUnlocked(save, 'camp') ? push({ name: 'camp' }) : useUI.getState().toast(`Camp : ${unlockText('camp').toLowerCase()} de la campagne.`)) },
     { label: 'Marché', icon: Icon.bag, dot: isUnlocked(save, 'market') && save.shop.market?.day !== dayKey(now), go: () => (isUnlocked(save, 'market') ? push({ name: 'market' }) : useUI.getState().toast(`Marché : ${unlockText('market').toLowerCase()} de la campagne.`)) },
   ];
 

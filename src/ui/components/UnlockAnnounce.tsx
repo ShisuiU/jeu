@@ -15,13 +15,14 @@ import { play } from '../../audio/sfx';
 // avec un bouton pour y aller. Une seule fois par mode, jamais pendant le tutoriel ni en combat.
 
 const INFO: Record<Feature, { title: string; text: string; art: string; hero?: boolean; route: Route }> = {
+  camp: { title: 'Camp des Héritiers', text: 'Pendant ton absence, tes héros rapportent de l’or, des élixirs et des cristaux. Jusqu’à 12 h de butin, même jeu fermé.', art: 'torvald', hero: true, route: { name: 'camp' } },
   market: { title: 'Marché', text: 'Chaque jour, 6 offres à acheter avec ton or : éclats, élixirs, potions et équipements.', art: 'lio', hero: true, route: { name: 'market' } },
   expeditions: { title: 'Expéditions', text: 'Envoie des héros en mission : ils reviennent avec du butin, même jeu fermé.', art: 'seam_stalker', route: { name: 'expeditions' } },
   events: { title: 'Événements', text: 'Chaque semaine, un nouvel événement : objectifs, épreuve et récompenses.', art: 'hollow_knight', route: { name: 'events' } },
   dungeons: { title: 'Donjons', text: 'Équipement et matériaux d’amélioration, étage après étage.', art: 'forge_golem', route: { name: 'dungeons' } },
   worldboss: { title: 'Boss mondial', text: 'Frappe le plus fort possible : 3 essais par jour, des coffres selon les dégâts.', art: WORLD_BOSS.enemy, route: { name: 'worldboss' } },
   arena: { title: 'Arène', text: 'Affronte les équipes d’autres Héritiers et grimpe les ligues.', art: 'hollow_knight', route: { name: 'arena' } },
-  tower: { title: 'Tour des Âges', text: '50 étages sans énergie : jusqu’où iras-tu ?', art: 'tower_sentinel', route: { name: 'tower' } },
+  tower: { title: 'Tour des Âges', text: '100 étages sans énergie : jusqu’où iras-tu ?', art: 'tower_sentinel', route: { name: 'tower' } },
 };
 const ORDER = Object.keys(UNLOCK_AT) as Feature[];
 const flag = (f: Feature) => `unl_${f}`;

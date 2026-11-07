@@ -34,6 +34,7 @@ let popSeq = 0;
 
 export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: string; seed: number }) {
   const save = useGame((s) => s.save)!;
+  const secondFight = Object.values(save.progress.campaign).some((p) => p.clears > 0);
   const mutate = useGame((s) => s.mutate);
   const updateSettings = useGame((s) => s.updateSettings);
   const { popTo, replace, toast } = useUI.getState();
@@ -253,7 +254,7 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
 
   const onUnit = (u: Unit) => { if (targetable.has(u.id)) void act(u.id); };
 
-  const toggleAuto = () => { const v = !auto; setAuto(v); updateSettings({ autoBattleDefault: v }); play('tap'); };
+  const toggleAuto = () => { const v = !auto; setAuto(v); updateSettings({ autoBattleDefault: v }); play('tap'); if (v && !save.flags.coach_battle_auto) mutate((s) => { s.flags.coach_battle_auto = true; }); };
   const cycleSpeed = () => { const v = (speed === 3 ? 1 : speed + 1) as 1 | 2 | 3; setSpeed(v); updateSettings({ battleSpeed: v }); play('tap'); };
 
   const doQuit = () => { setQuit(false); s.outcome = 'lost'; s.activeId = null; alive.current = false; finish(); };
@@ -323,9 +324,9 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
       {banner && <div className={`skill-banner ${banner.side} ${ult ? 'ult' : ''}`} key={banner.text + banner.side}>{banner.text}</div>}
 
       <FxLayer items={fxItems} />
-      <Coach id="battle_skill" target=".battle-controls .skills" when={awaiting && !auto && phase === 'fight'} text="C’est ton tour : choisis une compétence." />
-      <Coach id="battle_target" target=".unit.enemy.targetable" when={awaiting && !auto && !!selSkill && targetKind(selSkill) !== 'none'} text="Touche un ennemi pour attaquer. ▲ : ton affinité est avantagée, ▼ : elle est désavantagée." />
-      <Coach id="battle_auto" target=".ctrl-col" when={awaiting && !auto && phase === 'fight'} text="AUTO fait jouer l’équipe toute seule ; ×1 / ×2 / ×3 accélère." />
+      {/* Tutoriel du combat : une seule bulle au premier combat ; AUTO au combat suivant (les affinités sont expliquées à la préparation). Bulles en haut : l'équipe reste visible. */}
+      <Coach id="battle_skill" place="top" target=".battle-controls .skills" when={awaiting && !auto && phase === 'fight'} text="C’est ton tour : choisis une compétence en bas, puis touche un ennemi." />
+      <Coach id="battle_auto" place="top" target=".ctrl-col" when={secondFight && awaiting && !auto && phase === 'fight'} text="AUTO fait jouer l’équipe toute seule ; ×1 / ×2 / ×3 accélère le combat." />
 
       <div className="battle-controls">
         {/* Hauteur de l'aide = plus longue description de l'équipe (mesurée une fois) : texte complet, sans saut d'écran. */}
@@ -377,6 +378,9 @@ export function Battle({ spec, teamId, seed }: { spec: BattleSpec; teamId: strin
             <div className="result-stars">
               {[1, 2, 3].map((n) => <span key={n} className={n <= result.stars ? 'on' : ''} style={{ animationDelay: `${0.3 + n * 0.2}s` }}><Icon.star size={46} color={n <= result.stars ? '#ffd36b' : '#3a3442'} /></span>)}
             </div>
+          )}
+          {result.won && spec.mode === 'campaign' && result.stars < 3 && (
+            <p className="faint result-why">{result.stars === 2 ? '1 héros KO : 2 étoiles. Aucun héros KO pour la 3ᵉ.' : 'Plusieurs héros KO : 1 étoile. Garde ton équipe en vie pour en gagner plus.'}</p>
           )}
           <div className="result-body">
             {result.won ? (

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
 import { HERO_BY_ID } from '../../data/heroes';
@@ -16,6 +16,7 @@ import { Sheet } from './ListControls';
 import { AffinityIcon } from '../art/Identity';
 import { FactionEmblem } from '../art/FactionEmblem';
 import { Icon } from '../art/Icons';
+import { inTutorial } from './Coach';
 
 // DOUBLONS — encart de la fiche héros et fenêtre « Utiliser un doublon » (3 choix clairs).
 
@@ -111,5 +112,48 @@ export function BondsSheet({ onClose }: { onClose: () => void }) {
       <div className="sheet-gtitle" style={{ marginTop: 14 }}>Affinités</div>
       {(Object.keys(AFFINITIES) as AffinityId[]).map((a) => row('affinity', a, AFFINITIES[a].name, <AffinityIcon id={a} size={22} />))}
     </Sheet>
+  );
+}
+
+/** PRÉSENTATION DES LIENS — au premier doublon obtenu, une fenêtre explique ce qui rend Aeonfall différent :
+ *  un doublon peut renforcer toute une famille ou toute une affinité, pas seulement le héros lui-même. */
+export function BondsIntro() {
+  const save = useGame((s) => s.save)!;
+  const mutate = useGame((s) => s.mutate);
+  const [open, setOpen] = useState(false);
+  const [sheet, setSheet] = useState(false);
+  const copies = Object.values(save.heroCopies ?? {}).reduce((a, n) => a + Math.max(0, n), 0);
+  const anyBond = Object.values(save.bonds?.faction ?? {}).some((v) => v > 0) || Object.values(save.bonds?.affinity ?? {}).some((v) => v > 0);
+  const due = copies > 0 && !anyBond && !save.flags.bonds_intro && !inTutorial(save);
+  useEffect(() => {
+    if (!due || open || sheet) return;
+    // Jamais par-dessus une autre fenêtre, le tutoriel ou l'animation d'invocation.
+    const id = setInterval(() => { if (!document.querySelector('.modal-backdrop, .sheet-backdrop, .coach, .rift-reveal')) { setOpen(true); play('rare'); clearInterval(id); } }, 700);
+    return () => clearInterval(id);
+  }, [due, open, sheet]);
+  const close = (go: boolean) => { mutate((s) => { s.flags.bonds_intro = true; }); setOpen(false); if (go) setSheet(true); };
+  return (
+    <>
+      {open && (
+        <Modal onClose={() => close(false)}>
+          <div className="unl-tag">Les Liens</div>
+          <h2>Ton premier doublon !</h2>
+          <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>
+            Dans le Monde Cousu, les Héritiers sont liés. Un héros en double peut renforcer <b>toute sa famille</b> (Valcrest, Prisme…) ou <b>toute son affinité</b> (Solaire, Lunaire…) :
+            +{BOND_PCT} % de PV, ATQ et DÉF pour chacun d’eux, jusqu’à +{BOND_MAX * BOND_PCT} %.
+          </p>
+          <div className="bonds-intro-aff">
+            {(['solar', 'telluric', 'lunar'] as AffinityId[]).map((a, i) => (
+              <span key={a}><AffinityIcon id={a} size={22} />{i < 2 && <b>›</b>}</span>
+            ))}
+            <AffinityIcon id="solar" size={22} />
+          </div>
+          <p className="faint" style={{ textAlign: 'center', marginTop: 0 }}>Et en combat : Solaire bat Tellurique, qui bat Lunaire, qui bat Solaire. Le Néant n’a ni avantage ni faiblesse.</p>
+          <button className="btn block" onClick={() => close(true)}>Voir les Liens</button>
+          <button className="btn secondary block" style={{ marginTop: 8 }} onClick={() => close(false)}>Plus tard</button>
+        </Modal>
+      )}
+      {sheet && <BondsSheet onClose={() => setSheet(false)} />}
+    </>
   );
 }

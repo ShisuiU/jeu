@@ -14,6 +14,7 @@ import { cloudWanted, loadCloud } from './cloud/account';
 import { AccountPrompt, CloudConflictModal } from './ui/screens/Account';
 import { inTutorial } from './ui/components/Coach';
 import { UnlockAnnounce } from './ui/components/UnlockAnnounce';
+import { BondsIntro } from './ui/components/Copies';
 import { BottomNav } from './ui/components/BottomNav';
 import { Toasts } from './ui/components/Toasts';
 import { Title } from './ui/screens/Title';
@@ -177,7 +178,8 @@ export default function App() {
     setStarted(true);
     setTimeout(() => play('claim'), 50);
     const s = useGame.getState();
-    if (s.save && canClaimDaily(s.save, s.now)) useUI.getState().push({ name: 'daily' });
+    // Pas de calendrier pendant les premières minutes : l'histoire et le premier combat d'abord.
+    if (s.save && !inTutorial(s.save) && canClaimDaily(s.save, s.now)) useUI.getState().push({ name: 'daily' });
   };
 
   return (
@@ -194,6 +196,7 @@ export default function App() {
           {route.name !== 'battle' && <BottomNav />}
           <CloudConflictModal />
           {(route.name === 'home' || route.name === 'combats' || route.name === 'campaign') && <UnlockAnnounce />}
+          {(route.name === 'home' || route.name === 'collection' || route.name === 'summon') && <BondsIntro />}
           {route.name === 'home' && <AccountPrompt />}
           {route.name === 'home' && !save.flags.guide_done && <Guide />}
         </>

@@ -8,6 +8,7 @@ import { ENEMIES } from '../../data/enemies';
 import { HERO_BY_ID } from '../../data/heroes';
 import { AFFINITIES } from '../../data/affinities';
 import { STAGE_BY_ID } from '../../data/campaign';
+import { stageProgress } from '../../game/campaign';
 import { heroTotalStats } from '../../game/heroStats';
 import { powerOf } from '../../game/stats';
 import { msToNextEnergy } from '../../game/energy';
@@ -80,8 +81,10 @@ export function Prep({ spec }: { spec: BattleSpec }) {
   return (
     <Screen title={info.title}>
       <Coach id="prep_fight" target=".fight-btn" text="Voici les ennemis et la récompense. Lance le combat !" />
+      <Coach id="battle_target" target=".aff-advice" when={Object.values(save.progress.campaign).some((p) => p.clears > 0)} text="Les affinités comptent : Solaire bat Tellurique, qui bat Lunaire, qui bat Solaire. Un héros avantagé (▲) frappe 30 % plus fort. Regarde ici combien ton équipe en a." />
       <div className="prep-sub"><span className="muted">{info.subtitle}</span></div>
-      <AffinityAdvice waves={info.waves} />
+      {spec.mode === 'campaign' && <StarRules best={stageProgress(save, spec.difficulty, spec.stageId).stars} />}
+      <AffinityAdvice waves={info.waves} team={members.filter(Boolean).map((h) => h!.heroId)} />
 
       <Panel title={spec.mode === 'arena' ? 'Équipe adverse' : `Ennemis · ${info.waves.length} vague${info.waves.length > 1 ? 's' : ''}`}>
         <div className="foe-row">
@@ -167,7 +170,7 @@ export function Stage({ stageId }: { stageId: string }) {
 }
 
 /** Conseil d'affinité : l'affinité ennemie la plus présente, et celle qui la bat. */
-function AffinityAdvice({ waves }: { waves: { kind: string; refId: string }[][] }) {
+function AffinityAdvice({ waves, team }: { waves: { kind: string; refId: string }[][]; team: string[] }) {
   const count: Partial<Record<AffinityId, number>> = {};
   for (const w of waves) for (const e of w) {
     const a = (e.kind === 'hero' ? HERO_BY_ID[e.refId].affinity : ENEMIES[e.refId].affinity) as AffinityId;
@@ -176,10 +179,36 @@ function AffinityAdvice({ waves }: { waves: { kind: string; refId: string }[][] 
   const main = (Object.entries(count) as [AffinityId, number][]).filter(([a]) => a !== 'void').sort((a, b) => b[1] - a[1])[0]?.[0];
   if (!main) return null;
   const counter = (Object.values(AFFINITIES).find((x) => x.strongAgainst === main))?.id as AffinityId | undefined;
+  // Ce qui fait la différence : combien de tes héros frappent fort (▲) ou faiblement (▼) contre ces ennemis.
+  const up = team.filter((id) => AFFINITIES[HERO_BY_ID[id].affinity].strongAgainst === main).length;
+  const down = team.filter((id) => AFFINITIES[main].strongAgainst === HERO_BY_ID[id].affinity).length;
   return (
     <div className="aff-advice">
-      <span>Ennemis surtout <AffinityIcon id={main} size={16} /> <b style={{ color: AFFINITIES[main].color }}>{AFFINITIES[main].name}</b></span>
-      {counter && <span>· conseillé <AffinityIcon id={counter} size={16} /> <b style={{ color: AFFINITIES[counter].color }}>{AFFINITIES[counter].name}</b></span>}
+      <div>
+        <span>Ennemis surtout <AffinityIcon id={main} size={16} /> <b style={{ color: AFFINITIES[main].color }}>{AFFINITIES[main].name}</b></span>
+        {counter && <span> · conseillé <AffinityIcon id={counter} size={16} /> <b style={{ color: AFFINITIES[counter].color }}>{AFFINITIES[counter].name}</b></span>}
+      </div>
+      {team.length > 0 && (
+        <div className="aff-team">
+          Ton équipe : <b className="aff-up">{up} avantagé{up > 1 ? 's' : ''} ▲</b> · <b className={down ? 'aff-down' : ''}>{down} désavantagé{down > 1 ? 's' : ''} ▼</b>
+          <span className="faint"> (▲ +30 % de dégâts, ▼ −20 %)</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** Conditions des étoiles, affichées avant le combat (et le meilleur résultat déjà obtenu). */
+function StarRules({ best }: { best: number }) {
+  const rules = ['Victoire', '1 KO max', 'Aucun KO'];
+  return (
+    <div className="star-rules" aria-label={`Étoiles : meilleur résultat ${best} sur 3`}>
+      {rules.map((r, i) => (
+        <span key={i} className={`sr ${best > i ? 'got' : ''}`}>
+          <span className="sr-stars">{Array.from({ length: i + 1 }, (_, k) => <Icon.star key={k} size={11} color={best > i ? '#ffd36b' : '#7a7266'} />)}</span>
+          {r}
+        </span>
+      ))}
     </div>
   );
 }

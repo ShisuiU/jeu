@@ -8,8 +8,9 @@ import { play } from '../../audio/sfx';
 // Chaque étape ne s'affiche qu'une fois (drapeau coach_<id>), dans l'ordre (après l'étape « after »).
 // Toucher l'élément éclairé valide l'étape ; « Passer le tutoriel » coupe tout.
 
-export const COACH_ORDER = ['home_campaign', 'campaign_stage', 'prep_fight', 'battle_skill', 'battle_target', 'battle_auto',
-  'home_summon', 'summon_call', 'home_sanct', 'sanct_level', 'hero_gear'] as const;
+// Ordre du tutoriel : 1er combat (une seule bulle) → première invocation → 2e combat (affinités, AUTO) → Sanctuaire.
+export const COACH_ORDER = ['home_campaign', 'campaign_stage', 'prep_fight', 'battle_skill',
+  'home_summon', 'summon_call', 'battle_target', 'battle_auto', 'home_sanct', 'sanct_level', 'hero_gear'] as const;
 export type CoachId = typeof COACH_ORDER[number];
 
 /** Joueur déjà avancé avant l'arrivée du tutoriel : on ne l'embête pas (sauf relance depuis les paramètres). */
@@ -22,7 +23,8 @@ function veteran(s: SaveData): boolean {
 export function coachActive(s: SaveData, id: CoachId): boolean {
   if (s.flags.coach_off || s.flags[`coach_${id}`] || !s.flags.guide_done || veteran(s)) return false;
   const i = COACH_ORDER.indexOf(id);
-  return i === 0 || !!s.flags[`coach_${COACH_ORDER[i - 1]}`];
+  // Une étape n'apparaît que si TOUTES les précédentes sont faites : jamais deux bulles à la fois.
+  return COACH_ORDER.slice(0, i).every((x) => !!s.flags[`coach_${x}`]);
 }
 
 /** Le tutoriel du début est-il encore en cours (pas de message par-dessus) ? */
@@ -38,7 +40,7 @@ export function resetCoach(s: SaveData) {
 
 type Rect = { x: number; y: number; w: number; h: number };
 
-export function Coach({ id, target, text, when = true }: { id: CoachId; target: string; text: string; when?: boolean }) {
+export function Coach({ id, target, text, when = true, place = 'auto' }: { id: CoachId; target: string; text: string; when?: boolean; place?: 'auto' | 'top' }) {
   const save = useGame((s) => s.save)!;
   const mutate = useGame((s) => s.mutate);
   const active = when && coachActive(save, id);
@@ -85,9 +87,11 @@ export function Coach({ id, target, text, when = true }: { id: CoachId; target: 
 
   if (!active || !rect) return null;
   const vw = window.innerWidth, vh = window.innerHeight;
-  const below = rect.y + rect.h / 2 < vh * 0.55;
-  const bubbleTop = below ? Math.min(vh - 150, rect.y + rect.h + 12) : undefined;
-  const bubbleBottom = below ? undefined : Math.min(vh - 60, vh - rect.y + 12);
+  // « top » (combat) : la bulle se met en haut de l'écran, pour ne jamais cacher l'équipe.
+  const top = place === 'top';
+  const below = !top && rect.y + rect.h / 2 < vh * 0.55;
+  const bubbleTop = top ? 12 : below ? Math.min(vh - 150, rect.y + rect.h + 12) : undefined;
+  const bubbleBottom = top || below ? undefined : Math.min(vh - 60, vh - rect.y + 12);
   const arrowX = Math.max(24, Math.min(vw - 24, rect.x + rect.w / 2));
   return createPortal(
     <div className="coach" aria-live="polite">
@@ -97,7 +101,7 @@ export function Coach({ id, target, text, when = true }: { id: CoachId; target: 
       <div className="coach-veil" style={{ left: 0, top: rect.y, width: Math.max(0, rect.x), height: rect.h }} />
       <div className="coach-veil" style={{ left: rect.x + rect.w, top: rect.y, width: Math.max(0, vw - rect.x - rect.w), height: rect.h }} />
       <div className="coach-ring" style={{ left: rect.x, top: rect.y, width: rect.w, height: rect.h }} />
-      <div className={`coach-bubble ${below ? 'below' : 'above'}`} style={{ top: bubbleTop, bottom: bubbleBottom, ['--ax' as string]: `${arrowX}px` }}>
+      <div className={`coach-bubble ${top ? 'top' : below ? 'below' : 'above'}`} style={{ top: bubbleTop, bottom: bubbleBottom, ['--ax' as string]: `${arrowX}px` }}>
         <p>{text}</p>
         <div className="coach-actions">
           <button onClick={() => mutate((s) => { s.flags.coach_off = true; })}>Passer le tutoriel</button>

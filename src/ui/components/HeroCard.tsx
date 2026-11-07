@@ -20,7 +20,7 @@ export function HeroCard({ heroId, level, owned = true, selected, onClick, badge
       <span className="hc-id"><AffinityIcon id={d.affinity} size={18} /><span className="hc-role"><RoleIcon id={d.role} size={12} /></span></span>
       <div className="meta">
         <div className="hc-line"><FactionEmblem id={d.faction} size={13} /><Stars rarity={d.rarity} /></div>
-        <div className="name">{d.name}</div>
+        <div className="name"><span className="n-full">{d.name}</span><span className="n-short">{d.name.split(/[ ,]/)[0]}</span></div>
       </div>
     </Tag>
   );

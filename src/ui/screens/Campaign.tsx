@@ -26,13 +26,13 @@ export function Campaign() {
   return (
     <Screen title="Campagne">
       <Coach id="campaign_stage" target=".stage-node:not(.locked)" text="Choisis le premier niveau." />
-      <div className="seg" style={{ marginBottom: 10 }}>
+      <div className="seg camp-diff" style={{ marginBottom: 10 }}>
         {DIFFICULTY_ORDER.map((d) => {
           const open = isStageUnlocked(save, d, CHAPTERS[0].stages[0]);
           return <button key={d} className={`${diff === d ? 'on' : ''} ${open ? '' : 'locked'}`} aria-disabled={!open} onClick={() => { if (!open) { toast(`${DIFFICULTIES[d].name} : terminez d’abord le chapitre 1 en ${DIFFICULTIES[DIFFICULTY_ORDER[DIFFICULTY_ORDER.indexOf(d) - 1]].name}.`); return; } setDiff(d); setChap(latest(d)); }}>{DIFFICULTIES[d].name}</button>;
         })}
       </div>
-      <div className="chips" style={{ marginBottom: 12 }}>
+      <div className="chips camp-chaps" style={{ marginBottom: 12 }} ref={(el) => { const a = el?.querySelector<HTMLElement>('.chip.active'); if (a && el && (a.offsetLeft + a.offsetWidth > el.scrollLeft + el.clientWidth || a.offsetLeft < el.scrollLeft)) el.scrollLeft = a.offsetLeft - el.clientWidth / 2 + a.offsetWidth / 2; }}>
         {CHAPTERS.map((x) => {
           const open = isStageUnlocked(save, diff, x.stages[0]);
           const done = stageProgress(save, diff, x.stages[9].id).clears > 0;
@@ -52,8 +52,8 @@ export function Campaign() {
           <div className="faint" style={{ color: 'var(--gold)' }}>CHAPITRE {c.n} · {c.region.toUpperCase()}</div>
           <h2 style={{ fontSize: 22 }}>{c.name}</h2>
           <p className="muted" style={{ fontSize: 13, margin: '6px 0' }}>{c.intro}</p>
-          <div className="row"><Icon.star size={16} /> <b>{st.stars}</b><span className="faint">/ {st.max}</span>
-            {reward && <span className="faint" style={{ marginLeft: 8 }}>· Récompense : {HERO_BY_ID[reward].name}</span>}
+          <div className="row chap-meta"><span className="nowrap"><Icon.star size={16} /> <b>{st.stars}</b><span className="faint"> / {st.max}</span></span>
+            {reward && <span className="faint chap-reward">Récompense : {HERO_BY_ID[reward].name.split(' ')[0]}</span>}
             <span className="chip" style={{ marginLeft: 'auto' }}>{DIFFICULTIES[diff].name}{DIFFICULTIES[diff].levelAdd ? ` · +${DIFFICULTIES[diff].levelAdd}` : ''}</span>
           </div>
         </div>

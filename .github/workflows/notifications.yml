@@ -2,16 +2,20 @@
 # Prérequis (une seule fois) : Settings → Secrets and variables → Actions → New repository secret
 #   Nom : FIREBASE_SERVICE_ACCOUNT   Valeur : le contenu du fichier de clé du compte de service Firebase
 #   (console Firebase → Paramètres du projet → Comptes de service → Générer une nouvelle clé privée).
+#
+# La programmation de GitHub (schedule) ne se déclenche pas toujours. Chaque lancement manuel envoie donc les
+# notifications toutes les 10 minutes pendant une heure, puis relance lui-même le suivant : une chaîne continue.
+# Pour la (re)démarrer : Actions → Notifications → Run workflow. Pour l'arrêter : désactiver le workflow.
 name: Notifications
 
 on:
   schedule:
-    # Minutes 4, 14, 24… : à l'écart des heures pleines, où GitHub saute souvent les tâches programmées.
     - cron: '4-59/10 * * * *'
   workflow_dispatch:
 
 permissions:
   contents: read
+  actions: write
 
 concurrency:
   group: notifications
@@ -20,7 +24,7 @@ concurrency:
 jobs:
   send:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 75
     steps:
       - uses: actions/checkout@v4
         with:
@@ -32,7 +36,18 @@ jobs:
           cache-dependency-path: scripts/push/package-lock.json
       - run: npm ci --no-audit --no-fund
         working-directory: scripts/push
-      - run: node send.mjs
+      - name: Envoyer (une fois si programmé ; toutes les 10 minutes pendant une heure si lancé à la main)
         working-directory: scripts/push
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          ROUNDS: ${{ github.event_name == 'workflow_dispatch' && '6' || '1' }}
+        run: |
+          for i in $(seq 1 "$ROUNDS"); do
+            node send.mjs || echo "Échec de l'envoi n°$i (on continue)"
+            if [ "$i" -lt "$ROUNDS" ]; then sleep 590; fi
+          done
+      - name: Relancer la suite de la chaîne
+        if: always() && github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run notifications.yml --ref main --repo "${{ github.repository }}"

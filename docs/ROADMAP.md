@@ -558,6 +558,10 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Notifications : envoi en chaîne
+
+- La programmation de GitHub ne déclenchait jamais l'envoi pour ce dépôt. Chaque lancement envoie désormais les notifications toutes les 10 minutes pendant une heure, puis relance lui-même le suivant (chaîne continue, démarrée une fois à la main ; la programmation reste en secours)
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

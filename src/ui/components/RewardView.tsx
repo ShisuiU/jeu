@@ -4,8 +4,11 @@ import { ResourceIcon, Icon } from '../art/Icons';
 import { fmt } from './common';
 
 export function RewardView({ reward }: { reward: Reward }) {
+  // Grille équilibrée : 4 récompenses sur une ligne, 5 ou 6 en deux lignes de 3 (jamais une seule toute seule).
+  const n = Object.keys(reward).length;
+  const cols = n <= 4 ? n : n <= 6 ? 3 : 4;
   return (
-    <div className="reward-list">
+    <div className="reward-list" style={{ ['--n' as string]: Math.max(1, cols) }}>
       {Object.entries(reward).map(([k, v], i) => {
         const def = k === 'energy' ? null : RESOURCES[k as keyof typeof RESOURCES];
         return (

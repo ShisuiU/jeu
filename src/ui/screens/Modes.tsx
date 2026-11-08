@@ -153,7 +153,13 @@ export function WorldBoss() {
               </div>
               <button className="btn" disabled={keys <= 0} onClick={() => push({ name: 'prep', spec: { mode: 'worldboss', tier: t.id } })}>Affronter</button>
             </div>
-            <div className="chests">{DAMAGE_CHESTS.map((c) => <span key={c} className={best >= c ? 'on' : ''}>{c}%</span>)}</div>
+            {/* Un seul repère : le prochain palier (les six paliers sont dans le ⓘ). */}
+            {(() => { const got = DAMAGE_CHESTS.filter((c) => best >= c).length; const next = DAMAGE_CHESTS[got]; return (
+              <div className="wb-next">
+                <div className="progress"><div style={{ width: `${Math.min(100, best)}%` }} /></div>
+                <span className="faint">{next ? <>Prochain palier : <b>{next} %</b> · {got}/{DAMAGE_CHESTS.length} atteints</> : <>Tous les paliers atteints</>}</span>
+              </div>
+            ); })()}
             <RewardInline reward={t.reward} />
           </Panel>
         );

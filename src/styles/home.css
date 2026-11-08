@@ -56,8 +56,8 @@
 .daily-cell.claimed::after { content: '✓'; position: absolute; inset: 0; display: grid; place-items: center; font-size: 22px; color: var(--ok); font-weight: 900; }
 .daily-cell.current { border-color: var(--gold-hi); background: rgba(217,179,106,0.16); box-shadow: 0 0 14px rgba(217,179,106,0.35); animation: rarePulse 2s infinite; --rc: #d9b36a; }
 .daily-cell.major { background: linear-gradient(180deg, rgba(154,107,255,0.22), rgba(154,107,255,0.05)); border-color: rgba(185,140,255,0.45); }
-.reward-list { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
-.reward-item { display: flex; flex-direction: column; align-items: center; gap: 4px; width: 78px; padding: 10px 4px; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid var(--line); font-size: 11px; text-align: center; animation: popIn 0.4s cubic-bezier(.2,1.4,.4,1) backwards; }
+.reward-list { display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 92px)); gap: 8px; justify-content: center; }
+.reward-item { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; text-align: center; padding: 10px 4px; border-radius: 12px; background: rgba(255,255,255,0.04); border: 1px solid var(--line); font-size: 11px; text-align: center; animation: popIn 0.4s cubic-bezier(.2,1.4,.4,1) backwards; }
 .reward-item svg { width: 34px; height: 34px; }
 .reward-item b { font-size: 14px; color: var(--gold-hi); }
 

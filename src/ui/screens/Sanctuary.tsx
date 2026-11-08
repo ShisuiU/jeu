@@ -83,7 +83,7 @@ export function Sanctuary({ uid }: { uid?: string }) {
           <Wallet ids={['xpElixir', 'gold']} cols={2} />
           <div className="upg-list">
             <UpRow icon={<ResourceIcon icon="flask" color="#9bdc6a" size={20} />} label="Élixirs" value={`${h.level}/${cap}`}
-              sub={h.level < cap ? <span>{save.resources.xpElixir} élixir(s)</span> : <span>Plafond du rang : monte de rang</span>}>
+              sub={h.level < cap ? <span>{save.resources.xpElixir} élixir(s)</span> : <span>Niveau maximum du rang : monte de rang</span>}>
               <button className="btn secondary small" disabled={!toCap || !save.resources.xpElixir} onClick={() => elixir(1)}>+1</button>
               <button className="btn small" disabled={!toCap || !save.resources.xpElixir} onClick={() => elixir(toCap)}>Max</button>
             </UpRow>

@@ -93,6 +93,11 @@ export function Gear({ gearUid }: { gearUid?: string }) {
                 : <GearSlotEmpty key={s.id} slot={s.id} onClick={() => toast('Emplacement vide : équipe un objet depuis la fiche du héros.')} />;
             })}
           </div>
+          {items.length === 0 && (
+            <p className="hint" style={{ marginTop: 10 }}>{save.equipment.length === 0
+              ? 'Pas encore d’équipement : 2 victoires de campagne sur 3 en donnent un, et le donjon Forge Engloutie en garantit. Équipe-le ensuite depuis la fiche du héros.'
+              : 'Ce héros ne porte rien : touche un emplacement de sa fiche (onglet Héros) pour l’équiper depuis le sac.'}</p>
+          )}
         </>
       )}
 

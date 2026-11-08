@@ -1,8 +1,9 @@
 import { doc, getDoc, setDoc, deleteDoc, updateDoc, collection, query, where, getDocs, serverTimestamp } from 'firebase/firestore/lite';
 import { cloud } from './cloudCore';
 import type { SaveData } from '../save/schema';
-import { FRIENDS_MAX, friendCode, lendHero, normalizeCode, otherOf, pairId, today, type FriendProfile, type Friendship } from '../game/friends';
+import { FRIENDS_MAX, friendCode, giftWaiting, lendHero, normalizeCode, otherOf, pairId, today, type FriendProfile, type Friendship } from '../game/friends';
 import { playerTeamPower } from '../game/arena';
+import { useGifts } from '../state/gifts';
 
 // AMIS EN LIGNE — profiles/{uid} (fiche publique), codes/{code} → uid, friendships/{a_b}.
 const ctx = () => { const c = cloud(); if (!c.uid) throw Object.assign(new Error('Connecte-toi à ton compte.'), { code: 'auth' }); return c as { db: typeof c.db; uid: string }; };
@@ -46,6 +47,15 @@ export async function listFriends(): Promise<FriendRow[]> {
     const p = await getDoc(doc(db, 'profiles', other)).catch(() => null);
     return { ...r, uid: other, profile: p?.exists() ? (p.data() as FriendProfile) : null };
   }));
+}
+
+/** Compte les cadeaux d'amis qui attendent (sans lire les fiches : une seule requête). */
+export async function refreshGifts(): Promise<number> {
+  const { db, uid } = ctx();
+  const snap = await getDocs(query(collection(db, 'friendships'), where('users', 'array-contains', uid)));
+  const n = snap.docs.filter((d) => giftWaiting(d.data() as Friendship, uid)).length;
+  useGifts.getState().set(n);
+  return n;
 }
 
 /** Envoie une demande d'ami à partir d'un code. */

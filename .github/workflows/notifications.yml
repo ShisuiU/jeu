@@ -6,7 +6,8 @@ name: Notifications
 
 on:
   schedule:
-    - cron: '*/10 * * * *'
+    # Minutes 4, 14, 24… : à l'écart des heures pleines, où GitHub saute souvent les tâches programmées.
+    - cron: '4-59/10 * * * *'
   workflow_dispatch:
 
 permissions:

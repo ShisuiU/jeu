@@ -525,6 +525,11 @@
 - Fiche d'unité (appui long / clic droit) et Codex → Règles expliquent ces mécaniques
 - Équilibrage vérifié par simulation (80 combats par cas) : difficulté des boss inchangée en moyenne, combats en retard de niveau un peu plus abordables ; tests d'équilibrage portés à 40 combats par cas pour mesurer la difficulté plutôt que le hasard
 
+## ✅ Version 1.59.1 — Boîte de cadeaux et notifications réparées
+
+- **Courrier → Cadeaux** : l'énergie envoyée par les amis s'y récupère d'un geste (« Tout récupérer »), même avec l'énergie pleine (le surplus est gardé), et on rend la pareille avec « Tout envoyer » ; pastille sur le Courrier et l'Accueil quand un cadeau attend (vérifié au lancement, au retour dans le jeu et toutes les 5 minutes)
+- **Notifications** : l'envoi programmé ne s'était jamais lancé tout seul (GitHub n'avait pas pris en compte la programmation) ; nouvelle programmation aux minutes 4, 14, 24… Les cadeaux envoyés depuis une ancienne version du jeu sont aussi annoncés (relecture complète une fois par heure)
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

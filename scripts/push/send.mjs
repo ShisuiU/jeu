@@ -66,7 +66,12 @@ async function main() {
   }
 
   // 2. Cadeaux d'énergie des amis (les 12 dernières heures ; chaque cadeau n'est annoncé qu'une fois).
-  const recent = await db.collection('friendships').where('giftAt', '>=', Timestamp.fromMillis(now - 12 * HOUR)).get();
+  // Une fois par heure, toutes les amitiés sont relues : les cadeaux envoyés depuis une ancienne version du jeu
+  // (sans la date d'envoi « giftAt ») sont annoncés quand même.
+  const full = new Date(now).getUTCMinutes() < 10;
+  const recent = full
+    ? await db.collection('friendships').where('status', '==', 'ok').get()
+    : await db.collection('friendships').where('giftAt', '>=', Timestamp.fromMillis(now - 12 * HOUR)).get();
   const forWho = new Map(); // destinataire → [{ from, day }]
   for (const f of recent.docs.map((x) => x.data())) {
     if (f.status !== 'ok' || !Array.isArray(f.users)) continue;

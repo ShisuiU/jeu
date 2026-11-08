@@ -15,6 +15,7 @@ import { Icon } from '../art/Icons';
 import { TopBar } from '../components/TopBar';
 import { unreadMail } from './Mail';
 import { campElapsed } from '../../game/camp';
+import { useGifts } from '../../state/gifts';
 
 // ACCUEIL — l'illustration du chef d'équipe en plein écran, les lieux (Sanctuaire, Forge),
 // trois raccourcis, la campagne.
@@ -23,6 +24,7 @@ export function Home() {
   const save = useGame((s) => s.save)!;
   const now = useGame((s) => s.now);
   const push = useUI((s) => s.push);
+  const gifts = useGifts((s) => s.waiting);
   const team = save.teams.find((t) => t.id === save.activeTeamId) ?? save.teams[0];
   const leaderUid = team.leader ?? team.slots.find(Boolean);
   const leader = save.heroes.find((h) => h.uid === leaderUid) ?? save.heroes[0];
@@ -34,7 +36,7 @@ export function Home() {
   // (Sanctuaire, Forge, Équipes, Liens : onglet Héros. Modes de combat : onglet Combats. Clan, amis : Menu.)
   const shortcuts = [
     { label: 'Missions', icon: Icon.scroll, dot: claimableCount(save) > 0, go: () => push({ name: 'missions' }) },
-    { label: 'Courrier', icon: Icon.mail, dot: unreadMail(save.flags) || canClaimDaily(save, now), go: () => push({ name: 'mail' }) },
+    { label: 'Courrier', icon: Icon.mail, dot: unreadMail(save.flags) || canClaimDaily(save, now) || gifts > 0, go: () => push({ name: 'mail' }) },
     ...(isUnlocked(save, 'events') ? [{ label: 'Événements', icon: Icon.calendar, dot: eventsDot(save, now), go: () => push({ name: 'events' }) }] : []),
   ];
   const places = [

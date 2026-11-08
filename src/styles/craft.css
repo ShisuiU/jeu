@@ -719,7 +719,7 @@ body:has(.modal-backdrop) .toasts, body:has(.sheet-backdrop) .toasts { bottom: a
 .mini-slot .hero-card .lvl { display: none; }
 
 /* Combat : les messages passent en haut, sous le titre, pour ne jamais cacher les compétences. */
-body:has(.battle-controls) .toasts { bottom: auto; top: calc(var(--sat, 0px) + 64px); }
+body:has(.battle-controls) .toasts { bottom: auto; top: calc(var(--sat, 0px) + 100px); } /* sous la barre d'ordre des tours */
 
 /* Arène : vrai joueur ou adversaire imaginaire, annoncé honnêtement. */
 .ar-tag { display: inline-block; margin-left: 4px; padding: 0 6px; border-radius: 3px; font-size: 11px; font-weight: 700; vertical-align: 1px; color: var(--text-faint); border: 1px solid var(--edge); }
@@ -822,3 +822,8 @@ body:has(.battle-controls) .toasts { bottom: auto; top: calc(var(--sat, 0px) + 6
 .mod-line { font-size: 12px; margin-top: 2px; overflow-wrap: anywhere; }
 .acc-id { text-align: center; font-size: 12px; overflow-wrap: anywhere; }
 .acc-id code { font-size: 11px; }
+
+/* Sanctuaire : les 5 onglets tiennent sur la largeur d'un téléphone (plus d'onglet coupé à droite). */
+.sanct-tabs button { flex: 1 1 auto; padding: 0 5px; }
+@media (max-width: 430px) { .sanct-tabs button { font-size: 12px; } }
+@media (max-width: 359px) { .sanct-tabs button { flex: 0 0 auto; padding: 0 8px; } }

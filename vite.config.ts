@@ -37,12 +37,21 @@ export default defineConfig({
         // Tout le jeu (code, polices, illustrations) est pré-caché : jouable hors ligne après le 1er chargement.
         globPatterns: ['**/*.{js,css,html,woff2,png,webp,svg,json}'],
         // Les événements sont téléchargés frais à chaque lancement (repli : dernière version mémorisée).
-        globIgnores: ['events.json'],
+        // Les illustrations des héros et des ennemis (~14 Mo) ne sont plus téléchargées d'un coup à l'installation :
+        // chacune l'est quand elle s'affiche, puis reste en cache (jouable hors ligne pour tout ce qui a été vu).
+        globIgnores: ['events.json', 'assets/full-*.webp', 'assets/portrait-*.webp', 'assets/battle-*.webp'],
+        runtimeCaching: [{
+          urlPattern: /\/assets\/(full|portrait|battle)-[^/]+\.webp$/,
+          handler: 'CacheFirst',
+          options: { cacheName: 'aeonfall-art', expiration: { maxEntries: 400, maxAgeSeconds: 60 * 60 * 24 * 365 } },
+        }],
         maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
         navigateFallback: 'index.html',
         // Pages de connexion Google (servies par Firebase via vercel.json) : jamais remplacées par le jeu.
         navigateFallbackDenylist: [/^\/__\//],
         cleanupOutdatedCaches: true,
+        // Dès la première visite, le service hors ligne prend la main : les illustrations vues sont gardées tout de suite.
+        clientsClaim: true,
       },
     }),
   ],

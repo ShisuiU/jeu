@@ -485,6 +485,14 @@
 - **Défenses vérifiées** : avant d’être proposée, chaque défense est recalculée (niveaux, rangs, équipement) ; une défense trafiquée (niveaux impossibles, équipement gonflé, puissance annoncée fausse) n’est jamais proposée
 - Règles Firestore mises à jour (31 tests sur l’émulateur) — **à republier**
 
+## ✅ Version 1.55.0 — Téléchargement léger et finitions
+
+- **Installation 7 fois plus légère** : 2,4 Mo au lieu d’environ 17 Mo. Les illustrations des héros et des ennemis ne sont plus toutes téléchargées d’un coup : chacune l’est quand elle s’affiche, puis reste en cache (le jeu reste jouable hors ligne, avec tout ce qui a déjà été vu)
+- Le service hors ligne prend la main dès la première visite (les illustrations vues sont gardées tout de suite)
+- **Arrivée plus calme** : la présentation d’un nouvel événement et l’invitation à créer un compte attendent une minute de jeu, au lieu de s’ouvrir dès l’arrivée
+- Combat : l’astuce s’affiche sous la barre d’ordre des tours, au lieu de la couvrir
+- Sanctuaire : les 5 onglets tiennent sur la largeur d’un téléphone (plus d’onglet « Maîtrises » coupé)
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

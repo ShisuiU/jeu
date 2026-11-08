@@ -107,8 +107,8 @@ function GiftInbox({ uid }: { uid: string }) {
             <span className="row" style={{ gap: 4 }}>+{GIFT_ENERGY}<Icon.energy size={14} /></span>
           </div>
         ))}
-        {waiting.length > 0 && <button className="btn block" style={{ marginTop: 10 }} disabled={busy || left <= 0} onClick={() => void receive()}>{left > 0 ? `Tout récupérer (+${Math.min(waiting.length, left) * GIFT_ENERGY} énergie)` : 'Limite du jour atteinte'}</button>}
-        <p className="hint" style={{ marginBottom: 0 }}>Même avec l’énergie pleine, tu peux récupérer : le surplus est gardé. {left} cadeau{left > 1 ? 'x' : ''} encore récupérable{left > 1 ? 's' : ''} aujourd’hui.</p>
+        {waiting.length > 0 && <button className="btn block" style={{ marginTop: 10 }} disabled={busy} onClick={() => void receive()}>Tout récupérer (+{waiting.length * GIFT_ENERGY} énergie)</button>}
+        <p className="hint" style={{ marginBottom: 0 }}>Même avec l’énergie pleine, tu peux récupérer : le surplus est gardé. Aucune limite par jour.</p>
       </Panel>
       <Panel title="Rendre la pareille">
         <p className="faint" style={{ marginTop: 0 }}>{toSend.length ? `${toSend.length} ami${toSend.length > 1 ? 's n’ont' : ' n’a'} pas encore reçu ton énergie aujourd’hui.` : 'Tu as envoyé ton énergie à tous tes amis aujourd’hui.'}</p>

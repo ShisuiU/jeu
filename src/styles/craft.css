@@ -834,3 +834,5 @@ body:has(.battle-controls) .toasts { bottom: auto; top: calc(var(--sat, 0px) + 1
 .hp-tile span:not(.badge-dot) { color: var(--text); }
 .hp-tile .badge-dot { top: 6px; right: 8px; }
 .hp-tile:active { transform: scale(0.96); }
+.rk-row.ghost { opacity: 0.62; }
+.rk-row.ghost .rk-av { filter: grayscale(0.6); }

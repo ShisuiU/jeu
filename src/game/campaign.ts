@@ -135,7 +135,9 @@ export function applyStageResult(s: SaveData, stageId: string, diff: DifficultyI
       result.gear.push(g);
     }
   }
-  const [lootKey, lootAmount] = pickWeighted(r, CAMPAIGN_LOOT.map((l) => [[l.resource, l.amount] as [keyof Reward, number], l.weight]));
+  // Chapitre 1 : seulement ce qui sert tout de suite (les potions d'ascension ne servent qu'au niveau 10).
+  const table = stage.chapter === 1 ? CAMPAIGN_LOOT.filter((l) => !['potionMinor', 'potionGreater', 'rankSigil', 'awakenEssence'].includes(l.resource)) : CAMPAIGN_LOOT;
+  const [lootKey, lootAmount] = pickWeighted(r, table.map((l) => [[l.resource, l.amount] as [keyof Reward, number], l.weight]));
   result.loot = { [lootKey]: Math.round(lootAmount * mult) };
   applyReward(s, result.loot);
 

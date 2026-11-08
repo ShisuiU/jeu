@@ -29,14 +29,14 @@ describe('amis (règles locales)', () => {
     expect(giftWaiting(f({ gifts: { a: '2026-11-09' }, claims: { b: '2026-11-09' } }), 'b')).toBe(false);
     expect(canGift(f({ status: 'pending' }), 'a', T0)).toBe(false);
   });
-  it('recevoir : +énergie, limite par jour', () => {
+  it('recevoir : +énergie, sans limite par jour (même au-delà du maximum)', () => {
     const s = createNewSave(T0);
     const e0 = s.energy.current;
     expect(receiveGift(s, T0)).toBe(true);
     expect(s.energy.current).toBe(e0 + GIFT_ENERGY);
-    for (let i = 1; i < GIFTS_PER_DAY; i++) receiveGift(s, T0);
-    expect(receiveGift(s, T0)).toBe(false);
-    expect(claimsLeft(s, T0 + DAY)).toBe(GIFTS_PER_DAY);
+    for (let i = 1; i < 40; i++) expect(receiveGift(s, T0)).toBe(true);
+    expect(s.energy.current).toBe(e0 + 40 * GIFT_ENERGY);
+    expect(claimsLeft(s, T0)).toBe(GIFTS_PER_DAY);
   });
   it('héros prêté : le plus puissant, utilisable une fois par jour et par ami en renfort', () => {
     const s = createNewSave(T0);

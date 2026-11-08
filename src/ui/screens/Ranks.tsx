@@ -3,7 +3,7 @@ import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
 import { useAccount, loadCloud } from '../../cloud/account';
 import { HERO_BY_ID } from '../../data/heroes';
-import { RANK_TABS, rankEntry, type RankEntry, type RankField } from '../../game/ranks';
+import { GHOST_PREFIX, RANK_TABS, ghostRanks, rankEntry, type RankEntry, type RankField } from '../../game/ranks';
 import { Screen, fmt } from '../components/common';
 import { HeroArt } from '../art/HeroArt';
 import { ReportSheet, type ReportTarget } from '../components/ReportSheet';
@@ -34,12 +34,13 @@ export function Ranks({ tab: initial }: { tab?: RankField }) {
     loadCloud().then(async (c) => {
       if (user) await c.publishRank(user.uid, useGame.getState().save!);
       const r = await c.fetchRanks(tab);
-      if (alive) { setRows(r.filter((x) => (x[tab] ?? 0) > 0 && !blocked.some((b) => b.uid === x.uid))); setUid(c.currentUid()); }
+      if (alive) { const real = r.filter((x) => (x[tab] ?? 0) > 0 && !blocked.some((b) => b.uid === x.uid)); setRows([...real, ...ghostRanks(tab, real.length)].sort((a, b) => (b[tab] ?? 0) - (a[tab] ?? 0))); setUid(c.currentUid()); }
     }).catch((e) => { if (alive) setErr((e as { code?: string })?.code === 'permission-denied' ? 'Les classements ne sont pas encore ouverts sur le serveur.' : 'Classement injoignable pour le moment.'); });
     return () => { alive = false; };
   }, [tab, user]);
 
   const mine = rows?.findIndex((r) => r.uid === uid) ?? -1;
+  const isGhost = (r: Row) => r.uid.startsWith(GHOST_PREFIX);
   const toggle = () => {
     mutate((s) => { s.settings.showInRanks = !s.settings.showInRanks; });
     void loadCloud().then((c) => c.publishRankNow()).then(() => setTab((t) => t));
@@ -67,10 +68,10 @@ export function Ranks({ tab: initial }: { tab?: RankField }) {
       {rows && rows.length > 0 && (
         <ol className="rk-list">
           {rows.map((r, i) => (
-            <li key={r.uid} className={`rk-row ${r.uid === uid ? 'me' : ''} ${i < 3 ? `top top${i + 1}` : ''}`} onClick={() => { if (r.uid !== uid && user) setReport({ uid: r.uid, name: r.name, kind: 'name', where: `Classement ${def.label}` }); }}>
+            <li key={r.uid} className={`rk-row ${r.uid === uid ? 'me' : ''} ${isGhost(r) ? 'ghost' : ''} ${i < 3 ? `top top${i + 1}` : ''}`} onClick={() => { if (r.uid !== uid && user && !isGhost(r)) setReport({ uid: r.uid, name: r.name, kind: 'name', where: `Classement ${def.label}` }); }}>
               <span className="rk-pos">{i + 1}</span>
               <div className="rk-av"><HeroArt heroId={HERO_BY_ID[r.avatar] ? r.avatar : 'aldric'} /></div>
-              <div className="grow rk-name"><b>{maskProfanity(r.name)}</b><small className="faint">Niv. {r.level}</small></div>
+              <div className="grow rk-name"><b>{maskProfanity(r.name)}</b><small className="faint">{isGhost(r) ? 'Imaginaire · ' : ''}Niv. {r.level}</small></div>
               <div className="rk-val"><b>{fmt(r[tab])}</b></div>
             </li>
           ))}
@@ -83,6 +84,7 @@ export function Ranks({ tab: initial }: { tab?: RankField }) {
           {save.settings.showInRanks ? 'Ne plus apparaître au classement' : 'Apparaître au classement'}
         </button>
       )}
+      {rows?.some(isGhost) && <p className="faint" style={{ fontSize: 12, textAlign: 'center' }}>Peu de joueurs pour l’instant : le classement est complété par des Héritiers imaginaires, en attendant les vrais.</p>}
       <p className="faint" style={{ fontSize: 12, textAlign: 'center' }}>Seuls ton nom (modifiable sur ta carte du Menu), ton avatar et tes scores sont visibles.</p>
     </Screen>
   );

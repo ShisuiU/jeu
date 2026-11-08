@@ -45,8 +45,9 @@ export const BALANCE = {
       { potion: 'potionSupreme', amount: 8, gold: 80000, minLevel: 50 },
       { potion: 'potionSupreme', amount: 18, gold: 120000, minLevel: 60 },
     ],
-    /** Éveil e → e+1 : coûte 1 doublon du héros + essence d'éveil + or ; demande l'ascension e (le 1er éveil est libre). */
-    awaken: { copies: 1, essenceBase: 2, gold: 20000 },
+    /** Éveil e → e+1 : 1 doublon du héros + essence d'éveil + or ; sans doublon, 6 essences de plus à la place.
+     *  Demande l'ascension e (le 1er éveil est libre). */
+    awaken: { copies: 1, essenceBase: 2, gold: 20000, noCopyEssence: 6 },
     /** Compétence niveau n → n+1 : grimoires = n, or = skillGold × n. */
     skillGold: 4000,
     /** Chance d'obtenir un équipement après une victoire de campagne. */

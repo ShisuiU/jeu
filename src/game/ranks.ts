@@ -24,3 +24,19 @@ export function rankEntry(s: SaveData): RankEntry {
     updatedAt: s.updatedAt,
   };
 }
+
+// HÉRITIERS IMAGINAIRES — tant qu'il y a peu de joueurs, le classement est complété jusqu'à 10 lignes par des
+// rivaux inventés, toujours signalés « Imaginaire » (les mêmes chaque jour, sans jamais remplacer un vrai joueur).
+const GHOSTS = ['Hadrik', 'Corbeau-Sel', 'Isaure', 'Mavren', 'Liessa', 'Tobrin', 'Ysmé', 'Garance', 'Orlan', 'Séverine'];
+const GHOST_AVATARS = ['aldric', 'elowen', 'torvald', 'brann', 'corvin', 'ysolde', 'maelis', 'orin', 'kaedra', 'tamsin'];
+const GHOST_SCORE: Record<RankField, (i: number) => number> = {
+  arena: (i) => 1500 - i * 55, tower: (i) => 42 - i * 4, boss: (i) => 64 - i * 6, power: (i) => 42000 - i * 3600,
+};
+export const GHOST_PREFIX = 'ghost:';
+export function ghostRanks(field: RankField, realCount: number, want = 10): (RankEntry & { uid: string })[] {
+  const n = Math.max(0, want - realCount);
+  return Array.from({ length: n }, (_, i) => {
+    const score = Math.max(1, GHOST_SCORE[field](i));
+    return { uid: `${GHOST_PREFIX}${i}`, name: GHOSTS[i % GHOSTS.length], avatar: GHOST_AVATARS[i % GHOST_AVATARS.length], level: Math.max(5, 40 - i * 3), arena: 0, tower: 0, boss: 0, power: 0, [field]: score, updatedAt: 0 } as RankEntry & { uid: string };
+  });
+}

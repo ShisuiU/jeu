@@ -4,7 +4,7 @@ import { migrateSave } from '../src/save/migrations';
 import { summon, rollRarity } from '../src/game/summon';
 import { BANNER_BY_ID, BANNERS } from '../src/data/summons';
 import { seededRand, generateGear, upgradeGear, equipGear, dismantleGear, gearBonus, applyGearBonus, mainValue } from '../src/game/gear';
-import { useElixirs, rankUp, rankUpCheck, ascend, awaken, upgradeSkill, elixirsToCap } from '../src/game/upgrade';
+import { useElixirs, rankUp, rankUpCheck, ascend, awaken, awakenCheck, upgradeSkill, elixirsToCap } from '../src/game/upgrade';
 import { heroTotalStats } from '../src/game/heroStats';
 import { applyStageResult, teamSetups } from '../src/game/campaign';
 import { createBattle } from '../src/game/battle/engine';
@@ -104,7 +104,8 @@ describe('améliorations', () => {
     useElixirs(s, h.uid, 999);
     expect(ascend(s, h.uid).ok).toBe(true);
     expect(h.ascension).toBe(1);
-    expect(awaken(s, h.uid).ok).toBe(false); // aucun doublon
+    expect(awakenCheck(s, h).cost.copies).toBeUndefined(); // sans doublon : plus d'essence à la place
+    expect(awakenCheck(s, h).cost.awakenEssence).toBe(8);
     s.heroCopies.elowen = 2;
     expect(awaken(s, h.uid).ok).toBe(true);
     expect(h.awaken).toBe(1);

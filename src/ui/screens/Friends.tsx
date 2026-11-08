@@ -113,7 +113,7 @@ function FriendsBody({ uid }: { uid: string }) {
           {friends.length > 0 && (
             <div className="row" style={{ gap: 8, marginBottom: 8 }}>
               <button className="btn small grow" disabled={busy || !toSend.length} onClick={() => void sendAll()}><Icon.energy size={14} /> Tout envoyer ({toSend.length})</button>
-              <button className="btn small grow" disabled={busy || !toReceive.length || left <= 0} onClick={() => void receive(toReceive)}><Icon.energy size={14} /> Tout recevoir ({Math.min(toReceive.length, left)})</button>
+              <button className="btn small grow" disabled={busy || !toReceive.length || left <= 0} onClick={() => void receive(toReceive)}><Icon.energy size={14} /> Tout recevoir ({toReceive.length})</button>
             </div>
           )}
           {friends.map((r) => (
@@ -125,7 +125,7 @@ function FriendsBody({ uid }: { uid: string }) {
               </span>
             </div>
           ))}
-          {friends.length > 0 && <p className="hint" style={{ marginBottom: 0 }}>Chaque jour : un cadeau de {GIFT_ENERGY} énergie par ami, {claimsLeft(save, now)} cadeau{left > 1 ? 'x' : ''} encore à recevoir aujourd’hui. Le meilleur héros d’un ami peut te rejoindre en campagne et en donjon (une fois par jour et par ami).</p>}
+          {friends.length > 0 && <p className="hint" style={{ marginBottom: 0 }}>Chaque jour : un cadeau de {GIFT_ENERGY} énergie par ami, à recevoir sans limite (même avec l’énergie pleine). Le meilleur héros d’un ami peut te rejoindre en campagne et en donjon (une fois par jour et par ami).</p>}
         </Panel>
       )}
 

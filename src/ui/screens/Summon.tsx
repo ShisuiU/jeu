@@ -81,8 +81,8 @@ export function Summon() {
 
       {b.pity && (
         <div className="pity">
-          <div className="pity-label"><span>Fissure du Cœur</span><span><b>{b.pity.every - pity}</b> appel{b.pity.every - pity > 1 ? 's' : ''} avant un {RARITIES[b.pity.rarity].name.toLowerCase()} garanti</span></div>
-          <div className="pity-bar"><div style={{ width: `${(pity / b.pity.every) * 100}%`, background: RARITIES[b.pity.rarity].color }} /></div>
+          <div className="pity-label"><span>Fissure du Cœur</span><span><b>{Math.max(1, b.pity.every - pity)}</b> appel{Math.max(1, b.pity.every - pity) > 1 ? 's' : ''} avant un {RARITIES[b.pity.rarity].name.toLowerCase()} garanti</span></div>
+          <div className="pity-bar"><div style={{ width: `${Math.min(100, (pity / b.pity.every) * 100)}%`, background: RARITIES[b.pity.rarity].color }} /></div>
         </div>
       )}
 

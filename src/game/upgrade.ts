@@ -94,7 +94,9 @@ export function ascend(s: SaveData, heroUid: string): Check {
 // ─── Éveil ───
 export function awakenCheck(s: SaveData, h: HeroInstance): Check {
   const n = h.awaken + 1;
-  const cost: Cost = { copies: U.awaken.copies, awakenEssence: U.awaken.essenceBase * n, gold: U.awaken.gold * n };
+  // Avec un doublon du héros : 1 doublon + essence. Sans doublon : plus d'essence à la place (un légendaire reste éveillable).
+  const hasCopy = (s.heroCopies?.[h.heroId] ?? 0) >= U.awaken.copies;
+  const cost: Cost = hasCopy ? { copies: U.awaken.copies, awakenEssence: U.awaken.essenceBase * n, gold: U.awaken.gold * n } : { awakenEssence: U.awaken.essenceBase * n + U.awaken.noCopyEssence, gold: U.awaken.gold * n };
   if (h.awaken >= BALANCE.hero.maxAwaken) return { ok: false, reason: 'Éveil maximal.', cost };
   if (h.ascension < h.awaken) return { ok: false, reason: `Ascension ${h.awaken} requise.`, cost };
   const r = affordable(s, h, cost);

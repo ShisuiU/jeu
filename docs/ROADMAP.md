@@ -444,6 +444,15 @@
 - Les joueurs qui ont encore un nom par défaut (« Lien », « Héritier », « Joueur »…) doivent choisir le leur : une fenêtre impossible à fermer s’ouvre au lancement (jamais en plein combat)
 - Le changement de nom depuis la carte du joueur (Menu) suit les mêmes règles ; le nouveau nom est publié avec la sauvegarde en ligne (classements, Arène, clans, amis)
 
+## ✅ Version 1.51.0 — Connexion avec Google, « nouveau ou ancien joueur »
+
+- **Continuer avec Google** (Menu → Sauvegarde et compte) : créer son compte ou s’y connecter en un geste ; la sauvegarde en ligne fonctionne comme avec un e-mail
+- Un compte e-mail existant peut **lier Google** (on se connecte ensuite des deux façons, même sauvegarde) ; un compte Google seul se confirme avec Google pour être supprimé (pas de mot de passe demandé)
+- **Premier lancement** : « As-tu déjà joué à Aeonfall ? » — **Nouveau joueur** (l’aventure commence, choix du nom) ou **Ancien joueur** (se connecter à son compte Google / e-mail, ou charger un code de sauvegarde) : la partie revient, sans refaire le début
+- Messages d’erreur Google en français (fenêtre bloquée, annulée, connexion pas encore activée sur le serveur…)
+- À activer une fois dans la console Firebase : fournisseur Google (Authentication → Sign-in method), et le domaine du jeu dans les domaines autorisés
+- Testé de bout en bout sur l’émulateur Firebase : un joueur crée son compte avec Google, puis sur un autre appareil choisit « Ancien joueur », se connecte avec Google et retrouve sa partie
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

@@ -800,3 +800,13 @@ body:has(.battle-controls) .toasts { bottom: auto; top: calc(var(--sat, 0px) + 6
 /* Nom du joueur obligatoire */
 .name-err { margin: 6px 0 10px; font-size: 12px; text-align: center; color: var(--text-faint); }
 .name-err.on { color: #ff8f8f; }
+
+/* Connexion avec Google */
+.btn.acc-google, .theme-v2 .btn.acc-google { background: #fff; color: #1f1f1f; box-shadow: none; border: 1px solid #dadce0; font-family: var(--font-ui, inherit); text-transform: none; letter-spacing: 0; font-weight: 600; }
+.btn.acc-google:disabled { opacity: 0.6; }
+.acc-or { display: flex; align-items: center; gap: 10px; margin: 14px 0 12px; color: var(--text-faint); font-size: 12px; }
+.acc-or::before, .acc-or::after { content: ''; flex: 1; height: 1px; background: var(--edge); }
+
+/* Premier lancement : nouveau ou ancien joueur */
+.first-choice .btn { display: flex; flex-direction: column; align-items: center; gap: 2px; padding-top: 12px; padding-bottom: 12px; }
+.first-choice .btn small { font-family: var(--font-ui, inherit); font-size: 12px; font-weight: 500; text-transform: none; letter-spacing: 0; opacity: 0.8; }

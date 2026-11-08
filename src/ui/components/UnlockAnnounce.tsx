@@ -26,6 +26,7 @@ const INFO: Record<Feature, { title: string; text: string; art: string; hero?: b
   tower: { title: 'Tour des Âges', text: '100 étages sans énergie : jusqu’où iras-tu ?', art: 'tower_sentinel', route: { name: 'tower' } },
 };
 const ORDER = Object.keys(UNLOCK_AT) as Feature[];
+const SESSION_START = Date.now();
 const flag = (f: Feature) => `unl_${f}`;
 
 export function UnlockAnnounce() {
@@ -42,7 +43,9 @@ export function UnlockAnnounce() {
     // Ensuite : un événement de connexion avec héros exclusif, présenté une fois.
     const special = !next && isUnlocked(save, 'events') ? activeEvents(save.time.highWater).find((e) => e.login && !save.flags[`ann_${e.id}`]) : undefined;
     if (!next && !special) return;
-    const t = setTimeout(() => { if (!document.querySelector('.modal-backdrop, .sheet-backdrop, .coach')) { if (next) setF(next); else setEv(special!.id); play('rare'); } }, 600);
+    // Un nouvel événement n'interrompt pas l'arrivée : il est présenté après une minute de jeu dans la session.
+    const wait = next ? 600 : Math.max(600, SESSION_START + 60_000 - Date.now());
+    const t = setTimeout(() => { if (!document.querySelector('.modal-backdrop, .sheet-backdrop, .coach')) { if (next) setF(next); else setEv(special!.id); play('rare'); } }, wait);
     return () => clearTimeout(t);
   }, [save]); // eslint-disable-line react-hooks/exhaustive-deps
 

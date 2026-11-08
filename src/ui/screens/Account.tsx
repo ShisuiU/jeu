@@ -120,6 +120,7 @@ export function CloudConflictModal() {
 // INVITATION À CRÉER UN COMPTE — affichée sur l'accueil quand la partie a un peu avancé et n'est
 // sauvegardée que sur l'appareil. « Plus tard » la repousse (1, 3 puis 7 jours), 4 fois au plus.
 const PROMPT_KEY = 'aeonfall.accountPrompt';
+const SESSION_START = Date.now();
 type PromptState = { n: number; last: number; never?: boolean };
 const DELAYS = [0, 1, 3, 7].map((d) => d * 86_400_000);
 const readPrompt = (): PromptState => { try { return JSON.parse(localStorage.getItem(PROMPT_KEY) ?? '') as PromptState; } catch { return { n: 0, last: 0 }; } };
@@ -136,11 +137,12 @@ export function AccountPrompt() {
   const save = useGame((s) => s.save)!;
   const [open, setOpen] = useState(false);
   useEffect(() => {
-    // Petit délai : on laisse l'accueil s'afficher, et rien d'autre (connexion du jour, guide) par-dessus.
+    // L'invitation n'interrompt pas l'arrivée : elle vient après une minute de jeu dans la session,
+    // quand rien d'autre (connexion du jour, guide, annonce) n'est affiché.
     const t = setTimeout(() => {
       if (document.querySelector('.modal-backdrop, .sheet-backdrop, .coach')) return;
       if (shouldPromptAccount(useGame.getState().save!, Date.now())) setOpen(true);
-    }, 1200);
+    }, Math.max(1200, SESSION_START + 60_000 - Date.now()));
     return () => clearTimeout(t);
   }, []);
   if (!open) return null;

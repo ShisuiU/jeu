@@ -52,6 +52,8 @@ export default defineConfig({
         cleanupOutdatedCaches: true,
         // Dès la première visite, le service hors ligne prend la main : les illustrations vues sont gardées tout de suite.
         clientsClaim: true,
+        // Notifications : affichage et clic (public/push-sw.js).
+        importScripts: ['push-sw.js'],
       },
     }),
   ],

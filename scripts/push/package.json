@@ -1,0 +1,10 @@
+{
+  "name": "aeonfall-push",
+  "private": true,
+  "type": "module",
+  "description": "Envoi des notifications d'Aeonfall (lancé par GitHub Actions toutes les 10 minutes).",
+  "dependencies": {
+    "firebase-admin": "^13.0.0",
+    "web-push": "^3.6.7"
+  }
+}

@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc, deleteDoc, updateDoc, collection, query, where, getDocs } from 'firebase/firestore/lite';
+import { doc, getDoc, setDoc, deleteDoc, updateDoc, collection, query, where, getDocs, serverTimestamp } from 'firebase/firestore/lite';
 import { cloud } from './cloudCore';
 import type { SaveData } from '../save/schema';
 import { FRIENDS_MAX, friendCode, lendHero, normalizeCode, otherOf, pairId, today, type FriendProfile, type Friendship } from '../game/friends';
@@ -68,7 +68,7 @@ export async function addByCode(raw: string, current: FriendRow[]): Promise<stri
 export const accept = (id: string) => updateDoc(doc(ctx().db, 'friendships', id), { status: 'ok' });
 export const removeFriend = (id: string) => deleteDoc(doc(ctx().db, 'friendships', id));
 /** Envoie son cadeau d'énergie du jour. */
-export async function sendGift(id: string): Promise<void> { const { db, uid } = ctx(); await updateDoc(doc(db, 'friendships', id), { [`gifts.${uid}`]: today(Date.now()) }); }
+export async function sendGift(id: string): Promise<void> { const { db, uid } = ctx(); await updateDoc(doc(db, 'friendships', id), { [`gifts.${uid}`]: today(Date.now()), giftAt: serverTimestamp() }); } // giftAt : l'ami est prévenu (notification)
 /** Marque le cadeau de l'ami comme reçu (l'énergie est ajoutée par l'appelant). */
 export async function markClaimed(r: FriendRow): Promise<void> { const { db, uid } = ctx(); await updateDoc(doc(db, 'friendships', r.id), { [`claims.${uid}`]: r.f.gifts[r.uid] }); }
 

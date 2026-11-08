@@ -1,0 +1,37 @@
+# Notifications d'Aeonfall (camp plein, énergie au maximum, cadeau d'un ami), toutes les 10 minutes.
+# Prérequis (une seule fois) : Settings → Secrets and variables → Actions → New repository secret
+#   Nom : FIREBASE_SERVICE_ACCOUNT   Valeur : le contenu du fichier de clé du compte de service Firebase
+#   (console Firebase → Paramètres du projet → Comptes de service → Générer une nouvelle clé privée).
+name: Notifications
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: notifications
+  cancel-in-progress: false
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts/push
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: scripts/push/package-lock.json
+      - run: npm ci --no-audit --no-fund
+        working-directory: scripts/push
+      - run: node send.mjs
+        working-directory: scripts/push
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}

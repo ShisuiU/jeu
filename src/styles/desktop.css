@@ -3,7 +3,9 @@
    il s'affiche dans une colonne centrale (comme une grande tablette), avec le monde peint et flouté autour.
    Les fenêtres plein écran (titre, invocations) gardent tout l'écran. */
 @media (min-width: 720px) {
-  :root { --col: min(640px, 100vw); --col-left: calc(50vw - var(--col) / 2); }
+  /* Largeur réglée sur la HAUTEUR de l'écran (proportions d'un téléphone en hauteur, environ 0,6) : sur un portable
+     peu haut, la colonne reste étroite et rien n'est démesuré ; sur un grand écran, elle s'élargit (640 px au plus). */
+  :root { --col: clamp(380px, 60vh, 640px); --col-left: calc(50vw - var(--col) / 2); }
   body { background: #040309; }
   body::before {
     content: ''; position: fixed; inset: -60px; z-index: -1; pointer-events: none;
@@ -22,9 +24,9 @@
   .toasts { left: var(--col-left); right: auto; width: var(--col); }
   .sheet { max-width: var(--col); margin: 0 auto; border-left: 1px solid var(--edge-hi); border-right: 1px solid var(--edge-hi); }
   .coach-bubble { left: calc(var(--col-left) + 16px); right: calc(var(--col-left) + 16px); }
-  /* Plus de place : 4 héros par ligne, cartes de combat plus grandes. */
-  .hero-grid { grid-template-columns: repeat(4, 1fr); }
-  .battle { --unit-max: 150px; }
+  /* Les grilles suivent la largeur réelle de la colonne : 4 héros par ligne seulement si elle est large. */
+  .app { container-type: inline-size; container-name: app; }
+  .battle { --unit-max: 136px; }
   .mode-grid { gap: 10px; }
   /* Souris : le survol montre ce qui se clique. */
   button:not(:disabled), .hero-card, .stage-node:not(.locked), .combat-card, .menu-tile { transition: filter 0.15s, transform 0.15s; }
@@ -34,8 +36,6 @@
   /* Barre de défilement discrète, aux couleurs du jeu. */
   * { scrollbar-width: thin; scrollbar-color: rgba(217, 179, 106, 0.35) transparent; }
 }
-/* Très grands écrans hauts : la colonne s'élargit un peu. */
-@media (min-width: 1280px) and (min-height: 860px) {
-  :root { --col: 680px; }
-  .battle { --unit-max: 160px; }
+@container app (min-width: 520px) {
+  .hero-grid { grid-template-columns: repeat(4, 1fr); }
 }

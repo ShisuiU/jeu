@@ -432,6 +432,12 @@
 - **Aperçu d’un clan avant de le rejoindre** : toucher un clan de la liste montre sa présentation, sa puissance totale et ses membres avec leurs rôles
 - Règles Firestore mises à jour (liste `officers`, 23 tests sur l’émulateur) : **à republier** ; test de bout en bout à trois joueurs (aperçu, adjoint, exclusion par l’adjoint, passation de chef)
 
+## ✅ Version 1.49.1 — Clans : rôles mieux expliqués, erreurs en français
+
+- Onglet Membres : « Les rôles du clan » en haut (ce que peut faire le Chef, un Adjoint, un Membre), ton rôle et ce que tu peux faire, le rôle de chaque membre affiché (y compris « Membre »), et sa description dans la fiche du membre
+- Erreurs du serveur en français : un refus des règles affiche « Action refusée par le serveur : ses règles ne sont pas à jour… » au lieu du message anglais de Firebase
+- Vérifié sur le vrai serveur : le refus de « Nommer adjoint » venait des règles en ligne pas encore republiées (version 1.49.0 de `firestore.rules`)
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

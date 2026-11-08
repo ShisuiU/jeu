@@ -837,3 +837,5 @@ body:has(.battle-controls) .toasts { bottom: auto; top: calc(var(--sat, 0px) + 1
 .rk-row.ghost { opacity: 0.62; }
 .rk-row.ghost .rk-av { filter: grayscale(0.6); }
 .wb-next { margin: 8px 0 6px; display: flex; flex-direction: column; gap: 4px; font-size: 12px; }
+/* Collection : paliers de héros possédés. */
+.col-bar { margin-bottom: 10px; padding: 8px 10px; border-radius: var(--radius); background-color: var(--stone); background-image: var(--grain); border: 1px solid var(--edge-hi); font-size: 13px; }

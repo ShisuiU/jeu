@@ -67,6 +67,10 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
   const [popups, setPopups] = useState<Record<string, Popup[]>>({});
   const [vfx, setVfx] = useState<Record<string, { id: number; cls: string; color: string }>>({});
   const [flash, setFlash] = useState(false);
+  // Sensations : tremblement sur les gros coups, ralenti sur le coup fatal.
+  const [shake, setShake] = useState<'' | 'soft' | 'hard'>('');
+  const [slowmo, setSlowmo] = useState(false);
+  const doShake = (k: 'soft' | 'hard') => { if (save.settings.reducedMotion) return; setShake(k); setTimeout(() => setShake(''), k === 'hard' ? 420 : 260); };
   const [ult, setUlt] = useState<string | null>(null);
   const [wave, setWave] = useState<{ side: 'ally' | 'enemy'; color: string; id: number } | null>(null);
   const [result, setResult] = useState<ModeResult | null>(null);
@@ -140,6 +144,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
           const f = fx && e.source === actorId ? fx : fxFor(e.source);
           addVfx(e.target, `impact w-${f.weapon} e-${f.element}${e.crit ? ' crit' : ''}`, f.color);
           if (e.crit) { setFlash(true); setTimeout(() => setFlash(false), 140); }
+          { const t = s.units.find((u) => u.id === e.target); const big = !!t && e.amount > t.base.hp * 0.25; if (e.crit || big) doShake(e.crit && big ? 'hard' : 'soft'); }
           if (!soundOnce.has('hit:' + e.source)) { soundOnce.add('hit:' + e.source); playImpact(f, { crit: ev.some((x) => x.kind === 'damage' && x.source === e.source && x.crit), many: ev.filter((x) => x.kind === 'damage' && x.source === e.source).length > 1 }); }
           if (f.weapon === 'blunt' || e.crit) heavy.add(e.target);
           hit.add(e.target); if (e.combo) addPopup(e.target, 'Combo !', 'buff'); addPopup(e.target, `${e.crit ? 'CRIT ' : ''}-${e.amount}${e.strong ? ' ▲' : e.weak ? ' ▼' : ''}`, `dmg ${e.crit ? 'crit' : ''} ${e.strong ? 'strong' : ''} ${e.weak ? 'weak' : ''}`); pause = true; break;
@@ -151,7 +156,16 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
         case 'status': if (['stun', 'freeze', 'taunt'].includes(e.status)) addPopup(e.target, STATUS_INFO[e.status].name, 'debuff'); if (!vfxBusy(e.target)) addVfx(e.target, STATUS_INFO[e.status].debuff ? 'cursefx' : 'bufffx', STATUS_INFO[e.status].color); if (!soundOnce.has('st:' + e.status)) { soundOnce.add('st:' + e.status); playStatus(e.status, STATUS_INFO[e.status].debuff); } break;
         case 'resist': if (e.immune) addPopup(e.target, 'Immunisé', 'resist'); break;
         case 'skip': addPopup(e.target, STATUS_INFO[e.status].name, 'debuff'); pause = true; break;
-        case 'death': addPopup(e.target, 'K.O.', 'death'); playDeath(); pause = true; break;
+        case 'death': {
+          addPopup(e.target, 'K.O.', 'death'); playDeath(); pause = true;
+          const dead = s.units.find((u) => u.id === e.target);
+          // Coup fatal : le dernier ennemi de la dernière vague tombe (surtout un boss) : ralenti et tremblement.
+          if (dead && dead.side === 'enemy' && s.outcome === 'won' && !s.pendingWaves.length && !s.units.some((u) => u.side === 'enemy' && u.alive)) {
+            doShake('hard');
+            if (!save.settings.reducedMotion) { setSlowmo(true); setBanner({ text: dead.isBoss ? 'Coup fatal !' : 'Victoire !', side: 'ally' }); await wait(900); setSlowmo(false); }
+          }
+          break;
+        }
         case 'revive': addVfx(e.target, 'revivefx', '#ffd36b'); addPopup(e.target, 'Ressuscité !', 'heal'); playRevive(); pause = true; break;
         case 'undying': addPopup(e.target, 'Ce qui ne meurt pas', 'buff'); break;
         case 'extraTurn': addPopup(e.target, 'Tour bonus !', 'buff'); break;
@@ -327,7 +341,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
   );
 
   return (
-    <div ref={battleRef} className={`battle ${flash ? 'flash' : ''}`}>
+    <div ref={battleRef} className={`battle ${flash ? 'flash' : ''} ${shake ? `shake ${shake}` : ''} ${slowmo ? 'slowmo' : ''}`}>
       <BattleBackdrop region={initial.info.region} />
       <div className="battle-top">
         <div className="row between">

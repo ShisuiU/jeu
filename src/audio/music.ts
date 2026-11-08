@@ -7,7 +7,9 @@ import { audioContext } from './sfx';
 // Morceaux : Accueil (harpe, nappe, flûte), Invocation (cloches de verre, chœur), Combat (une couleur par
 // région : ostinato, tambours, cuivres) et Boss (plus rapide, plus lourd).
 
-export type MusicMode = 'menu' | 'summon' | 'battle' | 'boss';
+export type MusicMode = 'menu' | 'summon' | 'battle' | 'boss' | PlaceMusic;
+/** Lieux qui ont leur propre musique (hors combat). */
+export type PlaceMusic = 'forge' | 'sanctuary' | 'tower' | 'arena' | 'market' | 'camp';
 type Lead = 'flute' | 'brass' | 'square' | 'choir';
 
 interface Theme {
@@ -29,6 +31,15 @@ const LYDIAN = [0, 2, 4, 6, 7, 9, 11];
 
 const MENU: Theme = { tempo: 68, root: 62, scale: AEOLIAN, prog: [0, 5, 2, 6], lead: 'flute', drums: 'none', arp: 'harp', cutoff: 1500 };
 const SUMMON: Theme = { tempo: 60, root: 64, scale: LYDIAN, prog: [0, 1, 0, 4], lead: 'choir', drums: 'none', arp: 'bells', cutoff: 2600 };
+// Lieux : chacun sa couleur (forge lourde et grave, sanctuaire en chœur, tour mystérieuse, arène martiale…).
+const PLACES: Record<PlaceMusic, Theme> = {
+  forge: { tempo: 84, root: 45, scale: HARMONIC, prog: [0, 5, 4, 0], lead: 'brass', drums: 'battle', arp: 'pulse', cutoff: 1300 },
+  sanctuary: { tempo: 56, root: 60, scale: LYDIAN, prog: [0, 4, 5, 1], lead: 'choir', drums: 'none', arp: 'bells', cutoff: 2400 },
+  tower: { tempo: 72, root: 57, scale: HARMONIC, prog: [0, 6, 5, 4], lead: 'choir', drums: 'none', arp: 'pulse', cutoff: 1800 },
+  arena: { tempo: 100, root: 55, scale: DORIAN, prog: [0, 6, 3, 4], lead: 'brass', drums: 'battle', arp: 'none', cutoff: 2000 },
+  market: { tempo: 92, root: 62, scale: DORIAN, prog: [0, 3, 4, 0], lead: 'flute', drums: 'none', arp: 'harp', cutoff: 2600 },
+  camp: { tempo: 64, root: 55, scale: AEOLIAN, prog: [0, 3, 5, 4], lead: 'flute', drums: 'none', arp: 'harp', cutoff: 1600 },
+};
 // Combat : une couleur par région (tonalité, mode, grille, timbre de la mélodie).
 const REGION: Record<string, Partial<Theme>> = {
   valcrest: { root: 57, scale: AEOLIAN, prog: [0, 5, 2, 6], lead: 'brass' },
@@ -263,7 +274,7 @@ export function playMusic(m: MusicMode, region?: string) {
   ensureGraph(ctx);
   if (key !== themeKey) {
     themeKey = key;
-    theme = m === 'menu' ? MENU : m === 'summon' ? SUMMON : battleTheme(region, m === 'boss');
+    theme = m === 'menu' ? MENU : m === 'summon' ? SUMMON : m === 'battle' || m === 'boss' ? battleTheme(region, m === 'boss') : PLACES[m];
     motif = makeMotif(key);
     // Nouveau morceau : on repart du début, après un court silence (fondu du précédent par la réverbération).
     step = 0;

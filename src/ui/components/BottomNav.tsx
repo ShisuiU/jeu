@@ -5,6 +5,8 @@ import { Icon } from '../art/Icons';
 import { unreadMail } from '../screens/Mail';
 import { claimableCount, eventsDot } from '../../game/missions';
 import { isUnlocked } from '../../game/unlocks';
+import { canImprove } from '../../game/upgrade';
+import type { SaveData } from '../../save/schema';
 import { newCopies } from '../../game/copies';
 import { cloudWanted, useAccount } from '../../cloud/account';
 import { campElapsed } from '../../game/camp';
@@ -17,6 +19,8 @@ const ITEMS: { tab: Tab; label: string; icon: keyof typeof Icon }[] = [
   { tab: 'menu', label: 'Menu', icon: 'menu' },
 ];
 
+const teamCanImprove = (s: SaveData) => { const t = s.teams.find((x) => x.id === s.activeTeamId) ?? s.teams[0]; return t.slots.some((u) => { const h = s.heroes.find((x) => x.uid === u); return !!h && canImprove(s, h); }); };
+
 export function BottomNav() {
   const root = useUI((s) => s.stack[0].name);
   // L'onglet reste allumé quand on navigue dans ses sous-écrans.
@@ -28,7 +32,8 @@ export function BottomNav() {
   // Combats : une expédition revenue (butin qui attend). Les clés et tickets du jour restent signalés sur les cartes.
   const combatsDot = useGame((s) => !!s.save && (s.save.expeditions?.runs ?? []).some((r) => s.now >= r.endsAt));
   const homeDot = useGame((s) => !!s.save && (canClaimDaily(s.save, s.now) || unreadMail(s.save.flags) || claimableCount(s.save) > 0 || (isUnlocked(s.save, 'events') && eventsDot(s.save, s.now)) || (isUnlocked(s.save, 'camp') && campElapsed(s.save, s.now) >= 4 * 3600_000)));
-  const heroesDot = useGame((s) => !!s.save && newCopies(s.save));
+  // Héros : nouveaux doublons, ou un héros de l'équipe peut progresser au Sanctuaire.
+  const heroesDot = useGame((s) => !!s.save && (newCopies(s.save) || teamCanImprove(s.save)));
   // Menu : invitation à protéger sa partie, jusqu'à la première visite de l'écran Sauvegarde.
   const menuDot = useGame((s) => !!s.save && !s.save.flags.saves_seen && !useAccount.getState().user && !cloudWanted() && s.save.stats.battlesWon >= 3);
   const dots: Partial<Record<Tab, boolean>> = { home: homeDot, collection: heroesDot, summon: summonDot, combats: combatsDot, menu: menuDot };

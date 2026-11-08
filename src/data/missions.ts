@@ -7,6 +7,11 @@ export type TrackKey =
 
 export interface MissionDef { id: string; key: TrackKey; target: number; title: string; reward: Reward }
 
+/** Mode à avoir ouvert pour qu'une mission apparaisse (les autres sont toujours là). */
+export const KEY_FEATURE: Partial<Record<TrackKey, 'dungeons' | 'arena' | 'expeditions' | 'worldboss' | 'tower'>> = {
+  dungeonWin: 'dungeons', arenaFight: 'arena', arenaWin: 'arena', expedition: 'expeditions', worldBoss: 'worldboss', towerWin: 'tower',
+};
+
 export const DAILY_MISSIONS: MissionDef[] = [
   { id: 'd_login', key: 'login', target: 1, title: 'Se connecter', reward: { gold: 3000 } },
   { id: 'd_win5', key: 'battleWin', target: 5, title: 'Remporter 5 combats', reward: { xpElixir: 3, gold: 3000 } },

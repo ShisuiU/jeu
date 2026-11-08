@@ -827,3 +827,10 @@ body:has(.battle-controls) .toasts { bottom: auto; top: calc(var(--sat, 0px) + 1
 .sanct-tabs button { flex: 1 1 auto; padding: 0 5px; }
 @media (max-width: 430px) { .sanct-tabs button { font-size: 12px; } }
 @media (max-width: 359px) { .sanct-tabs button { flex: 0 0 auto; padding: 0 8px; } }
+
+/* Héros : Sanctuaire, Forge, Équipes, Liens en tête de la collection. */
+.hero-places { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-bottom: 10px; }
+.hp-tile { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; height: 62px; border-radius: var(--radius); background-color: var(--stone); background-image: var(--grain); border: 1px solid var(--edge-hi); color: var(--gold-hi); font-size: 12px; font-weight: 700; }
+.hp-tile span:not(.badge-dot) { color: var(--text); }
+.hp-tile .badge-dot { top: 6px; right: 8px; }
+.hp-tile:active { transform: scale(0.96); }

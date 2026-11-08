@@ -1,4 +1,5 @@
 import { cloudWanted, useAccount } from '../../cloud/account';
+import { isUnlocked } from '../../game/unlocks';
 import { useGame } from '../../state/store';
 import { useUI, type Route } from '../../state/ui';
 import { useEffect, useState } from 'react';
@@ -17,7 +18,7 @@ export function Menu() {
   const push = useUI((s) => s.push);
   const save = useGame((s) => s.save)!;
   // Le Menu ne contient que ce qui n'a pas de place ailleurs : chaque écran n'a qu'une seule entrée.
-  // (Missions, Événements, Courrier, Sanctuaire, Forge, Camp et Marché sont sur l'Accueil ; Équipes et Liens dans Héros.)
+  // (Accueil : Missions, Courrier, Événements, Camp, Marché. Héros : Sanctuaire, Forge, Équipes, Liens. Combats : tous les modes.)
   // Modérateur : une entrée « Modération » (vérifiée en ligne, une fois par session).
   const user = useAccount((s) => s.user);
   const [admin, setAdmin] = useState(false);
@@ -29,6 +30,7 @@ export function Menu() {
     ] },
     { title: 'Entre joueurs', items: [
       { label: 'Amis', icon: 'heroes', route: { name: 'friends' } },
+      ...(isUnlocked(save, 'guild') ? [{ label: 'Clan', icon: 'team' as const, route: { name: 'guild' } as Route }] : []),
       { label: 'Classements', icon: 'star', route: { name: 'ranks' } },
       ...(admin ? [{ label: 'Modération', icon: 'lock' as const, route: { name: 'moderation' } as Route }] : []),
     ] },
@@ -57,7 +59,7 @@ export function Menu() {
           </div>
         </div>
       ))}
-      <p className="faint menu-map">Missions, Événements, Courrier, Sanctuaire, Forge, Camp et Marché : sur l’<b>Accueil</b>. Équipes et liens : dans <b>Héros</b>.</p>
+      <p className="faint menu-map"><b>Héros</b> : Sanctuaire, Forge, Équipes, Liens · <b>Combats</b> : tous les modes · <b>Accueil</b> : Missions, Courrier, Camp, Marché.</p>
     </Screen>
   );
 }

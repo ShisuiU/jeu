@@ -7,6 +7,7 @@ import { claimableCount, eventsDot } from '../../game/missions';
 import { isUnlocked } from '../../game/unlocks';
 import { canImprove } from '../../game/upgrade';
 import { useGifts } from '../../state/gifts';
+import { collectionClaimable } from '../../game/collection';
 import type { SaveData } from '../../save/schema';
 import { newCopies } from '../../game/copies';
 import { cloudWanted, useAccount } from '../../cloud/account';
@@ -36,7 +37,7 @@ export function BottomNav() {
   const homeDotGame = useGame((s) => !!s.save && (canClaimDaily(s.save, s.now) || unreadMail(s.save.flags) || claimableCount(s.save) > 0 || (isUnlocked(s.save, 'events') && eventsDot(s.save, s.now)) || (isUnlocked(s.save, 'camp') && campElapsed(s.save, s.now) >= 4 * 3600_000)));
   const homeDot = gifts || homeDotGame;
   // Héros : nouveaux doublons, ou un héros de l'équipe peut progresser au Sanctuaire.
-  const heroesDot = useGame((s) => !!s.save && (newCopies(s.save) || teamCanImprove(s.save)));
+  const heroesDot = useGame((s) => !!s.save && (newCopies(s.save) || teamCanImprove(s.save) || collectionClaimable(s.save).length > 0));
   // Menu : invitation à protéger sa partie, jusqu'à la première visite de l'écran Sauvegarde.
   const menuDot = useGame((s) => !!s.save && !s.save.flags.saves_seen && !useAccount.getState().user && !cloudWanted() && s.save.stats.battlesWon >= 3);
   const dots: Partial<Record<Tab, boolean>> = { home: homeDot, collection: heroesDot, summon: summonDot, combats: combatsDot, menu: menuDot };

@@ -11,6 +11,9 @@ import { BondsSheet } from '../components/Copies';
 import { copiesOf, markCopiesSeen } from '../../game/copies';
 import { canImprove } from '../../game/upgrade';
 import { Icon } from '../art/Icons';
+import { COLLECTION_PCT, claimCollection, collectionClaimable, collectionPct, collectionReward, nextCollectionStep, ownedCount } from '../../game/collection';
+import { RewardInline } from '../components/RewardView';
+import { play } from '../../audio/sfx';
 
 export function Collection() {
   const save = useGame((s) => s.save)!;
@@ -37,6 +40,7 @@ export function Collection() {
         <button className="hp-tile" onClick={() => push({ name: 'team' })}><Icon.team size={22} /><span>Équipes</span></button>
         <button className="hp-tile" onClick={() => setBonds(true)}><Icon.heroes size={22} /><span>Liens</span></button>
       </div>
+      <CollectionBar />
       {bonds && <BondsSheet onClose={() => setBonds(false)} />}
       <ListControls sortOptions={HERO_SORTS} sort={sort} onSort={(s) => setPrefs({ ...prefs, sort: s })}
         groups={HERO_GROUPS} filters={filters} onFilters={(f) => setPrefs({ ...prefs, filters: f })}
@@ -59,5 +63,34 @@ export function Collection() {
         </>
       )}
     </Screen>
+  );
+}
+
+/** Paliers de collection : progression, récompense du prochain palier, bonus permanent déjà gagné. */
+function CollectionBar() {
+  const save = useGame((s) => s.save)!;
+  const mutate = useGame((s) => s.mutate);
+  const toast = useUI((s) => s.toast);
+  const owned = ownedCount(save);
+  const ready = collectionClaimable(save);
+  const next = nextCollectionStep(save);
+  const bonus = collectionPct(save);
+  const target = ready[0] ?? next;
+  return (
+    <div className="col-bar">
+      <div className="row between">
+        <b>Collection {owned}/{HEROES.length}</b>
+        <span className="faint">{bonus ? `Bonus : +${bonus} % PV, ATQ, DÉF à tous` : 'Aucun palier encore'}</span>
+      </div>
+      {target ? (
+        <>
+          <div className="progress" style={{ margin: '6px 0' }}><div style={{ width: `${Math.min(100, (owned / target) * 100)}%` }} /></div>
+          <div className="row between" style={{ gap: 8 }}>
+            <span className="faint" style={{ fontSize: 12 }}>Palier {target} héros : +{COLLECTION_PCT} % à tous · <RewardInline reward={collectionReward(target)} /></span>
+            {ready.length > 0 && <button className="btn small" onClick={() => { let got: number[] = []; mutate((d) => { got = claimCollection(d); }); if (got.length) { play('claim'); toast(`Palier${got.length > 1 ? 's' : ''} de collection : +${got.length * COLLECTION_PCT} % PV, ATQ et DÉF à tous tes héros !`, 'ok'); } }}>Récupérer</button>}
+          </div>
+        </>
+      ) : <div className="faint" style={{ fontSize: 12, marginTop: 4 }}>Collection complète : tous les paliers sont à toi.</div>}
+    </div>
   );
 }

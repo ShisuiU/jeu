@@ -551,6 +551,13 @@
 - Boss mondial : un seul repère par difficulté, le prochain palier et sa barre (au lieu de six pastilles)
 - Choix du nom : l'astuce « Safari → Sur l'écran d'accueil » n'apparaît que sur iPhone et iPad
 
+## ✅ Version 1.62.0 — Objectifs, sensations et musiques
+
+- **Paliers de collection** (onglet Héros) : à 10, 15, 20, 25, 30, 35 et 40 héros différents, des cristaux, des éclats d'Aeon et un **bonus permanent de +1 % PV, ATQ et DÉF à tous les héros** (jusqu'à +7 %) ; pastille sur l'onglet quand un palier attend
+- **Sensations en combat** : l'écran tremble sur les coups critiques et les gros coups (plus d'un quart des PV), chiffres critiques plus grands, **ralenti et « Coup fatal ! »** quand le dernier ennemi tombe (rien de tout cela avec « Animations réduites »)
+- **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
+- **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

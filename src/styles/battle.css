@@ -204,3 +204,13 @@
 /* Les deux camps se regroupent au milieu de l'écran (plus de grand vide sous l'équipe). */
 .fields { justify-content: center; }
 .fields > .field { flex: 0 1 auto; }
+
+/* ─── Sensations ─── */
+.battle.shake.soft .fields { animation: shakeSoft 0.26s ease-out; }
+.battle.shake.hard .fields { animation: shakeHard 0.42s ease-out; }
+@keyframes shakeSoft { 0%, 100% { transform: translate(0, 0); } 25% { transform: translate(-3px, 2px); } 50% { transform: translate(3px, -2px); } 75% { transform: translate(-2px, 1px); } }
+@keyframes shakeHard { 0%, 100% { transform: translate(0, 0); } 15% { transform: translate(-7px, 4px) rotate(-0.4deg); } 30% { transform: translate(6px, -5px) rotate(0.4deg); } 45% { transform: translate(-5px, 3px); } 60% { transform: translate(4px, -2px); } 80% { transform: translate(-2px, 1px); } }
+.popup.dmg.crit { font-size: 24px; text-shadow: 0 0 10px rgba(255,90,60,0.8), 0 2px 4px #000; animation-duration: 1.1s; }
+.battle.slowmo .fields { filter: saturate(1.25) contrast(1.08); transition: filter 0.3s; }
+.battle.slowmo .fields .unit { transition-duration: 0.9s; }
+.battle.slowmo::after { content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none; background: radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,0.55)); animation: fadeIn 0.3s; }

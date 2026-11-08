@@ -49,7 +49,8 @@ export function plausibleDefense(d: ArenaDefense): boolean {
   for (const h of d.team) {
     if (h.level < 1 || h.level > 60 || (h.rank ?? 1) > 6 || (h.ascension ?? 0) > 6 || (h.awaken ?? 0) > 5) return false;
     const g = h.gear;
-    if (g && (Object.values(g.pct ?? {}).some((v) => v > 3) || (g.lifesteal ?? 0) > 60 || (g.regen ?? 0) > 20 || (g.startTm ?? 0) > 60)) return false;
+    // Bonus en % (équipement, ensembles, liens, maîtrises, collection) : au plus ~250 % au maximum réel ; 400 % = impossible.
+    if (g && (Object.values(g.pct ?? {}).some((v) => v > 400) || (g.lifesteal ?? 0) > 60 || (g.regen ?? 0) > 20 || (g.startTm ?? 0) > 60)) return false;
   }
   const real = defenseRealPower(d);
   return real <= 150000 && real <= d.power * 1.25 + 500;

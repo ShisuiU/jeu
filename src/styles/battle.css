@@ -178,3 +178,26 @@
 
 .skill-info.empty { visibility: hidden; }
 .battle-controls { background: linear-gradient(0deg, rgba(7,6,11,0.9), rgba(7,6,11,0)); border-top: 0; }
+
+/* ─── Pouvoir du Lien ─── */
+.lien-btn { position: relative; width: 56px; height: 56px; flex-shrink: 0; align-self: center; border-radius: 50%; display: grid; place-items: center;
+  background: conic-gradient(#ffd36b var(--lp, 0deg), rgba(255,255,255,0.08) 0); padding: 3px; border: 0; color: var(--gold-hi); }
+.lien-btn .lien-core { width: 100%; height: 100%; border-radius: 50%; display: grid; place-items: center; background: radial-gradient(circle at 50% 35%, #2a2134, #110d18); font-family: var(--font-title); font-weight: 800; font-size: 11px; letter-spacing: 0.04em; }
+.lien-btn .lien-uses { position: absolute; bottom: -4px; right: -4px; font-size: 9.5px; font-weight: 800; padding: 1px 4px; border-radius: 6px; background: #0b0910; border: 1px solid var(--edge-hi); color: var(--text-dim); }
+.lien-btn:disabled { opacity: 0.85; cursor: default; }
+.lien-btn.full { animation: lienPulse 1.2s ease-in-out infinite; }
+.lien-btn.full .lien-core { background: radial-gradient(circle at 50% 35%, #6b4c1d, #2a1d0b); color: #fff3cf; }
+@keyframes lienPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,211,107,0.55); } 50% { box-shadow: 0 0 0 8px rgba(255,211,107,0); } }
+.lien-choices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-bottom: 6px; animation: popIn 0.22s cubic-bezier(.2,1.4,.4,1); }
+.lien-choice { display: flex; flex-direction: column; gap: 3px; padding: 8px; border-radius: 10px; text-align: left; background: rgba(20,16,28,0.95); border: 1px solid rgba(255,211,107,0.5); }
+.lien-choice b { font-family: var(--font-title); font-size: 12px; color: var(--gold-hi); }
+.lien-choice span { font-size: 10.5px; line-height: 1.25; color: var(--text-dim); }
+.lien-choice.heal { border-color: rgba(123,234,143,0.55); }
+.lien-choice.guard { border-color: rgba(170,215,255,0.55); }
+
+/* ─── Mécaniques de boss ─── */
+.u-cara { position: absolute; left: 50%; top: -9px; transform: translateX(-50%); min-width: 22px; height: 18px; padding: 0 5px; border-radius: 9px; display: grid; place-items: center; font-size: 11px; font-weight: 900; color: #2a1d0b; background: linear-gradient(180deg, #f2d48a, #b8913f); border: 1px solid #fff0c4; box-shadow: 0 2px 8px rgba(0,0,0,0.6); z-index: 3; }
+.u-cara::before { content: '⛨ '; font-size: 10px; }
+.u-cara.broken { background: linear-gradient(180deg, #ff8f8f, #a3283a); color: #fff; border-color: #ffc2c2; }
+.u-rage { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); font-size: 9px; font-weight: 900; letter-spacing: 0.08em; padding: 1px 5px; border-radius: 5px; background: #a3122e; color: #fff; box-shadow: 0 0 10px rgba(255,61,110,0.7); z-index: 3; pointer-events: none; }
+.ui-boss { margin-top: 8px; padding: 8px; border-radius: 8px; background: rgba(255,61,110,0.08); border: 1px solid rgba(255,61,110,0.3); font-size: 12px; display: flex; flex-direction: column; gap: 4px; }

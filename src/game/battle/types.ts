@@ -54,7 +54,16 @@ export type BattleEvent =
   | { kind: 'revive'; target: string }
   | { kind: 'undying'; target: string }
   | { kind: 'extraTurn'; target: string }
-  | { kind: 'wave'; wave: number };
+  | { kind: 'wave'; wave: number }
+  | { kind: 'rage'; target: string }
+  | { kind: 'carapace'; target: string; charges: number; broken?: boolean; reformed?: boolean }
+  | { kind: 'lien'; power: LienPower };
+
+/** Pouvoir du Lien : le joueur (le Lien) agit lui-même quand la jauge commune de l'équipe est pleine. */
+export type LienPower = 'heal' | 'strike' | 'guard';
+export const LIEN_MAX = 100;
+/** Le Lien agit au plus deux fois par combat. */
+export const LIEN_USES = 2;
 
 export interface UnitSetup {
   kind: 'hero' | 'enemy';
@@ -90,6 +99,12 @@ export interface BattleState {
   /** Synergies d'équipe actives (côté joueur). */
   synergy: { ash: boolean; sylvaran: boolean; astral: boolean; akkar: boolean };
   enemyLevelMult: number;
+  /** Jauge du Lien (0 à LIEN_MAX ; −1 = désactivée) : se remplit à chaque action d'un héros et à chaque ennemi vaincu. */
+  lien: number;
+  /** Pouvoirs du Lien déjà utilisés dans ce combat. */
+  lienUsed: number;
+  /** Mécaniques de boss (Fureur, Carapace) : campagne, donjons, tour, arène — pas les boss à score (mondial, clan). */
+  mechanics: boolean;
 }
 
 export interface Action {

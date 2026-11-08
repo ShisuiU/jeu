@@ -4,7 +4,7 @@ import { nextRandom } from '../../core/rng';
 import type { SkillDef, SkillEffect, StatId, StatusId, TargetId } from '../../data/types';
 import { buildUnit } from './setup';
 import { effectiveCooldown, skillMods, type SkillMods } from './skillMods';
-import { BUFFS, DEBUFFS, type Action, type BattleState, type Unit, type UnitSetup } from './types';
+import { BUFFS, DEBUFFS, LIEN_MAX, LIEN_USES, type Action, type BattleState, type LienPower, type Unit, type UnitSetup } from './types';
 
 // MOTEUR DE COMBAT — tour par tour à jauge de vitesse.
 // Chaque unité remplit sa jauge (TM) proportionnellement à sa vitesse ; la première à 1000 agit.
@@ -53,7 +53,19 @@ export interface BattleOptions {
   leaderUid?: string | null;
   seed?: number;
   turnLimit?: number;
+  /** Mécaniques de boss ; par défaut : oui, sauf pour les combats à nombre d'actions limité (boss à score). */
+  mechanics?: boolean;
+  /** Pouvoir du Lien (par défaut : oui). */
+  lien?: boolean;
 }
+
+// ─── Mécaniques de boss ───
+/** Carapace (boss de niveau 20 et plus, 3 charges) : −30 % de dégâts ; chaque coup retire une charge.
+ *  Brisée, elle laisse le boss vulnérable (−30 % DÉF, 2 tours) et se reforme 8 tours plus tard. */
+export const carapaceCharges = (level: number) => (level >= 20 ? 3 : 0);
+export const CARAPACE_REFORM = 8, CARAPACE_CUT = 0.3;
+/** Jauge du Lien : +5 par action d'un héros, +5 par ennemi vaincu ; deux pouvoirs par combat au plus. */
+export const LIEN_PER_ACTION = 5, LIEN_PER_KILL = 5;
 
 export function createBattle(allies: UnitSetup[], waves: UnitSetup[][], opts: BattleOptions = {}): BattleState {
   const units = allies.map((a, i) => buildUnit(a, 'ally', i));
@@ -88,6 +100,9 @@ export function createBattle(allies: UnitSetup[], waves: UnitSetup[][], opts: Ba
     synergy: { ash: count('ash') > 0, sylvaran: count('sylvaran') > 0, astral: count('astral') > 0, akkar: count('akkar') > 0 },
     enemyLevelMult: 1,
     turnLimit: opts.turnLimit,
+    lien: opts.lien === false ? -1 : 0,
+    lienUsed: 0,
+    mechanics: opts.mechanics ?? !opts.turnLimit,
   };
   spawnWave(s, waves[0]);
   // Petite dispersion initiale des jauges pour éviter les égalités parfaites.
@@ -100,6 +115,7 @@ function spawnWave(s: BattleState, wave: UnitSetup[]) {
   wave.forEach((w, i) => {
     const u = buildUnit(w, 'enemy', s.wave * 10 + i);
     u.tm = rand(s) * 100;
+    if (s.mechanics && u.isBoss) { const c = carapaceCharges(u.level); if (c) { u.flags.carapace = c; u.flags.carapaceMax = c; } }
     s.units.push(u);
   });
 }
@@ -169,6 +185,7 @@ function kill(s: BattleState, target: Unit, killer: Unit | null) {
   target.tm = 0;
   s.events.push({ kind: 'death', target: target.id });
   if (!killer) return;
+  if (killer.side === 'ally' && target.side === 'enemy' && s.lien >= 0 && s.lienUsed < LIEN_USES) s.lien = Math.min(LIEN_MAX, s.lien + LIEN_PER_KILL);
   // Synergie d'Akkar : chaque ennemi vaincu augmente l'attaque des héros d'Akkar.
   if (killer.side === 'ally' && s.synergy.akkar) {
     for (const a of alliesOf(s, killer)) if (a.faction === 'akkar') a.flags.fury = Math.min(5, (a.flags.fury ?? 0) + 1);
@@ -198,6 +215,13 @@ function dealDamage(s: BattleState, source: Unit, target: Unit, effect: Extract<
   let combo = false;
   if (effect.bonusVs?.some((st) => hasStatus(target, st))) { dmg *= 1 + (effect.bonusPct ?? 0.5); combo = true; }
   if (effect.executeBelow && hpPct(target) < effect.executeBelow) { dmg *= 1.5; combo = true; }
+  // Carapace : dégâts réduits, une charge en moins par coup.
+  let broke = false;
+  if (target.flags.carapace > 0) {
+    dmg *= 1 - CARAPACE_CUT;
+    target.flags.carapace -= 1;
+    if (target.flags.carapace === 0) { broke = true; target.flags.carapaceBrokeAt = target.flags.bossTurns ?? 0; }
+  }
   dmg = Math.max(1, Math.round(dmg));
 
   // Bouclier
@@ -212,7 +236,13 @@ function dealDamage(s: BattleState, source: Unit, target: Unit, effect: Extract<
   const hpDmg = dmg - absorbed;
   target.hp -= hpDmg;
   s.events.push({ kind: 'damage', source: source.id, target: target.id, amount: dmg, crit, strong: aff > 1, weak: aff < 1, absorbed, ...(combo ? { combo } : {}) });
-  if (target.isBoss && !target.flags.enraged && hpPct(target) < 0.5) target.flags.enraged = 1;
+  if (target.flags.carapaceMax && !broke && target.flags.carapace > 0) s.events.push({ kind: 'carapace', target: target.id, charges: target.flags.carapace });
+  if (broke && target.alive && target.hp > 0) {
+    s.events.push({ kind: 'carapace', target: target.id, charges: 0, broken: true });
+    addStatus(s, target, 'defDown', 2, 0.3, source);
+  }
+  // Boss sous la moitié de ses PV : il enrage (+30 % ATQ), et le joueur le voit.
+  if (target.isBoss && !target.flags.enraged && hpPct(target) < 0.5 && target.hp > 0) { target.flags.enraged = 1; s.events.push({ kind: 'rage', target: target.id }); }
   if (target.hp <= 0) kill(s, target, source);
   const ls = (effect.lifestealPct ?? 0) + mods.lifesteal + (source.flags.leech ?? 0) / 100;
   if (ls > 0 && source.alive) heal(s, source, hpDmg * ls);
@@ -323,6 +353,14 @@ export function beginTurn(s: BattleState): Unit | null {
         heal(s, u, u.base.hp * st.value);
       }
     }
+    // Boss : la Carapace brisée se reforme.
+    if (u.alive && s.mechanics && u.isBoss && u.side === 'enemy') {
+      u.flags.bossTurns = (u.flags.bossTurns ?? 0) + 1;
+      if (u.flags.carapaceMax && !u.flags.carapace && u.flags.bossTurns - (u.flags.carapaceBrokeAt ?? 0) >= CARAPACE_REFORM) {
+        u.flags.carapace = u.flags.carapaceMax;
+        s.events.push({ kind: 'carapace', target: u.id, charges: u.flags.carapace, reformed: true });
+      }
+    }
     // Ensemble Pérennité : soin au début de chaque tour.
     if (u.alive && u.flags.setRegen && u.hp < u.base.hp) heal(s, u, (u.base.hp * u.flags.setRegen) / 100);
     // Passif d'Hesper : perturbe la jauge d'un ennemi.
@@ -429,9 +467,48 @@ export function performAction(s: BattleState, action: Action): void {
   // Ultime de Kaedra : rejoue si la cible meurt.
   if (skill.id === 'kaedra_3' && killed && actor.alive) { s.extraTurn = actor.id; s.events.push({ kind: 'extraTurn', target: actor.id }); }
 
+  if (actor.side === 'ally' && s.lien >= 0 && s.lienUsed < LIEN_USES) s.lien = Math.min(LIEN_MAX, s.lien + LIEN_PER_ACTION);
   s.activeId = null;
   endTurn(s, actor);
   endCheck(s);
+}
+
+// ─── Pouvoir du Lien ───
+const LIEN_SKILL = { id: 'lien_strike', name: 'Frappe des Héritiers', slot: 'basic', cooldown: 0, description: '', effects: [], upgrades: [] } as unknown as SkillDef;
+const NO_MODS = skillMods(LIEN_SKILL, 1);
+export const LIEN_POWERS: Record<LienPower, { name: string; text: string }> = {
+  heal: { name: 'Souffle de vie', text: 'Soigne toute l’équipe de 20 % de ses PV et retire les effets néfastes.' },
+  strike: { name: 'Frappe des Héritiers', text: 'Tous tes héros frappent ensemble l’ennemi le plus affaibli (50 % de leur ATQ chacun).' },
+  guard: { name: 'Rempart', text: 'Bouclier de 20 % des PV sur toute l’équipe (2 tours) et +15 % de jauge de tour.' },
+};
+/** Le Lien peut-il agir ? (jauge pleine, au tour d'un héros, deux fois par combat au plus). Ne consomme pas le tour du héros. */
+export const lienReady = (s: BattleState) => s.outcome === 'running' && s.lien >= LIEN_MAX && s.lienUsed < LIEN_USES && !!s.activeId && unitById(s, s.activeId).side === 'ally';
+export function castLien(s: BattleState, power: LienPower): boolean {
+  if (!lienReady(s)) return false;
+  const allies = s.units.filter((u) => u.side === 'ally' && u.alive);
+  s.lien = 0;
+  s.lienUsed += 1;
+  s.events.push({ kind: 'lien', power });
+  if (power === 'heal') for (const a of allies) { cleanse(s, a); heal(s, a, a.base.hp * 0.2); }
+  else if (power === 'guard') for (const a of allies) { addStatus(s, a, 'shield', 2, a.base.hp * 0.2, a); applyTm(s, a, a, 0.15); }
+  else {
+    for (const a of allies) {
+      const foes = s.units.filter((u) => u.side === 'enemy' && u.alive);
+      if (!foes.length) break;
+      const t = [...foes].sort((x, y) => hpPct(x) - hpPct(y))[0];
+      dealDamage(s, a, t, { kind: 'damage', target: 'enemy', mult: 0.5 } as Extract<SkillEffect, { kind: 'damage' }>, NO_MODS, LIEN_SKILL, true);
+    }
+  }
+  endCheck(s);
+  return true;
+}
+/** Choix automatique (combat auto, simulations) : soigner si l'équipe souffre, sinon frapper. */
+export function autoLien(s: BattleState): LienPower | null {
+  if (!lienReady(s)) return null;
+  const allies = s.units.filter((u) => u.side === 'ally' && u.alive);
+  const avg = allies.reduce((a, u) => a + hpPct(u), 0) / Math.max(1, allies.length);
+  if (avg < 0.55 || allies.some((u) => hpPct(u) < 0.3)) return 'heal';
+  return 'strike';
 }
 
 /** Ordre de jeu prévu (approximation sans effets futurs), pour l'affichage. */

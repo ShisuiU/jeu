@@ -517,6 +517,14 @@
 - **Onglet Héros** : Sanctuaire, Forge, Équipes et Liens en tête de la collection ; la pastille de l'onglet signale un héros de l'équipe qui peut progresser
 - **Clan** rangé dans le Menu, avec Amis et Classements ; le tutoriel montre le chemin Héros → Sanctuaire
 
+## ✅ Version 1.59.0 — Profondeur de combat
+
+- **Pouvoir du Lien** : le joueur (le Lien) agit lui-même. Une jauge commune se remplit à chaque action d'un héros (+5) et à chaque ennemi vaincu (+5) ; pleine, au tour d'un héros et sans lui faire perdre son tour, on choisit **Souffle de vie** (soin de 20 %, effets néfastes retirés), **Frappe des Héritiers** (toute l'équipe frappe l'ennemi le plus affaibli, 50 % de l'ATQ chacun) ou **Rempart** (bouclier de 20 % des PV, +15 % de jauge de tour). Deux fois par combat au plus ; le combat automatique s'en sert seul (soin si l'équipe souffre, sinon frappe)
+- **Carapace des boss** (niveau 20 et plus) : −30 % de dégâts, 3 charges, une en moins par coup (les attaques à plusieurs coups et de zone la brisent vite) ; brisée, le boss perd 30 % de DÉF pendant 2 tours ; elle se reforme 8 tours plus tard. Pas pour les boss à score (mondial, clan)
+- **La rage des boss se voit** : sous la moitié de leurs PV, « Enragé ! +30 % ATQ » (elle existait sans être montrée)
+- Fiche d'unité (appui long / clic droit) et Codex → Règles expliquent ces mécaniques
+- Équilibrage vérifié par simulation (80 combats par cas) : difficulté des boss inchangée en moyenne, combats en retard de niveau un peu plus abordables ; tests d'équilibrage portés à 40 combats par cas pour mesurer la difficulté plutôt que le hasard
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

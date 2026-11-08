@@ -16,7 +16,13 @@ import type { GuildWithId } from '../../cloud/guildCloud';
 type Api = typeof import('../../cloud/guildCloud');
 let api: Promise<Api> | null = null;
 const gapi = () => (api ??= import('../../cloud/guildCloud'));
-const errMsg = (e: unknown) => (e instanceof Error && e.message && !/^[A-Z_]+$/.test(e.message) ? e.message : (e as { code?: string })?.code === 'permission-denied' ? 'Les clans ne sont pas encore ouverts sur le serveur.' : 'Serveur injoignable pour le moment.');
+// Messages d'erreur en français : le code de Firebase passe avant son texte (en anglais).
+const errMsg = (e: unknown) => {
+  const code = (e as { code?: string })?.code ?? '';
+  if (code === 'permission-denied' || /permission/i.test(String((e as Error)?.message))) return 'Action refusée par le serveur : ses règles ne sont pas à jour (fichier firestore.rules à republier dans la console Firebase).';
+  if (code === 'unavailable' || /offline|network/i.test(String((e as Error)?.message))) return 'Serveur injoignable pour le moment.';
+  return e instanceof Error && e.message && !/^[A-Za-z ,.:-]+$/.test(e.message) ? e.message : 'Serveur injoignable pour le moment.';
+};
 const avatar = (id: string) => (HERO_BY_ID[id] ? id : 'torvald');
 
 export function Guild() {
@@ -253,8 +259,13 @@ function Members({ g, uid, now, act, confirm, leave }: {
   const r = sel ? clanRights(g, uid, sel) : null;
   return (
     <>
+      <Panel title="Les rôles du clan">
+        {(['leader', 'officer', 'member'] as ClanRole[]).map((k) => (
+          <div key={k} className="stat-row"><b className={`cl-role ${k}`}>{ROLE_NAMES[k]}{k === 'officer' ? ` · ${officers}/${OFFICERS_MAX}` : ''}</b><span className="faint" style={{ maxWidth: '62%', textAlign: 'right' }}>{ROLE_HELP[k]}</span></div>
+        ))}
+      </Panel>
       <Panel title={`Membres · ${g.count}/${GUILD_MAX}`}>
-        <p className="faint" style={{ marginTop: 0 }}>Toi : <b className={`cl-role ${me}`}>{ROLE_NAMES[me]}</b> · {ROLE_HELP[me]} {me === 'leader' && 'Touche un membre pour lui donner un rôle.'}</p>
+        <p className="faint" style={{ marginTop: 0 }}>Ton rôle : <b className={`cl-role ${me}`}>{ROLE_NAMES[me]}</b>{me === 'leader' ? ' · touche un membre pour le nommer adjoint, chef, ou l’exclure.' : me === 'officer' ? ' · touche un simple membre pour l’exclure.' : ''}</p>
         {list.map(([id, mm]) => {
           const role = roleOf(g, id);
           return (
@@ -264,15 +275,10 @@ function Members({ g, uid, now, act, confirm, leave }: {
                 <b>{mm.name}</b>{id === uid && <span className="faint"> (toi)</span>}
                 <div className="faint">Puissance {fmt(mm.power)} · dégâts de la semaine {fmt(myBossDamage(g, id, now))}</div>
               </span>
-              {role !== 'member' && <span className={`cl-role ${role}`}>{ROLE_NAMES[role]}</span>}
+              <span className={`cl-role ${role}`}>{ROLE_NAMES[role]}</span>
             </button>
           );
         })}
-      </Panel>
-      <Panel title="Rôles">
-        {(['leader', 'officer', 'member'] as ClanRole[]).map((k) => (
-          <div key={k} className="stat-row"><b className={`cl-role ${k}`}>{ROLE_NAMES[k]}{k === 'officer' ? ` · ${officers}/${OFFICERS_MAX}` : ''}</b><span className="faint" style={{ maxWidth: '62%', textAlign: 'right' }}>{ROLE_HELP[k]}</span></div>
-        ))}
       </Panel>
       {clanRights(g, uid, uid).settings && (
         <Panel title="Réglages du clan">
@@ -291,6 +297,7 @@ function Members({ g, uid, now, act, confirm, leave }: {
             <div style={{ minWidth: 0 }}>
               <h3 style={{ margin: 0 }}>{m.name}</h3>
               <span className={`cl-role ${roleOf(g, sel)}`}>{ROLE_NAMES[roleOf(g, sel)]}</span>
+              <div className="faint" style={{ marginTop: 4 }}>{ROLE_HELP[roleOf(g, sel)]}</div>
             </div>
           </div>
           <div className="stat-row"><span>Puissance</span><b>{fmt(m.power)}</b></div>

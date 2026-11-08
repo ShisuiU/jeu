@@ -9,6 +9,7 @@ import { HEROES } from '../../data/heroes';
 import { TOWER_FLOORS } from '../../data/tower';
 import { arenaTier } from '../../data/arena';
 import { campProgress } from '../../game/camp';
+import { cleanName, nameError } from '../../game/profile';
 
 type Entry = { label: string; icon: keyof typeof Icon; route: Route; dot?: boolean };
 
@@ -73,9 +74,9 @@ function Profile() {
     ['Invocations', fmt(save.stats.summons)],
   ];
   const saveName = () => {
-    const n = (edit ?? '').trim().slice(0, 18);
-    if (!n) { toast('Choisis un nom.', 'error'); return; }
-    mutate((s) => { s.profile.name = n; });
+    const err = nameError(edit ?? '');
+    if (err) { toast(err, 'error'); return; }
+    mutate((s) => { s.profile.name = cleanName(edit ?? ''); s.flags.name_chosen = true; });
     setEdit(null); toast('Nom changé.', 'ok');
   };
   return (
@@ -83,7 +84,7 @@ function Profile() {
       <button className="pc-ava" onClick={() => push({ name: 'collection' })} aria-label="Changer d’avatar (dans Héros)"><HeroArt heroId={save.profile.avatarHeroId} /></button>
       <div className="grow" style={{ minWidth: 0 }}>
         <div className="row" style={{ gap: 6 }}>
-          <b className="pc-name">{save.profile.name || 'Lien'}</b>
+          <b className="pc-name">{save.profile.name}</b>
           <button className="btn secondary small" onClick={() => setEdit(save.profile.name)}>Modifier</button>
         </div>
         <div className="faint">Le Lien · niveau {save.profile.level}</div>

@@ -1,6 +1,8 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { ErrorBoundary } from './ui/components/ErrorBoundary';
 import { Guide } from './ui/components/Guide';
+import { NamePrompt } from './ui/components/NamePrompt';
+import { needsName } from './game/profile';
 import { useGame } from './state/store';
 import { useUI, type Route } from './state/ui';
 import { initSaveSystem } from './save/saveManager';
@@ -212,6 +214,7 @@ export default function App() {
           {(route.name === 'home' || route.name === 'collection' || route.name === 'summon') && <BondsIntro />}
           {route.name === 'home' && <AccountPrompt />}
           {route.name === 'home' && !save.flags.guide_done && <Guide />}
+          {save.flags.guide_done && route.name !== 'battle' && needsName(save) && <NamePrompt />}
         </>
       )}
       <Toasts />

@@ -438,6 +438,12 @@
 - Erreurs du serveur en français : un refus des règles affiche « Action refusée par le serveur : ses règles ne sont pas à jour… » au lieu du message anglais de Firebase
 - Vérifié sur le vrai serveur : le refus de « Nommer adjoint » venait des règles en ligne pas encore republiées (version 1.49.0 de `firestore.rules`)
 
+## ✅ Version 1.50.0 — Nom obligatoire
+
+- Au premier lancement, le nom n’est plus facultatif : impossible de commencer sans en choisir un (3 à 18 caractères ; lettres, chiffres, espaces, apostrophes, points, tirets)
+- Les joueurs qui ont encore un nom par défaut (« Lien », « Héritier », « Joueur »…) doivent choisir le leur : une fenêtre impossible à fermer s’ouvre au lancement (jamais en plein combat)
+- Le changement de nom depuis la carte du joueur (Menu) suit les mêmes règles ; le nouveau nom est publié avec la sauvegarde en ligne (classements, Arène, clans, amis)
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

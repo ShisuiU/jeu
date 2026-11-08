@@ -493,6 +493,14 @@
 - Combat : l’astuce s’affiche sous la barre d’ordre des tours, au lieu de la couvrir
 - Sanctuaire : les 5 onglets tiennent sur la largeur d’un téléphone (plus d’onglet « Maîtrises » coupé)
 
+## ✅ Version 1.56.0 — Notifications
+
+- **Paramètres → Notifications** : le téléphone prévient quand le jeu est fermé : **camp plein**, **énergie au maximum**, **cadeau d’énergie d’un ami** (avec son nom). Chaque type se coupe à part ; jamais la nuit (22 h – 8 h, heure du joueur : l’annonce attend 8 h)
+- Il faut un compte. Sur iPhone, le jeu doit être installé sur l’écran d’accueil (iOS 16.4 ou plus) : le réglage l’explique
+- Rien n’est envoyé pendant qu’on joue ; chaque annonce n’est faite qu’une fois ; se déconnecter ou supprimer son compte coupe les notifications de ce téléphone
+- **Envoi** : un petit programme (`scripts/push/send.mjs`) tourne sur GitHub Actions toutes les 10 minutes (`.github/workflows/notifications.yml`). Il lit les heures à annoncer dans Firestore (`push/{uid}`) et les cadeaux récents (`friendships`, champ `giftAt`), puis envoie les notifications (Web Push, clés VAPID tirées de la clé du compte de service ; clé publique publiée dans `config/push`). Abonnements expirés effacés automatiquement
+- **À faire une fois** : ajouter le secret GitHub `FIREBASE_SERVICE_ACCOUNT` (clé du compte de service Firebase) et republier les règles Firestore (35 tests sur l’émulateur)
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

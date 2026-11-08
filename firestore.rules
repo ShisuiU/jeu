@@ -15,6 +15,8 @@ rules_version = '2';
 // reports/{id}       : signalements (nom, message, clan), lus seulement par les modérateurs.
 // admins/{uid}       : modérateurs (créés à la main dans la console Firebase).
 // bans/{uid}         : joueurs bannis des fonctions en ligne (classements, Arène, clans, amis).
+// config/push        : clé publique des notifications (écrite par le serveur d'envoi).
+// push/{uid}         : abonnement aux notifications et heures à annoncer (camp plein, énergie).
 
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -183,7 +185,7 @@ service cloud.firestore {
       allow delete: if signedIn() && resource.data.uid == me();
     }
     function validFriendship(d) {
-      return d.keys().hasOnly(['users', 'from', 'status', 'gifts', 'claims', 'createdAt'])
+      return d.keys().hasOnly(['users', 'from', 'status', 'gifts', 'claims', 'createdAt', 'giftAt'])
         && d.users is list && d.users.size() == 2 && d.users[0] < d.users[1]
         && d.from in d.users && (d.status == 'pending' || d.status == 'ok')
         && d.gifts is map && d.claims is map && d.createdAt is number;
@@ -200,8 +202,9 @@ service cloud.firestore {
           // Accepter une demande reçue.
           (resource.data.status == 'pending' && resource.data.from != me() && changed().hasOnly(['status']) && request.resource.data.status == 'ok')
           // Envoyer son cadeau d'énergie du jour.
-          || (resource.data.status == 'ok' && changed().hasOnly(['gifts'])
-            && request.resource.data.gifts.diff(resource.data.gifts).affectedKeys().hasOnly([me()]) && request.resource.data.gifts[me()] is string)
+          || (resource.data.status == 'ok' && changed().hasOnly(['gifts', 'giftAt'])
+            && request.resource.data.gifts.diff(resource.data.gifts).affectedKeys().hasOnly([me()]) && request.resource.data.gifts[me()] is string
+            && (!('giftAt' in request.resource.data) || request.resource.data.giftAt == request.time || request.resource.data.giftAt == resource.data.get('giftAt', null)))
           // Recevoir le cadeau de l'ami.
           || (resource.data.status == 'ok' && changed().hasOnly(['claims'])
             && request.resource.data.claims.diff(resource.data.claims).affectedKeys().hasOnly([me()]) && request.resource.data.claims[me()] is string)
@@ -222,6 +225,21 @@ service cloud.firestore {
     }
     match /admins/{uid} {
       allow read: if isMe(uid) || isAdmin();
+    }
+    // ─── Notifications ───
+    // config/push : clé publique d'envoi des notifications (écrite par le serveur d'envoi, lue par le jeu).
+    match /config/{id} {
+      allow read: if true;
+    }
+    // push/{uid} : abonnement aux notifications de ce téléphone et heures à annoncer (camp, énergie).
+    match /push/{uid} {
+      allow read, delete: if isMe(uid);
+      allow create, update: if isMe(uid)
+        && request.resource.data.keys().hasOnly(['sub', 'campAt', 'energyAt', 'due', 'tz', 'camp', 'energy', 'gifts', 'updatedAt', 'campSent', 'energySent', 'giftSeen'])
+        && request.resource.data.sub is map && request.resource.data.sub.keys().hasOnly(['endpoint', 'keys'])
+        && shortText(request.resource.data.sub.endpoint, 1200) && request.resource.data.sub.endpoint.matches('https://.+')
+        && request.resource.data.campAt is number && request.resource.data.energyAt is number && request.resource.data.due is number
+        && request.resource.data.tz is number && request.resource.data.camp is bool && request.resource.data.energy is bool && request.resource.data.gifts is bool;
     }
     match /bans/{uid} {
       allow read: if isMe(uid) || isAdmin();

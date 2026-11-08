@@ -4,6 +4,10 @@ import { useUI } from '../../state/ui';
 import { Panel, Screen, Toggle } from '../components/common';
 import { play } from '../../audio/sfx';
 import { checkForUpdate, isStandalone } from '../../pwa';
+import { useState } from 'react';
+import { useAccount } from '../../cloud/account';
+import { localPush, pushOn, pushSupport } from '../../cloud/pushLocal';
+import type { PushPrefs } from '../../game/notify';
 
 export function Settings() {
   const save = useGame((s) => s.save)!;
@@ -45,6 +49,7 @@ export function Settings() {
           <Toggle label="Animations réduites" on={st.reducedMotion} onChange={(v) => update({ reducedMotion: v })} />
         </div>
       </Panel>
+      <NotifyPanel />
       <Panel title="Application">
         {!isStandalone() && (
           <div className="hint" style={{ marginTop: 0 }}><b>Installe le jeu</b> : sur iPhone, dans Safari, touche <b>Partager</b> puis <b>« Sur l’écran d’accueil »</b>. Il s’ouvrira en plein écran, marchera hors ligne, et Safari n’effacera plus tes données.</div>
@@ -59,5 +64,62 @@ export function Settings() {
         </div>
       </Panel>
     </Screen>
+  );
+}
+
+// NOTIFICATIONS — camp plein, énergie au maximum, cadeau d'un ami. Jamais la nuit.
+const PREFS: { k: keyof PushPrefs; label: string }[] = [
+  { k: 'camp', label: 'Camp plein' },
+  { k: 'energy', label: 'Énergie au maximum' },
+  { k: 'gifts', label: 'Cadeau d’un ami' },
+];
+function NotifyPanel() {
+  const user = useAccount((s) => s.user);
+  const toast = useUI((s) => s.toast);
+  const push = useUI((s) => s.push);
+  const [on, setOn] = useState(pushOn());
+  const [prefs, setPrefs] = useState(localPush().prefs);
+  const [busy, setBusy] = useState(false);
+  const support = pushSupport();
+  const api = () => import('../../cloud/pushCloud');
+  const toggle = async (v: boolean) => {
+    setBusy(true);
+    try {
+      if (v) {
+        // L'autorisation est demandée tout de suite, pendant l'appui (l'iPhone l'exige).
+        const perm = Notification.requestPermission();
+        await (await api()).enablePush(useGame.getState().save!, perm);
+        setOn(true); toast('Notifications activées.', 'ok');
+      } else { await (await api()).disablePush(); setOn(false); toast('Notifications coupées.'); }
+    } catch (e) { setOn(pushOn()); toast(e instanceof Error && (e as { code?: string }).code === 'push' ? e.message : 'Activation impossible pour le moment (connexion ?).', 'error'); }
+    finally { setBusy(false); }
+  };
+  const setPref = (k: keyof PushPrefs, v: boolean) => { const n = { ...prefs, [k]: v }; setPrefs(n); void api().then((m) => m.setPushPrefs(n)).catch(() => {}); };
+  return (
+    <Panel title="Notifications">
+      {support === 'ios-install' ? (
+        <p className="hint" style={{ margin: 0 }}>Sur iPhone, les notifications marchent quand le jeu est <b>installé</b> : dans Safari, touche <b>Partager</b> puis <b>« Sur l’écran d’accueil »</b>, et ouvre le jeu depuis son icône.</p>
+      ) : support === 'no' ? (
+        <p className="faint" style={{ margin: 0 }}>Ce navigateur ne gère pas les notifications.</p>
+      ) : !user ? (
+        <div className="setting-row">
+          <div className="grow"><b>Notifications</b><div className="faint">Il faut un compte pour en recevoir</div></div>
+          <button className="btn secondary small" onClick={() => push({ name: 'saves' })}>Compte</button>
+        </div>
+      ) : (
+        <>
+          <div className="setting-row">
+            <div className="grow"><b>Notifications</b><div className="faint">Te prévient quand le jeu est fermé. Jamais la nuit (22 h – 8 h).</div></div>
+            <Toggle label="Notifications" on={on} disabled={busy} onChange={(v) => void toggle(v)} />
+          </div>
+          {on && PREFS.map((p) => (
+            <div key={p.k} className="setting-row">
+              <div className="grow">{p.label}</div>
+              <Toggle label={p.label} on={prefs[p.k]} onChange={(v) => setPref(p.k, v)} />
+            </div>
+          ))}
+        </>
+      )}
+    </Panel>
   );
 }

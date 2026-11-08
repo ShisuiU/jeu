@@ -11,6 +11,8 @@ import { isUnlocked } from '../game/unlocks';
 import type { ArenaLogEntry } from '../save/schema';
 import { rankEntry, type RankEntry, type RankField } from '../game/ranks';
 import { FIREBASE_CONFIG } from './config';
+import { disablePush, schedulePush } from './pushCloud';
+import { pushOn } from './pushLocal';
 import { useAccount, setCloudWanted } from './account';
 import { useGame } from '../state/store';
 import { useUI } from '../state/ui';
@@ -101,7 +103,12 @@ export function startCloud() {
       setSyncProvider({ id: 'local', name: 'Appareil uniquement', isAvailable: async () => true, pull: async () => null, push: async () => {} });
     }
   });
-  const flush = () => { if (document.visibilityState === 'hidden') void pushNow(); };
+  // Jeu quitté : sauvegarde en ligne + heures des notifications (camp plein, énergie) ; jeu repris : on les suspend.
+  const flush = () => {
+    const hidden = document.visibilityState === 'hidden';
+    if (hidden) void pushNow();
+    if (pushOn()) void schedulePush(useGame.getState().save, !hidden);
+  };
   document.addEventListener('visibilitychange', flush);
   window.addEventListener('online', () => { void syncNow('online'); });
 }
@@ -323,6 +330,7 @@ export async function finishGoogleRedirect() {
 export async function resetPassword(email: string) { ensure(); await sendPasswordResetEmail(auth, email.trim()); }
 export async function logout() {
   ensure(); await pushNow().catch(() => {});
+  await disablePush().catch(() => {}); // plus de notifications pour ce compte sur ce téléphone
   await signOut(auth); setCloudWanted(false);
   useAccount.getState().set({ user: null, lastSync: null, status: 'idle', conflict: null });
 }
@@ -334,6 +342,7 @@ export async function deleteAccount(password?: string) {
   else if (u.providerData.some((p) => p.providerId === 'google.com')) await reauthenticateWithPopup(u, googleProvider(), browserPopupRedirectResolver);
   await deleteDoc(saveRef(u.uid));
   await deleteDoc(rankRef(u.uid)).catch(() => {});
+  await disablePush().catch(() => {});
   // Amis : fiche, code et amitiés.
   await import('./friendsCloud').then((m) => m.deleteSocial()).catch(() => {});
   // Clan : on le quitte (le chef seul le dissout).

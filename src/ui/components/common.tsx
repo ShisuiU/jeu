@@ -78,8 +78,8 @@ export function Stars({ rarity }: { rarity: RarityId }) {
   return <span className="stars">{Array.from({ length: r.order }, (_, i) => <Icon.star key={i} size={10} color={r.color} />)}</span>;
 }
 
-export function Toggle({ on, onChange, label }: { on: boolean; onChange: (v: boolean) => void; label: string }) {
-  return <button role="switch" aria-checked={on} aria-label={label} className={`toggle ${on ? 'on' : ''}`} onClick={() => onChange(!on)} />;
+export function Toggle({ on, onChange, label, disabled }: { on: boolean; onChange: (v: boolean) => void; label: string; disabled?: boolean }) {
+  return <button role="switch" aria-checked={on} aria-label={label} disabled={disabled} className={`toggle ${on ? 'on' : ''}`} onClick={() => onChange(!on)} />;
 }
 
 export function Modal({ children, onClose }: { children: ReactNode; onClose?: () => void }) {

@@ -796,3 +796,7 @@ body:has(.battle-controls) .toasts { bottom: auto; top: calc(var(--sat, 0px) + 6
 .cl-role.officer { color: #c9d6ff; border-color: rgba(160,180,255,0.55); background: rgba(160,180,255,0.08); }
 .cl-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
 .cl-preview-list { max-height: 46vh; overflow-y: auto; }
+
+/* Nom du joueur obligatoire */
+.name-err { margin: 6px 0 10px; font-size: 12px; text-align: center; color: var(--text-faint); }
+.name-err.on { color: #ff8f8f; }

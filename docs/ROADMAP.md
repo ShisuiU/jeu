@@ -461,6 +461,12 @@
 - Clans : la fiche de chaque membre (nom, avatar, puissance) se met à jour à chaque sauvegarde en ligne, même sans ouvrir l’écran du clan (un nouveau nom apparaît donc chez les autres membres)
 - Testé sur l’émulateur : iPhone (lier Google à un compte e-mail, puis « Ancien joueur » + Google sur un autre iPhone) et ordinateur (fenêtre Google)
 
+## ✅ Version 1.52.0 — Plus de sauvegarde par texte
+
+- Retrait du « code de sauvegarde » en texte : plus de « Copier le code », de zone où coller un code, ni de « Copier une sauvegarde de secours » sur l’écran d’erreur
+- Restent : la **sauvegarde en ligne** (compte Google ou e-mail), le **fichier de sauvegarde** (« Enregistrer » dans Fichiers / iCloud Drive, « Ouvrir un fichier ») et les copies de secours automatiques de l’appareil
+- Premier lancement, « Ancien joueur » : « J’ai un fichier de sauvegarde » à la place du code
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

@@ -28,7 +28,6 @@ function Summary({ s }: { s: SaveData }) {
 export function Saves({ mode }: { mode?: 'register' } = {}) {
   const save = useGame((s) => s.save)!;
   const toast = useUI((s) => s.toast);
-  const [code, setCode] = useState('');
   const [pending, setPending] = useState<{ save: SaveData; reason: string } | null>(null);
   const [backups, setBackups] = useState<StoredSave[]>([]);
   const [resetStep, setResetStep] = useState(0);
@@ -58,11 +57,6 @@ export function Saves({ mode }: { mode?: 'register' } = {}) {
     toast('Fichier de sauvegarde créé.', 'ok');
   };
 
-  const copy = async () => {
-    try { await navigator.clipboard.writeText(exported()); toast('Code de sauvegarde copié. Colle-le dans Notes ou un mail.', 'ok'); }
-    catch { setCode(exported()); toast('Copie automatique impossible : le code est affiché ci-dessous.', 'error'); }
-  };
-
   const tryImport = (text: string) => {
     try { setPending({ save: importSave(text), reason: 'import' }); }
     catch (e) { toast((e as Error).message, 'error'); }
@@ -77,7 +71,7 @@ export function Saves({ mode }: { mode?: 'register' } = {}) {
   const confirmReplace = async () => {
     if (!pending) return;
     await replaceSave(pending.save, pending.reason);
-    setPending(null); setCode('');
+    setPending(null);
     toast('Sauvegarde chargée. Une copie de l’ancienne partie a été conservée.', 'ok');
     void refresh();
   };
@@ -95,18 +89,10 @@ export function Saves({ mode }: { mode?: 'register' } = {}) {
         {saveStatus.error && <div className="hint warn">Erreur d’écriture : {saveStatus.error}</div>}
       </Panel>
 
-      <Panel title="Exporter">
-        <p className="faint" style={{ marginTop: 0 }}>À faire avant de changer de téléphone.</p>
+      <Panel title="Fichier de sauvegarde">
+        <p className="faint" style={{ marginTop: 0 }}>Sans compte en ligne : enregistre un fichier de ta partie (dans Fichiers ou iCloud Drive) avant de changer de téléphone, puis ouvre-le sur le nouveau.</p>
         <div className="row" style={{ gap: 8 }}>
-          <button className="btn grow" onClick={download}>Fichier</button>
-          <button className="btn secondary grow" onClick={copy}>Copier le code</button>
-        </div>
-      </Panel>
-
-      <Panel title="Importer">
-        <textarea className="text-area" placeholder="Colle ici un code de sauvegarde (AEONFALL1:…)" value={code} onChange={(e) => setCode(e.target.value)} />
-        <div className="row" style={{ gap: 8, marginTop: 8 }}>
-          <button className="btn grow" disabled={!code.trim()} onClick={() => tryImport(code)}>Charger le code</button>
+          <button className="btn grow" onClick={download}>Enregistrer</button>
           <button className="btn secondary grow" onClick={() => fileRef.current?.click()}>Ouvrir un fichier</button>
           <input ref={fileRef} type="file" accept=".txt,text/plain" hidden onChange={(e) => onFile(e.target.files?.[0])} />
         </div>

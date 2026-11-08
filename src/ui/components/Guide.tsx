@@ -40,11 +40,11 @@ export function Guide() {
           </>
         ) : (
           <>
-            <p className="lore" style={{ textAlign: 'center' }}>Retrouve ta partie : avec ton compte (Google ou e-mail), ou avec un code de sauvegarde exporté auparavant.</p>
+            <p className="lore" style={{ textAlign: 'center' }}>Retrouve ta partie : avec ton compte (Google ou e-mail), ou avec un fichier de sauvegarde enregistré auparavant.</p>
             <button className="btn block" onClick={() => { play('tap'); push({ name: 'saves' }); }}>Me connecter à mon compte</button>
-            <button className="btn secondary block" style={{ marginTop: 10 }} onClick={() => { play('tap'); push({ name: 'saves' }); }}>J’ai un code de sauvegarde</button>
+            <button className="btn secondary block" style={{ marginTop: 10 }} onClick={() => { play('tap'); push({ name: 'saves' }); }}>J’ai un fichier de sauvegarde</button>
             <button className="acc-link" style={{ display: 'block', margin: '14px auto 0' }} onClick={() => setWho('ask')}>Retour</button>
-            <p className="faint" style={{ textAlign: 'center', marginBottom: 0 }}>Pas de compte ni de code ? Ta partie était seulement sur l’ancien appareil : commence en « Nouveau joueur ».</p>
+            <p className="faint" style={{ textAlign: 'center', marginBottom: 0 }}>Pas de compte ni de fichier ? Ta partie était seulement sur l’ancien appareil : commence en « Nouveau joueur ».</p>
           </>
         )}
       </div>

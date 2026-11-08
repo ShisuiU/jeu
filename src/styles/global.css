@@ -187,7 +187,6 @@ h1, h2, h3, .title { font-family: var(--font-title); letter-spacing: 0.04em; mar
 .setting-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
 .setting-row:last-child { border: 0; }
 .text-input { width: 100%; height: 44px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--line-strong); background: rgba(0,0,0,0.4); outline: none; }
-.text-area { width: 100%; min-height: 110px; padding: 10px; border-radius: 10px; border: 1px solid var(--line-strong); background: rgba(0,0,0,0.4); font-family: ui-monospace, monospace; font-size: 11px; resize: vertical; outline: none; word-break: break-all; }
 .seg { display: flex; background: rgba(0,0,0,0.4); border: 1px solid var(--line); border-radius: 10px; padding: 3px; }
 .seg button { flex: 1; min-width: 0; height: 32px; padding: 0 6px; border-radius: 8px; font-weight: 700; font-size: 13px; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .seg button.on { background: linear-gradient(180deg, #e2b866, #8a6a33); color: #1d1408; }

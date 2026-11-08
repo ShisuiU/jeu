@@ -836,3 +836,4 @@ body:has(.battle-controls) .toasts { bottom: auto; top: calc(var(--sat, 0px) + 1
 .hp-tile:active { transform: scale(0.96); }
 .rk-row.ghost { opacity: 0.62; }
 .rk-row.ghost .rk-av { filter: grayscale(0.6); }
+.wb-next { margin: 8px 0 6px; display: flex; flex-direction: column; gap: 4px; font-size: 12px; }

@@ -66,7 +66,7 @@ export function Guide() {
           </label>
         )}
         {last && <p className={`name-err ${tried && err ? 'on' : ''}`}>{tried && err ? err : '3 à 18 caractères.'}</p>}
-        {last && !isStandalone() && <div className="hint">Astuce : dans Safari, Partager → « Sur l’écran d’accueil » pour jouer en plein écran et hors ligne.</div>}
+        {last && !isStandalone() && /iPad|iPhone|iPod/.test(navigator.userAgent) && <div className="hint">Astuce : dans Safari, Partager → « Sur l’écran d’accueil » pour jouer en plein écran et hors ligne.</div>}
         <div className="guide-dots">{STEPS.map((_, k) => <span key={k} className={k === i ? 'on' : ''} />)}</div>
         <div className="row" style={{ gap: 8 }}>
           {!last && <button className="btn secondary grow" onClick={() => setI(STEPS.length - 1)}>Passer</button>}

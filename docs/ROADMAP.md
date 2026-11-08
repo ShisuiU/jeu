@@ -541,6 +541,16 @@
 - **Classements complétés** jusqu'à 10 lignes par des Héritiers imaginaires, signalés comme tels, tant qu'il y a peu de joueurs
 - **Cadeaux d'amis sans limite** : tous les cadeaux reçus se récupèrent, chaque jour, même avec l'énergie pleine
 
+## ✅ Version 1.61.0 — Finitions visuelles
+
+- **Combat** : les deux camps se regroupent au milieu de l'écran (plus de grand vide sous l'équipe)
+- **Illustrations en chargement** : une lueur aux couleurs de la faction au lieu d'un cadre vide, le temps du téléchargement
+- **Récompenses** en grille équilibrée (4 sur une ligne, 5-6 en deux lignes de 3) : fini la récompense seule sur sa ligne (Camp, victoires)
+- Sanctuaire : texte du niveau maximum en entier ; Forge : explique comment obtenir et équiper de l'équipement quand un héros ne porte rien
+- Préparation de combat : « Ton équipe : 2 ▲ · 1 ▼ » avec le détail des affinités dans le ⓘ
+- Boss mondial : un seul repère par difficulté, le prochain palier et sa barre (au lieu de six pastilles)
+- Choix du nom : l'astuce « Safari → Sur l'écran d'accueil » n'apparaît que sur iPhone et iPad
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

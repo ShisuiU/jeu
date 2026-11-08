@@ -54,6 +54,6 @@ export function enemyArtUrl(id: string): string | undefined { return ART[id]; }
 export const EnemyArt = memo(function EnemyArt({ enemyId }: { enemyId: string }) {
   const def = ENEMIES[enemyId];
   if (!def) return null;
-  if (ART[enemyId]) return <img src={ART[enemyId]} alt={def.name} draggable={false} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />;
+  if (ART[enemyId]) return <img className="art-img" src={ART[enemyId]} alt={def.name} draggable={false} onLoad={(e) => e.currentTarget.classList.add('ok')} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', ['--ph' as string]: '#3a1420' }} />;
   return <Procedural def={def} />;
 });

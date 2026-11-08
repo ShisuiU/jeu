@@ -22,7 +22,7 @@ import { Modal } from '../components/common';
 import { GearCard } from '../components/GearCard';
 import { play } from '../../audio/sfx';
 import { formatDuration } from '../../core/time';
-import { Panel, Screen, fmt } from '../components/common';
+import { InfoButton, Panel, Screen, fmt } from '../components/common';
 import { RewardInline, RewardView } from '../components/RewardView';
 import { HeroCard } from '../components/HeroCard';
 import { EnemyArt } from '../art/EnemyArt';
@@ -231,8 +231,8 @@ function AffinityAdvice({ waves, team }: { waves: { kind: string; refId: string 
       </div>
       {team.length > 0 && (
         <div className="aff-team">
-          Ton équipe : <b className="aff-up">{up} avantagé{up > 1 ? 's' : ''} ▲</b> · <b className={down ? 'aff-down' : ''}>{down} désavantagé{down > 1 ? 's' : ''} ▼</b>
-          <span className="faint"> (▲ +30 % de dégâts, ▼ −20 %)</span>
+          Ton équipe : <b className="aff-up">{up} ▲</b> · <b className={down ? 'aff-down' : ''}>{down} ▼</b>
+          <InfoButton title="Affinités">Solaire bat Tellurique, qui bat Lunaire, qui bat Solaire. Un héros avantagé (▲) inflige +30 % de dégâts à ces ennemis ; désavantagé (▼), −20 %. Le Néant est neutre.</InfoButton>
         </div>
       )}
     </div>

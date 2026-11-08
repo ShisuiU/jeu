@@ -12,8 +12,8 @@
 
 .fields { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; container-type: size; padding-top: 1.5vh; }
 .field { flex: 1 1 0; display: flex; flex-direction: column; justify-content: center; gap: 6px; padding: 0 6px; min-height: 0; }
-.enemy-field { justify-content: flex-end; padding-bottom: 3cqh; }
-.ally-field { justify-content: flex-start; padding-top: 3cqh; }
+.enemy-field { justify-content: flex-end; padding-bottom: 2cqh; }
+.ally-field { justify-content: flex-start; padding-top: 2cqh; }
 .frow { display: flex; justify-content: center; gap: 8px; }
 .frow.back { opacity: 0.97; }
 .enemy-field .frow.back .unit, .ally-field .frow.back .unit { transform: scale(0.9); }
@@ -201,3 +201,6 @@
 .u-cara.broken { background: linear-gradient(180deg, #ff8f8f, #a3283a); color: #fff; border-color: #ffc2c2; }
 .u-rage { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); font-size: 9px; font-weight: 900; letter-spacing: 0.08em; padding: 1px 5px; border-radius: 5px; background: #a3122e; color: #fff; box-shadow: 0 0 10px rgba(255,61,110,0.7); z-index: 3; pointer-events: none; }
 .ui-boss { margin-top: 8px; padding: 8px; border-radius: 8px; background: rgba(255,61,110,0.08); border: 1px solid rgba(255,61,110,0.3); font-size: 12px; display: flex; flex-direction: column; gap: 4px; }
+/* Les deux camps se regroupent au milieu de l'écran (plus de grand vide sous l'équipe). */
+.fields { justify-content: center; }
+.fields > .field { flex: 0 1 auto; }

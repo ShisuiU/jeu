@@ -203,3 +203,8 @@ h1, h2, h3, .title { font-family: var(--font-title); letter-spacing: 0.04em; mar
 
 .panel.hidden-empty { display: none; }
 button.res-cell { text-align: left; width: 100%; }
+
+/* Illustration en cours de téléchargement : lueur douce aux couleurs de la faction. */
+.art-img { background: radial-gradient(ellipse at 50% 32%, color-mix(in srgb, var(--ph, #2a2134) 75%, #fff 8%) 0%, var(--ph, #2a2134) 28%, #0b0910 78%); animation: artWait 1.6s ease-in-out infinite; }
+.art-img.ok { animation: none; background: none; }
+@keyframes artWait { 0%, 100% { filter: brightness(0.8); } 50% { filter: brightness(1.15); } }

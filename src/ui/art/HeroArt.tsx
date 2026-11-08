@@ -114,7 +114,9 @@ export const HeroArt = memo(function HeroArt({ heroId, kind = 'portrait', positi
   const def = HERO_BY_ID[heroId];
   if (!def) return null;
   const url = heroArtUrl(heroId, kind);
-  if (url) return <img src={url} alt={def.name} draggable={false} decoding="async" loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: position, display: 'block' }} />;
+  // Pendant le téléchargement (illustrations chargées à la demande) : une lueur aux couleurs de la faction, pas un cadre vide.
+  if (url) return <img className="art-img" src={url} alt={def.name} draggable={false} decoding="async" loading="lazy" onLoad={(e) => e.currentTarget.classList.add('ok')}
+    style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: position, display: 'block', ['--ph' as string]: FACTIONS[def.faction]?.colors.primary ?? '#2a2134' }} />;
   return <Procedural def={def} kind={kind} />;
 });
 

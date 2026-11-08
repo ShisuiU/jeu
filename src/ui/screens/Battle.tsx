@@ -84,7 +84,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
   }, []);
   useEffect(() => {
     if (phase !== 'fight') return;
-    try { if (!localStorage.getItem('aeonfall.tip.unitInfo')) { localStorage.setItem('aeonfall.tip.unitInfo', '1'); setTimeout(() => useUI.getState().toast('Astuce : garde le doigt appuyé sur une carte pour voir ses effets.'), 1500); } } catch { /* ignoré */ }
+    try { if (!localStorage.getItem('aeonfall.tip.unitInfo')) { localStorage.setItem('aeonfall.tip.unitInfo', '1'); setTimeout(() => useUI.getState().toast(window.matchMedia?.('(pointer: fine)').matches ? 'Astuce : clic droit (ou clic maintenu) sur une carte pour voir ses effets.' : 'Astuce : garde le doigt appuyé sur une carte pour voir ses effets.'), 1500); } } catch { /* ignoré */ }
   }, [phase]); // eslint-disable-line react-hooks/exhaustive-deps
   const autoRef = useRef(auto); autoRef.current = auto;
   const speedRef = useRef(speed); speedRef.current = speed;
@@ -563,7 +563,7 @@ function UnitView({ u, vfx, active, acting, hit, heavy, targetable, popups, onCl
     <button className={`unit ${u.side} ${u.alive ? '' : 'dead'} ${active ? 'active' : ''} ${acting ? 'acting' : ''} ${hit ? 'hit' : ''} ${targetable ? 'targetable' : ''} ${u.isBoss ? 'boss' : ''} ${heavy ? 'heavy' : ''} ${stCls}`} data-uid={u.id}
       onClick={() => { if (longDone.current) { longDone.current = false; return; } onClick(); }}
       onPointerDown={startPress} onPointerUp={endPress} onPointerLeave={endPress} onPointerCancel={endPress}
-      onContextMenu={(e) => { e.preventDefault(); }}>
+      onContextMenu={(e) => { e.preventDefault(); if (e.nativeEvent instanceof MouseEvent && (e.nativeEvent as PointerEvent).pointerType !== 'touch') { window.clearTimeout(timer.current); onInfo(); } }}>
       <div className="u-art">{u.kind === 'hero' ? <HeroArt heroId={u.refId} /> : <EnemyArt enemyId={u.refId} />}<span className="u-lvl">{u.level}</span><span className="u-aff"><AffinityIcon id={u.affinity} size={15} /></span><span className="u-name">{shortName(u.name)}</span>
         {stCls && <span className="u-stfx" aria-hidden><i /><i /><i /></span>}
         <div className="u-status">

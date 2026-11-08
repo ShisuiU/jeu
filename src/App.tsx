@@ -173,7 +173,12 @@ export default function App() {
   }, [started]);
 
   // Compte en ligne : reprise automatique de la connexion au démarrage (SDK chargé seulement si besoin).
-  useEffect(() => { if (started && cloudWanted()) void loadCloud().then((m) => m.startCloud()).catch(() => {}); }, [started]);
+  // Retour d'une connexion Google par redirection : on charge le compte pour lire le résultat.
+  useEffect(() => {
+    if (!started) return;
+    let googleBack = false; try { googleBack = !!sessionStorage.getItem('aeonfall.googlePending'); } catch { /* */ }
+    if (cloudWanted() || googleBack) void loadCloud().then((m) => { m.startCloud(); if (googleBack) void m.finishGoogleRedirect(); }).catch(() => {});
+  }, [started]);
 
   // Retour par glissement depuis le bord gauche (comme les apps iPhone), sauf en combat.
   const swipe = useRef<{ x: number; y: number } | null>(null);

@@ -40,6 +40,8 @@ export default defineConfig({
         globIgnores: ['events.json'],
         maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
         navigateFallback: 'index.html',
+        // Pages de connexion Google (servies par Firebase via vercel.json) : jamais remplacées par le jeu.
+        navigateFallbackDenylist: [/^\/__\//],
         cleanupOutdatedCaches: true,
       },
     }),

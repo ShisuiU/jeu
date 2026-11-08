@@ -453,6 +453,14 @@
 - À activer une fois dans la console Firebase : fournisseur Google (Authentication → Sign-in method), et le domaine du jeu dans les domaines autorisés
 - Testé de bout en bout sur l’émulateur Firebase : un joueur crée son compte avec Google, puis sur un autre appareil choisit « Ancien joueur », se connecte avec Google et retrouve sa partie
 
+## ✅ Version 1.51.1 — Connexion Google sur iPhone, noms à jour dans les clans
+
+- iPhone et jeu installé : la connexion Google passe par une **redirection** (la page part chez Google puis revient au jeu) au lieu d’une fenêtre séparée qui ne revenait pas ; au retour, un message confirme « Connecté avec Google » ou « Compte Google lié » (ou explique l’erreur)
+- La connexion passe par l’adresse du jeu (`/__/auth`, relayée vers Firebase par `vercel.json`) : Safari ne bloque plus le retour. Le service hors ligne laisse passer ces pages
+- Bouton Google blanc, comme il se doit, sur tous les écrans
+- Clans : la fiche de chaque membre (nom, avatar, puissance) se met à jour à chaque sauvegarde en ligne, même sans ouvrir l’écran du clan (un nouveau nom apparaît donc chez les autres membres)
+- Testé sur l’émulateur : iPhone (lier Google à un compte e-mail, puis « Ancien joueur » + Google sur un autre iPhone) et ordinateur (fenêtre Google)
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

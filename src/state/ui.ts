@@ -22,6 +22,7 @@ export type Route =
   | { name: 'prep'; spec: BattleSpec }
   | { name: 'battle'; spec: BattleSpec; teamId: string; seed: number; guest?: import('../game/battle/types').UnitSetup }
   | { name: 'friends' }
+  | { name: 'moderation' }
   | { name: 'dungeons' }
   | { name: 'dungeon'; dungeonId: string }
   | { name: 'tower' }

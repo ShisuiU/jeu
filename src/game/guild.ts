@@ -1,4 +1,6 @@
 import type { SaveData } from '../save/schema';
+import { hasProfanity, maskProfanity } from './moderation';
+export { maskProfanity };
 import { GUILD_BOSS, GUILD_NAME_MAX, GUILD_NAME_MIN, GUILD_TIERS } from '../data/guild';
 import { dayKey, weekKey } from '../core/time';
 import { applyReward } from './rewards';
@@ -40,6 +42,7 @@ export function validGuildName(name: string): string | null {
   const n = name.trim();
   if (n.length < GUILD_NAME_MIN || n.length > GUILD_NAME_MAX) return `Le nom fait de ${GUILD_NAME_MIN} à ${GUILD_NAME_MAX} caractères.`;
   if (!/^[\p{L}\p{N}' -]+$/u.test(n)) return 'Lettres, chiffres, espaces, apostrophes et tirets seulement.';
+  if (hasProfanity(n)) return 'Ce nom n’est pas autorisé.';
   return null;
 }
 export const tagOf = (name: string) => name.trim().split(/\s+/).map((w) => w[0]).join('').slice(0, 4).toUpperCase() || name.slice(0, 3).toUpperCase();

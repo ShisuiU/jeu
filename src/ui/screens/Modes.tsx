@@ -8,6 +8,8 @@ import { ARENA, ARENA_TIERS, arenaTier } from '../../data/arena';
 import { HERO_BY_ID } from '../../data/heroes';
 import { applyDefenseLog, arenaDefenses, defenseTeam, generateOpponents, opponentFromDefense, playerTeamPower, setArenaDefenses } from '../../game/arena';
 import type { ArenaLogEntry } from '../../save/schema';
+import { ReportSheet, type ReportTarget } from '../components/ReportSheet';
+import { maskProfanity } from '../../game/moderation';
 import { loadCloud, useAccount } from '../../cloud/account';
 import { seededRand } from '../../game/gear';
 import { dungeonBonus } from '../../game/events';
@@ -175,7 +177,8 @@ export function Arena() {
         if (r.won + r.lost) toast(`Ta défense : ${r.won} victoire${r.won > 1 ? 's' : ''}, ${r.lost} défaite${r.lost > 1 ? 's' : ''} (${r.delta >= 0 ? '+' : ''}${r.delta} points).`, r.delta >= 0 ? 'ok' : 'info');
       }
       if (!arenaDefenses().length) {
-        setArenaDefenses(await c.fetchDefenses(playerTeamPower(useGame.getState().save!)));
+        const bl = useGame.getState().save!.blocked ?? [];
+        setArenaDefenses((await c.fetchDefenses(playerTeamPower(useGame.getState().save!))).filter((d) => !bl.some((b) => b.uid === d.uid)));
         const cur = useGame.getState().save!.arena.opponents;
         if (alive && arenaDefenses().length && !cur.some((o) => o.real)) mutate((s) => { s.arena.opponents = generateOpponents(s, seededRand(Date.now())); });
       }
@@ -184,6 +187,7 @@ export function Arena() {
     return () => { alive = false; };
   }, [user, mutate]); // eslint-disable-line react-hooks/exhaustive-deps
   const anyReal = save.arena.opponents.some((o) => o.real);
+  const [report, setReport] = useState<ReportTarget | null>(null);
   const defTeam = defenseTeam(save);
   const setDefense = (id: string) => {
     mutate((s) => { s.arena.defenseTeamId = id; });
@@ -222,7 +226,7 @@ export function Arena() {
       {save.arena.opponents.map((o, i) => (
         <Panel key={o.id}>
           <div className="row between" style={{ marginBottom: 8 }}>
-            <div><b>{o.name}</b> <span className={`ar-tag ${o.real ? 'real' : ''}`}>{o.revenge ? 'Vengeance' : o.real ? 'Joueur' : 'Imaginaire'}</span><div className="faint">{o.revenge ? 'A battu ta défense' : ['Accessible', 'Équilibré', 'Redoutable'][i]} · puissance {fmt(o.power)}</div></div>
+            <div><b>{maskProfanity(o.name)}</b> <span className={`ar-tag ${o.real ? 'real' : ''}`}>{o.revenge ? 'Vengeance' : o.real ? 'Joueur' : 'Imaginaire'}</span><div className="faint">{o.revenge ? 'A battu ta défense' : ['Accessible', 'Équilibré', 'Redoutable'][i]} · puissance {fmt(o.power)}</div></div>
             <button className="btn small" disabled={tickets <= 0} onClick={() => push({ name: 'prep', spec: { mode: 'arena', opponentId: o.id } })}>Défier</button>
           </div>
           <div className="row" style={{ gap: 6 }}>
@@ -230,7 +234,7 @@ export function Arena() {
               <div key={h.slot} className="xp-ava" style={{ width: 46, height: 46, position: 'relative' }}><HeroArt heroId={h.heroId} /><span className="u-lvl">{h.level}</span></div>
             ))}
           </div>
-          <div className="faint" style={{ marginTop: 4 }}>{o.heroes.map((h) => HERO_BY_ID[h.heroId].name.split(/[ ,]/)[0]).join(', ')}</div>
+          <div className="faint" style={{ marginTop: 4 }}>{o.heroes.map((h) => HERO_BY_ID[h.heroId].name.split(/[ ,]/)[0]).join(', ')}{o.real && o.uid && <button className="acc-link" style={{ marginLeft: 8 }} onClick={() => setReport({ uid: o.uid!, name: o.name, kind: 'name', where: 'Arène' })}>Signaler</button>}</div>
         </Panel>
       ))}
       <Panel title="Ta défense">
@@ -256,6 +260,7 @@ export function Arena() {
           ))}
         </Panel>
       )}
+      {report && <ReportSheet target={report} onClose={() => setReport(null)} />}
       <Panel title="Ligues et récompenses de victoire">
         {ARENA_TIERS.map((t) => (
           <div key={t.id} className="stat-row"><b style={{ color: t.color }}>{t.name}</b><span className="faint">dès {t.min} · {Object.entries(t.reward).map(([k, v]) => `${v} ${k === 'gold' ? 'or' : k === 'crystals' ? 'cristaux' : k === 'shardAeon' ? 'éclat d’Aeon' : 'éclat terne'}`).join(', ')}</span></div>

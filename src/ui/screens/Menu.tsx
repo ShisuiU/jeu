@@ -1,7 +1,7 @@
 import { cloudWanted, useAccount } from '../../cloud/account';
 import { useGame } from '../../state/store';
 import { useUI, type Route } from '../../state/ui';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Modal, Screen, fmt } from '../components/common';
 import { Icon } from '../art/Icons';
 import { HeroArt } from '../art/HeroArt';
@@ -18,6 +18,10 @@ export function Menu() {
   const save = useGame((s) => s.save)!;
   // Le Menu ne contient que ce qui n'a pas de place ailleurs : chaque écran n'a qu'une seule entrée.
   // (Missions, Événements, Courrier, Sanctuaire, Forge, Camp et Marché sont sur l'Accueil ; Équipes et Liens dans Héros.)
+  // Modérateur : une entrée « Modération » (vérifiée en ligne, une fois par session).
+  const user = useAccount((s) => s.user);
+  const [admin, setAdmin] = useState(false);
+  useEffect(() => { if (user) void import('../../cloud/moderationCloud').then((m) => m.amIAdmin()).then(setAdmin).catch(() => {}); }, [user]);
   const groups: { title: string; items: Entry[] }[] = [
     { title: 'Ma partie', items: [
       { label: 'Sac', icon: 'bag', route: { name: 'inventory' } },
@@ -26,6 +30,7 @@ export function Menu() {
     { title: 'Entre joueurs', items: [
       { label: 'Amis', icon: 'heroes', route: { name: 'friends' } },
       { label: 'Classements', icon: 'star', route: { name: 'ranks' } },
+      ...(admin ? [{ label: 'Modération', icon: 'lock' as const, route: { name: 'moderation' } as Route }] : []),
     ] },
     { title: 'Système', items: [
       { label: 'Sauvegarde et compte', icon: 'save', route: { name: 'saves' }, dot: !save.flags.saves_seen && !useAccount.getState().user && !cloudWanted() && save.stats.battlesWon >= 3 },

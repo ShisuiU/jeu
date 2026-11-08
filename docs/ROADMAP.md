@@ -467,6 +467,16 @@
 - Restent : la **sauvegarde en ligne** (compte Google ou e-mail), le **fichier de sauvegarde** (« Enregistrer » dans Fichiers / iCloud Drive, « Ouvrir un fichier ») et les copies de secours automatiques de l’appareil
 - Premier lancement, « Ancien joueur » : « J’ai un fichier de sauvegarde » à la place du code
 
+## ✅ Version 1.53.0 — Modération
+
+- **Filtre d’insultes** (français et anglais, même déguisées : C0NNARD, f.u.c.k…) : noms de joueur et de clan refusés ; présentation de clan et messages de discussion masqués (« ****** ») ; noms et messages déjà publiés masqués à l’affichage
+- **Signaler** : depuis les classements (toucher un joueur), la discussion de clan (⚑ sur un message), la fiche d’un membre et l’Arène ; motif (nom, message, triche, clan) et précision facultative
+- **Bloquer** : ses messages, ses demandes d’ami et son équipe d’Arène ne s’affichent plus ; liste des joueurs bloqués (Amis) avec « Débloquer »
+- **Écran Modération** (modérateurs seulement, Menu → Entre joueurs) : signalements regroupés par joueur, **Bannir** (retiré des classements, de l’Arène et des fiches d’amis, ne peut plus rien publier en ligne), **Retirer des classements**, **Ignorer**, liste des bannis avec « Lever »
+- Un joueur banni voit un avis dans « Sauvegarde et compte » ; sa partie reste jouable et sauvegardée
+- « Identifiant du compte » affiché (et copiable) dans « Sauvegarde et compte », pour se déclarer modérateur dans la console Firebase (collection `admins`)
+- Règles Firestore : `reports`, `admins`, `bans`, contrôle des bannis sur toutes les écritures (27 tests sur l’émulateur) — **à republier**
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

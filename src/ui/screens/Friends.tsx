@@ -9,6 +9,7 @@ import { Panel, Screen, fmt } from '../components/common';
 import { HeroArt } from '../art/HeroArt';
 import { Icon } from '../art/Icons';
 import type { FriendRow } from '../../cloud/friendsCloud';
+import { maskProfanity } from '../../game/moderation';
 
 // AMIS — ton code ami, les demandes, et chaque jour : un cadeau d'énergie à envoyer à chaque ami,
 // et leurs cadeaux à recevoir. Leur meilleur héros peut venir en renfort en campagne et en donjon.
@@ -58,7 +59,7 @@ function FriendsBody({ uid }: { uid: string }) {
     try { await fn(await fapi()); if (ok) toast(ok, 'ok'); await load(); } catch (e) { toast(errMsg(e), 'error'); } finally { setBusy(false); }
   };
   const friends = rows?.filter((r) => r.f.status === 'ok') ?? [];
-  const incoming = rows?.filter((r) => r.f.status === 'pending' && r.f.from !== uid) ?? [];
+  const incoming = rows?.filter((r) => r.f.status === 'pending' && r.f.from !== uid && !save.blocked.some((b) => b.uid === r.uid)) ?? [];
   const outgoing = rows?.filter((r) => r.f.status === 'pending' && r.f.from === uid) ?? [];
   const toSend = friends.filter((r) => canGift(r.f, uid, now));
   const toReceive = friends.filter((r) => giftWaiting(r.f, uid));
@@ -134,6 +135,16 @@ function FriendsBody({ uid }: { uid: string }) {
             <div key={r.id} className="stat-row" style={{ alignItems: 'center' }}>
               <Who r={r} />
               <button className="btn small secondary" disabled={busy} onClick={() => void run((a) => a.removeFriend(r.id))}>Annuler</button>
+            </div>
+          ))}
+        </Panel>
+      )}
+      {save.blocked.length > 0 && (
+        <Panel title={`Joueurs bloqués · ${save.blocked.length}`}>
+          {save.blocked.map((b) => (
+            <div key={b.uid} className="stat-row" style={{ alignItems: 'center' }}>
+              <b>{maskProfanity(b.name)}</b>
+              <button className="btn small secondary" onClick={() => { mutate((s) => { s.blocked = s.blocked.filter((x) => x.uid !== b.uid); }); toast(`${b.name} n’est plus bloqué.`, 'ok'); }}>Débloquer</button>
             </div>
           ))}
         </Panel>

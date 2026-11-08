@@ -11,6 +11,8 @@ import { RewardInline } from '../components/RewardView';
 import { HeroArt } from '../art/HeroArt';
 import { EnemyArt } from '../art/EnemyArt';
 import type { GuildWithId } from '../../cloud/guildCloud';
+import { ReportSheet, isBlockedUid, type ReportTarget } from '../components/ReportSheet';
+import { maskProfanity } from '../../game/moderation';
 
 // GUILDE — trouver ou créer un clan, puis : membres, discussion, boss de la semaine.
 type Api = typeof import('../../cloud/guildCloud');
@@ -210,6 +212,8 @@ function Chat({ gid, uid, leader }: { gid: string; uid: string; leader: boolean 
   const [msgs, setMsgs] = useState<ChatMessage[] | null>(null);
   const [text, setText] = useState('');
   const [sending, setSending] = useState(false);
+  const [report, setReport] = useState<ReportTarget | null>(null);
+  const blocked = useGame((s) => s.save?.blocked);
   const endRef = useRef<HTMLDivElement>(null);
   const load = useCallback(async () => { try { setMsgs(await (await gapi()).listChat(gid)); } catch (e) { toast(errMsg(e), 'error'); } }, [gid, toast]);
   useEffect(() => { void load(); const t = setInterval(() => { if (document.visibilityState === 'visible') void load(); }, 8000); return () => clearInterval(t); }, [load]);
@@ -224,16 +228,18 @@ function Chat({ gid, uid, leader }: { gid: string; uid: string; leader: boolean 
       <div className="cl-chat">
         {msgs === null && <p className="faint" style={{ textAlign: 'center' }}>Chargement…</p>}
         {msgs?.length === 0 && <p className="faint" style={{ textAlign: 'center' }}>Aucun message. Dis bonjour à ton clan !</p>}
-        {msgs?.map((m) => (
+        {msgs?.filter((m) => !isBlockedUid(blocked, m.uid)).map((m) => (
           <div key={m.id} className={`cl-msg ${m.uid === uid ? 'me' : ''}`}>
-            <div className="cl-msg-h"><b>{m.name}</b> <span className="faint">{new Date(m.at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
+            <div className="cl-msg-h"><b>{maskProfanity(m.name)}</b> <span className="faint">{new Date(m.at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
+              {m.uid !== uid && <button className="cl-del" aria-label={`Signaler le message de ${m.name}`} onClick={() => setReport({ uid: m.uid, name: m.name, kind: 'chat', text: m.text, where: 'Discussion de clan' })}>⚑</button>}
               {(m.uid === uid || leader) && <button className="cl-del" aria-label="Effacer le message" onClick={() => void (async () => { try { await (await gapi()).deleteChat(gid, m.id); await load(); } catch (e) { toast(errMsg(e), 'error'); } })()}>×</button>}
             </div>
-            <div className="cl-msg-t">{m.text}</div>
+            <div className="cl-msg-t">{maskProfanity(m.text)}</div>
           </div>
         ))}
         <div ref={endRef} />
       </div>
+      {report && <ReportSheet target={report} onClose={() => setReport(null)} />}
       <form className="row" style={{ gap: 8, marginTop: 10 }} onSubmit={(e) => { e.preventDefault(); void send(); }}>
         <input className="text-input grow" maxLength={CHAT_MAX} placeholder="Écrire à ton clan…" value={text} onChange={(e) => setText(e.target.value)} aria-label="Message" />
         <button className="btn small" type="submit" disabled={sending || !text.trim()}>Envoyer</button>
@@ -252,6 +258,7 @@ function Members({ g, uid, now, act, confirm, leave }: {
 }) {
   const [sel, setSel] = useState<string | null>(null);
   const [desc, setDesc] = useState<string | null>(null);
+  const [report, setReport] = useState<ReportTarget | null>(null);
   const me = roleOf(g, uid);
   const list = Object.entries(g.members).sort((a, b) => ROLE_ORDER[roleOf(g, a[0])] - ROLE_ORDER[roleOf(g, b[0])] || b[1].power - a[1].power);
   const officers = (g.officers ?? []).length;
@@ -308,12 +315,14 @@ function Members({ g, uid, now, act, confirm, leave }: {
               ? <button className="btn secondary" onClick={() => { setSel(null); void act((a) => a.setOfficer(g.id, sel, false), `${m.name} redevient membre.`); }}>Retirer le rôle d’adjoint</button>
               : <button className="btn" onClick={() => { setSel(null); void act((a) => a.setOfficer(g.id, sel, true), `${m.name} est adjoint.`); }}>Nommer adjoint</button>)}
             {r.leader && <button className="btn secondary" onClick={() => { setSel(null); confirm({ text: `Nommer ${m.name} chef du clan ? Tu deviendras simple membre.`, run: () => act((a) => a.promoteLeader(g.id, sel), `${m.name} est le nouveau chef.`) }); }}>Nommer chef</button>}
+            {sel !== uid && <button className="btn secondary" onClick={() => { const t = { uid: sel, name: m.name, kind: 'name' as const, where: 'Membres du clan' }; setSel(null); setReport(t); }}>Signaler ou bloquer</button>}
             {r.kick && <button className="btn danger" onClick={() => { setSel(null); confirm({ text: `Exclure ${m.name} du clan ?`, run: () => act((a) => a.kickMember(g.id, sel), `${m.name} a été exclu.`) }); }}>Exclure</button>}
             {!r.officer && !r.leader && !r.kick && <p className="faint" style={{ margin: 0, textAlign: 'center' }}>{sel === uid ? 'C’est toi !' : 'Seuls le chef et les adjoints gèrent les membres.'}</p>}
           </div>
           <button className="btn secondary block" style={{ marginTop: 10 }} onClick={() => setSel(null)}>Fermer</button>
         </Modal>
       )}
+      {report && <ReportSheet target={report} onClose={() => setReport(null)} />}
       {desc != null && (
         <Modal onClose={() => setDesc(null)}>
           <h3 style={{ marginTop: 0 }}>Présentation du clan</h3>

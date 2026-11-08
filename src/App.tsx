@@ -51,6 +51,7 @@ const Market = L(() => import('./ui/screens/Market'), 'Market');
 const Camp = L(() => import('./ui/screens/Camp'), 'Camp');
 const Guild = L(() => import('./ui/screens/Guild'), 'Guild');
 const Friends = L(() => import('./ui/screens/Friends'), 'Friends');
+const Moderation = L(() => import('./ui/screens/Moderation'), 'Moderation');
 const Ranks = L(() => import('./ui/screens/Ranks'), 'Ranks');
 const Missions = L(() => import('./ui/screens/Missions'), 'Missions');
 const Events = L(() => import('./ui/screens/Events'), 'Events');
@@ -90,6 +91,7 @@ function renderRoute(r: Route) {
     case 'prep': return <Prep key={JSON.stringify(r.spec)} spec={r.spec} />;
     case 'battle': return <Battle key={r.seed} spec={r.spec} teamId={r.teamId} seed={r.seed} guest={r.guest} />;
     case 'friends': return <Friends />;
+    case 'moderation': return <Moderation />;
   }
 }
 

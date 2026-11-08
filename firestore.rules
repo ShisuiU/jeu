@@ -12,12 +12,17 @@ rules_version = '2';
 // profiles/{uid}     : la fiche publique d'un joueur pour ses amis (nom, avatar, niveau, héros prêté).
 // codes/{code}       : le code ami d'un joueur (pour l'ajouter).
 // friendships/{a_b}  : une amitié entre deux joueurs (demande, cadeaux d'énergie du jour).
+// reports/{id}       : signalements (nom, message, clan), lus seulement par les modérateurs.
+// admins/{uid}       : modérateurs (créés à la main dans la console Firebase).
+// bans/{uid}         : joueurs bannis des fonctions en ligne (classements, Arène, clans, amis).
 
 service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
     function isMe(uid) { return signedIn() && request.auth.uid == uid; }
     function shortText(v, max) { return v is string && v.size() <= max; }
+    function isAdmin() { return signedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)); }
+    function banned() { return signedIn() && exists(/databases/$(database)/documents/bans/$(request.auth.uid)); }
 
     match /saves/{uid} {
       allow read, write: if isMe(uid);
@@ -25,9 +30,9 @@ service cloud.firestore {
 
     match /ranks/{uid} {
       allow read: if true;
-      allow create, update: if isMe(uid) && shortText(request.resource.data.name, 18);
-      // Effacer sa ligne : « ne pas apparaître dans les classements », suppression du compte.
-      allow delete: if isMe(uid);
+      allow create, update: if isMe(uid) && !banned() && shortText(request.resource.data.name, 18);
+      // Effacer sa ligne : « ne pas apparaître dans les classements », suppression du compte ; un modérateur aussi.
+      allow delete: if isMe(uid) || isAdmin();
     }
 
     // ─── Arène réelle ───
@@ -40,12 +45,12 @@ service cloud.firestore {
     }
     match /defenses/{uid} {
       allow read: if signedIn();
-      allow create, update: if isMe(uid) && validDefense(request.resource.data);
-      allow delete: if isMe(uid);
+      allow create, update: if isMe(uid) && !banned() && validDefense(request.resource.data);
+      allow delete: if isMe(uid) || isAdmin();
 
       match /log/{id} {
         allow read, delete: if isMe(uid);
-        allow create: if signedIn() && !isMe(uid)
+        allow create: if signedIn() && !isMe(uid) && !banned()
           && request.resource.data.keys().hasOnly(['attacker', 'name', 'avatar', 'power', 'won', 'points', 'at'])
           && request.resource.data.attacker == request.auth.uid
           && shortText(request.resource.data.name, 18) && shortText(request.resource.data.avatar, 40)
@@ -88,10 +93,10 @@ service cloud.firestore {
     }
     match /guilds/{gid} {
       allow read: if signedIn();
-      allow create: if signedIn() && validGuild(request.resource.data)
+      allow create: if signedIn() && !banned() && validGuild(request.resource.data)
         && request.resource.data.leader == me() && request.resource.data.members.keys().hasOnly([me()])
         && validMember(request.resource.data.members[me()]);
-      allow update: if signedIn() && validGuild(request.resource.data) && (
+      allow update: if signedIn() && !banned() && validGuild(request.resource.data) && (
         // Un membre met à jour sa fiche et ses dégâts de boss.
         (me() in resource.data.members && me() in request.resource.data.members
           && changed().hasOnly(['members', 'boss']) && membersChanged().hasOnly([me()])
@@ -129,12 +134,12 @@ service cloud.firestore {
       function guild() { return get(/databases/$(database)/documents/guilds/$(gid)).data; }
       match /chat/{mid} {
         allow read: if signedIn() && me() in guild().members;
-        allow create: if signedIn() && me() in guild().members
+        allow create: if signedIn() && !banned() && me() in guild().members
           && request.resource.data.keys().hasOnly(['uid', 'name', 'text', 'at'])
           && request.resource.data.uid == me() && shortText(request.resource.data.name, 18)
           && request.resource.data.text is string && request.resource.data.text.size() >= 1 && request.resource.data.text.size() <= 200
           && request.resource.data.at == request.time;
-        allow delete: if signedIn() && (resource.data.uid == me() || guild().leader == me());
+        allow delete: if signedIn() && (resource.data.uid == me() || guild().leader == me() || me() in officersOf(guild()) || isAdmin());
       }
     }
 
@@ -147,8 +152,8 @@ service cloud.firestore {
     }
     match /profiles/{uid} {
       allow read: if signedIn();
-      allow create, update: if isMe(uid) && validProfile(request.resource.data);
-      allow delete: if isMe(uid);
+      allow create, update: if isMe(uid) && !banned() && validProfile(request.resource.data);
+      allow delete: if isMe(uid) || isAdmin();
     }
     match /codes/{code} {
       allow read: if signedIn();
@@ -181,6 +186,26 @@ service cloud.firestore {
             && request.resource.data.claims.diff(resource.data.claims).affectedKeys().hasOnly([me()]) && request.resource.data.claims[me()] is string)
         );
       allow delete: if signedIn() && me() in resource.data.users;
+    }
+
+    // ─── Modération ───
+    match /reports/{id} {
+      allow create: if signedIn() && !banned()
+        && request.resource.data.keys().hasOnly(['by', 'byName', 'target', 'targetName', 'kind', 'text', 'where', 'at'])
+        && request.resource.data.by == me() && request.resource.data.target is string && request.resource.data.target != me()
+        && shortText(request.resource.data.byName, 18) && shortText(request.resource.data.targetName, 40)
+        && request.resource.data.kind in ['name', 'chat', 'clan', 'behavior']
+        && shortText(request.resource.data.text, 300) && shortText(request.resource.data.where, 60)
+        && request.resource.data.at == request.time;
+      allow read, delete: if isAdmin();
+    }
+    match /admins/{uid} {
+      allow read: if isMe(uid) || isAdmin();
+    }
+    match /bans/{uid} {
+      allow read: if isMe(uid) || isAdmin();
+      allow create, update: if isAdmin() && request.resource.data.keys().hasOnly(['name', 'reason', 'at']) && request.resource.data.at == request.time;
+      allow delete: if isAdmin();
     }
   }
 }

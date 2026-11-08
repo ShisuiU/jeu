@@ -1,4 +1,5 @@
 import type { SaveData } from '../save/schema';
+import { hasProfanity } from './moderation';
 
 // NOM DU JOUEUR — obligatoire : il apparaît dans l'histoire, les classements, l'Arène, les clans et chez les amis.
 // Les noms par défaut (« Lien », « Héritier »…) ne sont pas acceptés : chacun doit choisir le sien.
@@ -14,6 +15,7 @@ export function nameError(raw: string): string | null {
   if (n.length > NAME_MAX) return `${NAME_MAX} caractères au plus.`;
   if (!/^[\p{L}\p{N}][\p{L}\p{N} '’._-]*$/u.test(n)) return 'Lettres, chiffres, espaces, apostrophes, points et tirets seulement.';
   if (DEFAULTS.includes(plain(n))) return 'Choisis un nom à toi.';
+  if (hasProfanity(n)) return 'Ce nom n’est pas autorisé.';
   return null;
 }
 /** Le joueur doit-il (encore) choisir un nom ? */

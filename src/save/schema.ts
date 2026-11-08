@@ -118,6 +118,8 @@ export interface SaveData {
   }>;
   /** Clan : identifiant (vide = aucune), essais du boss du jour, dégâts pas encore envoyés, paliers récupérés. */
   guild: { id: string; name: string; day: string; tries: number; week: string; pending: number; claimed: number[] };
+  /** Joueurs bloqués (leurs messages et leurs équipes ne s'affichent plus). */
+  blocked: { uid: string; name: string }[];
   /** Amis : cadeaux reçus aujourd'hui, amis dont le héros a déjà été emprunté aujourd'hui. */
   friends: { day: string; claims: number; borrowed: string[] };
   /** Camp des Héritiers : début de l'accumulation du butin d'absence. */
@@ -204,6 +206,7 @@ export function createNewSave(now: number = Date.now()): SaveData {
     worldBoss: { keysUsed: 0, best: {} },
     events: {},
     guild: { id: '', name: '', day: '', tries: 0, week: '', pending: 0, claimed: [] },
+    blocked: [],
     friends: { day: '', claims: 0, borrowed: [] },
     camp: { since: now },
     shop: { energyRefills: 0 },

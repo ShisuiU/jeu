@@ -6,6 +6,8 @@ import { HERO_BY_ID } from '../../data/heroes';
 import { RANK_TABS, rankEntry, type RankEntry, type RankField } from '../../game/ranks';
 import { Screen, fmt } from '../components/common';
 import { HeroArt } from '../art/HeroArt';
+import { ReportSheet, type ReportTarget } from '../components/ReportSheet';
+import { maskProfanity } from '../../game/moderation';
 
 // CLASSEMENTS EN LIGNE — les 50 meilleurs Héritiers par mode. Il faut un compte pour y figurer ;
 // tout le monde peut les consulter. Le joueur peut choisir de ne pas apparaître.
@@ -20,6 +22,8 @@ export function Ranks({ tab: initial }: { tab?: RankField }) {
   const [rows, setRows] = useState<Row[] | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [uid, setUid] = useState<string | null>(null);
+  const [report, setReport] = useState<ReportTarget | null>(null);
+  const blocked = useGame((st) => st.save?.blocked ?? []);
   const me = rankEntry(save);
   const def = RANK_TABS.find((t) => t.id === tab)!;
 
@@ -30,7 +34,7 @@ export function Ranks({ tab: initial }: { tab?: RankField }) {
     loadCloud().then(async (c) => {
       if (user) await c.publishRank(user.uid, useGame.getState().save!);
       const r = await c.fetchRanks(tab);
-      if (alive) { setRows(r.filter((x) => (x[tab] ?? 0) > 0)); setUid(c.currentUid()); }
+      if (alive) { setRows(r.filter((x) => (x[tab] ?? 0) > 0 && !blocked.some((b) => b.uid === x.uid))); setUid(c.currentUid()); }
     }).catch((e) => { if (alive) setErr((e as { code?: string })?.code === 'permission-denied' ? 'Les classements ne sont pas encore ouverts sur le serveur.' : 'Classement injoignable pour le moment.'); });
     return () => { alive = false; };
   }, [tab, user]);
@@ -63,21 +67,23 @@ export function Ranks({ tab: initial }: { tab?: RankField }) {
       {rows && rows.length > 0 && (
         <ol className="rk-list">
           {rows.map((r, i) => (
-            <li key={r.uid} className={`rk-row ${r.uid === uid ? 'me' : ''} ${i < 3 ? `top top${i + 1}` : ''}`}>
+            <li key={r.uid} className={`rk-row ${r.uid === uid ? 'me' : ''} ${i < 3 ? `top top${i + 1}` : ''}`} onClick={() => { if (r.uid !== uid && user) setReport({ uid: r.uid, name: r.name, kind: 'name', where: `Classement ${def.label}` }); }}>
               <span className="rk-pos">{i + 1}</span>
               <div className="rk-av"><HeroArt heroId={HERO_BY_ID[r.avatar] ? r.avatar : 'aldric'} /></div>
-              <div className="grow rk-name"><b>{r.name}</b><small className="faint">Niv. {r.level}</small></div>
+              <div className="grow rk-name"><b>{maskProfanity(r.name)}</b><small className="faint">Niv. {r.level}</small></div>
               <div className="rk-val"><b>{fmt(r[tab])}</b></div>
             </li>
           ))}
         </ol>
       )}
+      {report && <ReportSheet target={report} onClose={() => setReport(null)} />}
+      {rows && rows.length > 0 && user && <p className="faint" style={{ fontSize: 12, textAlign: 'center' }}>Touche un joueur pour le signaler ou le bloquer.</p>}
       {user && (
         <button className="btn secondary block" style={{ marginTop: 14 }} onClick={toggle}>
           {save.settings.showInRanks ? 'Ne plus apparaître au classement' : 'Apparaître au classement'}
         </button>
       )}
-      <p className="faint" style={{ fontSize: 12, textAlign: 'center' }}>Seuls ton nom (modifiable dans Paramètres), ton avatar et tes scores sont visibles.</p>
+      <p className="faint" style={{ fontSize: 12, textAlign: 'center' }}>Seuls ton nom (modifiable sur ta carte du Menu), ton avatar et tes scores sont visibles.</p>
     </Screen>
   );
 }

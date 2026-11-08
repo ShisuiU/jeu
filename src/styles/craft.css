@@ -810,3 +810,15 @@ body:has(.battle-controls) .toasts { bottom: auto; top: calc(var(--sat, 0px) + 6
 /* Premier lancement : nouveau ou ancien joueur */
 .first-choice .btn { display: flex; flex-direction: column; align-items: center; gap: 2px; padding-top: 12px; padding-bottom: 12px; }
 .first-choice .btn small { font-family: var(--font-ui, inherit); font-size: 12px; font-weight: 500; text-transform: none; letter-spacing: 0; opacity: 0.8; }
+
+/* Modération : signaler / bloquer, écran du modérateur */
+.report-quote { font-style: italic; overflow-wrap: anywhere; }
+.report-reasons { display: flex; flex-direction: column; gap: 6px; }
+.report-reason { text-align: left; padding: 9px 12px; border-radius: var(--radius); border: 1px solid var(--edge); background: rgba(0,0,0,0.25); color: var(--text); font-size: 14px; }
+.report-reason.on { border-color: var(--brass); background: rgba(217,179,106,0.12); }
+.rk-row { cursor: pointer; }
+.mod-item { padding: 10px 0; border-bottom: 1px solid var(--edge); }
+.mod-item:last-child { border-bottom: 0; }
+.mod-line { font-size: 12px; margin-top: 2px; overflow-wrap: anywhere; }
+.acc-id { text-align: center; font-size: 12px; overflow-wrap: anywhere; }
+.acc-id code { font-size: 11px; }

@@ -28,6 +28,8 @@ export function AccountBody({ mode: initial }: { mode?: 'register' } = {}) {
   const [del, setDel] = useState(false);
   const [delPw, setDelPw] = useState('');
   const [delTxt, setDelTxt] = useState('');
+  const [ban, setBan] = useState<{ reason: string } | null>(null);
+  useEffect(() => { if (acc.user) void import('../../cloud/moderationCloud').then((m) => m.myBan()).then(setBan).catch(() => {}); }, [acc.user?.uid]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const run = async (fn: (c: Awaited<ReturnType<typeof loadCloud>>) => Promise<unknown>, ok?: string) => {
     setBusy(true);
@@ -66,6 +68,7 @@ export function AccountBody({ mode: initial }: { mode?: 'register' } = {}) {
         <div className="acc-who"><b>{acc.user.email}</b><span className={`acc-state ${acc.status}`}>{acc.status === 'syncing' ? 'Synchronisation…' : acc.status === 'offline' ? 'Hors ligne' : acc.status === 'error' ? 'Erreur' : 'Sauvegarde en ligne active'}</span></div>
         <div className="faint">{acc.user.google ? (acc.user.password ? 'Connexion : Google ou mot de passe' : 'Connecté avec Google') : 'Connexion : e-mail et mot de passe'}</div>
         <div className="faint">Dernière synchronisation : {when(acc.lastSync)}</div>
+        {ban && <div className="hint warn" style={{ marginTop: 8 }}>Ton compte est suspendu des fonctions en ligne (classements, Arène, clans, amis){ban.reason ? ` : ${ban.reason}` : ''}. Ta partie reste jouable et sauvegardée.</div>}
         {acc.error && <div className="hint warn" style={{ marginTop: 8 }}>{acc.error}</div>}
         <div className="row" style={{ gap: 8, marginTop: 12 }}>
           <button className="btn secondary grow" disabled={busy || acc.status === 'syncing'} onClick={() => void run((c) => c.syncNow('manual'))}>Synchroniser</button>
@@ -78,6 +81,7 @@ export function AccountBody({ mode: initial }: { mode?: 'register' } = {}) {
           <button className="btn secondary block acc-google" disabled={busy} onClick={() => void run(async (c) => { if ((await c.linkGoogle()) === 'done') toast('Compte Google lié : tu peux maintenant te connecter avec Google.', 'ok'); })}><GoogleLogo /> Lier mon compte Google</button>
         </Panel>
       )}
+      <p className="faint acc-id">Identifiant du compte : <code>{acc.user.uid}</code> <button className="acc-link" onClick={() => void navigator.clipboard?.writeText(acc.user!.uid).then(() => toast('Identifiant copié.', 'ok')).catch(() => {})}>Copier</button></p>
       <button className="acc-link danger" onClick={() => setDel(true)}>Supprimer mon compte</button>
       {del && (
         <Modal onClose={() => setDel(false)}>

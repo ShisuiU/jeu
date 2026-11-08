@@ -6,7 +6,7 @@ import { cloud } from './cloudCore';
 import { useGame } from '../state/store';
 import type { SaveData } from '../save/schema';
 import { GUILD_DESC_MAX, GUILD_MAX, CHAT_MAX } from '../data/guild';
-import { OFFICERS_MAX, guildWeek, memberEntry, takePending, validGuildName, tagOf, type ChatMessage, type GuildDoc } from '../game/guild';
+import { OFFICERS_MAX, guildWeek, maskProfanity, memberEntry, takePending, validGuildName, tagOf, type ChatMessage, type GuildDoc } from '../game/guild';
 
 // CLANS EN LIGNE — guilds/{gid} (fiche, membres, dégâts du boss de la semaine) et guilds/{gid}/chat.
 // Toutes les modifications passent par des transactions : deux joueurs qui rejoignent en même temps ne
@@ -39,7 +39,7 @@ export async function createGuild(s: SaveData, name: string, description: string
   const ref = doc(collection(db, 'guilds'));
   const now = Date.now();
   const g: GuildDoc = {
-    name: n, nameLower: n.toLowerCase(), tag: tagOf(n), description: description.trim().slice(0, GUILD_DESC_MAX), emblem: s.profile.avatarHeroId, open,
+    name: n, nameLower: n.toLowerCase(), tag: tagOf(n), description: maskProfanity(description.trim()).slice(0, GUILD_DESC_MAX), emblem: s.profile.avatarHeroId, open,
     leader: uid, members: { [uid]: memberEntry(s, 'leader', now) }, count: 1, createdAt: now, boss: { week: guildWeek(now), dmg: {} },
   };
   await setDoc(ref, g);
@@ -112,7 +112,7 @@ export async function promoteLeader(gid: string, who: string): Promise<void> {
 export async function updateSettings(gid: string, patch: { description?: string; open?: boolean }): Promise<void> {
   const { db } = ctx();
   await runTransaction(db, async (tx) => {
-    tx.update(gref(gid), { ...(patch.description != null ? { description: patch.description.trim().slice(0, GUILD_DESC_MAX) } : {}), ...(patch.open != null ? { open: patch.open } : {}) });
+    tx.update(gref(gid), { ...(patch.description != null ? { description: maskProfanity(patch.description.trim()).slice(0, GUILD_DESC_MAX) } : {}), ...(patch.open != null ? { open: patch.open } : {}) });
   });
 }
 
@@ -155,7 +155,7 @@ export async function listChat(gid: string): Promise<ChatMessage[]> {
 
 export async function sendChat(gid: string, text: string): Promise<void> {
   const { db, uid } = ctx();
-  const t = text.trim().slice(0, CHAT_MAX);
+  const t = maskProfanity(text.trim()).slice(0, CHAT_MAX);
   if (!t) return;
   const s = useGame.getState().save!;
   await addDoc(collection(db, 'guilds', gid, 'chat'), { uid, name: (s.profile.name || 'Lien').trim().slice(0, 18), text: t, at: serverTimestamp() });

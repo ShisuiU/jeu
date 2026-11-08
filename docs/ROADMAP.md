@@ -477,6 +477,14 @@
 - « Identifiant du compte » affiché (et copiable) dans « Sauvegarde et compte », pour se déclarer modérateur dans la console Firebase (collection `admins`)
 - Règles Firestore : `reports`, `admins`, `bans`, contrôle des bannis sur toutes les écritures (27 tests sur l’émulateur) — **à republier**
 
+## ✅ Version 1.54.0 — Anti-triche
+
+- Le serveur refuse les valeurs impossibles : puissance d’équipe au-delà de 150 000 (≈ 100 000 au maximum réel avec tout l’équipement), Tour au-delà de 100 étages, Boss mondial au-delà de 100 %, Arène au-delà de 5 000 (3 000 à la première publication)
+- **L’Arène ne monte pas plus vite qu’en jouant** : 60 points, plus 15 par heure écoulée depuis la dernière publication (heure du serveur)
+- **Boss de clan** : 1,5 million de dégâts au plus par envoi, 6 millions par membre et par semaine
+- **Défenses vérifiées** : avant d’être proposée, chaque défense est recalculée (niveaux, rangs, équipement) ; une défense trafiquée (niveaux impossibles, équipement gonflé, puissance annoncée fausse) n’est jamais proposée
+- Règles Firestore mises à jour (31 tests sur l’émulateur) — **à republier**
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

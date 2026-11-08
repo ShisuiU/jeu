@@ -56,3 +56,15 @@ describe('le joueur dans l’histoire', () => {
     expect(withName('Mon épée est à toi, {nom}.', 'Sam')).toBe('Mon épée est à toi, Sam.');
   });
 });
+
+describe('anti-triche : défenses', () => {
+  it('une vraie défense passe, une défense trafiquée est écartée', async () => {
+    const { plausibleDefense } = await import('../src/game/arena');
+    const s = createNewSave(T0);
+    const real = { ...defenseDoc(s, T0), uid: 'x' };
+    expect(plausibleDefense(real)).toBe(true);
+    expect(plausibleDefense({ ...real, team: real.team.map((h) => ({ ...h, level: 999 })) })).toBe(false);
+    expect(plausibleDefense({ ...real, team: real.team.map((h) => ({ ...h, gear: { flat: {}, pct: { hp: 50, atk: 50, def: 50, spd: 0 }, lifesteal: 0, regen: 0, startTm: 0, sets: [] } })) })).toBe(false);
+    expect(plausibleDefense({ ...real, power: 10 })).toBe(false); // puissance annoncée bien plus basse que la vraie (appât)
+  });
+});

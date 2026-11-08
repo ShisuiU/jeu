@@ -131,7 +131,8 @@ export async function publishRank(uid: string, s: SaveData) {
     const e = rankEntry(s);
     const key = JSON.stringify({ ...e, updatedAt: 0 });
     if (key === lastRank) return;
-    await setDoc(rankRef(uid), e);
+    // Heure du serveur : sert aux règles pour vérifier que l'Arène ne monte pas plus vite qu'en jouant.
+    await setDoc(rankRef(uid), { ...e, at: serverTimestamp() });
     lastRank = key;
   } catch { /* les classements ne doivent jamais gêner la sauvegarde */ }
 }

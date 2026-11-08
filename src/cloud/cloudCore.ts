@@ -4,7 +4,7 @@ import {
   signInWithEmailAndPassword, sendPasswordResetEmail, signOut, deleteUser, reauthenticateWithCredential, EmailAuthProvider, type Auth,
 } from 'firebase/auth';
 import { getFirestore, doc, getDoc, setDoc, deleteDoc, runTransaction, collection, query, orderBy, limit, getDocs, where, addDoc, serverTimestamp, connectFirestoreEmulator, type Firestore, type Timestamp } from 'firebase/firestore/lite';
-import { connectAuthEmulator } from 'firebase/auth';
+import { connectAuthEmulator, GoogleAuthProvider, signInWithPopup, linkWithPopup, reauthenticateWithPopup, browserPopupRedirectResolver, type User } from 'firebase/auth';
 import { defenseDoc, defensePoints, type ArenaDefense } from '../game/arena';
 import { isUnlocked } from '../game/unlocks';
 import type { ArenaLogEntry } from '../save/schema';
@@ -53,6 +53,15 @@ const ERR: Record<string, string> = {
   'auth/network-request-failed': 'Pas de connexion Internet.',
   'auth/requires-recent-login': 'Par sécurité, confirme ton mot de passe.',
   'permission-denied': 'Accès refusé par le serveur.',
+  'auth/popup-blocked': 'La fenêtre Google a été bloquée : autorise les fenêtres surgissantes pour ce site, puis réessaie.',
+  'auth/popup-closed-by-user': 'Connexion Google annulée.',
+  'auth/cancelled-popup-request': 'Connexion Google annulée.',
+  'auth/operation-not-allowed': 'La connexion avec Google n’est pas encore activée sur le serveur.',
+  'auth/unauthorized-domain': 'Ce site n’est pas encore autorisé pour la connexion Google (réglage du serveur).',
+  'auth/account-exists-with-different-credential': 'Un compte existe déjà avec cette adresse : connecte-toi avec ton mot de passe, puis lie Google dans « Sauvegarde et compte ».',
+  'auth/credential-already-in-use': 'Ce compte Google est déjà relié à un autre compte du jeu.',
+  'auth/provider-already-linked': 'Google est déjà lié à ton compte.',
+  'auth/web-storage-unsupported': 'Ce navigateur bloque la connexion Google (stockage désactivé). Essaie dans Safari ou Chrome.',
   'unavailable': 'Serveur injoignable (hors ligne ?).',
 };
 export const errText = (e: unknown) => { const c = (e as { code?: string })?.code ?? ''; return ERR[c] ?? (e instanceof Error ? e.message : 'Erreur inconnue.'); };
@@ -72,6 +81,8 @@ function ensure() {
 /** Accès partagé pour les autres modules en ligne (clans, amis). */
 export function cloud() { ensure(); return { db, uid: auth.currentUser?.uid ?? null }; }
 
+const who = (u: User) => ({ uid: u.uid, email: u.email, google: u.providerData.some((p) => p.providerId === 'google.com'), password: u.providerData.some((p) => p.providerId === 'password') });
+
 /** Démarre la surveillance du compte (connexion persistée d'une session à l'autre). */
 export function startCloud() {
   ensure();
@@ -79,7 +90,7 @@ export function startCloud() {
   if (acc.started) return;
   acc.set({ started: true });
   onAuthStateChanged(auth, (u) => {
-    useAccount.getState().set({ user: u ? { uid: u.uid, email: u.email } : null });
+    useAccount.getState().set({ user: u ? who(u) : null });
     if (u) {
       setCloudWanted(true);
       setSyncProvider({ id: 'firebase', name: 'Compte en ligne', isAvailable: async () => navigator.onLine, pull: async () => null, push: async (s) => queuePush(s) });
@@ -267,6 +278,16 @@ export async function resolve(keep: 'local' | 'remote') {
 
 export async function register(email: string, password: string) { ensure(); startCloud(); await createUserWithEmailAndPassword(auth, email.trim(), password); }
 export async function login(email: string, password: string) { ensure(); startCloud(); await signInWithEmailAndPassword(auth, email.trim(), password); }
+// CONNEXION AVEC GOOGLE — même compte, même sauvegarde : seule la façon de se connecter change.
+// (initializeAuth ne charge pas la fenêtre de connexion : on la fournit à chaque appel.)
+const googleProvider = () => { const p = new GoogleAuthProvider(); p.setCustomParameters({ prompt: 'select_account' }); return p; };
+export async function loginGoogle() { ensure(); startCloud(); await signInWithPopup(auth, googleProvider(), browserPopupRedirectResolver); }
+/** Ajoute Google à un compte e-mail existant (on pourra ensuite se connecter des deux façons). */
+export async function linkGoogle() {
+  ensure(); const u = auth.currentUser; if (!u) return;
+  const r = await linkWithPopup(u, googleProvider(), browserPopupRedirectResolver);
+  useAccount.getState().set({ user: who(r.user) });
+}
 export async function resetPassword(email: string) { ensure(); await sendPasswordResetEmail(auth, email.trim()); }
 export async function logout() {
   ensure(); await pushNow().catch(() => {});
@@ -276,7 +297,9 @@ export async function logout() {
 /** Supprime la sauvegarde en ligne puis le compte (la partie reste sur l'appareil). */
 export async function deleteAccount(password?: string) {
   ensure(); const u = auth.currentUser; if (!u) return;
+  // Confirmation d'identité : mot de passe, ou Google pour un compte sans mot de passe.
   if (password && u.email) await reauthenticateWithCredential(u, EmailAuthProvider.credential(u.email, password));
+  else if (u.providerData.some((p) => p.providerId === 'google.com')) await reauthenticateWithPopup(u, googleProvider(), browserPopupRedirectResolver);
   await deleteDoc(saveRef(u.uid));
   await deleteDoc(rankRef(u.uid)).catch(() => {});
   // Amis : fiche, code et amitiés.

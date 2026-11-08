@@ -7,7 +7,8 @@ import type { SaveData } from '../save/schema';
 export interface CloudConflict { local: SaveData; remote: SaveData; remoteAt: number }
 interface AccountState {
   started: boolean;
-  user: { uid: string; email: string | null } | null;
+  /** google / password : moyens de connexion liés au compte. */
+  user: { uid: string; email: string | null; google?: boolean; password?: boolean } | null;
   busy: boolean;
   lastSync: number | null;
   status: 'idle' | 'syncing' | 'ok' | 'offline' | 'error';

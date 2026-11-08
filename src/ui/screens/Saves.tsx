@@ -15,7 +15,7 @@ function Summary({ s }: { s: SaveData }) {
   const best = [...s.heroes].sort((a, b) => b.level - a.level)[0];
   return (
     <div className="stack" style={{ fontSize: 13.5 }}>
-      <div className="stat-row"><span className="muted">Héritier</span><b>{s.profile.name}</b></div>
+      <div className="stat-row"><span className="muted">Nom</span><b>{s.profile.name}</b></div>
       <div className="stat-row"><span className="muted">Héros</span><b>{s.heroes.length}{best ? ` (meilleur : ${HERO_BY_ID[best.heroId]?.name} Nv ${best.level})` : ''}</b></div>
       <div className="stat-row"><span className="muted">Or · Cristaux</span><b>{fmt(s.resources.gold)} · {fmt(s.resources.crystals)}</b></div>
       <div className="stat-row"><span className="muted">Jours de connexion</span><b>{s.daily.totalLogins}</b></div>

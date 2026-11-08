@@ -40,6 +40,8 @@ export function AccountBody({ mode: initial }: { mode?: 'register' } = {}) {
     <>
       <Panel>
         <p className="muted" style={{ marginTop: 0 }}>Avec un compte gratuit, ta partie est sauvegardée en ligne : tu la retrouves sur un autre appareil ou après avoir réinstallé le jeu. Le jeu reste jouable hors ligne.</p>
+        <button className="btn block acc-google" disabled={busy} onClick={() => void run((c) => c.loginGoogle(), 'Connecté avec Google.')}><GoogleLogo /> Continuer avec Google</button>
+        <div className="acc-or"><span>ou avec une adresse e-mail</span></div>
         <div className="seg" style={{ marginBottom: 12 }}>
           <button className={mode === 'login' ? 'on' : ''} onClick={() => setMode('login')}>Se connecter</button>
           <button className={mode === 'register' ? 'on' : ''} onClick={() => setMode('register')}>Créer un compte</button>
@@ -62,6 +64,7 @@ export function AccountBody({ mode: initial }: { mode?: 'register' } = {}) {
     <>
       <Panel>
         <div className="acc-who"><b>{acc.user.email}</b><span className={`acc-state ${acc.status}`}>{acc.status === 'syncing' ? 'Synchronisation…' : acc.status === 'offline' ? 'Hors ligne' : acc.status === 'error' ? 'Erreur' : 'Sauvegarde en ligne active'}</span></div>
+        <div className="faint">{acc.user.google ? (acc.user.password ? 'Connexion : Google ou mot de passe' : 'Connecté avec Google') : 'Connexion : e-mail et mot de passe'}</div>
         <div className="faint">Dernière synchronisation : {when(acc.lastSync)}</div>
         {acc.error && <div className="hint warn" style={{ marginTop: 8 }}>{acc.error}</div>}
         <div className="row" style={{ gap: 8, marginTop: 12 }}>
@@ -69,16 +72,22 @@ export function AccountBody({ mode: initial }: { mode?: 'register' } = {}) {
           <button className="btn secondary grow" disabled={busy} onClick={() => void run((c) => c.logout(), 'Déconnecté. La partie reste sur cet appareil.')}>Se déconnecter</button>
         </div>
       </Panel>
+      {!acc.user.google && (
+        <Panel>
+          <p className="faint" style={{ marginTop: 0 }}>Lie ton compte Google pour te connecter en un geste sur un autre appareil. Ta sauvegarde ne change pas.</p>
+          <button className="btn secondary block acc-google" disabled={busy} onClick={() => void run((c) => c.linkGoogle(), 'Compte Google lié.')}><GoogleLogo /> Lier mon compte Google</button>
+        </Panel>
+      )}
       <button className="acc-link danger" onClick={() => setDel(true)}>Supprimer mon compte</button>
       {del && (
         <Modal onClose={() => setDel(false)}>
           <h2>Supprimer le compte ?</h2>
-          <p className="muted" style={{ textAlign: 'center' }}>La sauvegarde en ligne et le compte seront effacés définitivement. La partie reste sur cet appareil. Tape <b>SUPPRIMER</b> et ton mot de passe pour confirmer.</p>
+          <p className="muted" style={{ textAlign: 'center' }}>La sauvegarde en ligne et le compte seront effacés définitivement. La partie reste sur cet appareil. Tape <b>SUPPRIMER</b>{acc.user.password ? <> et ton mot de passe</> : <>, puis confirme avec Google</>} pour confirmer.</p>
           <input className="text-input" value={delTxt} onChange={(e) => setDelTxt(e.target.value)} placeholder="SUPPRIMER" aria-label="Confirmation" />
-          <input className="text-input" type="password" style={{ marginTop: 8 }} value={delPw} onChange={(e) => setDelPw(e.target.value)} placeholder="Mot de passe" aria-label="Mot de passe" autoComplete="current-password" />
+          {acc.user.password && <input className="text-input" type="password" style={{ marginTop: 8 }} value={delPw} onChange={(e) => setDelPw(e.target.value)} placeholder="Mot de passe" aria-label="Mot de passe" autoComplete="current-password" />}
           <div className="row" style={{ gap: 8, marginTop: 12 }}>
             <button className="btn secondary grow" onClick={() => setDel(false)}>Annuler</button>
-            <button className="btn danger grow" disabled={busy || delTxt.trim().toUpperCase() !== 'SUPPRIMER' || !delPw} onClick={async () => { if (await run((c) => c.deleteAccount(delPw), 'Compte supprimé.')) setDel(false); }}>Supprimer</button>
+            <button className="btn danger grow" disabled={busy || delTxt.trim().toUpperCase() !== 'SUPPRIMER' || (acc.user.password && !delPw)} onClick={async () => { if (await run((c) => c.deleteAccount(acc.user?.password ? delPw : undefined), 'Compte supprimé.')) setDel(false); }}>Supprimer</button>
           </div>
         </Modal>
       )}
@@ -142,5 +151,17 @@ export function AccountPrompt() {
       <button className="btn secondary block" style={{ marginTop: 8 }} onClick={() => close()}>Plus tard</button>
       <button className="acc-link" onClick={() => close(true)}>Ne plus me demander</button>
     </Modal>
+  );
+}
+
+/** Logo « G » de Google (couleurs officielles), pour les boutons de connexion. */
+function GoogleLogo() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden style={{ verticalAlign: '-4px', marginRight: 8 }}>
+      <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z" />
+      <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z" />
+      <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z" />
+      <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z" />
+    </svg>
   );
 }

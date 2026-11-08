@@ -87,6 +87,15 @@ export function cloud() { ensure(); return { db, uid: auth.currentUser?.uid ?? n
 
 const who = (u: User) => ({ uid: u.uid, email: u.email, google: u.providerData.some((p) => p.providerId === 'google.com'), password: u.providerData.some((p) => p.providerId === 'password') });
 
+/** Cadeaux d'amis en attente (pastille du Courrier) : au plus une vérification par minute. */
+let lastGiftCheck = 0;
+function checkGifts() {
+  if (!auth.currentUser || Date.now() - lastGiftCheck < 60_000) return;
+  lastGiftCheck = Date.now();
+  void import('./friendsCloud').then((m) => m.refreshGifts()).catch(() => {});
+}
+setInterval(() => { if (document.visibilityState === 'visible') checkGifts(); }, 5 * 60_000);
+
 /** Démarre la surveillance du compte (connexion persistée d'une session à l'autre). */
 export function startCloud() {
   ensure();
@@ -99,6 +108,7 @@ export function startCloud() {
       setCloudWanted(true);
       setSyncProvider({ id: 'firebase', name: 'Compte en ligne', isAvailable: async () => navigator.onLine, pull: async () => null, push: async (s) => queuePush(s) });
       void syncNow('login');
+      checkGifts();
     } else {
       setSyncProvider({ id: 'local', name: 'Appareil uniquement', isAvailable: async () => true, pull: async () => null, push: async () => {} });
     }
@@ -106,6 +116,7 @@ export function startCloud() {
   // Jeu quitté : sauvegarde en ligne + heures des notifications (camp plein, énergie) ; jeu repris : on les suspend.
   const flush = () => {
     const hidden = document.visibilityState === 'hidden';
+    if (!hidden) checkGifts();
     if (hidden) void pushNow();
     if (pushOn()) void schedulePush(useGame.getState().save, !hidden);
   };

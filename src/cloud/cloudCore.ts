@@ -4,7 +4,8 @@ import {
   signInWithEmailAndPassword, sendPasswordResetEmail, signOut, deleteUser, reauthenticateWithCredential, EmailAuthProvider, type Auth,
 } from 'firebase/auth';
 import { getFirestore, doc, getDoc, setDoc, deleteDoc, runTransaction, collection, query, orderBy, limit, getDocs, where, addDoc, serverTimestamp, connectFirestoreEmulator, type Firestore, type Timestamp } from 'firebase/firestore/lite';
-import { connectAuthEmulator, GoogleAuthProvider, signInWithPopup, linkWithPopup, reauthenticateWithPopup, browserPopupRedirectResolver, type User } from 'firebase/auth';
+import { connectAuthEmulator, GoogleAuthProvider, signInWithPopup, linkWithPopup, reauthenticateWithPopup, signInWithRedirect, linkWithRedirect, getRedirectResult, browserPopupRedirectResolver, type User } from 'firebase/auth';
+import { isStandalone } from '../pwa';
 import { defenseDoc, defensePoints, type ArenaDefense } from '../game/arena';
 import { isUnlocked } from '../game/unlocks';
 import type { ArenaLogEntry } from '../save/schema';
@@ -69,7 +70,8 @@ export const errText = (e: unknown) => { const c = (e as { code?: string })?.cod
 function ensure() {
   if (app) return;
   app = initializeApp(FIREBASE_CONFIG);
-  auth = initializeAuth(app, { persistence: [indexedDBLocalPersistence, browserLocalPersistence] });
+  // La fenêtre / redirection Google doit être connue dès le départ (sinon auth/argument-error).
+  auth = initializeAuth(app, { persistence: [indexedDBLocalPersistence, browserLocalPersistence], popupRedirectResolver: browserPopupRedirectResolver });
   auth.languageCode = 'fr';
   db = getFirestore(app);
   // Tests de bout en bout : émulateurs Firebase locaux (jamais dans la version publiée).
@@ -115,6 +117,8 @@ async function upload(uid: string, s: SaveData) {
   void publishRank(uid, s);
   void publishDefense(uid, s);
   void import('./friendsCloud').then((m) => m.publishProfile(s)).catch(() => {});
+  // Clan : sa fiche (nom, avatar, puissance) suit la partie, même sans ouvrir l'écran du clan.
+  if (s.guild.id) void import('./guildCloud').then((m) => m.syncMe(s.guild.id)).catch(() => {});
 }
 
 // CLASSEMENTS — document ranks/{uid} : pseudo, avatar et meilleurs scores, publié avec la sauvegarde.
@@ -281,12 +285,39 @@ export async function login(email: string, password: string) { ensure(); startCl
 // CONNEXION AVEC GOOGLE — même compte, même sauvegarde : seule la façon de se connecter change.
 // (initializeAuth ne charge pas la fenêtre de connexion : on la fournit à chaque appel.)
 const googleProvider = () => { const p = new GoogleAuthProvider(); p.setCustomParameters({ prompt: 'select_account' }); return p; };
-export async function loginGoogle() { ensure(); startCloud(); await signInWithPopup(auth, googleProvider(), browserPopupRedirectResolver); }
+// Sur iPhone et quand le jeu est installé, une fenêtre séparée ne revient pas toujours : on passe par une
+// redirection (la page part chez Google puis revient au jeu) ; le résultat est lu au retour (finishGoogleRedirect).
+const PENDING = 'aeonfall.googlePending';
+const viaRedirect = () => isStandalone() || /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+/** Retourne 'redirect' si la page part chez Google (le résultat arrivera au retour). */
+export async function loginGoogle(): Promise<'done' | 'redirect'> {
+  ensure(); startCloud();
+  if (viaRedirect()) { sessionStorage.setItem(PENDING, 'login'); await signInWithRedirect(auth, googleProvider(), browserPopupRedirectResolver); return 'redirect'; }
+  await signInWithPopup(auth, googleProvider(), browserPopupRedirectResolver);
+  return 'done';
+}
 /** Ajoute Google à un compte e-mail existant (on pourra ensuite se connecter des deux façons). */
-export async function linkGoogle() {
-  ensure(); const u = auth.currentUser; if (!u) return;
+export async function linkGoogle(): Promise<'done' | 'redirect'> {
+  ensure(); const u = auth.currentUser; if (!u) return 'done';
+  if (viaRedirect()) { sessionStorage.setItem(PENDING, 'link'); await linkWithRedirect(u, googleProvider(), browserPopupRedirectResolver); return 'redirect'; }
   const r = await linkWithPopup(u, googleProvider(), browserPopupRedirectResolver);
   useAccount.getState().set({ user: who(r.user) });
+  return 'done';
+}
+/** Au retour de Google (redirection) : confirme ou explique l'erreur. */
+export async function finishGoogleRedirect() {
+  let kind: string | null = null;
+  try { kind = sessionStorage.getItem(PENDING); } catch { /* */ }
+  if (!kind) return;
+  try { sessionStorage.removeItem(PENDING); } catch { /* */ }
+  ensure();
+  try {
+    const r = await getRedirectResult(auth, browserPopupRedirectResolver);
+    if (r?.user) {
+      useAccount.getState().set({ user: who(r.user) });
+      useUI.getState().toast(kind === 'link' ? 'Compte Google lié : tu peux maintenant te connecter avec Google.' : 'Connecté avec Google : ta partie est sauvegardée en ligne.', 'ok', undefined, 7000);
+    } else useUI.getState().toast('Connexion Google interrompue. Réessaie.', 'error', undefined, 7000);
+  } catch (e) { useUI.getState().toast(errText(e), 'error', undefined, 7000); }
 }
 export async function resetPassword(email: string) { ensure(); await sendPasswordResetEmail(auth, email.trim()); }
 export async function logout() {

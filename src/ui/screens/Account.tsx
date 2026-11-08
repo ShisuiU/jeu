@@ -40,7 +40,7 @@ export function AccountBody({ mode: initial }: { mode?: 'register' } = {}) {
     <>
       <Panel>
         <p className="muted" style={{ marginTop: 0 }}>Avec un compte gratuit, ta partie est sauvegardée en ligne : tu la retrouves sur un autre appareil ou après avoir réinstallé le jeu. Le jeu reste jouable hors ligne.</p>
-        <button className="btn block acc-google" disabled={busy} onClick={() => void run((c) => c.loginGoogle(), 'Connecté avec Google.')}><GoogleLogo /> Continuer avec Google</button>
+        <button className="btn block acc-google" disabled={busy} onClick={() => void run(async (c) => { if ((await c.loginGoogle()) === 'done') toast('Connecté avec Google : ta partie est sauvegardée en ligne.', 'ok'); })}><GoogleLogo /> Continuer avec Google</button>
         <div className="acc-or"><span>ou avec une adresse e-mail</span></div>
         <div className="seg" style={{ marginBottom: 12 }}>
           <button className={mode === 'login' ? 'on' : ''} onClick={() => setMode('login')}>Se connecter</button>
@@ -75,7 +75,7 @@ export function AccountBody({ mode: initial }: { mode?: 'register' } = {}) {
       {!acc.user.google && (
         <Panel>
           <p className="faint" style={{ marginTop: 0 }}>Lie ton compte Google pour te connecter en un geste sur un autre appareil. Ta sauvegarde ne change pas.</p>
-          <button className="btn secondary block acc-google" disabled={busy} onClick={() => void run((c) => c.linkGoogle(), 'Compte Google lié.')}><GoogleLogo /> Lier mon compte Google</button>
+          <button className="btn secondary block acc-google" disabled={busy} onClick={() => void run(async (c) => { if ((await c.linkGoogle()) === 'done') toast('Compte Google lié : tu peux maintenant te connecter avec Google.', 'ok'); })}><GoogleLogo /> Lier mon compte Google</button>
         </Panel>
       )}
       <button className="acc-link danger" onClick={() => setDel(true)}>Supprimer mon compte</button>

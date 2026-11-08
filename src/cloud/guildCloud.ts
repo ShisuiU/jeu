@@ -125,7 +125,8 @@ export async function syncMe(gid: string): Promise<GuildWithId | null> {
   const s = useGame.getState().save!;
   const now = Date.now();
   let pending = 0;
-  useGame.getState().mutate((d) => { pending = takePending(d, now); });
+  // On ne touche à la sauvegarde que s'il y a des dégâts à envoyer (sinon chaque envoi relancerait une sauvegarde).
+  if (s.guild.pending > 0) useGame.getState().mutate((d) => { pending = takePending(d, now); });
   try {
     return await runTransaction(db, async (tx) => {
       const snap = await tx.get(gref(gid));

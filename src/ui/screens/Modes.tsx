@@ -3,6 +3,8 @@ import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
 import { DUNGEONS, DUNGEON_BY_ID, DUNGEON_FLOORS, dungeonEnergy, dungeonLevel } from '../../data/dungeons';
 import { TOWER_FLOORS, towerLevel, towerReward, towerStatMult } from '../../data/tower';
+import { sweepTower, towerSweepMax } from '../../game/towerSweep';
+import type { Reward } from '../../data/resources';
 import { BOSS_TIERS, DAMAGE_CHESTS, WORLD_BOSS } from '../../data/worldBoss';
 import { ARENA, ARENA_TIERS, arenaTier } from '../../data/arena';
 import { HERO_BY_ID } from '../../data/heroes';
@@ -17,6 +19,7 @@ import { formatDuration, msUntilReset } from '../../core/time';
 import { InfoButton, Panel, Screen, fmt } from '../components/common';
 import { RewardInline, rewardMainIcon } from '../components/RewardView';
 import { EnemyArt } from '../art/EnemyArt';
+import { play } from '../../audio/sfx';
 import { HeroArt } from '../art/HeroArt';
 import { Icon, ResourceIcon } from '../art/Icons';
 
@@ -92,6 +95,9 @@ export function Tower() {
   const next = Math.min(cur + 1, TOWER_FLOORS);
   const done = cur >= TOWER_FLOORS;
   const floors = Array.from({ length: 8 }, (_, i) => next + 3 - i).filter((f) => f >= 1 && f <= TOWER_FLOORS);
+  const sweepTo = towerSweepMax(save);
+  const mutate = useGame((s) => s.mutate);
+  const toast = useUI((s) => s.toast);
   return (
     <Screen title="Tour des Âges" right={<RanksBtn tab="tower" />}>
       <Panel>
@@ -108,6 +114,12 @@ export function Tower() {
           </div>
         ))}
       </div>
+      {sweepTo > 0 && (
+        <div className="hint" style={{ marginTop: 14 }}>
+          Les étages {cur + 1} à {sweepTo} sont bien en dessous du niveau de ton équipe.
+          <button className="btn secondary block" style={{ marginTop: 8 }} onClick={() => { let res = { floors: 0, reward: {} as Reward }; mutate((d) => { res = sweepTower(d); }); if (res.floors) { play('claim'); toast(`Montée rapide : ${res.floors} étages gravis, récompenses récupérées.`, 'ok'); } }}>Monter d’un coup jusqu’à l’étage {sweepTo}</button>
+        </div>
+      )}
       {!done ? (
         <button className="btn block" style={{ marginTop: 14, minHeight: 54 }} onClick={() => push({ name: 'prep', spec: { mode: 'tower', floor: next } })}>Monter à l’étage {next}<span className="shine" /></button>
       ) : <div className="hint" style={{ marginTop: 14 }}>Tu as conquis la Tour des Âges !</div>}

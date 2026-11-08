@@ -9,7 +9,8 @@ import type { DefenseHero } from './arena';
 // AMIS — règles du jeu (sans réseau). En ligne : profiles/{uid}, codes/{code}, friendships/{a_b}.
 export const FRIENDS_MAX = 30;
 export const GIFT_ENERGY = 10;
-export const GIFTS_PER_DAY = 20;
+/** Aucune limite au nombre de cadeaux d'amis récupérables par jour (chaque ami en envoie un par jour). */
+export const GIFTS_PER_DAY = Infinity;
 
 export interface FriendProfile { name: string; avatar: string; level: number; power: number; code: string; lend: (DefenseHero & { name?: string }) | null; updatedAt: number }
 export interface Friendship { users: [string, string]; from: string; status: 'pending' | 'ok'; gifts: Record<string, string>; claims: Record<string, string>; createdAt: number }
@@ -46,7 +47,7 @@ export const canGift = (f: Friendship, me: string, now: number) => f.status === 
 /** Un cadeau de l'ami attend-il ? (envoyé, et pas encore reçu) */
 export const giftWaiting = (f: Friendship, me: string) => { const g = f.gifts[otherOf(f, me)]; return f.status === 'ok' && !!g && f.claims[me] !== g; };
 export const claimsLeft = (s: SaveData, now: number) => (s.friends.day === dayKey(now) ? Math.max(0, GIFTS_PER_DAY - s.friends.claims) : GIFTS_PER_DAY);
-/** Reçoit l'énergie d'un cadeau (mutation). Retourne false si la limite du jour est atteinte. */
+/** Reçoit l'énergie d'un cadeau (mutation). Sans limite : chaque cadeau envoyé se récupère. */
 export function receiveGift(s: SaveData, now: number): boolean {
   const l = local(s, now);
   if (l.claims >= GIFTS_PER_DAY) return false;

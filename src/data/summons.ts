@@ -39,7 +39,7 @@ export const BANNERS: BannerDef[] = [
     id: 'epic', name: 'Invocation épique', subtitle: 'Cristaux d’Aeon : Épique garanti.',
     cost: { resource: 'crystals', amount: 300 },
     rates: { epic: 95, legendary: 4.5, mythic: 0.5 },
-    pity: { rarity: 'legendary', every: 40 },
+    pity: { rarity: 'legendary', every: 30 },
     color: '#a64dff', glow: '#cf9dff',
   },
   {

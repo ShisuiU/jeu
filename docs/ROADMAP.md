@@ -530,6 +530,17 @@
 - **Courrier → Cadeaux** : l'énergie envoyée par les amis s'y récupère d'un geste (« Tout récupérer »), même avec l'énergie pleine (le surplus est gardé), et on rend la pareille avec « Tout envoyer » ; pastille sur le Courrier et l'Accueil quand un cadeau attend (vérifié au lancement, au retour dans le jeu et toutes les 5 minutes)
 - **Notifications** : l'envoi programmé ne s'était jamais lancé tout seul (GitHub n'avait pas pris en compte la programmation) ; nouvelle programmation aux minutes 4, 14, 24… Les cadeaux envoyés depuis une ancienne version du jeu sont aussi annoncés (relecture complète une fois par heure)
 
+## ✅ Version 1.60.0 — Équilibrage
+
+- **Plus de cristaux** : bonus des missions du jour 150 (au lieu de 80), missions « Dépenser 60 énergie » 50 et « Combattre 2 fois dans l'arène » 40, bonus de la semaine 400 (au lieu de 200) : environ une invocation épique et demie par jour au lieu d'une
+- **Légendaire garanti au 30ᵉ appel épique** (au lieu du 40ᵉ)
+- **Éveil sans doublon** : possible avec 6 essences d'éveil de plus à la place du doublon (un légendaire n'est plus presque impossible à éveiller)
+- **Tour : montée rapide** des étages dont les ennemis ont 10 niveaux de moins que l'équipe (hors Sommets), avec toutes leurs récompenses
+- **Butin du chapitre 1** : seulement ce qui sert tout de suite (élixirs, minerai, grimoires) ; les potions d'ascension arrivent au chapitre 2
+- Mission du jour renommée « Récupérer la récompense du jour (Courrier) » (« Se connecter » restait à 0/1 tant que la récompense n'était pas prise)
+- **Classements complétés** jusqu'à 10 lignes par des Héritiers imaginaires, signalés comme tels, tant qu'il y a peu de joueurs
+- **Cadeaux d'amis sans limite** : tous les cadeaux reçus se récupèrent, chaque jour, même avec l'énergie pleine
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

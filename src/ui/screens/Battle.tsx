@@ -5,7 +5,8 @@ import { useGame } from '../../state/store';
 import { useUI, type Route } from '../../state/ui';
 import { HERO_BY_ID } from '../../data/heroes';
 import { HERO_LINES } from '../../data/heroLines';
-import { createBattle, beginTurn, performAction, unitById, availableSkills, targetKind, validTargets, hpPct, shieldOf, predictOrder } from '../../game/battle/engine';
+import { createBattle, beginTurn, performAction, unitById, availableSkills, targetKind, validTargets, hpPct, shieldOf, predictOrder, autoLien, castLien, lienReady, LIEN_POWERS } from '../../game/battle/engine';
+import { LIEN_MAX, LIEN_USES, type LienPower } from '../../game/battle/types';
 import { chooseAction } from '../../game/battle/ai';
 import { STATUS_INFO, type Action, type BattleState, type Unit, type UnitSetup } from '../../game/battle/types';
 import { effectiveCooldown } from '../../game/battle/skillMods';
@@ -156,6 +157,16 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
         case 'extraTurn': addPopup(e.target, 'Tour bonus !', 'buff'); break;
         case 'cleanse': break;
         case 'dispel': addPopup(e.target, 'Bonus retirés', 'debuff'); addVfx(e.target, 'cursefx', '#c7b6ff'); break;
+        case 'rage': addPopup(e.target, 'Enragé ! +30 % ATQ', 'debuff'); pause = true; break;
+        case 'carapace':
+          if (e.broken) { addPopup(e.target, 'Carapace brisée !', 'buff'); addVfx(e.target, 'cursefx', '#ffd36b'); pause = true; }
+          else if (e.reformed) { addPopup(e.target, 'Carapace reformée', 'shieldp'); addVfx(e.target, 'shieldfx', '#c9b27a'); }
+          break;
+        case 'lien': {
+          setBanner({ text: `Pouvoir du Lien · ${LIEN_POWERS[e.power].name}`, side: 'ally' });
+          for (const a of s.units.filter((u) => u.side === 'ally' && u.alive)) addVfx(a.id, e.power === 'heal' ? 'healfx' : e.power === 'guard' ? 'shieldfx' : 'revivefx', e.power === 'heal' ? '#7bea8f' : e.power === 'guard' ? '#aad7ff' : '#ffd36b');
+          play('claim'); pause = true; break;
+        }
         case 'wave': if (bossWave >= 0 && e.wave - 1 >= bossWave && useGame.getState().save?.settings.music) playMusic('boss', initial.info.region); setBanner({ text: `Vague ${e.wave} / ${s.totalWaves}`, side: 'wave' }); play('open'); force(); await wait(1100 / speedRef.current); setBanner(null); break;
       }
     }
@@ -241,6 +252,11 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
           if (s.outcome !== 'running' || !s.activeId) continue;
         }
         const actor = unitById(s, s.activeId);
+        // Combat auto : le Lien agit de lui-même quand sa jauge est pleine.
+        if (actor.side === 'ally' && autoRef.current) {
+          const lp = autoLien(s);
+          if (lp) { castLien(s, lp); await playEvents(); setBanner(null); if (s.outcome !== 'running' || !s.activeId) continue; }
+        }
         if (actor.side === 'ally' && !autoRef.current) {
           const first = availableSkills(actor)[0];
           setSelected(first ? first.id : null);
@@ -269,6 +285,21 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
   };
 
   const onUnit = (u: Unit) => { if (targetable.has(u.id)) void act(u.id); };
+  // Pouvoir du Lien (le joueur agit lui-même) : ne consomme pas le tour du héros.
+  const [lienOpen, setLienOpen] = useState(false);
+  const castPower = async (p: LienPower) => {
+    setLienOpen(false);
+    if (!awaiting || !castLien(s, p)) return;
+    setAwaiting(false);
+    await playEvents(); setBanner(null);
+    if (s.outcome !== 'running' || !s.activeId) { void run(); return; }
+    setAwaiting(true); force();
+  };
+  const lienFull = awaiting && lienReady(s);
+  useEffect(() => {
+    if (!lienFull) return;
+    try { if (!localStorage.getItem('aeonfall.tip.lien')) { localStorage.setItem('aeonfall.tip.lien', '1'); useUI.getState().toast('Ta jauge du Lien est pleine : touche-la pour aider toute l’équipe (sans perdre ton tour).'); } } catch { /* */ }
+  }, [lienFull]);
 
   const toggleAuto = () => { const v = !auto; setAuto(v); updateSettings({ autoBattleDefault: v }); play('tap'); if (v && !save.flags.coach_battle_auto) mutate((s) => { s.flags.coach_battle_auto = true; }); };
   const cycleSpeed = () => { const v = (speed === 3 ? 1 : speed + 1) as 1 | 2 | 3; setSpeed(v); updateSettings({ battleSpeed: v }); play('tap'); };
@@ -351,6 +382,15 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
             <div key={u.id + sk.id} className="skill-info"><SkillInfoBody unit={u} sk={sk} /></div>
           )))}
         </div>
+        {lienOpen && lienFull && (
+          <div className="lien-choices" role="dialog" aria-label="Pouvoir du Lien">
+            {(Object.keys(LIEN_POWERS) as LienPower[]).map((p) => (
+              <button key={p} className={`lien-choice ${p}`} onClick={() => void castPower(p)}>
+                <b>{LIEN_POWERS[p].name}</b><span>{LIEN_POWERS[p].text}</span>
+              </button>
+            ))}
+          </div>
+        )}
         <div className={`skill-info ${awaiting && active && selSkill ? '' : 'idle'}`} style={{ height: infoH }}>
           {awaiting && active && selSkill ? <SkillInfoBody unit={active} sk={selSkill} onLaunch={targetKind(selSkill) === 'none' ? () => act() : undefined} />
             : <span>{finished.current ? '' : auto ? 'Combat automatique : touche AUTO pour reprendre la main.' : awaiting ? 'Choisis une compétence.' : 'Tour adverse…'}</span>}
@@ -360,6 +400,13 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
             <button className={`ctrl ${auto ? 'on' : ''}`} onClick={toggleAuto}>AUTO</button>
             <button className="ctrl" onClick={cycleSpeed} aria-label={`Vitesse ×${speed}`}>×{speed}</button>
           </div>
+          {s.lien >= 0 && (
+            <button className={`lien-btn ${lienFull ? 'full' : ''}`} disabled={!lienFull} onClick={() => { play('tap'); setLienOpen((v) => !v); }}
+              aria-label={`Pouvoir du Lien : ${Math.round((s.lien / LIEN_MAX) * 100)} %`} style={{ ['--lp' as string]: `${(s.lien / LIEN_MAX) * 360}deg` }}>
+              <span className="lien-core">{s.lienUsed >= LIEN_USES ? '—' : lienFull ? 'LIEN' : `${Math.round((s.lien / LIEN_MAX) * 100)}%`}</span>
+              <span className="lien-uses">{LIEN_USES - s.lienUsed}/{LIEN_USES}</span>
+            </button>
+          )}
           <div className="skills">
             {(awaiting && active ? active.skills.filter((x) => x.slot !== 'passive') : []).map((sk) => {
               const cd = active!.cooldowns[sk.id] ?? 0;
@@ -462,6 +509,12 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
               <div className="ui-aff"><AffinityIcon id={u.affinity} size={16} /> {AFFINITIES[u.affinity].name}{AFFINITIES[u.affinity].strongAgainst ? ` · fort contre ${AFFINITIES[AFFINITIES[u.affinity].strongAgainst!].name}` : ' · neutre'}</div>
               <div className="ui-hp"><span>PV</span><b>{Math.max(0, Math.round(u.hp))} / {Math.round(u.base.hp)}</b></div>
               <div className="ui-stats"><span>ATQ <b>{Math.round(u.base.atk)}</b></span><span>DÉF <b>{Math.round(u.base.def)}</b></span><span>VIT <b>{Math.round(u.base.spd)}</b></span></div>
+              {u.isBoss && (u.flags.carapaceMax > 0 || s.mechanics) && (
+                <div className="ui-boss">
+                  {u.flags.carapaceMax > 0 && <div><b>Carapace</b> {u.flags.carapace > 0 ? `· ${u.flags.carapace} charge${u.flags.carapace > 1 ? 's' : ''}` : '· brisée'} : −30 % de dégâts, chaque coup retire une charge. Brisée, le boss perd 30 % de DÉF pendant 2 tours ; elle se reforme 8 tours plus tard. Les attaques à plusieurs coups la brisent vite.</div>}
+                  <div><b>{u.flags.enraged ? 'Enragé' : 'Rage'}</b> : sous la moitié de ses PV, le boss gagne +30 % d’ATQ.</div>
+                </div>
+              )}
               {list.length === 0 ? <p className="faint" style={{ margin: '8px 0 0' }}>Aucun effet en cours.</p> : (
                 <div className="ui-status">
                   {list.map((st) => (
@@ -575,6 +628,8 @@ function UnitView({ u, vfx, active, acting, hit, heavy, targetable, popups, onCl
         <div className="u-tm"><div style={{ width: `${Math.min(100, u.tm / 10)}%` }} /></div>
       </div>
       {stCls.includes('st-stun') && <span className="u-stars" aria-hidden>✦ ✦ ✦</span>}
+      {u.alive && u.flags.carapaceMax > 0 && <span className={`u-cara ${u.flags.carapace ? '' : 'broken'}`} title="Carapace">{u.flags.carapace || '✕'}</span>}
+      {u.alive && u.isBoss && u.flags.enraged > 0 && <span className="u-rage" title="Enragé">ENRAGÉ</span>}
       {edge === 1 && <span className="u-edge up">▲ +30 %</span>}
       {edge === -1 && <span className="u-edge down">▼ −20 %</span>}
       {vfx && <span key={vfx.id} className={`vfx ${vfx.cls}`} style={{ ['--vc' as string]: vfx.color }}><i /><i /><i /></span>}

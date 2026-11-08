@@ -48,6 +48,12 @@ export function Codex() {
             <div className="lore"><p>Solaire ▸ Tellurique ▸ Lunaire ▸ Solaire. Une affinité avantagée inflige +30 % de dégâts ; désavantagée, −20 %. Le Néant est neutre.</p></div>
             {Object.values(AFFINITIES).map((a) => <div key={a.id} className="stat-row"><b style={{ color: a.color }}>{a.name}</b><span className="faint">{a.description}</span></div>)}
           </Panel>
+          <Panel title="Pouvoir du Lien">
+            <div className="lore"><p>Toi, le Lien, tu agis aussi en combat. Ta jauge (le cercle doré près des compétences) se remplit à chaque action de tes héros et à chaque ennemi vaincu. Pleine, touche-la, au tour d’un héros et sans lui faire perdre son tour, pour choisir : <b>Souffle de vie</b> (soin de 20 % et effets néfastes retirés), <b>Frappe des Héritiers</b> (toute l’équipe frappe l’ennemi le plus affaibli) ou <b>Rempart</b> (bouclier et élan). Deux fois par combat au plus. En combat automatique, il agit tout seul.</p></div>
+          </Panel>
+          <Panel title="Boss">
+            <div className="lore"><p><b>Carapace</b> (boss à partir du niveau 20) : −30 % de dégâts, chaque coup retire une charge (le nombre doré sur la carte). Brisée, le boss perd 30 % de DÉF pendant 2 tours : c’est le moment de frapper fort. Elle se reforme 8 tours plus tard ; les attaques à plusieurs coups et de zone la brisent vite.</p><p><b>Rage</b> : sous la moitié de ses PV, un boss gagne +30 % d’ATQ (« Enragé »). Garde un soin ou le Rempart du Lien pour ce moment.</p></div>
+          </Panel>
           <Panel title="Combos">
             <div className="lore"><p>Certaines compétences frappent plus fort une cible déjà affaiblie (empoisonnée, gelée, DÉF réduite, provoquée…) : « Combo ! » s’affiche. L’<b>achèvement</b> ajoute +50 % de dégâts contre une cible sous 30 % de ses PV. D’autres compétences <b>retirent les bonus</b> d’un ennemi. Associe les héros qui posent un effet à ceux qui en profitent.</p></div>
           </Panel>

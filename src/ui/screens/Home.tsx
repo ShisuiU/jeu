@@ -7,9 +7,8 @@ import { FACTIONS } from '../../data/factions';
 import { CHAPTERS } from '../../data/campaign';
 import { chapterStars, isStageUnlocked, stageProgress } from '../../game/campaign';
 import { claimableCount, eventsDot } from '../../game/missions';
-import { isUnlocked, unlockText } from '../../game/unlocks';
+import { isUnlocked } from '../../game/unlocks';
 import { canClaimDaily } from '../../game/daily';
-import { canImprove } from '../../game/upgrade';
 import { HeroArt, hasRealArt } from '../art/HeroArt';
 import { WorldScene, Particles } from '../art/Scene';
 import { Icon } from '../art/Icons';
@@ -31,19 +30,16 @@ export function Home() {
   const real = def ? hasRealArt(def.id) : false;
   const nextStage = CHAPTERS.flatMap((c) => c.stages).find((st) => isStageUnlocked(save, 'normal', st) && stageProgress(save, 'normal', st.id).clears === 0);
   const stars = chapterStars(save, 'normal', nextStage?.chapter ?? CHAPTERS.length);
+  // Accueil épuré : seulement ce qui se récupère ou se suit au quotidien. Un bouton n'apparaît qu'une fois son mode ouvert.
+  // (Sanctuaire, Forge, Équipes, Liens : onglet Héros. Modes de combat : onglet Combats. Clan, amis : Menu.)
   const shortcuts = [
     { label: 'Missions', icon: Icon.scroll, dot: claimableCount(save) > 0, go: () => push({ name: 'missions' }) },
-    { label: 'Événements', icon: Icon.calendar, dot: isUnlocked(save, 'events') && eventsDot(save, now), go: () => (isUnlocked(save, 'events') ? push({ name: 'events' }) : useUI.getState().toast(`Événements : ${unlockText('events').toLowerCase()} de la campagne.`)) },
-    { label: 'Clan', icon: Icon.team, dot: false, go: () => (isUnlocked(save, 'guild') ? push({ name: 'guild' }) : useUI.getState().toast(`Clan : ${unlockText('guild').toLowerCase()} de la campagne.`)) },
     { label: 'Courrier', icon: Icon.mail, dot: unreadMail(save.flags) || canClaimDaily(save, now), go: () => push({ name: 'mail' }) },
+    ...(isUnlocked(save, 'events') ? [{ label: 'Événements', icon: Icon.calendar, dot: eventsDot(save, now), go: () => push({ name: 'events' }) }] : []),
   ];
-
-  const teamHeroes = team.slots.map((u) => save.heroes.find((h) => h.uid === u)).filter((h): h is NonNullable<typeof h> => !!h);
   const places = [
-    { label: 'Sanctuaire', icon: Icon.temple, dot: teamHeroes.some((h) => canImprove(save, h)), go: () => push({ name: 'sanctuary' }) },
-    { label: 'Forge', icon: Icon.forge, dot: false, go: () => push({ name: 'gear' }) },
-    { label: 'Camp', icon: Icon.gift, dot: isUnlocked(save, 'camp') && campElapsed(save, now) >= 4 * 3600_000, go: () => (isUnlocked(save, 'camp') ? push({ name: 'camp' }) : useUI.getState().toast(`Camp : ${unlockText('camp').toLowerCase()} de la campagne.`)) },
-    { label: 'Marché', icon: Icon.bag, dot: isUnlocked(save, 'market') && save.shop.market?.day !== dayKey(now), go: () => (isUnlocked(save, 'market') ? push({ name: 'market' }) : useUI.getState().toast(`Marché : ${unlockText('market').toLowerCase()} de la campagne.`)) },
+    ...(isUnlocked(save, 'camp') ? [{ label: 'Camp', icon: Icon.gift, dot: campElapsed(save, now) >= 4 * 3600_000, go: () => push({ name: 'camp' }) }] : []),
+    ...(isUnlocked(save, 'market') ? [{ label: 'Marché', icon: Icon.bag, dot: save.shop.market?.day !== dayKey(now), go: () => push({ name: 'market' }) }] : []),
   ];
 
   return (
@@ -80,7 +76,7 @@ export function Home() {
 
       <Coach id="home_campaign" target=".campaign-cta" text="Ton aventure commence ici : touche Campagne." />
       <Coach id="home_summon" target=".nav-item:nth-child(3)" text="Première victoire ! Appelle de nouveaux Héritiers à l’Autel des Failles." />
-      <Coach id="home_sanct" target='.sc-btn[aria-label="Sanctuaire"]' text="Fais progresser tes héros au Sanctuaire." />
+      <Coach id="home_sanct" target=".nav-item:nth-child(2)" text="Fais progresser tes héros : ouvre Héros, puis le Sanctuaire." />
       <div className="home-bottom">
         {def && (
           <button className="home-leader" onClick={() => push({ name: 'hero', uid: leader.uid, heroId: leader.heroId })}>

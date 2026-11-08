@@ -509,6 +509,14 @@
 - Souris : survol lumineux de ce qui se clique, **clic droit sur une carte de combat** pour voir ses effets (l'astuce l'indique), barre de défilement discrète
 - Sur téléphone, rien ne change
 
+## ✅ Version 1.58.0 — Découverte progressive et navigation regroupée
+
+- **Les modes s'ouvrent un par un, sur les chapitres 1 à 4** (au lieu de huit modes en dix niveaux) : Camp 1-4, Événements 1-8, Donjons 2-2, Marché 2-6, Expéditions 2-10, Arène 3-4, Tour 3-8, Boss mondial 4-3, Clan 4-7. Un joueur ne perd jamais un mode qu'il a déjà découvert
+- Les missions d'un mode pas encore ouvert sont masquées (et ne bloquent plus le bonus du jour ou de la semaine)
+- **Accueil épuré** : Missions, Courrier, Événements, Camp et Marché, chacun n'apparaissant qu'une fois ouvert (un nouveau joueur ne voit que Missions et Courrier)
+- **Onglet Héros** : Sanctuaire, Forge, Équipes et Liens en tête de la collection ; la pastille de l'onglet signale un héros de l'équipe qui peut progresser
+- **Clan** rangé dans le Menu, avec Amis et Classements ; le tutoriel montre le chemin Héros → Sanctuaire
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

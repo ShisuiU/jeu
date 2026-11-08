@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
-import { DAILY_BONUS, DAILY_MISSIONS, WEEKLY_BONUS, WEEKLY_MISSIONS, type TrackKey } from '../../data/missions';
+import { DAILY_BONUS, WEEKLY_BONUS, type TrackKey } from '../../data/missions';
 import { goFor } from '../../game/goTo';
 import { ACHIEVEMENTS } from '../../data/achievements';
-import { bonusAvailable, claimableByTab, claimAchievement, claimBonus, claimMission, missionState, type MissionKind } from '../../game/missions';
+import { activeMissions, bonusAvailable, claimableByTab, claimAchievement, claimBonus, claimMission, missionState, type MissionKind } from '../../game/missions';
 import { formatDuration, msUntilReset, msUntilWeekReset } from '../../core/time';
 import { play } from '../../audio/sfx';
 import { RESOURCES } from '../../data/resources';
@@ -37,7 +37,7 @@ export function Missions() {
   const [tab, setTab] = useState<'daily' | 'weekly' | 'progress'>('daily');
   const claim = (fn: (s: typeof save) => boolean) => { let ok = false; mutate((s) => { ok = fn(s); }); if (ok) { play('claim'); toast('Récompense obtenue !', 'ok'); } };
   const kind = tab as MissionKind;
-  const list = tab === 'daily' ? DAILY_MISSIONS : WEEKLY_MISSIONS;
+  const list = activeMissions(save, tab === 'daily' ? 'daily' : 'weekly');
   const counts = claimableByTab(save);
   return (
     <Screen title="Missions">

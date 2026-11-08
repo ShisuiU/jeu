@@ -9,6 +9,8 @@ import { ListControls, usePersisted, type Filters } from '../components/ListCont
 import { HERO_GROUPS, HERO_SORTS, heroMatches, sortHeroes } from '../components/heroFilters';
 import { BondsSheet } from '../components/Copies';
 import { copiesOf, markCopiesSeen } from '../../game/copies';
+import { canImprove } from '../../game/upgrade';
+import { Icon } from '../art/Icons';
 
 export function Collection() {
   const save = useGame((s) => s.save)!;
@@ -17,6 +19,8 @@ export function Collection() {
   const [showCodex, setShowCodex] = useState(false);
   const [bonds, setBonds] = useState(false);
   const { sort, filters } = prefs;
+  const team = save.teams.find((t) => t.id === save.activeTeamId) ?? save.teams[0];
+  const improvable = team.slots.some((u) => { const h = save.heroes.find((x) => x.uid === u); return !!h && canImprove(save, h); });
   useEffect(() => { markCopiesSeen(save); }, [save]);
 
   const owned = useMemo(() => sortHeroes(save, save.heroes, filters, sort), [save, filters, sort]);
@@ -25,7 +29,14 @@ export function Collection() {
     .sort((a, b) => RARITIES[b.rarity].order - RARITIES[a.rarity].order);
 
   return (
-    <Screen title={`Héros  ${ownedIds.size}/${HEROES.length}`} right={<div className="row" style={{ gap: 6 }}><button className="btn secondary small" onClick={() => setBonds(true)}>Liens</button><button className="btn secondary small" onClick={() => push({ name: 'team' })}>Équipes</button></div>}>
+    <Screen title={`Héros  ${ownedIds.size}/${HEROES.length}`}>
+      {/* Tout ce qui fait progresser les héros, au même endroit. */}
+      <div className="hero-places">
+        <button className="hp-tile" onClick={() => push({ name: 'sanctuary' })}><Icon.temple size={22} /><span>Sanctuaire</span>{improvable && <span className="badge-dot" />}</button>
+        <button className="hp-tile" onClick={() => push({ name: 'gear' })}><Icon.forge size={22} /><span>Forge</span></button>
+        <button className="hp-tile" onClick={() => push({ name: 'team' })}><Icon.team size={22} /><span>Équipes</span></button>
+        <button className="hp-tile" onClick={() => setBonds(true)}><Icon.heroes size={22} /><span>Liens</span></button>
+      </div>
       {bonds && <BondsSheet onClose={() => setBonds(false)} />}
       <ListControls sortOptions={HERO_SORTS} sort={sort} onSort={(s) => setPrefs({ ...prefs, sort: s })}
         groups={HERO_GROUPS} filters={filters} onFilters={(f) => setPrefs({ ...prefs, filters: f })}

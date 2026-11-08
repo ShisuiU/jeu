@@ -1,4 +1,5 @@
-import { DAILY_BONUS, DAILY_MISSIONS, WEEKLY_BONUS, WEEKLY_MISSIONS, type TrackKey } from '../data/missions';
+import { DAILY_BONUS, DAILY_MISSIONS, KEY_FEATURE, WEEKLY_BONUS, WEEKLY_MISSIONS, type MissionDef, type TrackKey } from '../data/missions';
+import { isUnlocked } from './unlocks';
 import { ACHIEVEMENTS } from '../data/achievements';
 import { dayKey, weekKey } from '../core/time';
 import type { SaveData } from '../save/schema';
@@ -40,6 +41,11 @@ export type MissionKind = 'daily' | 'weekly';
 const DEFS = { daily: DAILY_MISSIONS, weekly: WEEKLY_MISSIONS };
 const BONUS = { daily: DAILY_BONUS, weekly: WEEKLY_BONUS };
 
+/** Missions visibles : celles des modes pas encore ouverts sont masquées (et ne bloquent pas le bonus). */
+export function activeMissions(s: SaveData, kind: MissionKind): MissionDef[] {
+  return DEFS[kind].filter((m) => { const f = KEY_FEATURE[m.key]; return !f || isUnlocked(s, f); });
+}
+
 export function missionState(s: SaveData, kind: MissionKind, id: string) {
   const def = DEFS[kind].find((m) => m.id === id)!;
   const p = s.missions[kind];
@@ -56,7 +62,7 @@ export function claimMission(s: SaveData, kind: MissionKind, id: string): boolea
 }
 
 export function bonusAvailable(s: SaveData, kind: MissionKind): boolean {
-  return !s.missions[kind].bonus && DEFS[kind].every((m) => s.missions[kind].claimed.includes(m.id));
+  return !s.missions[kind].bonus && activeMissions(s, kind).every((m) => s.missions[kind].claimed.includes(m.id));
 }
 export function claimBonus(s: SaveData, kind: MissionKind): boolean {
   if (!bonusAvailable(s, kind)) return false;
@@ -68,7 +74,7 @@ export function claimBonus(s: SaveData, kind: MissionKind): boolean {
 export function claimableCount(s: SaveData): number {
   let n = 0;
   for (const kind of ['daily', 'weekly'] as MissionKind[]) {
-    n += DEFS[kind].filter((m) => { const st = missionState(s, kind, m.id); return st.done && !st.claimed; }).length;
+    n += activeMissions(s, kind).filter((m) => { const st = missionState(s, kind, m.id); return st.done && !st.claimed; }).length;
     if (bonusAvailable(s, kind)) n++;
   }
   n += ACHIEVEMENTS.filter((a) => achievementDone(s, a.id) && !s.achievements.includes(a.id)).length;
@@ -106,7 +112,7 @@ export function claimEventTask(s: SaveData, eventId: string, taskId: string): bo
 
 /** Nombre de récompenses à réclamer par onglet (journalières, hebdomadaires, progression). */
 export function claimableByTab(s: SaveData): { daily: number; weekly: number; progress: number } {
-  const per = (kind: MissionKind) => DEFS[kind].filter((m) => { const st = missionState(s, kind, m.id); return st.done && !st.claimed; }).length + (bonusAvailable(s, kind) ? 1 : 0);
+  const per = (kind: MissionKind) => activeMissions(s, kind).filter((m) => { const st = missionState(s, kind, m.id); return st.done && !st.claimed; }).length + (bonusAvailable(s, kind) ? 1 : 0);
   return { daily: per('daily'), weekly: per('weekly'), progress: ACHIEVEMENTS.filter((a) => achievementDone(s, a.id) && !s.achievements.includes(a.id)).length };
 }
 

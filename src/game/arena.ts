@@ -4,7 +4,7 @@ import { RARITIES } from '../data/rarities';
 import { uid } from '../core/ids';
 import type { ArenaLogEntry, ArenaOpponent, SaveData } from '../save/schema';
 import { computeStats, maxLevelForRank, powerOf } from './stats';
-import type { GearBonus, Rand } from './gear';
+import { applyGearBonus, type GearBonus, type Rand } from './gear';
 import { teamSetups } from './campaign';
 import { heroTotalStats } from './heroStats';
 
@@ -29,8 +29,31 @@ export interface DefenseHero { refId: string; slot: number; level: number; rank?
 export interface ArenaDefense { uid: string; name: string; avatar: string; level: number; power: number; rating: number; team: DefenseHero[]; updatedAt: number }
 
 let defenses: ArenaDefense[] = [];
-/** Défenses en ligne chargées par l'écran Arène (pour la session). */
-export function setArenaDefenses(list: ArenaDefense[]) { defenses = list.filter((d) => d.power > 0 && d.team?.length && d.team.every((h) => HERO_BY_ID[h.refId])); }
+/** Défenses en ligne chargées par l'écran Arène (pour la session). Les défenses invraisemblables sont écartées. */
+export function setArenaDefenses(list: ArenaDefense[]) { defenses = list.filter((d) => d.power > 0 && d.team?.length && d.team.every((h) => HERO_BY_ID[h.refId]) && plausibleDefense(d)); }
+
+/** Puissance réelle d'une défense, recalculée à partir de son équipe (niveaux, rangs, équipement). */
+export function defenseRealPower(d: ArenaDefense): number {
+  return d.team.reduce((a, h) => {
+    const def = HERO_BY_ID[h.refId];
+    const raw = computeStats(def, { level: h.level, rank: h.rank ?? RARITIES[def.rarity].startRank, ascension: h.ascension ?? 0, awaken: h.awaken ?? 0 });
+    return a + powerOf(h.gear ? applyGearBonus(raw, h.gear) : raw);
+  }, 0);
+}
+/**
+ * Anti-triche : une défense trafiquée (niveaux impossibles, équipement gonflé, puissance annoncée fausse)
+ * n'est pas proposée comme adversaire.
+ */
+export function plausibleDefense(d: ArenaDefense): boolean {
+  if (d.team.length > 5) return false;
+  for (const h of d.team) {
+    if (h.level < 1 || h.level > 60 || (h.rank ?? 1) > 6 || (h.ascension ?? 0) > 6 || (h.awaken ?? 0) > 5) return false;
+    const g = h.gear;
+    if (g && (Object.values(g.pct ?? {}).some((v) => v > 3) || (g.lifesteal ?? 0) > 60 || (g.regen ?? 0) > 20 || (g.startTm ?? 0) > 60)) return false;
+  }
+  const real = defenseRealPower(d);
+  return real <= 150000 && real <= d.power * 1.25 + 500;
+}
 export const arenaDefenses = () => defenses;
 
 /** L'équipe publiée en défense : celle choisie, sinon l'équipe active. */

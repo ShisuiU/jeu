@@ -17,7 +17,7 @@ describe('sauvegardes et classements', () => {
     await assertFails(getDoc(doc(t.authenticatedContext('b').firestore(), 'saves/a')));
   });
   it('classements : lecture pour tous, écriture par le propriétaire', async () => {
-    await assertSucceeds(setDoc(doc(t.authenticatedContext('a').firestore(), 'ranks/a'), { name: 'Alice', arena: 1 }));
+    await assertSucceeds(setDoc(doc(t.authenticatedContext('a').firestore(), 'ranks/a'), { name: 'Alice', avatar: 'kaedra', level: 1, arena: 1000, tower: 0, boss: 0, power: 100, updatedAt: 1 }));
     await assertSucceeds(getDocs(collection(t.unauthenticatedContext().firestore(), 'ranks')));
     await assertFails(setDoc(doc(t.authenticatedContext('b').firestore(), 'ranks/a'), { name: 'Pirate' }));
     await assertFails(deleteDoc(doc(t.authenticatedContext('b').firestore(), 'ranks/a')));

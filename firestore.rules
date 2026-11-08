@@ -28,9 +28,27 @@ service cloud.firestore {
       allow read, write: if isMe(uid);
     }
 
+    // ─── Anti-triche : plafonds de vraisemblance ───
+    // Puissance d'équipe : ~32 000 au maximum sans équipement, ~100 000 avec ; Arène : +30 points par victoire au plus,
+    // 5 tickets par jour ; Tour : 100 étages ; Boss mondial : en % de ses PV.
+    function plausibleRank(d) {
+      return d.keys().hasOnly(['name', 'avatar', 'level', 'arena', 'tower', 'boss', 'power', 'updatedAt', 'at'])
+        && shortText(d.name, 18) && d.level is number && d.level <= 300
+        && d.arena is number && d.arena >= 0 && d.arena <= 5000
+        && d.tower is number && d.tower >= 0 && d.tower <= 100
+        && d.boss is number && d.boss >= 0 && d.boss <= 100
+        && d.power is number && d.power >= 0 && d.power <= 150000
+        && (!('at' in d) || d.at == request.time);
+    }
+    // L'Arène ne monte pas plus vite qu'en jouant : 60 points, plus 15 par heure écoulée depuis la dernière publication.
+    function arenaPace() {
+      return !('at' in resource.data) || !('at' in request.resource.data)
+        || request.resource.data.arena - resource.data.arena <= 60 + (request.time.toMillis() - resource.data.at.toMillis()) / 240000;
+    }
     match /ranks/{uid} {
       allow read: if true;
-      allow create, update: if isMe(uid) && !banned() && shortText(request.resource.data.name, 18);
+      allow create: if isMe(uid) && !banned() && plausibleRank(request.resource.data) && request.resource.data.arena <= 3000;
+      allow update: if isMe(uid) && !banned() && plausibleRank(request.resource.data) && arenaPace();
       // Effacer sa ligne : « ne pas apparaître dans les classements », suppression du compte ; un modérateur aussi.
       allow delete: if isMe(uid) || isAdmin();
     }
@@ -39,7 +57,8 @@ service cloud.firestore {
     function validDefense(d) {
       return d.keys().hasOnly(['name', 'avatar', 'level', 'power', 'rating', 'team', 'updatedAt'])
         && shortText(d.name, 18) && shortText(d.avatar, 40)
-        && d.power is number && d.rating is number && d.level is number
+        && d.power is number && d.power >= 0 && d.power <= 150000
+        && d.rating is number && d.rating >= 0 && d.rating <= 5000 && d.level is number
         && d.team is list && d.team.size() >= 1 && d.team.size() <= 5
         && d.updatedAt is number;
     }
@@ -88,8 +107,10 @@ service cloud.firestore {
       let b = request.resource.data.boss;
       let o = resource.data.boss;
       return b == o
-        || (b.week == o.week && b.dmg.diff(o.dmg).affectedKeys().hasOnly([me()]) && b.dmg[me()] is number && b.dmg[me()] >= o.dmg.get(me(), 0))
-        || (b.week > o.week && b.dmg.keys().hasOnly([me()]));
+        || (b.week == o.week && b.dmg.diff(o.dmg).affectedKeys().hasOnly([me()]) && b.dmg[me()] is number && b.dmg[me()] >= o.dmg.get(me(), 0)
+          // Anti-triche : 1,5 million de dégâts au plus par envoi, 6 millions par membre et par semaine.
+          && b.dmg[me()] - o.dmg.get(me(), 0) <= 1500000 && b.dmg[me()] <= 6000000)
+        || (b.week > o.week && b.dmg.keys().hasOnly([me()]) && b.dmg[me()] is number && b.dmg[me()] <= 1500000);
     }
     match /guilds/{gid} {
       allow read: if signedIn();

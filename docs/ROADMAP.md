@@ -501,6 +501,14 @@
 - **Envoi** : un petit programme (`scripts/push/send.mjs`) tourne sur GitHub Actions toutes les 10 minutes (`.github/workflows/notifications.yml`). Il lit les heures à annoncer dans Firestore (`push/{uid}`) et les cadeaux récents (`friendships`, champ `giftAt`), puis envoie les notifications (Web Push, clés VAPID tirées de la clé du compte de service ; clé publique publiée dans `config/push`). Abonnements expirés effacés automatiquement
 - **À faire une fois** : ajouter le secret GitHub `FIREBASE_SERVICE_ACCOUNT` (clé du compte de service Firebase) et republier les règles Firestore (35 tests sur l’émulateur)
 
+## ✅ Version 1.57.0 — Version ordinateur
+
+- **Sur ordinateur et tablette, le jeu n'est plus étiré sur toute la largeur** : il s'affiche dans une colonne centrale (640 px, 680 px sur grand écran), avec le monde peint et flouté tout autour. Fini les cartes de héros géantes, les cases de forge immenses et les tuiles de menu d'une demi-page
+- **Combat agrandi** : cartes jusqu'à 150 px (160 px sur grand écran), compétences juste sous les cartes au lieu du coin de l'écran
+- 4 héros par ligne dans la collection ; bulles du tutoriel, messages et volets alignés sur la colonne
+- Souris : survol lumineux de ce qui se clique, **clic droit sur une carte de combat** pour voir ses effets (l'astuce l'indique), barre de défilement discrète
+- Sur téléphone, rien ne change
+
 ## Suites possibles
 
 - Nouveaux arcs narratifs et héros après la fin de l'histoire principale

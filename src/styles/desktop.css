@@ -1,0 +1,41 @@
+/* ─── ORDINATEUR ET TABLETTE ───
+   Le jeu est pensé pour un téléphone en hauteur. Sur un grand écran, il n'est plus étiré sur toute la largeur :
+   il s'affiche dans une colonne centrale (comme une grande tablette), avec le monde peint et flouté autour.
+   Les fenêtres plein écran (titre, invocations) gardent tout l'écran. */
+@media (min-width: 720px) {
+  :root { --col: min(640px, 100vw); --col-left: calc(50vw - var(--col) / 2); }
+  body { background: #040309; }
+  body::before {
+    content: ''; position: fixed; inset: -60px; z-index: -1; pointer-events: none;
+    background: url('../assets/title/world.webp') center 30% / cover no-repeat;
+    filter: blur(18px) brightness(0.45) saturate(1.2);
+  }
+  body::after {
+    content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 30%, rgba(2, 1, 6, 0.75) 80%);
+  }
+  .app {
+    left: var(--col-left); right: auto; width: var(--col);
+    box-shadow: 0 0 0 1px rgba(217, 179, 106, 0.22), 0 0 0 6px rgba(4, 3, 9, 0.6), 0 0 90px rgba(0, 0, 0, 0.9);
+  }
+  /* Éléments posés sur l'écran : alignés sur la colonne. */
+  .toasts { left: var(--col-left); right: auto; width: var(--col); }
+  .sheet { max-width: var(--col); margin: 0 auto; border-left: 1px solid var(--edge-hi); border-right: 1px solid var(--edge-hi); }
+  .coach-bubble { left: calc(var(--col-left) + 16px); right: calc(var(--col-left) + 16px); }
+  /* Plus de place : 4 héros par ligne, cartes de combat plus grandes. */
+  .hero-grid { grid-template-columns: repeat(4, 1fr); }
+  .battle { --unit-max: 150px; }
+  .mode-grid { gap: 10px; }
+  /* Souris : le survol montre ce qui se clique. */
+  button:not(:disabled), .hero-card, .stage-node:not(.locked), .combat-card, .menu-tile { transition: filter 0.15s, transform 0.15s; }
+  @media (hover: hover) {
+    .btn:not(:disabled):hover, .menu-tile:hover, .combat-card:hover, .hero-card:hover, .stage-node:not(.locked):hover, .nav-item:hover { filter: brightness(1.15); }
+  }
+  /* Barre de défilement discrète, aux couleurs du jeu. */
+  * { scrollbar-width: thin; scrollbar-color: rgba(217, 179, 106, 0.35) transparent; }
+}
+/* Très grands écrans hauts : la colonne s'élargit un peu. */
+@media (min-width: 1280px) and (min-height: 860px) {
+  :root { --col: 680px; }
+  .battle { --unit-max: 160px; }
+}

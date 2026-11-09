@@ -7,6 +7,7 @@ import { HERO_BY_ID } from '../../data/heroes';
 import { HERO_LINES } from '../../data/heroLines';
 import { createBattle, beginTurn, performAction, unitById, availableSkills, targetKind, validTargets, hpPct, shieldOf, predictOrder, autoLien, castLien, lienReady, LIEN_POWERS } from '../../game/battle/engine';
 import { LIEN_MAX, LIEN_USES, type LienPower } from '../../game/battle/types';
+import { groupStatuses, statusDescription, statusValueText } from '../../game/battle/statusText';
 import { chooseAction } from '../../game/battle/ai';
 import { STATUS_INFO, type Action, type BattleState, type Unit, type UnitSetup } from '../../game/battle/types';
 import { effectiveCooldown } from '../../game/battle/skillMods';
@@ -531,12 +532,11 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
               )}
               {list.length === 0 ? <p className="faint" style={{ margin: '8px 0 0' }}>Aucun effet en cours.</p> : (
                 <div className="ui-status">
-                  {list.map((st) => (
-                    <div key={st.uid} className="ui-st">
-                      <span className="ui-dot" style={{ background: STATUS_INFO[st.status].color }} />
-                      <span className="grow">{STATUS_INFO[st.status].name}</span>
-                      <span className={STATUS_INFO[st.status].debuff ? 'neg' : 'pos'}>{STATUS_INFO[st.status].debuff ? 'Négatif' : 'Positif'}</span>
-                      <span className="faint">{st.turns} tour{st.turns > 1 ? 's' : ''}</span>
+                  {groupStatuses(list).sort((a, b) => Number(STATUS_INFO[b.id].debuff) - Number(STATUS_INFO[a.id].debuff)).map((g) => (
+                    <div key={g.id} className="ui-st">
+                      <span className="ui-dot" style={{ background: STATUS_INFO[g.id].color }} />
+                      <span className="grow"><b className={STATUS_INFO[g.id].debuff ? 'neg' : 'pos'}>{STATUS_INFO[g.id].name}{statusValueText(g, u.isBoss) ? ` ${statusValueText(g, u.isBoss)}` : ''}</b><br /><span className="faint">{statusDescription(g, u.isBoss)}</span></span>
+                      <span className="faint">{g.turns} tour{g.turns > 1 ? 's' : ''}</span>
                     </div>
                   ))}
                 </div>
@@ -633,14 +633,13 @@ function UnitView({ u, vfx, active, acting, hit, heavy, targetable, popups, onCl
       onContextMenu={(e) => { e.preventDefault(); if (e.nativeEvent instanceof MouseEvent && (e.nativeEvent as PointerEvent).pointerType !== 'touch') { window.clearTimeout(timer.current); onInfo(); } }}>
       <div className="u-art">{u.kind === 'hero' ? <HeroArt heroId={u.refId} /> : <EnemyArt enemyId={u.refId} />}<span className="u-lvl">{u.level}</span><span className="u-aff"><AffinityIcon id={u.affinity} size={15} /></span><span className="u-name">{shortName(u.name)}</span>
         {stCls && <span className="u-stfx" aria-hidden><i /><i /><i /></span>}
-        <div className="u-status">
-          {[...new Map(u.statuses.map((st) => [st.status, st])).values()].slice(0, 3).map((st) => <span key={st.uid} title={STATUS_INFO[st.status].name} style={{ background: STATUS_INFO[st.status].color }} />)}{new Set(u.statuses.map((x) => x.status)).size > 3 && <em>+</em>}
-        </div>
+
       </div>
       <div className="u-bars">
         <div className="u-hp"><div style={{ width: `${hpPct(u) * 100}%` }} />{sh > 0 && <div className="u-sh" style={{ width: `${sh * 100}%` }} />}</div>
         <div className="u-tm"><div style={{ width: `${Math.min(100, u.tm / 10)}%` }} /></div>
       </div>
+      <EffectChips u={u} />
       {stCls.includes('st-stun') && <span className="u-stars" aria-hidden>✦ ✦ ✦</span>}
       {u.alive && u.flags.carapaceMax > 0 && <span className={`u-cara ${u.flags.carapace ? '' : 'broken'}`} title="Carapace">{u.flags.carapace || '✕'}</span>}
       {u.alive && u.isBoss && u.flags.enraged > 0 && <span className="u-rage" title="Enragé">ENRAGÉ</span>}
@@ -649,5 +648,25 @@ function UnitView({ u, vfx, active, acting, hit, heavy, targetable, popups, onCl
       {vfx && <span key={vfx.id} className={`vfx ${vfx.cls}`} style={{ ['--vc' as string]: vfx.color }}><i /><i /><i /></span>}
       {popups.map((p) => <span key={p.id} className={`popup ${p.cls}`}>{p.text}</span>)}
     </button>
+  );
+}
+
+/** Effets en cours, listés sous la carte avec leur valeur : néfastes d'abord (rouge), puis bénéfiques (vert), et les tours restants. */
+function EffectChips({ u }: { u: Unit }) {
+  if (!u.alive || !u.statuses.length) return <div className="u-fx" aria-hidden />;
+  const list = groupStatuses(u.statuses).sort((a, b) => Number(STATUS_INFO[b.id].debuff) - Number(STATUS_INFO[a.id].debuff));
+  const shown = list.slice(0, 4);
+  return (
+    <div className="u-fx" aria-label={list.map((g) => `${STATUS_INFO[g.id].name} ${statusValueText(g, u.isBoss)}, ${g.turns} tour${g.turns > 1 ? 's' : ''}`).join(' ; ')}>
+      {shown.map((g) => {
+        const v = statusValueText(g, u.isBoss);
+        return (
+          <span key={g.id} className={`fx-chip ${STATUS_INFO[g.id].debuff ? 'neg' : 'pos'}`} style={{ ['--fc' as string]: STATUS_INFO[g.id].color }} title={`${STATUS_INFO[g.id].name} · ${statusDescription(g, u.isBoss)} · ${g.turns} tour${g.turns > 1 ? 's' : ''}`}>
+            {STATUS_INFO[g.id].short}{v && <i>{v.replace(' %', '%')}</i>}<b>{g.turns}</b>
+          </span>
+        );
+      })}
+      {list.length > shown.length && <span className="fx-chip more">+{list.length - shown.length}</span>}
+    </div>
   );
 }

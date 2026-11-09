@@ -132,3 +132,47 @@
 @keyframes fxOrbit { 0% { transform: translateX(-6px) scaleX(1); } 50% { transform: translateX(6px) scaleX(-1); } 100% { transform: translateX(-6px) scaleX(1); } }
 
 .reduced-motion .fx-layer, .reduced-motion .u-stars { display: none; }
+
+/* ─── Vie de l'interface (légère ; tout est coupé par « Animations réduites ») ─── */
+/* Compteurs : brillance au gain, « +N » qui s'envole. */
+.counter { position: relative; display: inline-block; transition: color 0.3s, text-shadow 0.3s; }
+.counter.gain { color: #ffe9a8; text-shadow: 0 0 10px rgba(255,211,107,0.8); }
+.counter.loss { color: #ffb3b3; }
+.counter-fly { position: absolute; left: 50%; top: -2px; transform: translateX(-50%); font-size: 11px; font-weight: 900; white-space: nowrap; pointer-events: none; animation: counterFly 1.1s ease-out forwards; text-shadow: 0 1px 3px #000; }
+.counter-fly.up { color: #8dffb0; }
+.counter-fly.down { color: #ff9a9a; }
+@keyframes counterFly { 0% { opacity: 0; transform: translate(-50%, 4px); } 15% { opacity: 1; } 100% { opacity: 0; transform: translate(-50%, -22px); } }
+/* Onde sous le doigt. */
+.btn, .menu-tile, .combat-card, .hp-tile { overflow: hidden; }
+.tap-ripple { position: absolute; border-radius: 50%; pointer-events: none; z-index: 5; background: radial-gradient(circle, rgba(255,236,190,0.45) 0%, rgba(255,226,163,0.15) 45%, transparent 70%); transform: scale(0); animation: tapRipple 0.6s ease-out forwards; }
+@keyframes tapRipple { to { transform: scale(1); opacity: 0; } }
+/* Listes qui apparaissent en cascade. */
+.hero-grid > *, .menu-grid > *, .combat-grid > *, .mission, .hero-places > *, .mk-grid > * { animation: cascadeIn 0.38s cubic-bezier(.2,.8,.2,1) backwards; }
+.hero-grid > :nth-child(2), .menu-grid > :nth-child(2), .combat-grid > :nth-child(2), .mission:nth-child(2), .hero-places > :nth-child(2), .mk-grid > :nth-child(2) { animation-delay: 0.04s; }
+.hero-grid > :nth-child(3), .menu-grid > :nth-child(3), .combat-grid > :nth-child(3), .mission:nth-child(3), .hero-places > :nth-child(3), .mk-grid > :nth-child(3) { animation-delay: 0.08s; }
+.hero-grid > :nth-child(4), .menu-grid > :nth-child(4), .combat-grid > :nth-child(4), .mission:nth-child(4), .hero-places > :nth-child(4), .mk-grid > :nth-child(4) { animation-delay: 0.12s; }
+.hero-grid > :nth-child(5), .combat-grid > :nth-child(5), .mission:nth-child(5), .mk-grid > :nth-child(5) { animation-delay: 0.16s; }
+.hero-grid > :nth-child(6), .combat-grid > :nth-child(6), .mission:nth-child(6), .mk-grid > :nth-child(6) { animation-delay: 0.2s; }
+.hero-grid > :nth-child(n+7), .mission:nth-child(n+7) { animation-delay: 0.24s; }
+@keyframes cascadeIn { from { opacity: 0; transform: translateY(10px) scale(0.98); } to { opacity: 1; transform: none; } }
+/* Onglet actif : petit rebond ; pastilles : battement doux. */
+.nav-item.active svg { animation: navPop 0.42s cubic-bezier(.2,1.6,.4,1); }
+@keyframes navPop { 0% { transform: scale(0.8); } 60% { transform: scale(1.18); } 100% { transform: scale(1); } }
+.badge-dot { animation: dotBeat 2.4s ease-in-out infinite; }
+@keyframes dotBeat { 0%, 70%, 100% { transform: scale(1); } 80% { transform: scale(1.35); } 90% { transform: scale(0.95); } }
+/* Bouton Campagne : un reflet passe de temps en temps. */
+.campaign-cta::after { content: ''; position: absolute; top: 0; bottom: 0; left: -40%; width: 30%; pointer-events: none; z-index: 2;
+  background: linear-gradient(100deg, transparent, rgba(255,240,200,0.28), transparent); animation: ctaSweep 5.5s ease-in-out 1.5s infinite; }
+@keyframes ctaSweep { 0%, 70% { left: -40%; } 100% { left: 120%; } }
+/* Souris : les cartes se soulèvent au survol. */
+@media (hover: hover) and (pointer: fine) {
+  .hero-card, .combat-card, .menu-tile, .gear-card, .hp-tile { transition: transform 0.18s, filter 0.18s, box-shadow 0.18s; }
+  .hero-card:hover, .combat-card:hover, .menu-tile:hover, .gear-card:hover, .hp-tile:hover { transform: translateY(-3px); box-shadow: 0 8px 18px rgba(0,0,0,0.45); }
+}
+
+/* Clic : le bouton s'enfonce un instant, les boutons dorés lancent un petit éclat. */
+.btn:not(:disabled):active, .menu-tile:active, .combat-card:active, .hp-tile:active, .sc-btn:active, .nav-item:active { transform: scale(0.96); transition: transform 0.06s; }
+.btn:not(.secondary):not(.danger):not(:disabled):active { filter: brightness(1.12); }
+.btn .tap-ripple { background: radial-gradient(circle, rgba(255,255,240,0.7) 0%, rgba(255,226,163,0.25) 40%, transparent 70%); }
+.btn.secondary .tap-ripple, .menu-tile .tap-ripple, .hp-tile .tap-ripple { background: radial-gradient(circle, rgba(217,179,106,0.45) 0%, rgba(217,179,106,0.12) 45%, transparent 70%); }
+.res-art { display: block; border-radius: 22%; object-fit: cover; box-shadow: 0 2px 6px rgba(0,0,0,0.5); }

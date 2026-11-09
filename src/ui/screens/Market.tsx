@@ -63,7 +63,7 @@ export function Market() {
             <button key={`${m.refreshes}-${i}`} className={`mk-offer ${x.bought ? 'sold' : ''}`} disabled={x.bought} onClick={() => setSel(i)}
               style={x.gear ? { ['--gc' as string]: GEAR_RARITIES[x.gear.rarity].color } : undefined} aria-label={`${offerTitle(x)}${x.bought ? ', acheté' : ''}`}>
               <div className="mk-art">
-                {x.gear ? <GearCard g={x.gear} /> : def && <><ResourceIcon icon={def.icon} color={def.color} size={40} /><b className="mk-qty">×{res![1]}</b></>}
+                {x.gear ? <GearCard g={x.gear} /> : def && <><ResourceIcon icon={def.icon} color={def.color} size={40} res={def.id} /><b className="mk-qty">×{res![1]}</b></>}
               </div>
               <div className="mk-name">{x.gear ? GEAR_RARITIES[x.gear.rarity].name : def?.name}</div>
               {x.bought ? <span className="mk-sold">Acheté</span> : <PriceTag o={x} enough={has(x)} />}

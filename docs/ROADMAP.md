@@ -558,6 +558,15 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.66.0 — Un jeu plus vivant
+
+- **Effets de clic** : chaque bouton et tuile s'enfonce un instant et lance une onde dorée sous le doigt (un éclat plus vif sur les boutons dorés)
+- **Compteurs vivants** (énergie, or, cristaux) : la valeur défile jusqu'au nouveau total et « +N » s'envole ; un gain obtenu ailleurs (Camp, combat, Marché) défile au retour sur l'Accueil
+- **Listes en cascade** : héros, Menu, modes de combat, missions et Marché apparaissent l'un après l'autre
+- L'onglet choisi rebondit, les pastilles de notification battent doucement, un reflet traverse le bouton Campagne de temps en temps ; sur ordinateur, les cartes se soulèvent au survol
+- Tout est léger et coupé par « Animations réduites »
+- Prêt pour les illustrations des ressources du sac (vignettes du sac, des récompenses et du Marché)
+
 ## ✅ Version 1.65.0 — Vagues bien séparées en combat
 
 - **Frise des vagues** en haut du combat : « ✓ Vague 1 · Vague 2 · Boss », la vague en cours en surbrillance, celle du boss en rouge

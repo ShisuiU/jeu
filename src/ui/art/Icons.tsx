@@ -62,7 +62,16 @@ export const Icon = {
   essence: ({ size = 22, color = '#ff9bb5' }: P) => <svg viewBox="0 0 24 24" width={size} height={size}><path d="M12 2c3 5 7 7 7 12a7 7 0 0 1-14 0c0-5 4-7 7-12z" fill={color} stroke="#5a1430" strokeWidth="1.2" /><path d="M12 9c1.5 2.5 3 3.5 3 6" stroke="#fff" strokeOpacity="0.7" strokeWidth="1.2" fill="none" /></svg>,
 };
 
-export function ResourceIcon({ icon, color, size }: { icon: string; color?: string; size?: number }) {
+// Illustrations des ressources (src/assets/res/res-<ressource>.webp) : utilisées dans les grandes vignettes
+// (sac, récompenses, Marché) ; les petites icônes dans le texte gardent le symbole, plus lisible à cette taille.
+const RES_FILES = import.meta.glob('/src/assets/res/*.webp', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
+const RES_ART: Record<string, string> = {};
+for (const [path, url] of Object.entries(RES_FILES)) { const m = path.match(/res-([a-zA-Z]+)\.webp$/); if (m) RES_ART[m[1]] = url; }
+export const resArtUrl = (id: string) => RES_ART[id];
+
+export function ResourceIcon({ icon, color, size, res }: { icon: string; color?: string; size?: number; res?: string }) {
+  const url = res && (size ?? 22) >= 26 ? RES_ART[res] : undefined;
+  if (url) return <img className="art-img res-art" src={url} alt="" width={size} height={size} draggable={false} loading="lazy" decoding="async" onLoad={(e) => e.currentTarget.classList.add('ok')} style={{ ['--ph' as string]: color ?? '#2a2134' }} />;
   const f = (Icon as Record<string, (p: P) => JSX.Element>)[icon] ?? Icon.crystal;
   return f({ size, color });
 }

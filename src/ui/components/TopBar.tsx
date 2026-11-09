@@ -1,11 +1,12 @@
 import { useGame } from '../../state/store';
+import { Counter } from './Counter';
 import { useUI } from '../../state/ui';
 import { BALANCE } from '../../data/balance';
 import { msToNextEnergy } from '../../game/energy';
 import { formatDuration } from '../../core/time';
 import { Icon } from '../art/Icons';
 import { HeroArt } from '../art/HeroArt';
-import { fmt, Modal } from './common';
+import { Modal } from './common';
 import { useState } from 'react';
 import { refillCost, refillEnergy } from '../../game/comfort';
 import { play } from '../../audio/sfx';
@@ -30,10 +31,10 @@ export function TopBar() {
         </div>
       </button>
       <button className="pill" onClick={() => setOpen(true)}>
-        <Icon.energy size={20} /> <span className={e.current > BALANCE.energy.max ? 'over-cap' : ''}>{e.current}</span><small>/{BALANCE.energy.max}</small>
+        <Icon.energy size={20} /> <span className={e.current > BALANCE.energy.max ? 'over-cap' : ''}><Counter id="energy" value={e.current} format={String} /></span><small>/{BALANCE.energy.max}</small>
       </button>
-      <button className="pill" onClick={() => push({ name: 'inventory' })}><Icon.coin size={20} />{fmt(save.resources.gold)}</button>
-      <button className="pill" onClick={() => push({ name: 'inventory' })}><Icon.crystal size={20} />{fmt(save.resources.crystals)}</button>
+      <button className="pill" onClick={() => push({ name: 'inventory' })}><Icon.coin size={20} /><Counter id="gold" value={save.resources.gold} /></button>
+      <button className="pill" onClick={() => push({ name: 'inventory' })}><Icon.crystal size={20} /><Counter id="crystals" value={save.resources.crystals} /></button>
       {open && (
         <Modal onClose={() => setOpen(false)}>
           <h2>Énergie</h2>

@@ -49,7 +49,7 @@ export function Inventory() {
           <div className="res-grid">
             {list.map((r) => (
               <button key={r.id} className="res-cell" onClick={() => toast(`${r.name} : ${r.description}`)}>
-                <ResourceIcon icon={r.icon} color={r.color} size={30} />
+                <ResourceIcon icon={r.icon} color={r.color} size={30} res={r.id} />
                 <div className="grow">
                   <b>{fmt(save.resources[r.id])}</b>
                   <div className="faint" style={{ lineHeight: 1.25 }}>{r.name}</div>

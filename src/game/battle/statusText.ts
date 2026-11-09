@@ -54,3 +54,21 @@ export function statusDescription(g: StatusGroup, isBoss: boolean): string {
     default: return '';
   }
 }
+
+/** Légende des symboles (bouton « Effets » en combat) : ce que fait chaque effet, sans chiffre précis. Bonus d'abord. */
+export const STATUS_LEGEND: { id: StatusId; text: string }[] = [
+  { id: 'atkUp', text: 'Attaque augmentée : frappe plus fort.' },
+  { id: 'defUp', text: 'Défense augmentée : encaisse moins de dégâts.' },
+  { id: 'spdUp', text: 'Vitesse augmentée : joue plus souvent.' },
+  { id: 'shield', text: 'Bouclier : absorbe des dégâts avant les PV (chiffre = points restants).' },
+  { id: 'regen', text: 'Régénération : récupère une part de ses PV à chaque tour.' },
+  { id: 'revive', text: 'Résurrection : revient à la vie une fois s’il tombe.' },
+  { id: 'atkDown', text: 'Attaque réduite : frappe moins fort.' },
+  { id: 'defDown', text: 'Défense réduite : encaisse plus de dégâts.' },
+  { id: 'spdDown', text: 'Vitesse réduite : joue moins souvent.' },
+  { id: 'poison', text: 'Poison : perd 5 % de ses PV max par tour et par dose (moitié sur un boss).' },
+  { id: 'burn', text: 'Brûlure : perd 4 % de ses PV max par tour et par dose (moitié sur un boss).' },
+  { id: 'freeze', text: 'Gel : passe son tour et reçoit +15 % de dégâts.' },
+  { id: 'stun', text: 'Étourdi : passe son tour.' },
+  { id: 'taunt', text: 'Provoqué : doit attaquer celui qui l’a provoqué.' },
+];

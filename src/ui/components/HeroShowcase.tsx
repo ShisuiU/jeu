@@ -51,8 +51,8 @@ export function HeroShowcase({ heroId, h, onPrev, onNext, below }: { heroId: str
       <button key={s} className={`sc-slot ${gearArtUrl(g.set, g.slot) ? 'has-art' : ''}`} style={{ ['--gc' as string]: r.color }} aria-label={`${name} ${r.name} +${g.level}`} onClick={() => setOpen(g.uid)}>
         {gearArtUrl(g.set, g.slot) ? <GearArt set={g.set} slot={g.slot} className="sc-art" /> : <I size={22} />}
         <span className="sc-lv">+{g.level}</span>
-        <span className="sc-set"><SetEmblem id={g.set} size={11} /></span>
-        <span className="sc-stars"><GearStars n={g.stars ?? defaultStars(g.rarity)} size={7} /></span>
+        <span className="sc-set"><SetEmblem id={g.set} size={13} /></span>
+        <span className="sc-stars"><GearStars n={g.stars ?? defaultStars(g.rarity)} size={8} /></span>
       </button>
     );
   };

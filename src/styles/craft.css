@@ -839,3 +839,15 @@ body:has(.battle-controls) .toasts { bottom: auto; top: calc(var(--sat, 0px) + 1
 .wb-next { margin: 8px 0 6px; display: flex; flex-direction: column; gap: 4px; font-size: 12px; }
 /* Collection : paliers de héros possédés. */
 .col-bar { margin-bottom: 10px; padding: 8px 10px; border-radius: var(--radius); background-color: var(--stone); background-image: var(--grain); border: 1px solid var(--edge-hi); font-size: 13px; }
+
+/* Équipement illustré : l'image remplit la carte, les infos restent lisibles par-dessus. */
+.gear-card.has-art { overflow: hidden; justify-content: flex-end; padding-bottom: 3px; }
+.gear-card .gc-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; border-radius: inherit; }
+.gear-card.has-art::after { content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none; border-radius: inherit;
+  background: linear-gradient(180deg, rgba(0,0,0,0.35) 0%, transparent 28%, transparent 52%, rgba(6,5,10,0.92) 100%); }
+.gear-card.has-art > :not(.gc-art) { position: relative; z-index: 2; }
+.gear-card.has-art > .gc-lvl, .gear-card.has-art > .gc-set, .gear-card.has-art > .gc-lock { position: absolute; }
+.gear-card.has-art .gc-main { text-shadow: 0 1px 3px #000; }
+.sc-slot.has-art { overflow: hidden; }
+.sc-slot .sc-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
+.sc-slot.has-art > :not(.sc-art) { z-index: 1; }

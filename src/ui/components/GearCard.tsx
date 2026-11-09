@@ -4,6 +4,7 @@ import { mainValue } from '../../game/gear';
 import { Icon } from '../art/Icons';
 import { GearStars, SetEmblem } from '../art/SetEmblem';
 import { defaultStars } from '../../game/gear';
+import { GearArt, gearArtUrl } from '../art/GearArt';
 
 export const SLOT_ICON: Record<GearSlot, keyof typeof Icon> = {
   weapon: 'sword', helmet: 'helmet', armor: 'armor', gloves: 'gloves', boots: 'boots', accessory: 'ring', artifact: 'gem',
@@ -15,8 +16,8 @@ export function GearCard({ g, onClick, owner, selected }: { g: GearItem; onClick
   const r = GEAR_RARITIES[g.rarity];
   const I = Icon[SLOT_ICON[g.slot]] as (p: { size?: number }) => JSX.Element;
   return (
-    <button className={`gear-card r-${g.rarity} ${selected ? 'sel' : ''}`} style={{ ['--gc' as string]: r.color }} onClick={onClick} aria-label={`${SLOT_BY_ID[g.slot].name} ${r.name}, ${g.stars ?? defaultStars(g.rarity)} étoiles, +${g.level}, ensemble ${SETS[g.set].name}`}>
-      <span className="gc-ic"><I size={26} /></span>
+    <button className={`gear-card r-${g.rarity} ${selected ? 'sel' : ''} ${gearArtUrl(g.set, g.slot) ? 'has-art' : ''}`} style={{ ['--gc' as string]: r.color }} onClick={onClick} aria-label={`${SLOT_BY_ID[g.slot].name} ${r.name}, ${g.stars ?? defaultStars(g.rarity)} étoiles, +${g.level}, ensemble ${SETS[g.set].name}`}>
+      {gearArtUrl(g.set, g.slot) ? <GearArt set={g.set} slot={g.slot} /> : <span className="gc-ic"><I size={26} /></span>}
       <span className="gc-lvl">+{g.level}</span>
       <span className="gc-set" title={SETS[g.set].name}><SetEmblem id={g.set} size={13} /></span>
       {g.locked && <span className="gc-lock"><Icon.lock size={10} /></span>}

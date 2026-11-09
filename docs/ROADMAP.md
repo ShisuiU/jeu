@@ -558,6 +558,13 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.64.0 — Équipement illustré
+
+- **Chaque objet a son illustration**, peinte dans le style des héros : une par ensemble et par emplacement (arme, casque, armure, gants, bottes, accessoire, artefact), avec l'univers de son ensemble — bois vivant et mousse pour Vigueur, acier rouge braise pour Fureur, acier bleu de chevalier pour Rempart, assassin noir et or pour Acuité, cristal violet pour Concentration, plumes d'argent pour Célérité, os et cramoisi pour Sang-vif, bronze du désert pour Massacre, jade et pierre blanche pour Résolution, bois doré en fleurs pour Pérennité, horlogerie de bronze pour Élan
+- Partout où un objet s'affiche : Forge, sac, fiche du héros, victoire, Marché. Les informations (niveau, ensemble, étoiles, statistique) restent lisibles par-dessus
+- 256 px, environ 10 Ko chacune, téléchargées à l'affichage puis gardées hors ligne (l'installation ne grossit pas)
+- 75 illustrations sur 77 : le pendentif et la relique de l'ensemble Élan arrivent dans une prochaine mise à jour (symbole en attendant)
+
 ## ✅ Version 1.63.1 — Notifications fiables
 
 - Les heures à annoncer (camp plein, énergie au maximum) partaient seulement quand on quittait le jeu ; l'iPhone coupait souvent cet envoi : aucune notification n'était jamais programmée. Elles partent maintenant **toutes les 3 minutes pendant qu'on joue** (et au retour dans le jeu) ; le serveur attend que le joueur n'ait plus donné signe de vie depuis 5 minutes pour le prévenir

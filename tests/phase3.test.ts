@@ -39,8 +39,8 @@ describe('invocations', () => {
     const b = BANNER_BY_ID.standard;
     const n = 20000, c: Record<string, number> = {};
     for (let i = 0; i < n; i++) { const x = rollRarity(r, b, 0).rarity; c[x] = (c[x] ?? 0) + 1; }
-    expect(c.common / n).toBeCloseTo(0.6, 1);
-    expect(c.rare / n).toBeCloseTo(0.08, 1);
+    expect(c.common / n).toBeCloseTo(0.7, 1);
+    expect(c.rare / n).toBeCloseTo(0.04, 1);
   });
   it('dépense, attribue des héros et convertit les doublons en copies', () => {
     const s = rich();

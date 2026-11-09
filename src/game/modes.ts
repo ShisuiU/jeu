@@ -224,7 +224,8 @@ export function applyMode(s: SaveData, spec: BattleSpec, o: Outcome, now: number
     case 'dungeon': {
       const d = DUNGEON_BY_ID[spec.dungeonId];
       const res = empty(o.won);
-      res.accountLevelsGained = addAccountXp(s, dungeonEnergy(spec.floor) * (o.won ? 10 : 3));
+      res.accountXp = dungeonEnergy(spec.floor) * (o.won ? 10 : 3);
+      res.accountLevelsGained = addAccountXp(s, res.accountXp);
       if (!o.won) { s.stats.battlesLost++; return res; }
       s.stats.battlesWon++; track(s, 'battleWin'); track(s, 'dungeonWin');
       const prog = (s.progress.dungeons[d.id] ??= { bestFloor: 0 });

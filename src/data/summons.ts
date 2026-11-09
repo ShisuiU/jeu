@@ -24,22 +24,23 @@ export const BANNERS: BannerDef[] = [
   {
     id: 'standard', name: 'Invocation standard', subtitle: 'Éclats ternes : héros Communs à Rares.',
     cost: { resource: 'shardDim', amount: 1 },
-    rates: { common: 60, uncommon: 32, rare: 8 },
+    rates: { common: 70, uncommon: 26, rare: 4 },
     color: '#8d949c', glow: '#c9ced3',
   },
   {
     id: 'aeon', name: 'Invocation rare', subtitle: 'Éclats d’Aeon : Rare garanti, Légendaire possible.',
     cost: { resource: 'shardAeon', amount: 1 },
-    rates: { rare: 90, epic: 9, legendary: 0.9, mythic: 0.1 },
+    rates: { rare: 92, epic: 7.2, legendary: 0.7, mythic: 0.1 },
     pity: { rarity: 'legendary', every: 100 },
     multiGuarantee: 'epic',
     color: '#3d8bff', glow: '#8ab8ff',
   },
   {
-    id: 'epic', name: 'Invocation épique', subtitle: 'Cristaux d’Aeon : Épique garanti.',
+    id: 'epic', name: 'Invocation épique', subtitle: 'Cristaux d’Aeon : Rare garanti, Épique une fois sur deux.',
     cost: { resource: 'crystals', amount: 300 },
-    rates: { epic: 95, legendary: 4.5, mythic: 0.5 },
-    pity: { rarity: 'legendary', every: 30 },
+    rates: { rare: 52, epic: 44, legendary: 3.6, mythic: 0.4 },
+    pity: { rarity: 'legendary', every: 40 },
+    multiGuarantee: 'epic',
     color: '#a64dff', glow: '#cf9dff',
   },
   {

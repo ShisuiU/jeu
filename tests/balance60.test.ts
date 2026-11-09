@@ -36,8 +36,18 @@ describe('Équilibrage v1.60', () => {
     expect(ghostRanks('arena', 12)).toHaveLength(0);
     expect(ghostRanks('tower', 0).every((g) => g.uid.startsWith('ghost:') && g.tower > 0)).toBe(true);
   });
-  it('plus de cristaux, légendaire garanti plus tôt', () => {
-    expect(BANNER_BY_ID.epic.pity!.every).toBe(30);
+  it('plus de cristaux ; légendaire garanti au 40e appel épique (v1.66.4)', () => {
+    expect(BANNER_BY_ID.epic.pity!.every).toBe(40);
     expect(DAILY_BONUS.crystals).toBe(150);
+  });
+});
+
+describe('Invocations v1.66.4', () => {
+  it('l’invocation épique ne garantit plus un Épique à chaque appel, mais un sur dix', () => {
+    const b = BANNER_BY_ID.epic;
+    expect(b.rates.rare).toBeGreaterThan(40);
+    expect((b.rates.epic ?? 0) + (b.rates.legendary ?? 0) + (b.rates.mythic ?? 0)).toBeLessThan(55);
+    expect(b.multiGuarantee).toBe('epic');
+    expect(Object.values(b.rates).reduce((a, x) => a + (x ?? 0), 0)).toBeCloseTo(100, 5);
   });
 });

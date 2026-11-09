@@ -95,6 +95,8 @@ export interface BattleResult {
   loot: Reward;
   heroXp: { uid: string; heroId: string; xp: number; levelsGained: number; capped: boolean; level: number }[];
   accountLevelsGained: number;
+  /** Expérience de compte gagnée (récap de fin de combat). */
+  accountXp?: number;
 }
 
 /** Applique l'issue d'un combat de campagne à la sauvegarde (mutation). */
@@ -103,7 +105,8 @@ export function applyStageResult(s: SaveData, stageId: string, diff: DifficultyI
   const key = progressKey(diff, stageId);
   const prog = s.progress.campaign[key] ?? { stars: 0, clears: 0 };
   const result: BattleResult = { won, stars: 0, firstClear: false, reward: {}, newHeroes: [], gear: [], loot: {}, heroXp: [], accountLevelsGained: 0 };
-  result.accountLevelsGained = addAccountXp(s, stageEnergy(stage, diff) * (won ? 10 : 3));
+  result.accountXp = stageEnergy(stage, diff) * (won ? 10 : 3);
+  result.accountLevelsGained = addAccountXp(s, result.accountXp);
   if (!won) { s.stats.battlesLost += 1; return result; }
 
   s.stats.battlesWon += 1;

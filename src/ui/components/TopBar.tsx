@@ -1,3 +1,4 @@
+import { AccountXp } from './AccountXp';
 import { useGame } from '../../state/store';
 import { Counter } from './Counter';
 import { useUI } from '../../state/ui';
@@ -24,10 +25,10 @@ export function TopBar() {
   return (
     <div className="topbar">
       <button className="avatar-btn" onClick={() => push({ name: 'settings' })}>
-        <div className="avatar"><HeroArt heroId={save.profile.avatarHeroId} /></div>
+        <div className="avatar-wrap"><div className="avatar"><HeroArt heroId={save.profile.avatarHeroId} /></div><span className="avatar-lvl" aria-hidden>{save.profile.level}</span></div>
         <div style={{ minWidth: 0, textAlign: 'left' }}>
           <div className="player-name">{save.profile.name}</div>
-          <div className="player-lvl">Niveau {save.profile.level}</div>
+          <AccountXp level={save.profile.level} xp={save.profile.xp} compact />
         </div>
       </button>
       <button className="pill" onClick={() => setOpen(true)}>

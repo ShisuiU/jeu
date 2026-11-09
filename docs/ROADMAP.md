@@ -558,6 +558,13 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.66.4 — Invocations plus rares et niveau de compte visible
+
+- **Invocation épique** (300 cristaux) : Rare garanti, Épique 44 %, Légendaire 3,6 %, Mythique 0,4 % (au lieu d'Épique garanti) ; un Épique au moins par appel ×10 ; Légendaire garanti au 40ᵉ appel
+- **Invocation standard** : Commun 70 %, Peu commun 26 %, Rare 4 % (au lieu de 60/32/8)
+- **Invocation rare** : Épique 7,2 %, Légendaire 0,7 % (au lieu de 9 et 0,9)
+- **Niveau de compte** : médaillon doré sur l'avatar en haut de l'écran, jauge d'expérience sous le nom ; en fin de combat, un encadré « Niveau de compte » avec l'expérience gagnée et la jauge qui se remplit
+
 ## ✅ Version 1.66.3 — Récap des dégâts et équipe plus visible
 
 - **Récap des dégâts** à la fin de chaque combat (victoire ou défaite) : part des dégâts de chaque héros en %, total et barre, le meilleur mis en avant ; poison et brûlure comptent pour celui qui les a posés, et seuls les dégâts réellement encaissés sont comptés (bouclier compris)

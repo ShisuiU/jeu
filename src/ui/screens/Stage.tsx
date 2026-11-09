@@ -134,7 +134,11 @@ export function Prep({ spec }: { spec: BattleSpec }) {
         </div>
         <button className="mini-team prep-team-strip" onClick={() => push({ name: 'team' })} aria-label="Modifier l’équipe">
           {members.map((h, i) => (
-            <div key={i} className="mini-slot">{h ? <HeroCard heroId={h.heroId} level={h.level} /> : <span className="faint">+</span>}{h && team.leader === h.uid && <span className="leader-crown">CHEF</span>}</div>
+            <div key={i} className="prep-slot">
+              <div className="mini-slot">{h ? <HeroCard heroId={h.heroId} level={h.level} /> : <span className="faint">+</span>}</div>
+              {/* Le chef est signalé sous sa carte : le portrait reste dégagé. */}
+              <span className={`prep-lead ${h && team.leader === h.uid ? 'on' : ''}`}>{h && team.leader === h.uid ? '♛ Chef' : ''}</span>
+            </div>
           ))}
         </button>
       </Panel>

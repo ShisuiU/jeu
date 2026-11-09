@@ -866,3 +866,18 @@ body:has(.battle-controls) .toasts { bottom: auto; top: calc(var(--sat, 0px) + 1
 .sc-slot .sc-stars { bottom: 3px; }
 .sc-slot .sc-stars .gstars svg { width: 8px; height: 8px; }
 .sc-nav.prev { left: 80px; } .sc-nav.next { right: 80px; }
+
+/* Préparation : héros bien visibles (cartes plus hautes, portrait dégagé), seulement l'affinité, le chef sous sa carte. */
+.prep-team-strip { gap: 6px; }
+.prep-slot { display: flex; flex-direction: column; align-items: stretch; gap: 4px; min-width: 0; }
+.prep-team-strip .mini-slot { aspect-ratio: 5/7; border-radius: 11px; }
+.prep-team-strip .mini-slot .hero-card { border-width: 2px; }
+.prep-team-strip .hero-card .hc-role, .prep-team-strip .hero-card .hc-line { display: none; }
+.prep-team-strip .hero-card .hc-id { top: 3px; right: 3px; }
+.prep-team-strip .hero-card .art img { object-position: center 14% !important; }
+.prep-team-strip .hero-card .shade { height: 32%; }
+.prep-team-strip .hero-card .meta { padding-bottom: 3px; }
+.prep-team-strip .hero-card .name { font-size: 11.5px; text-shadow: 0 1px 3px #000, 0 0 6px rgba(0,0,0,0.8); }
+.prep-lead { height: 17px; display: grid; place-items: center; font-size: 10px; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 6px; color: transparent; }
+.prep-lead.on { color: #23180a; background: linear-gradient(180deg, #ffe7ad, #b4863d); box-shadow: 0 0 8px rgba(255,211,107,0.35); }
+.prep-team-strip .mini-slot:has(.hero-card) { border: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }

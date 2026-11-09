@@ -234,6 +234,8 @@ function dealDamage(s: BattleState, source: Unit, target: Unit, effect: Extract<
   }
   target.statuses = target.statuses.filter((x) => x.status !== 'shield' || x.value > 0);
   const hpDmg = dmg - absorbed;
+  // Récap de fin de combat : dégâts réellement encaissés (bouclier compris, sans l'excédent au-delà des PV restants).
+  source.flags.dmgDealt = (source.flags.dmgDealt ?? 0) + absorbed + Math.min(hpDmg, Math.max(0, target.hp));
   target.hp -= hpDmg;
   s.events.push({ kind: 'damage', source: source.id, target: target.id, amount: dmg, crit, strong: aff > 1, weak: aff < 1, absorbed, ...(combo ? { combo } : {}) });
   if (target.flags.carapaceMax && !broke && target.flags.carapace > 0) s.events.push({ kind: 'carapace', target: target.id, charges: target.flags.carapace });
@@ -346,6 +348,7 @@ export function beginTurn(s: BattleState): Unit | null {
         const src = s.units.find((x) => x.id === st.sourceId);
         let amount = Math.max(1, Math.round(u.base.hp * pct * (u.isBoss ? 0.5 : 1)));
         if (u.flags.dotCap) amount = Math.min(amount, Math.round((src ? eff(s, src, 'atk') : 1000) * 1.5));
+        if (src) src.flags.dmgDealt = (src.flags.dmgDealt ?? 0) + Math.min(amount, Math.max(0, u.hp));
         u.hp -= amount;
         s.events.push({ kind: 'dot', target: u.id, amount, status: st.status });
         if (u.hp <= 0) kill(s, u, src ?? null);

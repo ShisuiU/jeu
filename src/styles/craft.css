@@ -851,3 +851,18 @@ body:has(.battle-controls) .toasts { bottom: auto; top: calc(var(--sat, 0px) + 1
 .sc-slot.has-art { overflow: hidden; }
 .sc-slot .sc-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
 .sc-slot.has-art > :not(.sc-art) { z-index: 1; }
+
+/* v1.66.2 — Équipements bien visibles sur la fiche : plus grands, cadre épais à la couleur de la rareté, halo, niveau et étoiles lisibles. */
+.sc-col { gap: 9px; } .sc-col.left { left: 10px; } .sc-col.right { right: 10px; }
+.sc-slot { width: 66px; height: 66px; }
+.sc-slot:not(.empty) { clip-path: none; border-radius: 12px; border: 2px solid var(--gc);
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.75), 0 0 12px color-mix(in srgb, var(--gc) 55%, transparent), 0 4px 10px rgba(0,0,0,0.6); }
+.sc-slot:not(.empty)::after { content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none; border-radius: 10px;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.18); background: linear-gradient(180deg, transparent 58%, rgba(0,0,0,0.75)); }
+.sc-slot.empty { width: 66px; height: 66px; clip-path: none; border-radius: 12px; border: 1.5px dashed #6a6274; box-shadow: none; }
+.sc-slot.has-art > :not(.sc-art) { z-index: 2; }
+.sc-slot .sc-lv { left: 3px; top: 3px; font-size: 11px; padding: 1px 4px; border-radius: 5px; background: rgba(8,7,12,0.82); line-height: 1.2; }
+.sc-slot .sc-set { right: 3px; top: 3px; }
+.sc-slot .sc-stars { bottom: 3px; }
+.sc-slot .sc-stars .gstars svg { width: 8px; height: 8px; }
+.sc-nav.prev { left: 80px; } .sc-nav.next { right: 80px; }

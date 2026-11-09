@@ -558,6 +558,11 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.63.0 — Effets visibles en combat
+
+- **Bonus et malus listés sous chaque carte**, avec leur **valeur** et les tours restants : « ATQ▲ +25 % · 2 », « PSN −10 % · 3 », « BCL 1,3k · 2 »… Les malus d'abord (rouge), puis les bonus (vert) ; doses de poison et de brûlure cumulées, bouclier additionné ; 4 effets affichés, « +n » pour les suivants
+- **Fiche d'une carte** (appui long, ou clic droit sur ordinateur) : chaque effet expliqué en clair avec ses chiffres (« Perd 10 % de ses PV max à chaque tour (2 doses) », « Bouclier : absorbe encore 1 250 points de dégâts »…)
+
 ## ✅ Version 1.62.1 — Ordinateur : tailles corrigées
 
 - Sur ordinateur, la colonne du jeu suit maintenant la **hauteur** de l'écran (proportions d'un téléphone, environ 0,6) au lieu d'une largeur fixe de 640 px : sur un portable peu haut, elle était presque carrée et tout paraissait démesuré (illustrations, cartes, équipe). De 380 à 640 px de large selon l'écran

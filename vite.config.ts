@@ -39,9 +39,9 @@ export default defineConfig({
         // Les événements sont téléchargés frais à chaque lancement (repli : dernière version mémorisée).
         // Les illustrations des héros et des ennemis (~14 Mo) ne sont plus téléchargées d'un coup à l'installation :
         // chacune l'est quand elle s'affiche, puis reste en cache (jouable hors ligne pour tout ce qui a été vu).
-        globIgnores: ['events.json', 'assets/full-*.webp', 'assets/portrait-*.webp', 'assets/battle-*.webp', 'assets/gear-*.webp'],
+        globIgnores: ['events.json', 'assets/full-*.webp', 'assets/portrait-*.webp', 'assets/battle-*.webp', 'assets/gear-*.webp', 'assets/res-*.webp'],
         runtimeCaching: [{
-          urlPattern: /\/assets\/(full|portrait|battle|gear)-[^/]+\.webp$/,
+          urlPattern: /\/assets\/(full|portrait|battle|gear|res)-[^/]+\.webp$/,
           handler: 'CacheFirst',
           options: { cacheName: 'aeonfall-art', expiration: { maxEntries: 400, maxAgeSeconds: 60 * 60 * 24 * 365 } },
         }],

@@ -13,7 +13,7 @@ export function RewardView({ reward }: { reward: Reward }) {
         const def = k === 'energy' ? null : RESOURCES[k as keyof typeof RESOURCES];
         return (
           <div key={k} className="reward-item" style={{ animationDelay: `${i * 0.08}s` }}>
-            {def ? <ResourceIcon icon={def.icon} color={def.color} size={34} /> : <Icon.energy size={34} />}
+            {def ? <ResourceIcon icon={def.icon} color={def.color} size={34} res={k} /> : <Icon.energy size={34} />}
             <b>{fmt(v ?? 0)}</b>
             <span className="muted">{def ? def.name : 'Énergie'}</span>
           </div>

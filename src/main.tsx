@@ -24,3 +24,16 @@ fixViewport();
 
 createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);
 setupPWA();
+
+// Onde dorée sous le doigt sur les boutons et tuiles (rien avec « Animations réduites »).
+document.addEventListener('pointerdown', (e) => {
+  const el = (e.target as HTMLElement | null)?.closest?.('.btn, .menu-tile, .combat-card, .hp-tile') as HTMLElement | null;
+  if (!el || (el as HTMLButtonElement).disabled || document.querySelector('.reduced-motion')) return;
+  const r = el.getBoundingClientRect();
+  const size = Math.max(r.width, r.height) * 1.6;
+  const dot = document.createElement('span');
+  dot.className = 'tap-ripple';
+  dot.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX - r.left - size / 2}px;top:${e.clientY - r.top - size / 2}px`;
+  el.appendChild(dot);
+  setTimeout(() => dot.remove(), 600);
+}, { passive: true });

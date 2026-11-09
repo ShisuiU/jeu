@@ -558,6 +558,12 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.65.0 — Vagues bien séparées en combat
+
+- **Frise des vagues** en haut du combat : « ✓ Vague 1 · Vague 2 · Boss », la vague en cours en surbrillance, celle du boss en rouge
+- **Écran de transition** entre deux vagues : « ✓ Vague 1 terminée », puis « Vague 2 » (ou « Le boss arrive » en rouge), environ 1,5 seconde
+- **Les nouveaux ennemis entrent en scène** (ils descendent l'un après l'autre) au lieu d'apparaître d'un coup
+
 ## ✅ Version 1.64.0 — Équipement illustré
 
 - **Chaque objet a son illustration**, peinte dans le style des héros : une par ensemble et par emplacement (arme, casque, armure, gants, bottes, accessoire, artefact), avec l'univers de son ensemble — bois vivant et mousse pour Vigueur, acier rouge braise pour Fureur, acier bleu de chevalier pour Rempart, assassin noir et or pour Acuité, cristal violet pour Concentration, plumes d'argent pour Célérité, os et cramoisi pour Sang-vif, bronze du désert pour Massacre, jade et pierre blanche pour Résolution, bois doré en fleurs pour Pérennité, horlogerie de bronze pour Élan

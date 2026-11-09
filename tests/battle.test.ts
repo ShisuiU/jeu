@@ -117,3 +117,17 @@ describe('moteur de combat', () => {
     expect(boss.statuses.some((x) => x.status === 'stun')).toBe(false);
   });
 });
+
+describe('récap des dégâts', () => {
+  it('chaque héros compte ses dégâts, sans dépasser les PV des ennemis vaincus', () => {
+    const s = createBattle([hero('brann', 0, 20), hero('kaedra', 1, 20), hero('idris', 3, 20)], [[foe('hollow_soldier', 0), foe('hollow_shield', 1)]], { seed: 3 });
+    const maxHp = s.units.filter((u) => u.side === 'enemy').reduce((n, u) => n + u.base.hp, 0);
+    runToEnd(s);
+    expect(s.outcome).toBe('won');
+    const heroes = s.units.filter((u) => u.side === 'ally');
+    const total = heroes.reduce((n, u) => n + (u.flags.dmgDealt ?? 0), 0);
+    expect(total).toBeGreaterThan(0);
+    expect(total).toBeLessThanOrEqual(maxHp);
+    expect(total).toBeGreaterThanOrEqual(maxHp * 0.95);
+  });
+});

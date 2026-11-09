@@ -558,6 +558,11 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.66.3 — Récap des dégâts et équipe plus visible
+
+- **Récap des dégâts** à la fin de chaque combat (victoire ou défaite) : part des dégâts de chaque héros en %, total et barre, le meilleur mis en avant ; poison et brûlure comptent pour celui qui les a posés, et seuls les dégâts réellement encaissés sont comptés (bouclier compris)
+- **Préparation du combat** : cartes de l'équipe plus hautes et portraits dégagés ; seule l'affinité reste sur la carte (plus de rôle, de faction ni d'étoiles) ; l'étiquette « Chef » passe sous la carte du chef
+
 ## ✅ Version 1.66.2 — Équipement bien visible sur la fiche
 
 - Emplacements d'équipement agrandis sur la fiche du héros

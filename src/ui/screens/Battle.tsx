@@ -508,6 +508,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
                     <span className="faint">Nouvel équipement !</span>
                   </div>
                 )}
+                <DamageRecap units={s.units} />
                 <div className="xp-list">
                   {result.heroXp.map((h) => {
                     const inst = useGame.getState().save!.heroes.find((x) => x.uid === h.uid);
@@ -531,6 +532,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
                   : 'Les ennemis l’emportent cette fois. Pistes : rejoue des combats plus simples pour gagner de l’expérience, utilise les élixirs et l’équipement, place un défenseur en première ligne et un soigneur en seconde ligne.'}
               </div>
             )}
+            {!result.won && <DamageRecap units={s.units} />}
             {result.accountLevelsGained > 0 && <div className="chip active" style={{ margin: '10px auto 0', display: 'flex', width: 'fit-content' }}>Niveau de compte {useGame.getState().save!.profile.level} ! +2 000 or, +30 énergie</div>}
           </div>
           <div className="result-actions">
@@ -698,6 +700,35 @@ function UnitView({ u, vfx, active, acting, hit, heavy, targetable, popups, onCl
 }
 
 /** Effets en cours, listés sous la carte avec leur valeur : néfastes d'abord (rouge), puis bénéfiques (vert), et les tours restants. */
+/** Récap de fin de combat : part des dégâts infligés par chaque héros (du plus gros au plus petit). */
+function DamageRecap({ units }: { units: Unit[] }) {
+  const heroes = units.filter((u) => u.side === 'ally' && u.kind === 'hero');
+  const total = heroes.reduce((n, u) => n + (u.flags.dmgDealt ?? 0), 0);
+  if (!total) return null;
+  const rows = [...heroes].sort((a, b) => (b.flags.dmgDealt ?? 0) - (a.flags.dmgDealt ?? 0));
+  const top = rows[0].flags.dmgDealt ?? 0;
+  const fmt = (n: number) => (n >= 10000 ? `${Math.round(n / 1000)} k` : n.toLocaleString('fr-FR'));
+  return (
+    <div className="dmg-recap">
+      <div className="dr-title">Dégâts infligés</div>
+      {rows.map((u, i) => {
+        const d = u.flags.dmgDealt ?? 0;
+        const pct = Math.round((d / total) * 100);
+        return (
+          <div key={u.id} className={`dr-row ${i === 0 ? 'mvp' : ''}`}>
+            <div className="xp-ava"><HeroArt heroId={u.refId} /></div>
+            <div className="grow">
+              <div className="row between"><b>{HERO_BY_ID[u.refId]?.name.split(/[ ,]/)[0] ?? u.name}{i === 0 && <span className="dr-mvp">Meilleur</span>}</b><span className="dr-pct">{pct} %</span></div>
+              <div className="dr-bar"><div style={{ width: `${top ? (d / top) * 100 : 0}%`, animationDelay: `${0.15 + i * 0.12}s` }} /></div>
+            </div>
+            <span className="faint dr-val">{fmt(d)}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function EffectChips({ u }: { u: Unit }) {
   if (!u.alive || !u.statuses.length) return <div className="u-fx" aria-hidden />;
   const list = groupStatuses(u.statuses).sort((a, b) => Number(STATUS_INFO[b.id].debuff) - Number(STATUS_INFO[a.id].debuff));

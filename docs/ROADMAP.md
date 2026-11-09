@@ -558,6 +558,13 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.66.1 — Effets lisibles en combat
+
+- **Symboles d'effets** : chaque bonus et malus a son dessin (épée, bouclier ou éclair avec une flèche ▲ ▼, goutte de poison, flamme, flocon, étoiles d'étourdissement, cible de provocation, cœur de régénération, croix de résurrection) suivi de sa valeur et des tours restants
+- **Bouton « Effets »** en haut du combat : la légende de tous les symboles, bonus en vert puis malus en rouge
+- Pastilles compactes, deux par ligne : visibles même sous les héros du second rang
+- En AUTO, le bloc « Combat automatique » disparaît pour laisser la place au combat ; il revient avec les compétences quand on reprend la main
+
 ## ✅ Version 1.66.0 — Un jeu plus vivant
 
 - **Effets de clic** : chaque bouton et tuile s'enfonce un instant et lance une onde dorée sous le doigt (un éclat plus vif sur les boutons dorés)

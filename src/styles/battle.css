@@ -216,12 +216,12 @@
 .battle.slowmo::after { content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none; background: radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,0.55)); animation: fadeIn 0.3s; }
 
 /* ─── Effets en cours, listés sous chaque carte ─── */
-.u-fx { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; min-height: 13px; margin-top: 2px; }
-.fx-chip { display: inline-flex; align-items: center; gap: 2px; height: 13px; padding: 0 3px; border-radius: 3px; font-size: 8.5px; font-weight: 800; line-height: 1; letter-spacing: 0.02em; white-space: nowrap;
+.u-fx { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; min-height: 12px; margin-top: 2px; }
+.fx-chip { display: inline-flex; align-items: center; justify-content: safe center; letter-spacing: -0.2px; gap: 1px; height: 12px; padding: 0 2px; border-radius: 3px; font-size: 8px; flex: 0 1 calc(50% - 1px); min-width: 0; overflow: hidden; font-weight: 800; line-height: 1; white-space: nowrap;
   color: #fff; background: color-mix(in srgb, var(--fc, #888) 32%, rgba(10,8,14,0.9)); border: 1px solid color-mix(in srgb, var(--fc, #888) 80%, transparent); box-shadow: 0 1px 3px rgba(0,0,0,0.6); }
 .fx-chip i { font-style: normal; font-weight: 900; color: #fff; }
 .fx-chip.neg i { color: #ffd0d0; } .fx-chip.pos i { color: #d6ffe2; }
-.fx-chip b { font-weight: 900; opacity: 0.85; padding-left: 2px; border-left: 1px solid rgba(255,255,255,0.25); }
+.fx-chip b { font-weight: 900; opacity: 0.8; font-size: 7px; padding-left: 1px; margin-left: 1px; border-left: 1px solid rgba(255,255,255,0.25); }
 .fx-chip.neg { text-shadow: 0 0 4px rgba(255,80,80,0.4); }
 .fx-chip.more { --fc: #aaa; }
 
@@ -250,3 +250,19 @@
 .enemy-field.wave-in .frow .unit:nth-child(3) { animation-delay: 0.16s; }
 @keyframes enemyIn { from { opacity: 0; translate: 0 -40px; } to { opacity: 1; translate: 0 0; } }
 @media (prefers-reduced-motion: reduce) { .wave-card, .wave-card * , .enemy-field.wave-in .unit { animation-duration: 0.01s !important; } }
+
+/* Pastilles : deux par ligne (quatre au plus, sur deux lignes) pour toujours tenir sous la carte. */
+.fx-chip i { font-size: 8px; }
+.u-fx .fx-chip:only-child { flex-basis: auto; }
+
+/* Symboles des effets : bouton de légende en haut du combat et liste expliquée. */
+.fx-legend-btn { display: inline-flex; align-items: center; gap: 3px; height: 40px; padding: 0 9px; border-radius: 10px; background: rgba(10,8,14,0.72); border: 1px solid var(--line); color: var(--text-dim); font-size: 11px; font-weight: 800; letter-spacing: 0.03em; }
+.fx-legend-btn span { margin-left: 2px; }
+.fx-legend { display: grid; gap: 4px; max-height: 58vh; overflow-y: auto; }
+.fxl-row { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 9px; background: rgba(255,255,255,0.03); font-size: 12.5px; line-height: 1.3; }
+.fxl-row.pos { border-left: 3px solid rgba(111,227,154,0.6); }
+.fxl-row.neg { border-left: 3px solid rgba(255,107,107,0.6); }
+.fxl-row.sep { margin-top: 6px; }
+.fxl-ico { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; background: rgba(10,8,14,0.6); flex: none; }
+.fx-chip .st-ico { margin-right: 1px; }
+.ui-st .st-ico { flex: none; }

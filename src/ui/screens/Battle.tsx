@@ -7,8 +7,9 @@ import { HERO_BY_ID } from '../../data/heroes';
 import { HERO_LINES } from '../../data/heroLines';
 import { createBattle, beginTurn, performAction, unitById, availableSkills, targetKind, validTargets, hpPct, shieldOf, predictOrder, autoLien, castLien, lienReady, LIEN_POWERS } from '../../game/battle/engine';
 import { LIEN_MAX, LIEN_USES, type LienPower } from '../../game/battle/types';
-import { groupStatuses, statusDescription, statusValueText } from '../../game/battle/statusText';
+import { groupStatuses, statusDescription, statusValueText, STATUS_LEGEND } from '../../game/battle/statusText';
 import { chooseAction } from '../../game/battle/ai';
+import { StatusIcon } from '../art/StatusIcon';
 import { STATUS_INFO, type Action, type BattleState, type Unit, type UnitSetup } from '../../game/battle/types';
 import { effectiveCooldown } from '../../game/battle/skillMods';
 import { teamSetups } from '../../game/campaign';
@@ -77,6 +78,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
   const [wave, setWave] = useState<{ side: 'ally' | 'enemy'; color: string; id: number } | null>(null);
   const [result, setResult] = useState<ModeResult | null>(null);
   const [quit, setQuit] = useState(false);
+  const [legend, setLegend] = useState(false);
   const [infoId, setInfoId] = useState<string | null>(null);
   const [heavyHits, setHeavyHits] = useState<Set<string>>(new Set());
   const measureRef = useRef<HTMLDivElement>(null);
@@ -368,7 +370,10 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
             ) : <div className="faint">Vague unique</div>}
             {s.turnLimit ? <div className="faint">Actions {Math.min(s.actionCount, s.turnLimit)}/{s.turnLimit}</div> : null}
           </div>
-          {phase === 'fight' && <button className="back-btn" aria-label="Abandonner" onClick={() => setQuit(true)}><Icon.menu /></button>}
+          <div className="row" style={{ gap: 6 }}>
+            <button className="fx-legend-btn" aria-label="Légende des effets" onClick={() => { play('tap'); setLegend(true); }}><StatusIcon id="atkUp" size={14} /><StatusIcon id="poison" size={14} /><span>Effets</span></button>
+            {phase === 'fight' && <button className="back-btn" aria-label="Abandonner" onClick={() => setQuit(true)}><Icon.menu /></button>}
+          </div>
         </div>
         <div className="turn-order">
           {order.map((id, i) => {
@@ -431,10 +436,11 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
             ))}
           </div>
         )}
-        <div className={`skill-info ${awaiting && active && selSkill ? '' : 'idle'}`} style={{ height: infoH }}>
+        {/* En AUTO, ce bloc disparaît (plus de place pour le combat) ; il revient avec les compétences quand on reprend la main. */}
+        {!auto && <div className={`skill-info ${awaiting && active && selSkill ? '' : 'idle'}`} style={{ height: infoH }}>
           {awaiting && active && selSkill ? <SkillInfoBody unit={active} sk={selSkill} onLaunch={targetKind(selSkill) === 'none' ? () => act() : undefined} />
-            : <span>{finished.current ? '' : auto ? 'Combat automatique : touche AUTO pour reprendre la main.' : awaiting ? 'Choisis une compétence.' : 'Tour adverse…'}</span>}
-        </div>
+            : <span>{finished.current ? '' : awaiting ? 'Choisis une compétence.' : 'Tour adverse…'}</span>}
+        </div>}
         <div className="ctrl-row">
           <div className="ctrl-col">
             <button className={`ctrl ${auto ? 'on' : ''}`} onClick={toggleAuto}>AUTO</button>
@@ -559,7 +565,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
                 <div className="ui-status">
                   {groupStatuses(list).sort((a, b) => Number(STATUS_INFO[b.id].debuff) - Number(STATUS_INFO[a.id].debuff)).map((g) => (
                     <div key={g.id} className="ui-st">
-                      <span className="ui-dot" style={{ background: STATUS_INFO[g.id].color }} />
+                      <StatusIcon id={g.id} size={20} />
                       <span className="grow"><b className={STATUS_INFO[g.id].debuff ? 'neg' : 'pos'}>{STATUS_INFO[g.id].name}{statusValueText(g, u.isBoss) ? ` ${statusValueText(g, u.isBoss)}` : ''}</b><br /><span className="faint">{statusDescription(g, u.isBoss)}</span></span>
                       <span className="faint">{g.turns} tour{g.turns > 1 ? 's' : ''}</span>
                     </div>
@@ -572,6 +578,21 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
         );
       })()}
 
+      {legend && (
+        <Modal onClose={() => setLegend(false)}>
+          <h2>Effets en combat</h2>
+          <p className="faint" style={{ textAlign: 'center', margin: '0 0 8px' }}>Sous chaque carte : symbole, valeur, puis tours restants. Vert = bonus, rouge = malus.</p>
+          <div className="fx-legend">
+            {STATUS_LEGEND.map(({ id, text }, i) => (
+              <div key={id} className={`fxl-row ${STATUS_INFO[id].debuff ? 'neg' : 'pos'} ${i === 6 ? 'sep' : ''}`}>
+                <span className="fxl-ico"><StatusIcon id={id} size={22} /></span>
+                <span>{text}</span>
+              </div>
+            ))}
+          </div>
+          <button className="btn grow" style={{ width: '100%', marginTop: 10 }} onClick={() => setLegend(false)}>Compris</button>
+        </Modal>
+      )}
       {quit && (
         <Modal onClose={() => setQuit(false)}>
           <h2>Abandonner ?</h2>
@@ -684,10 +705,11 @@ function EffectChips({ u }: { u: Unit }) {
   return (
     <div className="u-fx" aria-label={list.map((g) => `${STATUS_INFO[g.id].name} ${statusValueText(g, u.isBoss)}, ${g.turns} tour${g.turns > 1 ? 's' : ''}`).join(' ; ')}>
       {shown.map((g) => {
-        const v = statusValueText(g, u.isBoss);
+        // Version courte pour la pastille : la flèche (▲▼) et la couleur disent déjà le sens, on garde le chiffre.
+        const v = statusValueText(g, u.isBoss).replace(/^[+−]/, '').replace(' %', '%');
         return (
           <span key={g.id} className={`fx-chip ${STATUS_INFO[g.id].debuff ? 'neg' : 'pos'}`} style={{ ['--fc' as string]: STATUS_INFO[g.id].color }} title={`${STATUS_INFO[g.id].name} · ${statusDescription(g, u.isBoss)} · ${g.turns} tour${g.turns > 1 ? 's' : ''}`}>
-            {STATUS_INFO[g.id].short}{v && <i>{v.replace(' %', '%')}</i>}<b>{g.turns}</b>
+            <StatusIcon id={g.id} size={10} />{v && <i>{v}</i>}<b>{g.turns}</b>
           </span>
         );
       })}

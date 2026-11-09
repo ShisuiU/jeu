@@ -224,3 +224,29 @@
 .fx-chip b { font-weight: 900; opacity: 0.85; padding-left: 2px; border-left: 1px solid rgba(255,255,255,0.25); }
 .fx-chip.neg { text-shadow: 0 0 4px rgba(255,80,80,0.4); }
 .fx-chip.more { --fc: #aaa; }
+
+/* ─── Vagues : frise en haut, carte de transition, entrée des nouveaux ennemis ─── */
+.wave-steps { display: flex; gap: 4px; margin-top: 3px; flex-wrap: wrap; }
+.wave-steps .ws { font-size: 10.5px; font-weight: 800; letter-spacing: 0.03em; padding: 2px 7px; border-radius: 999px; color: var(--text-faint); background: rgba(10,8,14,0.7); border: 1px solid rgba(255,255,255,0.12); }
+.wave-steps .ws.done { color: #9fe0b0; border-color: rgba(123,234,143,0.4); }
+.wave-steps .ws.now { color: #1b1206; background: linear-gradient(180deg, #ffe2a3, #d9a64a); border-color: #ffe2a3; box-shadow: 0 0 10px rgba(255,211,107,0.45); }
+.wave-steps .ws.boss { border-color: rgba(255,61,110,0.55); }
+.wave-steps .ws.boss.now { color: #fff; background: linear-gradient(180deg, #ff5d7e, #a3122e); border-color: #ff9bb0; box-shadow: 0 0 12px rgba(255,61,110,0.6); }
+
+.wave-card { position: absolute !important; inset: 0; z-index: 7 !important; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; pointer-events: none;
+  background: radial-gradient(ellipse at center, rgba(40,26,6,0.92) 0%, rgba(7,6,11,0.88) 60%, rgba(7,6,11,0.75) 100%); animation: waveCard 1.7s ease both; }
+.wave-card .wc-done { font-size: 13px; font-weight: 800; color: #9fe0b0; letter-spacing: 0.05em; animation: waveUp 0.4s ease both; }
+.wave-card .wc-title { font-family: var(--font-title); font-size: 30px; line-height: 1.15; text-align: center; padding: 0 16px; font-weight: 900; letter-spacing: 0.05em; text-transform: uppercase; color: var(--gold-hi); text-shadow: 0 0 24px rgba(255,211,107,0.55), 0 3px 6px #000; animation: waveZoom 0.55s cubic-bezier(.2,1.4,.4,1) 0.15s both; }
+.wave-card .wc-sub { font-size: 13px; color: var(--text-dim); animation: waveUp 0.4s ease 0.3s both; }
+.wave-card::before, .wave-card::after { content: ''; width: min(70%, 320px); height: 1px; background: linear-gradient(90deg, transparent, var(--gold-hi), transparent); }
+.wave-card.boss { background: radial-gradient(ellipse at center, rgba(70,6,20,0.92) 0%, rgba(7,6,11,0.9) 60%, rgba(7,6,11,0.78) 100%); }
+.wave-card.boss .wc-title { color: #ff8fa6; text-shadow: 0 0 26px rgba(255,61,110,0.7), 0 3px 6px #000; }
+.wave-card.boss::before, .wave-card.boss::after { background: linear-gradient(90deg, transparent, #ff5d7e, transparent); }
+@keyframes waveCard { 0% { opacity: 0; } 12% { opacity: 1; } 85% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes waveZoom { from { opacity: 0; transform: scale(1.5); } to { opacity: 1; transform: scale(1); } }
+@keyframes waveUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.enemy-field.wave-in .unit { animation: enemyIn 0.6s cubic-bezier(.2,.9,.3,1.1) both; }
+.enemy-field.wave-in .frow .unit:nth-child(2) { animation-delay: 0.08s; }
+.enemy-field.wave-in .frow .unit:nth-child(3) { animation-delay: 0.16s; }
+@keyframes enemyIn { from { opacity: 0; translate: 0 -40px; } to { opacity: 1; translate: 0 0; } }
+@media (prefers-reduced-motion: reduce) { .wave-card, .wave-card * , .enemy-field.wave-in .unit { animation-duration: 0.01s !important; } }

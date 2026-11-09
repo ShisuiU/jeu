@@ -70,6 +70,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
   const [flash, setFlash] = useState(false);
   // Sensations : tremblement sur les gros coups, ralenti sur le coup fatal.
   const [shake, setShake] = useState<'' | 'soft' | 'hard'>('');
+  const [waveCard, setWaveCard] = useState<{ n: number; total: number; boss: boolean } | null>(null);
   const [slowmo, setSlowmo] = useState(false);
   const doShake = (k: 'soft' | 'hard') => { if (save.settings.reducedMotion) return; setShake(k); setTimeout(() => setShake(''), k === 'hard' ? 420 : 260); };
   const [ult, setUlt] = useState<string | null>(null);
@@ -182,7 +183,15 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
           for (const a of s.units.filter((u) => u.side === 'ally' && u.alive)) addVfx(a.id, e.power === 'heal' ? 'healfx' : e.power === 'guard' ? 'shieldfx' : 'revivefx', e.power === 'heal' ? '#7bea8f' : e.power === 'guard' ? '#aad7ff' : '#ffd36b');
           play('claim'); pause = true; break;
         }
-        case 'wave': if (bossWave >= 0 && e.wave - 1 >= bossWave && useGame.getState().save?.settings.music) playMusic('boss', initial.info.region); setBanner({ text: `Vague ${e.wave} / ${s.totalWaves}`, side: 'wave' }); play('open'); force(); await wait(1100 / speedRef.current); setBanner(null); break;
+        case 'wave': {
+          // Passage à la vague suivante : un vrai temps de séparation, et les nouveaux ennemis entrent en scène.
+          const isBoss = bossWave >= 0 && e.wave - 1 === bossWave;
+          if (bossWave >= 0 && e.wave - 1 >= bossWave && useGame.getState().save?.settings.music) playMusic('boss', initial.info.region);
+          setBanner(null); setWaveCard({ n: e.wave, total: s.totalWaves, boss: isBoss }); play('open'); force();
+          await wait(1700 / Math.min(2, speedRef.current));
+          setWaveCard(null); force();
+          break;
+        }
       }
     }
     if (hit.size) { setHits(hit); setHeavyHits(heavy); }
@@ -348,7 +357,16 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
         <div className="row between">
           <div>
             <div className="battle-stage">{initial.info.title}</div>
-            <div className="faint">Vague {s.wave} / {s.totalWaves}{s.turnLimit ? ` · Actions ${Math.min(s.actionCount, s.turnLimit)}/${s.turnLimit}` : ''}</div>
+            {s.totalWaves > 1 ? (
+              <div className="wave-steps" aria-label={`Vague ${s.wave} sur ${s.totalWaves}`}>
+                {Array.from({ length: s.totalWaves }, (_, i) => (
+                  <span key={i} className={`ws ${i + 1 < s.wave ? 'done' : i + 1 === s.wave ? 'now' : ''} ${i === bossWave ? 'boss' : ''}`}>
+                    {i + 1 < s.wave ? '✓ ' : ''}{i === bossWave ? 'Boss' : `Vague ${i + 1}`}
+                  </span>
+                ))}
+              </div>
+            ) : <div className="faint">Vague unique</div>}
+            {s.turnLimit ? <div className="faint">Actions {Math.min(s.actionCount, s.turnLimit)}/{s.turnLimit}</div> : null}
           </div>
           {phase === 'fight' && <button className="back-btn" aria-label="Abandonner" onClick={() => setQuit(true)}><Icon.menu /></button>}
         </div>
@@ -369,7 +387,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
         const bossBonus = side('enemy').some((u) => u.isBoss) ? 0.25 : 0;
         return (
           <div className="fields" style={{ ['--rows' as string]: eRows + aRows + bossBonus }}>
-            <div className="field enemy-field" style={{ flexGrow: eRows + bossBonus }}>
+            <div key={`wave-${s.wave}`} className={`field enemy-field ${s.wave > 1 ? 'wave-in' : ''}`} style={{ flexGrow: eRows + bossBonus }}>
               {eb.length > 0 && <div className="frow back">{eb.map(renderUnit)}</div>}
               {ef.length > 0 && <div className="frow">{ef.map(renderUnit)}</div>}
             </div>
@@ -385,6 +403,13 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
       {wave && <div key={wave.id} className={`field-wave ${wave.side}`} style={{ ['--vc' as string]: wave.color }} onAnimationEnd={() => setWave(null)} />}
       {banner && <div className={`skill-banner ${banner.side} ${ult ? 'ult' : ''}`} key={banner.text + banner.side}>{banner.text}</div>}
 
+      {waveCard && (
+        <div className={`wave-card ${waveCard.boss ? 'boss' : ''}`} key={waveCard.n}>
+          <div className="wc-done">✓ Vague {waveCard.n - 1} terminée</div>
+          <div className="wc-title">{waveCard.boss ? 'Le boss arrive' : `Vague ${waveCard.n}`}</div>
+          <div className="wc-sub">{waveCard.boss ? `Vague ${waveCard.n} / ${waveCard.total}` : `${waveCard.n} / ${waveCard.total} · nouveaux ennemis`}</div>
+        </div>
+      )}
       <FxLayer items={fxItems} />
       {/* Tutoriel du combat : une seule bulle au premier combat ; AUTO au combat suivant (les affinités sont expliquées à la préparation). Bulles en haut : l'équipe reste visible. */}
       <Coach id="battle_skill" place="top" target=".battle-controls .skills" when={awaiting && !auto && phase === 'fight'} text="C’est ton tour : choisis une compétence en bas, puis touche un ennemi." />

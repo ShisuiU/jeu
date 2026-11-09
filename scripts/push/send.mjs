@@ -25,7 +25,9 @@ const now = Date.now();
 const HOUR = 3600_000;
 /** Heures calmes (22 h – 8 h, heure du joueur). Même règle que src/game/notify.ts. */
 const quiet = (tz) => { const h = new Date(now - (tz ?? -60) * 60_000).getUTCHours(); return h >= 22 || h < 8; };
-const stats = { sent: 0, gone: 0, failed: 0, quiet: 0 };
+const stats = { sent: 0, gone: 0, failed: 0, quiet: 0, playing: 0 };
+/** Le joueur est dans le jeu (signe de vie de moins de 5 minutes) : on ne le dérange pas, l'annonce attend. */
+const playing = (d) => typeof d.updatedAt === 'number' && now - d.updatedAt < 5 * 60_000;
 
 async function send(ref, d, msg) {
   try {
@@ -49,6 +51,7 @@ async function main() {
     const d = snap.data();
     if (!d.sub?.endpoint) continue;
     if (quiet(d.tz)) { stats.quiet++; continue; } // réessayé à 8 h
+    if (playing(d)) { stats.playing++; continue; } // réessayé quand il aura quitté le jeu
     const camp = d.camp !== false && d.campAt > 0 && d.campAt <= now && d.campSent !== d.campAt;
     const energy = d.energy !== false && d.energyAt > 0 && d.energyAt <= now && d.energySent !== d.energyAt;
     // Une annonce trop ancienne (plus d'un jour) n'a plus d'intérêt.
@@ -89,6 +92,7 @@ async function main() {
     const fresh = gifts.filter((g) => d.giftSeen?.[g.from] !== g.day);
     if (!fresh.length) continue;
     if (quiet(d.tz)) { stats.quiet++; continue; }
+    if (playing(d)) { stats.playing++; continue; }
     const names = await Promise.all(fresh.slice(0, 2).map(async (g) => (await db.doc(`profiles/${g.from}`).get()).data()?.name || 'Un ami'));
     const body = fresh.length === 1 ? `${names[0]} t’a envoyé de l’énergie. Viens la récupérer !`
       : `${names[0]} et ${fresh.length - 1 === 1 ? names[1] : `${fresh.length - 1} autres amis`} t’ont envoyé de l’énergie.`;
@@ -96,7 +100,13 @@ async function main() {
     // Marqué comme annoncé même si l'envoi échoue : jamais de répétition.
     await ref.update(Object.fromEntries(fresh.map((g) => [`giftSeen.${g.from}`, g.day]))).catch(() => {});
   }
-  console.log(`Notifications : ${stats.sent} envoyées, ${stats.quiet} reportées (nuit), ${stats.gone} abonnements expirés, ${stats.failed} échecs.`);
+  // Compte rendu (sans aucune donnée personnelle) : combien de téléphones sont inscrits, combien attendent une annonce.
+  const all = await db.collection('push').get();
+  const subs = all.docs.map((x) => x.data()).filter((x) => x.sub?.endpoint);
+  const waiting = subs.filter((x) => x.due > 0);
+  const next = waiting.length ? Math.round((Math.min(...waiting.map((x) => x.due)) - now) / 60000) : null;
+  console.log(`Abonnés : ${subs.length} · annonces programmées : ${waiting.length}${next !== null ? ` (prochaine dans ${next} min)` : ''} · cadeaux récents lus : ${recent.size}`);
+  console.log(`Notifications : ${stats.sent} envoyées, ${stats.quiet} reportées (nuit), ${stats.playing} reportées (joueur en jeu), ${stats.gone} abonnements expirés, ${stats.failed} échecs.`);
 }
 
 await main();

@@ -32,7 +32,7 @@ export async function enablePush(s: SaveData, permission?: Promise<NotificationP
   const t = pushTimes(s, Date.now());
   await setDoc(doc(db, 'push', uid), { sub: { endpoint: j.endpoint, keys: { p256dh: j.keys.p256dh, auth: j.keys.auth } }, ...t, due: 0, tz: new Date().getTimezoneOffset(), ...prefs, updatedAt: Date.now() }, { merge: true });
   saveLocal({ on: true, prefs });
-  lastDue = 0;
+  lastWrite = '';
 }
 function sameKey(sub: PushSubscription, vapid: string): boolean {
   const k = sub.options?.applicationServerKey; if (!k) return true;
@@ -54,15 +54,20 @@ export async function setPushPrefs(prefs: PushPrefs): Promise<void> {
   if (uid && pushOn()) await updateDoc(doc(db, 'push', uid), { ...prefs, updatedAt: Date.now() });
 }
 
-let lastDue = -1;
-/** Jeu quitté : envoie les heures à annoncer. Jeu repris : rien à annoncer pendant qu'on joue. */
-export async function schedulePush(s: SaveData | null, playing: boolean): Promise<void> {
+/** Signe de vie : tant que le joueur est dans le jeu, le serveur ne le prévient pas (« updatedAt » de moins de 5 minutes). */
+export const ACTIVE_MS = 5 * 60_000;
+let lastWrite = '';
+/**
+ * Envoie au serveur les heures à annoncer (camp plein, énergie au maximum). Appelé en jouant (toutes les 3 minutes),
+ * au retour dans le jeu et en le quittant : on ne compte plus sur ce dernier envoi, que l'iPhone coupe souvent.
+ */
+export async function schedulePush(s: SaveData | null, _playing: boolean): Promise<void> {
   if (!s || !pushOn()) return;
   const { db, uid } = cloud(); if (!uid) return;
   const now = Date.now();
   const t = pushTimes(s, now);
-  const due = playing ? 0 : nextDue(t, localPush().prefs);
-  if (playing && lastDue === 0) return;
-  await updateDoc(doc(db, 'push', uid), { ...t, due, tz: new Date().getTimezoneOffset(), updatedAt: now }).catch(() => {});
-  lastDue = due;
+  const due = nextDue(t, localPush().prefs);
+  const key = `${t.campAt}|${t.energyAt}|${due}|${Math.floor(now / 120_000)}`;
+  if (key === lastWrite) return;
+  await updateDoc(doc(db, 'push', uid), { ...t, due, tz: new Date().getTimezoneOffset(), updatedAt: now }).then(() => { lastWrite = key; }).catch(() => {});
 }

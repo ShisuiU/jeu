@@ -558,6 +558,11 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.63.1 — Notifications fiables
+
+- Les heures à annoncer (camp plein, énergie au maximum) partaient seulement quand on quittait le jeu ; l'iPhone coupait souvent cet envoi : aucune notification n'était jamais programmée. Elles partent maintenant **toutes les 3 minutes pendant qu'on joue** (et au retour dans le jeu) ; le serveur attend que le joueur n'ait plus donné signe de vie depuis 5 minutes pour le prévenir
+- Le journal d'envoi indique le nombre de téléphones inscrits et d'annonces programmées (sans donnée personnelle)
+
 ## ✅ Version 1.63.0 — Effets visibles en combat
 
 - **Bonus et malus listés sous chaque carte**, avec leur **valeur** et les tours restants : « ATQ▲ +25 % · 2 », « PSN −10 % · 3 », « BCL 1,3k · 2 »… Les malus d'abord (rouge), puis les bonus (vert) ; doses de poison et de brûlure cumulées, bouclier additionné ; 4 effets affichés, « +n » pour les suivants

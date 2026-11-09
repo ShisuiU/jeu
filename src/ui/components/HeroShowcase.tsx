@@ -12,6 +12,7 @@ import { HeroArt } from '../art/HeroArt';
 import { Icon } from '../art/Icons';
 import { Modal } from './common';
 import { GearCard, SLOT_ICON } from './GearCard';
+import { GearArt, gearArtUrl } from '../art/GearArt';
 import { GearDetail } from './GearDetail';
 import { GearStars, SetEmblem } from '../art/SetEmblem';
 import { defaultStars } from '../../game/gear';
@@ -47,8 +48,8 @@ export function HeroShowcase({ heroId, h, onPrev, onNext, below }: { heroId: str
     );
     const r = GEAR_RARITIES[g.rarity];
     return (
-      <button key={s} className="sc-slot" style={{ ['--gc' as string]: r.color }} aria-label={`${name} ${r.name} +${g.level}`} onClick={() => setOpen(g.uid)}>
-        <I size={22} />
+      <button key={s} className={`sc-slot ${gearArtUrl(g.set, g.slot) ? 'has-art' : ''}`} style={{ ['--gc' as string]: r.color }} aria-label={`${name} ${r.name} +${g.level}`} onClick={() => setOpen(g.uid)}>
+        {gearArtUrl(g.set, g.slot) ? <GearArt set={g.set} slot={g.slot} className="sc-art" /> : <I size={22} />}
         <span className="sc-lv">+{g.level}</span>
         <span className="sc-set"><SetEmblem id={g.set} size={11} /></span>
         <span className="sc-stars"><GearStars n={g.stars ?? defaultStars(g.rarity)} size={7} /></span>

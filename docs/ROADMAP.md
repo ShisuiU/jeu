@@ -558,6 +558,12 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.68.14 — Coffres d'étoiles par difficulté
+
+- Les coffres d'étoiles ne sont plus par chapitre mais **par difficulté** (Normal, Difficile, Expert, Cauchemar) : toutes les étoiles gagnées dans les 9 chapitres d'une difficulté (270 au plus) ouvrent **un coffre tous les 30 étoiles** (9 coffres par difficulté), sur une piste en haut de l'écran de campagne.
+- Un coffre sur trois (90, 180, 270 étoiles) donne des **Éclats de faille** (1 / 2 / 3 / 4 selon la difficulté) et des cristaux ; les autres donnent des éclats d'Aeon (ou ternes en Normal), de l'or et des cristaux ; le dernier coffre ajoute des essences d'éveil. Tout est multiplié par 1, 2, 3 ou 4 selon la difficulté.
+- Les étoiles déjà gagnées comptent. Un point rouge sur l'onglet de la difficulté et sur la carte Campagne signale un coffre prêt.
+
 ## ✅ Version 1.68.13 — Arène par ligue, adversaires actualisables
 
 - **Les adversaires sont des joueurs de ta ligue** (Bronze, Argent, Or, Platine, Diamant), quelle que soit leur puissance, au lieu d'un filtre de puissance (50 à 170 % de la tienne) qui écartait les nouveaux joueurs. Les 3 adversaires sont choisis au plus près de 70 %, 95 % et 115 % de ta puissance, puis rangés du plus faible au plus fort (Accessible, Équilibré, Redoutable). S'il n'y a pas assez de joueurs dans ta ligue, l'Arène complète avec des Héritiers imaginaires.

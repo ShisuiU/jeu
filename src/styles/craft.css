@@ -965,3 +965,8 @@ body:has(.prep-bar) .bg-pill, body:has(.summon-bar) .bg-pill { bottom: calc(var(
 .lr-rew { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 4px; font-size: 12px; }
 .lr-rew .reward-inline small { display: none; }
 .league-rules { display: grid; gap: 4px; margin-top: 10px; font-size: 13px; color: var(--text-dim, #c9c1b3); }
+
+/* v1.68.14 — piste de coffres par difficulté (défilement horizontal). */
+.sc-track { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 6px; scrollbar-width: none; }
+.sc-track::-webkit-scrollbar { display: none; }
+.sc-track .sc-chest { flex: 0 0 96px; }

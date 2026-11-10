@@ -53,6 +53,24 @@ export const DUNGEON_DIFF_OPEN = 10;
 export const DUNGEON_GEAR_BONUS: Record<DifficultyId, number> = { normal: 0, hard: 3, expert: 6, nightmare: 9 };
 export const dungeonRewardMult = (diff: DifficultyId = 'normal') => DIFFICULTIES[diff].rewardMult;
 
+/** Étoiles de l'équipement de la Forge Engloutie (v1.68.11) : étages 1-2 → 1 à 2 ★, 3-9 → 1 à 3 ★, 10 et plus → 3 à 4 ★ ;
+ *  chaque difficulté décale la fourchette vers le haut (Difficile +1, Expert +2, Cauchemar +3), sans dépasser 6 ★. */
+const STAR_SHIFT: Record<DifficultyId, number> = { normal: 0, hard: 1, expert: 2, nightmare: 3 };
+export function forgeStarRange(floor: number, diff: DifficultyId = 'normal'): [number, number] {
+  const [lo, hi] = floor <= 2 ? [1, 2] : floor <= 9 ? [1, 3] : [3, 4];
+  const k = STAR_SHIFT[diff];
+  return [Math.min(6, lo + k), Math.min(6, hi + k)];
+}
+/** Tirage dans la fourchette : les petites étoiles sont les plus fréquentes (1-3 ★ : 50 % / 33 % / 17 %). */
+export function rollForgeStars(r: () => number, floor: number, diff: DifficultyId = 'normal'): number {
+  const [lo, hi] = forgeStarRange(floor, diff);
+  const ks = Array.from({ length: hi - lo + 1 }, (_, i) => lo + i);
+  const ws = ks.map((_, i) => ks.length - i);
+  let x = r() * ws.reduce((a, w) => a + w, 0);
+  for (let i = 0; i < ks.length; i++) { x -= ws[i]; if (x < 0) return ks[i]; }
+  return hi;
+}
+
 export function dungeonLevel(floor: number, diff: DifficultyId = 'normal') { return 2 + (floor - 1) * 4 + DIFFICULTIES[diff].levelAdd; }
 export const DUNGEON_STEP = 0.55;
 export const dungeonStatMult = (floor: number) => (floor <= 10 ? 1 : 1 + (floor - 10) * DUNGEON_STEP);

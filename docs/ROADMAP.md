@@ -558,6 +558,14 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.68.11 — L'équipement vient de la Forge Engloutie
+
+- **L'équipement ne se gagne plus qu'au donjon Forge Engloutie** (un objet garanti à chaque victoire, y compris en arrière-plan). La campagne ne donne plus d'équipement, seulement ses autres butins. Le Marché en vend toujours.
+- **Étoiles selon l'étage** : étages 1 et 2 → 1 à 2 ★, étages 3 à 9 → 1 à 3 ★, étage 10 et plus → 3 à 4 ★. Les petites étoiles restent les plus fréquentes (pour 1 à 3 ★ : 50 %, 33 %, 17 %).
+- **Plus la difficulté est haute, meilleurs sont les objets** : Difficile +1 ★, Expert +2 ★, Cauchemar +3 ★ (6 ★ au plus) ; par exemple étage 10 : 4 à 5 ★ en Difficile, 5 à 6 ★ en Expert, 6 ★ en Cauchemar. La rareté monte aussi avec la difficulté.
+- Chaque étage de la Forge affiche sa fourchette d'étoiles, et l'écran de préparation la rappelle.
+- Tests : fourchettes, tirage, un objet par victoire, plus d'équipement en campagne.
+
 ## ✅ Version 1.68.10 — Équipement à côté de l'or
 
 - Écran de victoire : l'équipement gagné se range **dans la même rangée que l'or et les ressources**, dans une case de la même taille (« Nouvel équipement »), au lieu d'une ligne séparée en dessous.

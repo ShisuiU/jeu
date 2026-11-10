@@ -48,3 +48,32 @@ describe('difficultés des donjons (v1.68.9)', () => {
     expect(DUNGEON_BY_ID.forge.gear).toBeTruthy();
   });
 });
+
+describe('étoiles de l’équipement de la Forge (v1.68.11)', () => {
+  it('fourchettes par étage et par difficulté', async () => {
+    const { forgeStarRange, rollForgeStars } = await import('../src/data/dungeons');
+    const { seededRand } = await import('../src/game/gear');
+    expect(forgeStarRange(1)).toEqual([1, 2]);
+    expect(forgeStarRange(2)).toEqual([1, 2]);
+    expect(forgeStarRange(3)).toEqual([1, 3]);
+    expect(forgeStarRange(9)).toEqual([1, 3]);
+    expect(forgeStarRange(10)).toEqual([3, 4]);
+    expect(forgeStarRange(10, 'hard')).toEqual([4, 5]);
+    expect(forgeStarRange(10, 'expert')).toEqual([5, 6]);
+    expect(forgeStarRange(10, 'nightmare')).toEqual([6, 6]);
+    expect(forgeStarRange(1, 'nightmare')).toEqual([4, 5]);
+    const r = seededRand(3); const seen = new Map<number, number>();
+    for (let i = 0; i < 3000; i++) { const v = rollForgeStars(r, 5); seen.set(v, (seen.get(v) ?? 0) + 1); }
+    expect([...seen.keys()].sort()).toEqual([1, 2, 3]);
+    expect(seen.get(1)!).toBeGreaterThan(seen.get(3)!); // les petites étoiles sont plus fréquentes
+  });
+  it('la Forge donne un objet à chaque victoire, avec des étoiles dans la fourchette', () => {
+    const s = fresh();
+    for (let i = 0; i < 10; i++) {
+      const res = applyMode(s, { mode: 'dungeon', dungeonId: 'forge', floor: 1 }, { won: true, alliesDead: 0, participants: [s.heroes[0].uid] }, NOW + i * 1000);
+      expect(res.gear).toHaveLength(1);
+      expect(res.gear[0].stars).toBeGreaterThanOrEqual(1);
+      expect(res.gear[0].stars).toBeLessThanOrEqual(2);
+    }
+  });
+});

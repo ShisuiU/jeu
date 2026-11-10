@@ -8,9 +8,7 @@ import type { UnitSetup } from './battle/types';
 import { energyMax, spendEnergy } from './energy';
 import { applyReward } from './rewards';
 import { addAccountXp, addHeroXp } from './progression';
-import { rollCampaignGear, seededRand, pickWeighted } from './gear';
-import { BALANCE } from '../data/balance';
-import { GEAR_INVENTORY_CAP } from '../data/equipment';
+import { seededRand, pickWeighted } from './gear';
 import { eventBonus } from './events';
 import { addCopy, heroBonus } from './copies';
 import type { GearItem } from '../save/schema';
@@ -129,15 +127,8 @@ export function applyStageResult(s: SaveData, stageId: string, diff: DifficultyI
   }
   s.progress.campaign[key] = { stars: Math.max(prog.stars, stars), clears: prog.clears + 1 };
 
-  // Butin aléatoire : équipement et matériaux d'amélioration.
+  // Butin aléatoire : matériaux d'amélioration. L'équipement ne vient plus que de la Forge Engloutie (v1.68.11).
   const r = seededRand(now ^ (prog.clears * 7919) ^ stage.index);
-  if (r() < BALANCE.upgrades.gearDropChance || stage.boss) {
-    if (s.equipment.length < GEAR_INVENTORY_CAP) {
-      const g = rollCampaignGear(r, stage.index, !!stage.boss, now, stage.chapter);
-      s.equipment.push(g);
-      result.gear.push(g);
-    }
-  }
   // Chapitre 1 : seulement ce qui sert tout de suite (les potions d'ascension ne servent qu'au niveau 10).
   const table = stage.chapter === 1 ? CAMPAIGN_LOOT.filter((l) => !['potionMinor', 'potionGreater', 'rankSigil', 'awakenEssence'].includes(l.resource)) : CAMPAIGN_LOOT;
   const [lootKey, lootAmount] = pickWeighted(r, table.map((l) => [[l.resource, l.amount] as [keyof Reward, number], l.weight]));

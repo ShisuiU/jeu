@@ -112,3 +112,8 @@
 /* Lieux (Sanctuaire, Forge) — colonne de gauche de l'accueil */
 .home-places { position: absolute; z-index: 3; left: 10px; top: calc(var(--sat) + 64px); display: flex; flex-direction: column; gap: 10px; }
 .home-places .sc-label { right: auto; left: 56px; }
+
+/* v1.68.10 — Équipement gagné dans la grille des récompenses, à côté de l'or. */
+.reward-item.reward-gear { padding: 6px 6px 8px; justify-content: space-between; }
+.reward-item.reward-gear .gear-card { width: 100%; max-width: 72px; }
+.reward-item.reward-gear .gear-card svg { width: auto; height: auto; }

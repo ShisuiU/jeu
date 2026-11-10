@@ -2,10 +2,13 @@ import type { Reward } from '../../data/resources';
 import { RESOURCES } from '../../data/resources';
 import { ResourceIcon, Icon } from '../art/Icons';
 import { fmt } from './common';
+import type { GearItem } from '../../save/schema';
+import { GearCard } from './GearCard';
 
-export function RewardView({ reward }: { reward: Reward }) {
+export function RewardView({ reward, gear = [] }: { reward: Reward; gear?: GearItem[] }) {
   // Grille équilibrée : 4 récompenses sur une ligne, 5 ou 6 en deux lignes de 3 (jamais une seule toute seule).
-  const n = Object.keys(reward).length;
+  // L'équipement gagné se range dans la même grille, à côté de l'or et des ressources.
+  const n = Object.keys(reward).length + gear.length;
   const cols = n <= 4 ? n : n <= 6 ? 3 : 4;
   return (
     <div className="reward-list" style={{ ['--n' as string]: Math.max(1, cols) }}>
@@ -19,6 +22,12 @@ export function RewardView({ reward }: { reward: Reward }) {
           </div>
         );
       })}
+      {gear.map((g, i) => (
+        <div key={g.uid} className="reward-item reward-gear" style={{ animationDelay: `${(Object.keys(reward).length + i) * 0.08}s` }}>
+          <GearCard g={g} />
+          <span className="muted">Nouvel équipement</span>
+        </div>
+      ))}
     </div>
   );
 }

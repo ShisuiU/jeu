@@ -34,7 +34,6 @@ import { Dialogue } from '../components/Dialogue';
 import { Modal } from '../components/common';
 import { RewardView } from '../components/RewardView';
 import { HeroCard } from '../components/HeroCard';
-import { GearCard } from '../components/GearCard';
 
 type Phase = 'intro' | 'fight' | 'outro' | 'result';
 interface Popup { id: number; text: string; cls: string }
@@ -503,13 +502,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
                     <div><div className="faint">NOUVEL HÉRITIER</div><b style={{ fontSize: 17 }}>{HERO_BY_ID[id].name}</b><div className="muted">rejoint ta collection ! Ajoute-le à une équipe dans l’écran Équipe.</div></div>
                   </div>
                 ))}
-                <RewardView reward={{ ...result.reward, ...Object.fromEntries(Object.entries(result.loot).map(([k, v]) => [k, (result.reward[k as keyof typeof result.reward] ?? 0) + (v ?? 0)])) }} />
-                {result.gear.length > 0 && (
-                  <div className="row" style={{ justifyContent: 'center', gap: 10, marginTop: 10 }}>
-                    {result.gear.map((g) => <div key={g.uid} style={{ width: 70 }}><GearCard g={g} /></div>)}
-                    <span className="faint">Nouvel équipement !</span>
-                  </div>
-                )}
+                <RewardView reward={{ ...result.reward, ...Object.fromEntries(Object.entries(result.loot).map(([k, v]) => [k, (result.reward[k as keyof typeof result.reward] ?? 0) + (v ?? 0)])) }} gear={result.gear} />
                 <DamageRecap units={s.units} />
                 <div className="xp-list">
                   {result.heroXp.map((h) => {

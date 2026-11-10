@@ -94,3 +94,26 @@ describe('absorption des doublons (v1.68.3)', () => {
     expect(feedHeroes(s, target.uid, [copyKey('merrin')]).ok).toBe(false);
   });
 });
+
+describe('aperçu du bouton Max (élixirs)', () => {
+  it('annonce exactement ce que Max va dépenser', async () => {
+    const { elixirPreview, elixirsToCap, useElixirs } = await import('../src/game/upgrade');
+    const s = createNewSave(1000);
+    s.resources.xpElixir = 500; s.resources.gold = 1e7;
+    const h = s.heroes[0];
+    const p = elixirPreview(s, h, elixirsToCap(h));
+    const gold = s.resources.gold, elix = s.resources.xpElixir;
+    useElixirs(s, h.uid, elixirsToCap(h));
+    expect(elix - s.resources.xpElixir).toBe(p.used);
+    expect(gold - s.resources.gold).toBe(p.gold);
+    expect(h.level).toBe(p.to);
+  });
+  it('dit quand l’or manque', async () => {
+    const { elixirPreview, elixirsToCap } = await import('../src/game/upgrade');
+    const s = createNewSave(1000);
+    s.resources.xpElixir = 500; s.resources.gold = 100;
+    const p = elixirPreview(s, s.heroes[0], elixirsToCap(s.heroes[0]));
+    expect(p.limit).toBe('gold');
+    expect(p.used).toBe(0);
+  });
+});

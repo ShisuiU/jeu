@@ -7,9 +7,9 @@ import { BALANCE } from '../../data/balance';
 import { RARITIES } from '../../data/rarities';
 import { maxLevelForRank, powerOf } from '../../game/stats';
 import { heroTotalStats } from '../../game/heroStats';
-import { ascend, ascendCheck, awaken, awakenCheck, canImprove, elixirsToCap, rankUp, rankUpCheck, skillCheck, useElixirs as applyElixirs, type Check } from '../../game/upgrade';
+import { ascend, ascendCheck, awaken, awakenCheck, canImprove, elixirPreview, elixirsToCap, rankUp, rankUpCheck, skillCheck, useElixirs as applyElixirs, type Check } from '../../game/upgrade';
 import { play } from '../../audio/sfx';
-import { Screen, fmt } from '../components/common';
+import { Modal, Screen, fmt } from '../components/common';
 import { CostView } from '../components/Cost';
 import { HeroStrip, useHeroOrder } from '../components/HeroStrip';
 import { HeroArt } from '../art/HeroArt';
@@ -35,6 +35,9 @@ export function Sanctuary({ uid }: { uid?: string }) {
   const d = HERO_BY_ID[h.heroId];
   const cap = maxLevelForRank(h.rank);
   const toCap = elixirsToCap(h);
+  const [maxAsk, setMaxAsk] = useState(false);
+  const one = elixirPreview(save, h, 1);
+  const all = elixirPreview(save, h, toCap);
 
   const run = (fn: (s: typeof save) => Check, okMsg: string) => {
     let c: Check = { ok: false, cost: {} };
@@ -83,12 +86,35 @@ export function Sanctuary({ uid }: { uid?: string }) {
           <Wallet ids={['xpElixir', 'gold']} cols={2} />
           <div className="upg-list">
             <UpRow icon={<ResourceIcon icon="flask" color="#9bdc6a" size={20} />} label="Élixirs" value={`${h.level}/${cap}`}
-              sub={h.level < cap ? <span>{save.resources.xpElixir} élixir(s)</span> : <span>Niveau maximum du rang : monte de rang</span>}>
-              <button className="btn secondary small" disabled={!toCap || !save.resources.xpElixir} onClick={() => elixir(1)}>+1</button>
-              <button className="btn small" disabled={!toCap || !save.resources.xpElixir} onClick={() => elixir(toCap)}>Max</button>
+              sub={h.level < cap ? <span>{save.resources.xpElixir} élixir(s) · +1 : {fmt(BALANCE.upgrades.elixirGoldPerLevel * h.level)} or</span> : <span>Niveau maximum du rang : monte de rang</span>}>
+              <button className="btn secondary small" disabled={!one.used} onClick={() => elixir(1)}>+1</button>
+              <button className="btn small" disabled={!all.used} onClick={() => setMaxAsk(true)}>Max</button>
             </UpRow>
+            {h.level < cap && all.used > 0 && (
+              <div className="elx-cost">
+                <span>Max : niv. <b>{all.from}</b> → <b>{all.to}</b></span>
+                <span><ResourceIcon icon="flask" color="#9bdc6a" size={15} /> {all.used} · <ResourceIcon icon="coin" size={15} /> {fmt(all.gold)}</span>
+              </div>
+            )}
           </div>
           <FeedPanel targetUid={h.uid} />
+          {maxAsk && (
+            <Modal onClose={() => setMaxAsk(false)}>
+              <h2>Monter au maximum ?</h2>
+              <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>
+                {d.name.split(/[ ,]/)[0]} passe du niveau <b>{all.from}</b> au niveau <b>{all.to}</b>{all.to < cap ? ` (le maximum du rang est ${cap})` : ''}.
+              </p>
+              <div className="elx-bill">
+                <div><ResourceIcon icon="flask" color="#9bdc6a" size={22} /><span>Élixirs d’expérience</span><b>{all.used}</b><small>sur {save.resources.xpElixir}</small></div>
+                <div><ResourceIcon icon="coin" size={22} /><span>Or</span><b>{all.gold.toLocaleString('fr-FR')}</b><small>sur {save.resources.gold.toLocaleString('fr-FR')}</small></div>
+              </div>
+              {all.limit && <p className="hint" style={{ marginTop: 8 }}>{all.limit === 'elixirs' ? 'Pas assez d’élixirs pour aller jusqu’au bout : ' : 'Pas assez d’or pour aller jusqu’au bout : '}on s’arrête au niveau {all.to}.</p>}
+              <div className="row" style={{ gap: 8, marginTop: 12 }}>
+                <button className="btn secondary grow" onClick={() => setMaxAsk(false)}>Annuler</button>
+                <button className="btn grow" onClick={() => { setMaxAsk(false); elixir(all.used); }}>Utiliser</button>
+              </div>
+            </Modal>
+          )}
         </>
       )}
       {tab === 'rank' && (

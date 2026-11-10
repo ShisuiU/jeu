@@ -923,3 +923,12 @@ body:has(.prep-bar) .bg-pill, body:has(.summon-bar) .bg-pill { bottom: calc(var(
 .gd-card .gear-card .gc-lvl { font-size: 15px; top: 5px; left: 7px; }
 .gd-card .gear-card .gc-set { top: 6px; right: 6px; transform: scale(1.35); transform-origin: top right; }
 .gd-card .gear-card .gstars { transform: scale(1.5); transform-origin: bottom center; margin-bottom: 4px; }
+
+/* v1.68.6 — Coût des élixirs (bouton Max) affiché avant de valider. */
+.elx-cost { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: -2px 0 10px; padding: 7px 10px; border-radius: 6px; background: rgba(155,220,106,0.08); border: 1px solid rgba(155,220,106,0.25); font-size: 13px; }
+.elx-cost span { display: inline-flex; align-items: center; gap: 4px; }
+.elx-bill { display: grid; gap: 8px; }
+.elx-bill > div { display: grid; grid-template-columns: auto 1fr auto; grid-template-rows: auto auto; column-gap: 10px; align-items: center; padding: 8px 12px; border-radius: 6px; background: rgba(255,255,255,0.04); border: 1px solid var(--line); }
+.elx-bill > div > :first-child { grid-row: span 2; }
+.elx-bill b { font-size: 18px; color: var(--gold-hi); text-align: right; }
+.elx-bill small { grid-column: 3; text-align: right; color: var(--text-faint); font-size: 12px; }

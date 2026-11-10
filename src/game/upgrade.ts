@@ -43,6 +43,21 @@ export function elixirsToCap(h: HeroInstance): number {
   return Math.ceil(need / U.elixirXp);
 }
 
+/** Ce que coûterait `count` élixirs (sans rien changer) : élixirs vraiment utilisés, or, niveau atteint, et ce qui bloque. */
+export function elixirPreview(s: SaveData, h: HeroInstance, count: number): { used: number; gold: number; from: number; to: number; limit?: 'elixirs' | 'gold' } {
+  const sim = { ...h };
+  let used = 0, gold = 0, elix = s.resources.xpElixir, money = s.resources.gold;
+  let limit: 'elixirs' | 'gold' | undefined;
+  while (used < count && sim.level < maxLevelForRank(sim.rank)) {
+    const g = U.elixirGoldPerLevel * sim.level;
+    if (elix < 1) { limit = 'elixirs'; break; }
+    if (money < g) { limit = 'gold'; break; }
+    elix -= 1; money -= g; gold += g; used++;
+    addHeroXp(sim, U.elixirXp);
+  }
+  return { used, gold, from: h.level, to: sim.level, limit };
+}
+
 export function useElixirs(s: SaveData, heroUid: string, count: number): { used: number; levels: number; reason?: string } {
   const h = find(s, heroUid);
   if (!h) return { used: 0, levels: 0, reason: 'Héros introuvable.' };

@@ -5,7 +5,7 @@ import { BALANCE } from '../../data/balance';
 import type { HeroInstance } from '../../save/schema';
 import { maxLevelForRank } from '../../game/stats';
 import { heroXpToNext } from '../../game/progression';
-import { ascend, ascendCheck, awaken, awakenCheck, elixirsToCap, rankUp, rankUpCheck, skillCheck, upgradeSkill, useElixirs as applyElixirs, type Check } from '../../game/upgrade';
+import { ascend, ascendCheck, awaken, awakenCheck, elixirPreview, elixirsToCap, rankUp, rankUpCheck, skillCheck, upgradeSkill, useElixirs as applyElixirs, type Check } from '../../game/upgrade';
 import { play } from '../../audio/sfx';
 import { Panel, fmt } from '../components/common';
 import { CostView } from '../components/Cost';
@@ -50,7 +50,7 @@ export function HeroUpgrade({ h, section }: { h: HeroInstance; section?: Upgrade
         </div>
         <div className="row" style={{ gap: 8, marginTop: 8 }}>
           <button className="btn secondary small grow" disabled={!toCap || !save.resources.xpElixir} onClick={() => elixir(1)}>+1 élixir</button>
-          <button className="btn small grow" disabled={!toCap || !save.resources.xpElixir} onClick={() => elixir(toCap)}>Jusqu’au max ({Math.min(toCap, save.resources.xpElixir)})</button>
+          <button className="btn small grow" disabled={!toCap || !save.resources.xpElixir} onClick={() => elixir(toCap)}>{(() => { const p = elixirPreview(save, h, toCap); return `Max : niv. ${p.to} · ${p.used} élixir${p.used > 1 ? 's' : ''} · ${fmt(p.gold)} or`; })()}</button>
         </div>
       </Panel>
 

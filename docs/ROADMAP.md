@@ -558,6 +558,25 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.68.18 — Roue quotidienne
+
+- **Nouveau bouton « Roue » sur l'Accueil** (point rouge quand le tour du jour est disponible) : **un tour gratuit par jour**.
+- 8 cases : **5, 10, 30 et 50 énergie** (l'énergie gagnée peut dépasser le maximum), 5 000 or, 30 cristaux, 3 élixirs d'expérience, et une **case rare avec un Éclat de faille** (3 % de chances).
+
+| Case | Chance |
+|---|---|
+| 5 énergie | 22 % |
+| 10 énergie | 18 % |
+| 30 énergie | 9 % |
+| 50 énergie | 5 % |
+| 5 000 or | 18 % |
+| 30 cristaux | 12 % |
+| 3 élixirs d'expérience | 13 % |
+| Éclat de faille | 3 % |
+
+- La case gagnée est tirée et donnée dès le toucher, puis la roue tourne jusqu'à elle ; le gain du jour reste affiché, avec le temps avant le prochain tour.
+- Tests : un tour par jour, récompense donnée, cases et rareté de l'Éclat de faille.
+
 ## ✅ Version 1.68.17 — Écran de victoire compact
 
 - La phrase d'un héros en haut de l'écran de victoire est retirée.

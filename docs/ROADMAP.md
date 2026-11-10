@@ -558,6 +558,11 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.67.1 — Équipement rangé par ensemble
+
+- **Listes rangées par ensemble**, comme dans les grands jeux du genre : le sac de la Forge, le Démantèlement et la liste « Changer » de la fiche d'un héros regroupent les objets sous un bandeau par ensemble (emblème, nom, nombre de pièces, bonus, nombre d'objets). Les ensembles les plus fournis passent en premier, et le tri choisi s'applique à l'intérieur de chaque ensemble.
+- **Fiche d'un objet allégée** : la statistique principale n'est plus écrite sur l'image de l'objet, seulement dans la liste « Principale » en dessous (même chose au Marché). Les petites cartes des listes la gardent pour aider à choisir.
+
 ## ✅ Version 1.67.0 — Dix héros du rang et un sac illustré
 
 - **10 nouveaux héros à invoquer**, de raretés basses pour que les grandes raretés restent précieuses : 50 héros en tout (10 Communs, 10 Peu communs, 10 Rares, 10 Épiques, 8 Légendaires, 2 Mythiques)

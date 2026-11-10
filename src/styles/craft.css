@@ -881,3 +881,13 @@ body:has(.battle-controls) .toasts { bottom: auto; top: calc(var(--sat, 0px) + 1
 .prep-lead { height: 17px; display: grid; place-items: center; font-size: 10px; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 6px; color: transparent; }
 .prep-lead.on { color: #23180a; background: linear-gradient(180deg, #ffe7ad, #b4863d); box-shadow: 0 0 8px rgba(255,211,107,0.35); }
 .prep-team-strip .mini-slot:has(.hero-card) { border: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+
+/* ─── Listes d'équipement rangées par ensemble (v1.67.1) ─── */
+.gear-sets { display: flex; flex-direction: column; gap: 14px; }
+.gs-head { display: flex; align-items: center; gap: 10px; padding: 7px 10px; margin-bottom: 8px; border-radius: 6px;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--sc) 20%, transparent), transparent 85%); border-left: 3px solid var(--sc); }
+.gs-head b { color: var(--sc); font-size: 14px; }
+.gs-head .faint { font-size: 12px; }
+.gs-bonus { font-size: 12px; color: var(--text-dim, #c9c1b3); line-height: 1.2; }
+.gs-count { min-width: 26px; padding: 2px 7px; border-radius: 10px; text-align: center; font-weight: 800; font-size: 12px;
+  background: color-mix(in srgb, var(--sc) 22%, rgba(0,0,0,0.5)); color: #fff; }

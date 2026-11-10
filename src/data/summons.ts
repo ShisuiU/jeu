@@ -28,10 +28,10 @@ export const BANNERS: BannerDef[] = [
     color: '#8d949c', glow: '#c9ced3',
   },
   {
-    id: 'aeon', name: 'Invocation rare', subtitle: 'Éclats d’Aeon : Rare garanti, Légendaire possible.',
+    id: 'aeon', name: 'Invocation rare', subtitle: 'Éclats d’Aeon : Rare garanti, Épique une fois sur six.',
     cost: { resource: 'shardAeon', amount: 1 },
-    rates: { rare: 92, epic: 7.2, legendary: 0.7, mythic: 0.1 },
-    pity: { rarity: 'legendary', every: 100 },
+    rates: { rare: 82, epic: 16, legendary: 1.8, mythic: 0.2 },
+    pity: { rarity: 'legendary', every: 50 },
     multiGuarantee: 'epic',
     color: '#3d8bff', glow: '#8ab8ff',
   },

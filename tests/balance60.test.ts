@@ -4,7 +4,8 @@ import { awakenCheck } from '../src/game/upgrade';
 import { sweepTower, towerSweepMax } from '../src/game/towerSweep';
 import { ghostRanks } from '../src/game/ranks';
 import { BANNER_BY_ID } from '../src/data/summons';
-import { DAILY_BONUS } from '../src/data/missions';
+import { DAILY_BONUS, DAILY_MISSIONS, WEEKLY_BONUS, WEEKLY_MISSIONS } from '../src/data/missions';
+import { BOSS_TIERS } from '../src/data/worldBoss';
 
 describe('Équilibrage v1.60', () => {
   it('éveil sans doublon : possible avec plus d’essence', () => {
@@ -36,9 +37,9 @@ describe('Équilibrage v1.60', () => {
     expect(ghostRanks('arena', 12)).toHaveLength(0);
     expect(ghostRanks('tower', 0).every((g) => g.uid.startsWith('ghost:') && g.tower > 0)).toBe(true);
   });
-  it('plus de cristaux ; légendaire garanti au 40e appel épique (v1.66.4)', () => {
+  it('légendaire garanti au 40e appel épique (v1.66.4), bonus du jour revu en v1.68.2', () => {
     expect(BANNER_BY_ID.epic.pity!.every).toBe(40);
-    expect(DAILY_BONUS.crystals).toBe(150);
+    expect(DAILY_BONUS.crystals).toBe(100);
   });
 });
 
@@ -48,6 +49,23 @@ describe('Invocations v1.66.4', () => {
     expect(b.rates.rare).toBeGreaterThan(40);
     expect((b.rates.epic ?? 0) + (b.rates.legendary ?? 0) + (b.rates.mythic ?? 0)).toBeLessThan(55);
     expect(b.multiGuarantee).toBe('epic');
+    expect(Object.values(b.rates).reduce((a, x) => a + (x ?? 0), 0)).toBeCloseTo(100, 5);
+  });
+});
+
+describe('Économie v1.68.2 (audit : trop d’invocations)', () => {
+  it('cristaux d’un joueur régulier : environ une invocation épique par jour, pas trois', () => {
+    const daily = DAILY_MISSIONS.reduce((a, m) => a + (m.reward.crystals ?? 0), 0) + (DAILY_BONUS.crystals ?? 0);
+    const weekly = (WEEKLY_MISSIONS.reduce((a, m) => a + (m.reward.crystals ?? 0), 0) + (WEEKLY_BONUS.crystals ?? 0)) / 7;
+    const boss = 3 * (BOSS_TIERS.find((t) => t.id === 'nightmare')!.reward.crystals ?? 0); // 3 clés au plus haut niveau
+    const total = daily + weekly + boss + 80; // + camp et arène
+    expect(total).toBeLessThan(2 * BANNER_BY_ID.epic.cost.amount);
+    expect(total).toBeGreaterThan(BANNER_BY_ID.epic.cost.amount);
+  });
+  it('appel rare : un Épique une fois sur six, Légendaire garanti au 50e appel', () => {
+    const b = BANNER_BY_ID.aeon;
+    expect(b.pity!.every).toBe(50);
+    expect(b.rates.epic).toBeGreaterThanOrEqual(15);
     expect(Object.values(b.rates).reduce((a, x) => a + (x ?? 0), 0)).toBeCloseTo(100, 5);
   });
 });

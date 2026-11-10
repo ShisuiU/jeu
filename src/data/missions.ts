@@ -22,7 +22,7 @@ export const DAILY_MISSIONS: MissionDef[] = [
   { id: 'd_arena', key: 'arenaFight', target: 2, title: 'Combattre 2 fois dans l’arène', reward: { crystals: 40 } },
   { id: 'd_expedition', key: 'expedition', target: 1, title: 'Terminer 1 expédition', reward: { gold: 4000, xpElixir: 2 } },
 ];
-export const DAILY_BONUS: Reward = { crystals: 150, shardDim: 2 };
+export const DAILY_BONUS: Reward = { crystals: 100, shardDim: 2 };
 
 export const WEEKLY_MISSIONS: MissionDef[] = [
   { id: 'w_win', key: 'battleWin', target: 40, title: 'Remporter 40 combats', reward: { crystals: 150, skillTome: 2 } },
@@ -33,4 +33,4 @@ export const WEEKLY_MISSIONS: MissionDef[] = [
   { id: 'w_arena', key: 'arenaWin', target: 10, title: 'Gagner 10 combats d’arène', reward: { crystals: 100, shardDim: 3 } },
   { id: 'w_upgrade', key: 'heroUpgrade', target: 5, title: 'Améliorer 5 fois un héros (rang, ascension, compétence)', reward: { awakenEssence: 2 } },
 ];
-export const WEEKLY_BONUS: Reward = { shardAeon: 2, crystals: 400, masteryScroll: 6 };
+export const WEEKLY_BONUS: Reward = { shardAeon: 2, crystals: 250, masteryScroll: 6 };

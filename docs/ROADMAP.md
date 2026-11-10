@@ -558,6 +558,10 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.68.10 — Équipement à côté de l'or
+
+- Écran de victoire : l'équipement gagné se range **dans la même rangée que l'or et les ressources**, dans une case de la même taille (« Nouvel équipement »), au lieu d'une ligne séparée en dessous.
+
 ## ✅ Version 1.68.9 — Difficultés des donjons, fin du Balayage
 
 - **Les 4 donjons ont maintenant les 4 difficultés de la campagne** : Normal, Difficile, Expert, Cauchemar (onglets en haut de chaque donjon, la difficulté choisie est retenue).

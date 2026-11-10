@@ -16,7 +16,6 @@ import { STATUS_INFO, type Action, type BattleState, type Unit, type UnitSetup }
 import { effectiveCooldown } from '../../game/battle/skillMods';
 import { teamSetups } from '../../game/campaign';
 import { applyMode, nextSpec, payMode, resolveMode, type BattleSpec, type ModeResult } from '../../game/modes';
-import { heroXpToNext } from '../../game/progression';
 import { play } from '../../audio/sfx';
 import { playMusic } from '../../audio/music';
 import { loadCloud } from '../../cloud/account';
@@ -503,22 +502,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
                   </div>
                 ))}
                 <RewardView reward={{ ...result.reward, ...Object.fromEntries(Object.entries(result.loot).map(([k, v]) => [k, (result.reward[k as keyof typeof result.reward] ?? 0) + (v ?? 0)])) }} gear={result.gear} />
-                <DamageRecap units={s.units} />
-                <div className="xp-list">
-                  {result.heroXp.map((h) => {
-                    const inst = useGame.getState().save!.heroes.find((x) => x.uid === h.uid);
-                    return (
-                      <div key={h.uid} className="xp-row">
-                        <div className="xp-ava"><HeroArt heroId={h.heroId} /></div>
-                        <div className="grow">
-                          <div className="row between"><b>{HERO_BY_ID[h.heroId].name}</b><span className={h.levelsGained ? 'lvlup' : 'faint'}>{h.levelsGained ? `Niv. ${h.level} ▲` : h.capped ? 'Niveau max' : `Niv. ${h.level}`}</span></div>
-                          <div className="progress"><div style={{ width: `${inst && !h.capped ? (inst.xp / heroXpToNext(inst.level)) * 100 : 100}%` }} /></div>
-                        </div>
-                        <span className="faint">+{h.xp} XP</span>
-                      </div>
-                    );
-                  })}
-                </div>
+                <DamageRecap units={s.units} xp={result.heroXp} />
               </>
             ) : (
               <div className="hint">
@@ -697,25 +681,28 @@ function UnitView({ u, vfx, active, acting, hit, heavy, targetable, popups, onCl
 
 /** Effets en cours, listés sous la carte avec leur valeur : néfastes d'abord (rouge), puis bénéfiques (vert), et les tours restants. */
 /** Récap de fin de combat : part des dégâts infligés par chaque héros (du plus gros au plus petit). */
-function DamageRecap({ units }: { units: Unit[] }) {
+/** Héros du combat : part des dégâts (et, après une victoire, niveau et expérience gagnée) en une seule liste. */
+function DamageRecap({ units, xp }: { units: Unit[]; xp?: { uid: string; heroId: string; xp: number; levelsGained: number; capped: boolean; level: number }[] }) {
   const heroes = units.filter((u) => u.side === 'ally' && u.kind === 'hero');
   const total = heroes.reduce((n, u) => n + (u.flags.dmgDealt ?? 0), 0);
-  if (!total) return null;
+  if (!total && !xp?.length) return null;
   const rows = [...heroes].sort((a, b) => (b.flags.dmgDealt ?? 0) - (a.flags.dmgDealt ?? 0));
   const top = rows[0].flags.dmgDealt ?? 0;
   const fmt = (n: number) => (n >= 10000 ? `${Math.round(n / 1000)} k` : n.toLocaleString('fr-FR'));
   return (
     <div className="dmg-recap">
-      <div className="dr-title">Dégâts infligés</div>
+      <div className="dr-title">{xp ? 'Tes héros' : 'Dégâts infligés'}</div>
       {rows.map((u, i) => {
         const d = u.flags.dmgDealt ?? 0;
-        const pct = Math.round((d / total) * 100);
+        const pct = total ? Math.round((d / total) * 100) : 0;
+        const x = xp?.find((h) => h.uid === u.heroUid);
         return (
           <div key={u.id} className={`dr-row ${i === 0 ? 'mvp' : ''}`}>
             <div className="xp-ava"><HeroArt heroId={u.refId} /></div>
             <div className="grow">
               <div className="row between"><b>{HERO_BY_ID[u.refId]?.name.split(/[ ,]/)[0] ?? u.name}{i === 0 && <span className="dr-mvp">Meilleur</span>}</b><span className="dr-pct">{pct} %</span></div>
               <div className="dr-bar"><div style={{ width: `${top ? (d / top) * 100 : 0}%`, animationDelay: `${0.15 + i * 0.12}s` }} /></div>
+              {x && <div className="dr-xp"><span className={x.levelsGained ? 'lvlup' : ''}>{x.levelsGained ? `Niv. ${x.level} ▲` : x.capped ? 'Niveau max' : `Niv. ${x.level}`}</span><span>+{x.xp} XP</span></div>}
             </div>
             <span className="faint dr-val">{fmt(d)}</span>
           </div>

@@ -558,6 +558,15 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.68.13 — Arène par ligue, adversaires actualisables
+
+- **Les adversaires sont des joueurs de ta ligue** (Bronze, Argent, Or, Platine, Diamant), quelle que soit leur puissance, au lieu d'un filtre de puissance (50 à 170 % de la tienne) qui écartait les nouveaux joueurs. Les 3 adversaires sont choisis au plus près de 70 %, 95 % et 115 % de ta puissance, puis rangés du plus faible au plus fort (Accessible, Équilibré, Redoutable). S'il n'y a pas assez de joueurs dans ta ligue, l'Arène complète avec des Héritiers imaginaires.
+- Les joueurs de ta ligue sont rechargés à **chaque visite** de l'Arène (avant : une fois par session), pour que les nouveaux joueurs apparaissent vite.
+- **Bouton « Actualiser »** : de nouveaux adversaires, **une fois gratuitement par jour**, ensuite **20 cristaux**. Une vengeance en cours est gardée.
+- **Écran allégé** : le bouton « Classement » et le texte d'explication sont retirés (les classements restent dans Menu → Classements). À la place, un bouton **« Défense »** ouvre la gestion de ton équipe de défense (choix de l'équipe, et accès direct aux équipes).
+- Rappel : un joueur apparaît dans l'Arène une fois connecté à son compte et l'Arène débloquée (après le niveau 3-4).
+- Tests : choix dans la ligue, bornes des ligues, actualisation gratuite puis payante.
+
 ## ✅ Version 1.68.12 — Coffres d'étoiles de la campagne
 
 - **Dans chaque chapitre et chaque difficulté, 3 coffres d'étoiles** (à 10, 20 et 30 étoiles), sous la carte du chapitre, avec une barre de progression. Un coffre prêt brille ; on le touche pour le récupérer.

@@ -105,6 +105,8 @@ export interface SaveData {
   missions: { daily: MissionProgress; weekly: MissionProgress };
   achievements: string[];
   arena: { rating: number; wins: number; losses: number; ticketsUsed: number; opponents: ArenaOpponent[];
+    /** Actualisations des adversaires aujourd'hui (la première est gratuite). */
+    refreshes?: number;
     /** Équipe publiée en défense (par défaut : l'équipe active). */ defenseTeamId: string;
     /** Journal de défense déjà compté dans le classement (date du dernier combat appliqué). */ logSeen: number;
     log: ArenaLogEntry[]; revenged: string[] };

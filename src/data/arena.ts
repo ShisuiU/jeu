@@ -2,7 +2,7 @@ import type { Reward } from './resources';
 
 // ARÈNE — combats contre des équipes contrôlées par l'ordinateur. L'architecture (équipes décrites par des
 // données, moteur déterministe) permettra plus tard d'affronter les équipes défensives d'autres joueurs.
-export const ARENA = { ticketsPerDay: 5, startRating: 1000, winBase: 18, lossPenalty: 10 };
+export const ARENA = { ticketsPerDay: 5, startRating: 1000, winBase: 18, lossPenalty: 10, freeRefreshes: 1, refreshCost: 20 };
 
 export const ARENA_TIERS = [
   { id: 'bronze', name: 'Bronze', min: 0, color: '#c08a5a', reward: { gold: 1500, crystals: 10 } as Reward },

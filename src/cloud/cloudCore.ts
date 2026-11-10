@@ -188,10 +188,11 @@ export async function publishDefenseNow() {
   ensure(); const u = auth.currentUser; const s = useGame.getState().save;
   if (u && s) await publishDefense(u.uid, s, true);
 }
-/** Défenses de puissance proche (de 50 % à 170 % de la sienne), sans la sienne. */
-export async function fetchDefenses(power: number): Promise<ArenaDefense[]> {
+/** Défenses des joueurs de la même ligue (classement entre `min` et `max` exclu), sans la sienne. */
+export async function fetchDefenses(min: number, max: number | null): Promise<ArenaDefense[]> {
   ensure(); const me = auth.currentUser?.uid;
-  const snap = await getDocs(query(collection(db, 'defenses'), where('power', '>=', Math.floor(power * 0.5)), where('power', '<=', Math.ceil(power * 1.7)), orderBy('power'), limit(40)));
+  const range = max === null ? [where('rating', '>=', min)] : [where('rating', '>=', min), where('rating', '<', max)];
+  const snap = await getDocs(query(collection(db, 'defenses'), ...range, orderBy('rating', 'desc'), limit(60)));
   return snap.docs.filter((d) => d.id !== me).map((d) => ({ ...(d.data() as Omit<ArenaDefense, 'uid'>), uid: d.id }));
 }
 export async function fetchDefense(uid: string): Promise<ArenaDefense | null> {

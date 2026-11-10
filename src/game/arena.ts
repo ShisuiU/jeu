@@ -1,4 +1,4 @@
-import { ARENA, ARENA_NAMES } from '../data/arena';
+import { ARENA, ARENA_NAMES, ARENA_TIERS, arenaTier } from '../data/arena';
 import { HEROES, HERO_BY_ID } from '../data/heroes';
 import { RARITIES } from '../data/rarities';
 import { uid } from '../core/ids';
@@ -24,7 +24,8 @@ function teamPower(heroes: { heroId: string; level: number }[]): number {
 }
 
 // ARÈNE RÉELLE — chaque joueur connecté publie son équipe de défense (defenses/{uid}) : héros, niveaux,
-// rangs, compétences et équipement. Les adversaires « Joueur » sont ces vraies équipes, choisies par puissance.
+// rangs, compétences et équipement. Les adversaires « Joueur » sont ces vraies équipes, choisies DANS LA MÊME LIGUE
+// (Bronze, Argent, Or, Platine, Diamant) que le joueur (v1.68.13).
 export interface DefenseHero { refId: string; slot: number; level: number; rank?: number; ascension?: number; awaken?: number; skillLevels?: Record<string, number>; gear?: GearBonus }
 export interface ArenaDefense { uid: string; name: string; avatar: string; level: number; power: number; rating: number; team: DefenseHero[]; updatedAt: number }
 
@@ -78,17 +79,27 @@ export function opponentFromDefense(d: ArenaDefense, revenge?: string): ArenaOpp
   };
 }
 
+/** Bornes de classement de la ligue d'un joueur : [minimum, maximum exclu] (pas de maximum pour la dernière). */
+export function leagueBounds(rating: number): [number, number | null] {
+  const t = arenaTier(rating);
+  const i = ARENA_TIERS.findIndex((x) => x.id === t.id);
+  return [t.min, ARENA_TIERS[i + 1]?.min ?? null];
+}
+export const sameLeague = (a: number, b: number) => arenaTier(a).id === arenaTier(b).id;
+
 /**
- * Trois adversaires calibrés sur la puissance du joueur : accessible, équilibré, redoutable.
- * Avec un compte et des joueurs en ligne de puissance proche : leurs vraies équipes de défense.
- * Sinon, un Héritier imaginaire, annoncé comme tel.
+ * Trois adversaires : accessible, équilibré, redoutable.
+ * Avec un compte : de vrais joueurs DE LA MÊME LIGUE (quelle que soit leur puissance), choisis au plus près de
+ * 70 %, 95 % et 115 % de ta puissance, puis rangés du plus faible au plus fort.
+ * S'il n'y en a pas assez : des Héritiers imaginaires calibrés sur ta puissance, annoncés comme tels.
  */
 export function generateOpponents(s: SaveData, r: Rand, pool: ArenaDefense[] = defenses): ArenaOpponent[] {
   const target = playerTeamPower(s);
   const used = new Set<string>();
-  return ([[0.7, 3], [0.95, 4], [1.15, 5]] as const).map(([ratio, count]) => {
+  const league = pool.filter((p) => sameLeague(p.rating ?? ARENA.startRating, s.arena.rating));
+  const out = ([[0.7, 3], [0.95, 4], [1.15, 5]] as const).map(([ratio, count]) => {
     const want = target * ratio;
-    const real = pool.filter((p) => !used.has(p.uid) && Math.abs(p.power - want) <= want * 0.35)
+    const real = league.filter((p) => !used.has(p.uid))
       .sort((a, b) => Math.abs(a.power - want) - Math.abs(b.power - want))[0];
     if (real) { used.add(real.uid); return opponentFromDefense(real); }
     const heroPool = [...HEROES];
@@ -102,8 +113,10 @@ export function generateOpponents(s: SaveData, r: Rand, pool: ArenaDefense[] = d
       level = lv;
     }
     const heroes = picks.map((heroId, i) => ({ heroId, level: Math.min(level, maxLevelForRank(RARITIES[HERO_BY_ID[heroId].rarity].startRank + 1)), slot: i }));
-    return { id: uid('op_'), name: ARENA_NAMES[Math.floor(r() * ARENA_NAMES.length)], heroes, power: teamPower(heroes) };
+    return { id: uid('op_'), name: ARENA_NAMES[Math.floor(r() * ARENA_NAMES.length)], heroes, power: teamPower(heroes) } as ArenaOpponent;
   });
+  // Du plus faible au plus fort : « Accessible », « Équilibré », « Redoutable » restent vrais.
+  return out.sort((a, b) => a.power - b.power);
 }
 
 // Journal de défense : points gagnés ou perdus par la défense, appliqués au classement du défenseur.
@@ -130,4 +143,16 @@ export function applyDefenseLog(s: SaveData, entries: ArenaLogEntry[]): { won: n
 
 export function ratingDelta(won: boolean, opponentIndex: number): number {
   return won ? ARENA.winBase + opponentIndex * 6 : -ARENA.lossPenalty;
+}
+
+// ACTUALISER LES ADVERSAIRES (v1.68.13) — une fois gratuitement par jour, ensuite 20 cristaux.
+export const refreshCost = (s: SaveData) => ((s.arena.refreshes ?? 0) < ARENA.freeRefreshes ? 0 : ARENA.refreshCost);
+/** Nouveaux adversaires (mutation). La vengeance en cours est gardée. */
+export function refreshOpponents(s: SaveData, r: Rand): { ok: boolean; reason?: string; cost: number } {
+  const cost = refreshCost(s);
+  if (s.resources.crystals < cost) return { ok: false, reason: 'Cristaux insuffisants.', cost };
+  s.resources.crystals -= cost;
+  s.arena.refreshes = (s.arena.refreshes ?? 0) + 1;
+  s.arena.opponents = [...generateOpponents(s, r), ...s.arena.opponents.filter((o) => o.revenge)];
+  return { ok: true, cost };
 }

@@ -58,8 +58,14 @@ export function PaintedBackdrop({ src, blur = 4, dim = 0.55, position = 'center'
   );
 }
 
+// Décors peints de chaque région (v1.68.4) : de vrais paysages, à peine adoucis, au lieu d'un portrait de boss flouté.
+const LANDSCAPES = import.meta.glob('/src/assets/battle/battle-*.webp', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
+export const battleLandscape = (r: string) => LANDSCAPES[`/src/assets/battle/battle-${r}.webp`];
+
 export const BattleBackdrop = memo(function BattleBackdrop({ region = 'valcrest' }: { region?: string }) {
   const r = (region in PALETTES ? region : 'valcrest') as Region;
+  const land = battleLandscape(r);
+  if (land) return <PaintedBackdrop src={land} blur={0.6} dim={0.72} position="center 40%" />;
   const art = REGION_ART[r]();
   if (art) return <PaintedBackdrop src={art} />;
   const p = PALETTES[r];

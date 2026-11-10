@@ -11,7 +11,6 @@ import { collectionClaimable } from '../../game/collection';
 import type { SaveData } from '../../save/schema';
 import { newCopies } from '../../game/copies';
 import { cloudWanted, useAccount } from '../../cloud/account';
-import { campElapsed } from '../../game/camp';
 
 const ITEMS: { tab: Tab; label: string; icon: keyof typeof Icon }[] = [
   { tab: 'home', label: 'Accueil', icon: 'home' },
@@ -34,7 +33,7 @@ export function BottomNav() {
   // Combats : une expédition revenue (butin qui attend). Les clés et tickets du jour restent signalés sur les cartes.
   const combatsDot = useGame((s) => !!s.save && (s.save.expeditions?.runs ?? []).some((r) => s.now >= r.endsAt));
   const gifts = useGifts((g) => g.waiting > 0);
-  const homeDotGame = useGame((s) => !!s.save && (canClaimDaily(s.save, s.now) || unreadMail(s.save.flags) || claimableCount(s.save) > 0 || (isUnlocked(s.save, 'events') && eventsDot(s.save, s.now)) || (isUnlocked(s.save, 'camp') && campElapsed(s.save, s.now) >= 4 * 3600_000)));
+  const homeDotGame = useGame((s) => !!s.save && (canClaimDaily(s.save, s.now) || unreadMail(s.save.flags) || claimableCount(s.save) > 0 || (isUnlocked(s.save, 'events') && eventsDot(s.save, s.now))));
   const homeDot = gifts || homeDotGame;
   // Héros : nouveaux doublons, ou un héros de l'équipe peut progresser au Sanctuaire.
   const heroesDot = useGame((s) => !!s.save && (newCopies(s.save) || teamCanImprove(s.save) || collectionClaimable(s.save).length > 0));

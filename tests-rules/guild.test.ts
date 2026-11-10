@@ -85,7 +85,8 @@ describe('clans : adjoints', () => {
     await seed(guild({ members: { a: m('leader'), b: m('member'), c: m('member'), d: m('member') }, count: 4, officers: ['b', 'd'] }));
     await assertFails(updateDoc(doc(db('b'), 'guilds/g'), { 'members.d': deleteField(), count: 3, officers: ['b'] }));
     await assertFails(updateDoc(doc(db('b'), 'guilds/g'), { 'members.a': deleteField(), count: 3 }));
-    await assertSucceeds(updateDoc(doc(db('b'), 'guilds/g'), { description: 'Par l’adjoint', open: false }));
+    await assertSucceeds(updateDoc(doc(db('b'), 'guilds/g'), { description: 'Par l’adjoint' }));
+    await assertFails(updateDoc(doc(db('b'), 'guilds/g'), { open: false })); // seul le chef ouvre ou ferme le clan (v1.68.21)
     await assertSucceeds(updateDoc(doc(db('b'), 'guilds/g'), { 'members.c': deleteField(), count: 3 }));
     await assertFails(updateDoc(doc(db('b'), 'guilds/g'), { name: 'Renommé' }));
   });

@@ -88,7 +88,7 @@ function Profile() {
   };
   return (
     <div className="profile-card">
-      <button className="pc-ava" onClick={() => push({ name: 'collection' })} aria-label="Changer d’avatar (dans Héros)"><HeroArt heroId={save.profile.avatarHeroId} /></button>
+      <button className="pc-ava" onClick={() => push({ name: 'profile' })} aria-label="Mon profil"><HeroArt heroId={save.profile.avatarHeroId} /></button>
       <div className="grow" style={{ minWidth: 0 }}>
         <div className="row" style={{ gap: 6 }}>
           <b className="pc-name">{save.profile.name}</b>

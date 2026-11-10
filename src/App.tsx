@@ -51,6 +51,7 @@ const Expeditions = L(() => import('./ui/screens/Expeditions'), 'Expeditions');
 const Market = L(() => import('./ui/screens/Market'), 'Market');
 const Camp = L(() => import('./ui/screens/Camp'), 'Camp');
 const Wheel = L(() => import('./ui/screens/Wheel'), 'Wheel');
+const ProfileScreen = L(() => import('./ui/screens/Profile'), 'Profile');
 const Guild = L(() => import('./ui/screens/Guild'), 'Guild');
 const Friends = L(() => import('./ui/screens/Friends'), 'Friends');
 const Moderation = L(() => import('./ui/screens/Moderation'), 'Moderation');
@@ -87,6 +88,7 @@ function renderRoute(r: Route) {
     case 'market': return <Market />;
     case 'camp': return <Camp />;
     case 'wheel': return <Wheel />;
+    case 'profile': return <ProfileScreen />;
     case 'guild': return <Guild />;
     case 'ranks': return <Ranks tab={r.tab} />;
     case 'account': return <Saves mode={r.mode} />;

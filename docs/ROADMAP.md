@@ -558,6 +558,16 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.68.21 — Accueil, page de profil, rôles du clan
+
+- **Accueil** : le décor est celui de l'écran de lancement (le Monde Cousu sous le Cœur d'Aeon, halo et particules) au lieu du portrait du chef d'équipe ; le nom du chef en bas est retiré.
+- **Page de profil**, en touchant ton avatar en haut à gauche (avant : les paramètres) :
+  - avatar (touche-le pour le changer parmi tes héros), nom (Modifier), niveau de compte et barre d'expérience ;
+  - **cadres d'avatar** : « Lien » (le tien) et trois cadres à venir (Gladiateur, Cauchemar, Cœur d'Aeon), marqués « Bientôt » ;
+  - **ma progression** : héros possédés, bonus de collection, Tour, ligue d'Arène, combats gagnés, invocations ; campagne par difficulté (niveaux finis et étoiles) ; meilleure difficulté et étage de chaque donjon ;
+  - raccourcis vers Sauvegarde et compte, et Paramètres. La carte de profil du Menu y mène aussi.
+- **Clan** : le panneau « Les rôles du clan » est retiré ; **seul le chef peut ouvrir ou fermer le clan** (les adjoints gardent la présentation et l'exclusion de simples membres). Les règles du serveur (firestore.rules) et leur test sont mis à jour.
+
 ## ✅ Version 1.68.20 — Rotation de l'écran sur iPhone
 
 - **Correctif** : après être passé en paysage puis revenu en portrait, on ne pouvait plus rien toucher. En paysage, un iPhone est assez large pour que le jeu passe dans sa disposition « ordinateur » (colonne centrale) ; au retour, iOS gardait des zones de toucher décalées.

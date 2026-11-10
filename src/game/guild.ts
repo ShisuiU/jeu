@@ -21,7 +21,7 @@ export const OFFICERS_MAX = 5;
 export const ROLE_NAMES: Record<ClanRole, string> = { leader: 'Chef', officer: 'Adjoint', member: 'Membre' };
 export const ROLE_HELP: Record<ClanRole, string> = {
   leader: 'Nomme les adjoints et le prochain chef, exclut, règle le clan.',
-  officer: 'Exclut les simples membres, change la présentation, ouvre ou ferme le clan.',
+  officer: 'Exclut les simples membres et change la présentation (seul le chef ouvre ou ferme le clan).',
   member: 'Discute et attaque le boss de clan.',
 };
 export const roleOf = (g: GuildDoc, uid: string): ClanRole => (g.leader === uid ? 'leader' : (g.officers ?? []).includes(uid) ? 'officer' : 'member');

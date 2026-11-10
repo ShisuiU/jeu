@@ -558,6 +558,17 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.67.0 — Dix héros du rang et un sac illustré
+
+- **10 nouveaux héros à invoquer**, de raretés basses pour que les grandes raretés restent précieuses : 50 héros en tout (10 Communs, 10 Peu communs, 10 Rares, 10 Épiques, 8 Légendaires, 2 Mythiques)
+  - Communs : **Merrin la Lanternière** (soigneuse, Valcrest), **Jory Fronde-Vive** (contrôle, Sylvaran), **Sefa Dent-de-Sable** (assassin au poison, Akkar), **Ansel Rivet** (défenseur à boucliers, Prisme)
+  - Peu communs : **Rhoswen Voile-Pâle** (soutien, Concordat Astral), **Brakka Cuir-Noir** (attaquant à la brûlure, Légion de Cendre), **Ilse Corne-de-Brume** (gel et ralentissement, Valcrest)
+  - Rares : **Naerys Plume-d'Orage** (archère des tempêtes, Concordat Astral), **Gorm Poing-de-Lave** (défenseur de lave, Légion de Cendre), **Zahra Lune-des-Puits** (soigneuse, Akkar)
+  - Chacun a son portrait peint, ses compétences, son histoire, ses répliques et (pour les Peu communs et Rares) une aura de chef
+- **Paliers de collection à 45 et 50 héros** : +1 % PV, ATQ et DÉF chacun (jusqu'à +9 %)
+- **Ressources du sac illustrées** : or, cristaux, éclats, élixir, grimoire, sceau, potions, minerai, parchemin et essence ont leur image peinte (sac, récompenses, Marché)
+- **Ensemble Élan complet** : le pendentif et la relique ont aussi leur illustration ; tous les équipements sont illustrés
+
 ## ✅ Version 1.66.4 — Invocations plus rares et niveau de compte visible
 
 - **Invocation épique** (300 cristaux) : Rare garanti, Épique 44 %, Légendaire 3,6 %, Mythique 0,4 % (au lieu d'Épique garanti) ; un Épique au moins par appel ×10 ; Légendaire garanti au 40ᵉ appel
@@ -604,7 +615,6 @@
 - **Chaque objet a son illustration**, peinte dans le style des héros : une par ensemble et par emplacement (arme, casque, armure, gants, bottes, accessoire, artefact), avec l'univers de son ensemble — bois vivant et mousse pour Vigueur, acier rouge braise pour Fureur, acier bleu de chevalier pour Rempart, assassin noir et or pour Acuité, cristal violet pour Concentration, plumes d'argent pour Célérité, os et cramoisi pour Sang-vif, bronze du désert pour Massacre, jade et pierre blanche pour Résolution, bois doré en fleurs pour Pérennité, horlogerie de bronze pour Élan
 - Partout où un objet s'affiche : Forge, sac, fiche du héros, victoire, Marché. Les informations (niveau, ensemble, étoiles, statistique) restent lisibles par-dessus
 - 256 px, environ 10 Ko chacune, téléchargées à l'affichage puis gardées hors ligne (l'installation ne grossit pas)
-- 75 illustrations sur 77 : le pendentif et la relique de l'ensemble Élan arrivent dans une prochaine mise à jour (symbole en attendant)
 
 ## ✅ Version 1.63.1 — Notifications fiables
 

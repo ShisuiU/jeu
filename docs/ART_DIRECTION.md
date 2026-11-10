@@ -35,7 +35,7 @@ Le script produit `full.webp` (768×1152) et `portrait.webp` (recadrage buste 3:
 `src/assets/<heroes|enemies>/<id>/`. Format source conseillé : vertical 2:3 (1024×1536), tête dans
 le tiers supérieur. Illustrations générées dans le fichier Figma « Aeonfall — Illustrations des héros ».
 
-**Avancement :** les 21 héros ✓ et les 36 ennemis ✓ (dont 13 boss), générés avec Figma (modèle gpt-image). Les ennemis n'utilisent que `portrait.webp`.
+**Avancement :** les 50 héros ✓, les 36 ennemis ✓ (dont 13 boss), les 77 équipements ✓ et les 15 ressources du sac ✓, générés avec Figma (modèle gpt-image). Les ennemis n'utilisent que `portrait.webp`.
 
 ## Modèle de prompt de génération
 
@@ -120,3 +120,53 @@ Femme athlétique d'environ trente ans, peau brune, yeux soulignés de khôl, lo
 Homme d'une cinquantaine d'années à la stature royale, peau bronze, barbe noire tressée et ornée d'anneaux d'or, regard d'ambre lumineux. Armure cérémonielle de bronze et d'or noir, pectoral en disque solaire fissuré d'où s'échappe une lumière violette, cape pourpre, sceptre surmonté d'un soleil éclipsé.
 
 *Palette : #2b1a0c, #ffcc66, #9a4dff · Faction : Hordes d'Akkar — Bronze, sable rouge, peintures de guerre, étendards en lambeaux, métal récupéré.*
+
+### Merrin la Lanternière (`merrin`)
+Femme d'une trentaine d'années au visage doux et fatigué, cheveux châtains noués sous un voile de lin blanc. Robe grise d'hospitalière avec un tablier taché, ceinture de fioles et de bandages, cotte de mailles légère dessous. Elle tient haut une lanterne de laiton dont la flamme dorée éclaire son visage.
+
+*Palette : #e9e2cf, #f2b84b, #7a6a58 · Faction : Empire de Valcrest*
+
+### Jory Fronde-Vive (`jory`)
+Garçon d'environ seize ans, visage criblé de taches de rousseur, cheveux roux en bataille, sourire effronté. Tunique de laine verte rapiécée, cape de berger en peau de mouton, sacoche pleine de pierres rondes. Il fait tournoyer une fronde de cuir, une pierre gravée d'une rune luisante dans la poche.
+
+*Palette : #4d6b3a, #c8742f, #a89a7a · Faction : Gardiens de Sylvaran*
+
+### Sefa Dent-de-Sable (`sefa`)
+Jeune femme d'une vingtaine d'années, peau hâlée, yeux noirs soulignés de khôl, cheveux noirs tressés serrés. Voile de sable couvrant le bas du visage, gilet de cuir clouté, bandes de tissu rouge aux bras. Deux poignards courbes à lame sombre, l'un dégoulinant d'un poison verdâtre.
+
+*Palette : #b5562c, #2a1d18, #7bd84f · Faction : Hordes d'Akkar*
+
+### Ansel Rivet (`ansel`)
+Homme trapu d'une quarantaine d'années, moustache épaisse, nez cassé, regard placide. Exo-armure blanche usée et rayée aux plaques dépareillées, lignes cyan à moitié éteintes. Grand bouclier rectangulaire qui projette un champ d'énergie bleu pâle, matraque électrique à la ceinture.
+
+*Palette : #d9dee2, #7fb8ff, #3a4048 · Faction : Ordre du Prisme*
+
+### Rhoswen Voile-Pâle (`rhoswen`)
+Jeune femme d'environ vingt-cinq ans, peau très pâle, longs cheveux argentés presque blancs, yeux gris lumineux. Robe de voiles violet profond et argent brodée de constellations qui scintillent, longs gants de soie. Elle tient un astrolabe d'argent ouvert d'où s'échappent de petites étoiles flottantes.
+
+*Palette : #2a1f4a, #c9c3ff, #e8e6f2 · Faction : Concordat Astral*
+
+### Brakka Cuir-Noir (`brakka`)
+Homme colossal d'une quarantaine d'années, crâne rasé couvert de tatouages de braises, barbe noire tressée, petites cornes sombres sur le front. Tablier de cuir noir brûlé sur une armure d'obsidienne fissurée de lueurs orange. Immense couperet de boucher incandescent dans une main, crochet à viande enchaîné dans l'autre.
+
+*Palette : #1a1414, #ff7a2f, #6b3a22 · Faction : Légion de Cendre*
+
+### Ilse Corne-de-Brume (`ilse`)
+Femme d'environ trente-cinq ans, visage anguleux, cheveux noirs coupés au carré mêlés de mèches blanches, yeux violets cernés. Long manteau de laine gris sombre à col de fourrure, plastron d'acier aux armes pourpres de Valcrest. Elle porte en bandoulière une grande corne de bronze gravée d'où s'échappe une brume violette glacée.
+
+*Palette : #3a3a48, #9b7bff, #8e1b2b · Faction : Empire de Valcrest*
+
+### Naerys Plume-d'Orage (`naerys`)
+Femme élancée d'environ trente ans, peau brune, longs cheveux blancs ébouriffés par le vent, yeux d'un bleu électrique qui crépitent. Armure légère d'argent et de voiles violets, plumes sombres sur les épaules. Grand arc d'argent tendu, une flèche de verre chargée de foudre bleu-violet, éclairs autour d'elle.
+
+*Palette : #2d2350, #8fd0ff, #d8d4ea · Faction : Concordat Astral*
+
+### Gorm Poing-de-Lave (`gorm`)
+Géant massif au corps de roche noire craquelée, des fissures de lave orange lumineuse sur les bras et le torse, visage humain aux traits lourds et yeux de braise. Restes de chaînes rompues aux poignets, pagne et épaulières de cuir brûlé. Ses poings énormes rougeoient comme du métal en fusion, fumée et braises autour de lui.
+
+*Palette : #1c1714, #ff6a1f, #4a3a30 · Faction : Légion de Cendre*
+
+### Zahra Lune-des-Puits (`zahra`)
+Femme d'une quarantaine d'années, peau brun foncé, visage serein, yeux clairs couleur de lune, tatouages argentés sur le menton. Longue robe indigo et voile de lin blanc, bijoux de bronze et de lapis-lazuli. Elle porte une jarre de bronze d'où s'élève une eau lumineuse argentée qui flotte en spirale autour d'elle.
+
+*Palette : #1f2a5a, #cfe3ff, #b0773a · Faction : Hordes d'Akkar*

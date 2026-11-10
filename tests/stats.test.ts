@@ -9,9 +9,9 @@ const ART = Object.keys(import.meta.glob('../src/assets/heroes/*/*.webp'));
 const hasArt = (id: string, kind: string) => ART.includes(`../src/assets/heroes/${id}/${kind}.webp`);
 
 describe('données des héros', () => {
-  it('40 héros aux identifiants uniques et cohérents', () => {
-    expect(HEROES).toHaveLength(40);
-    expect(new Set(HEROES.map((h) => h.id)).size).toBe(40);
+  it('50 héros aux identifiants uniques et cohérents', () => {
+    expect(HEROES).toHaveLength(50);
+    expect(new Set(HEROES.map((h) => h.id)).size).toBe(50);
     const skillIds = HEROES.flatMap((h) => h.skills.map((s) => s.id));
     expect(new Set(skillIds).size).toBe(skillIds.length);
     for (const h of HEROES) {
@@ -25,6 +25,14 @@ describe('données des héros', () => {
       expect(hasArt(h.id, 'full'), h.id).toBe(true);
       expect((HERO_LINES[h.id] ?? []).length, h.id).toBeGreaterThanOrEqual(3);
     }
+  });
+  it('les raretés basses sont plus nombreuses que les hautes (invocations équilibrées)', () => {
+    const pool = HEROES.filter((h) => !h.exclusive);
+    const n = (r: string[]) => pool.filter((h) => r.includes(h.rarity)).length;
+    expect(n(['common', 'uncommon'])).toBeGreaterThanOrEqual(n(['epic', 'legendary', 'mythic']));
+    expect(n(['common'])).toBeGreaterThanOrEqual(10);
+    expect(n(['uncommon'])).toBeGreaterThanOrEqual(10);
+    expect(n(['rare'])).toBeGreaterThanOrEqual(10);
   });
   it('les six raretés et six factions sont représentées', () => {
     expect(new Set(HEROES.map((h) => h.rarity)).size).toBe(6);

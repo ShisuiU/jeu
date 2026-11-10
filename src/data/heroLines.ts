@@ -202,6 +202,56 @@ export const HERO_LINES: Record<string, string[]> = {
     'Derrière mon bouclier. La marée ne passera pas.',
     'J’ai retrouvé mon nom. Je n’en demandais pas tant.',
   ],
+  merrin: [
+    'Respire. Je suis là. La lanterne aussi.',
+    'J’ai recousu pire que toi, et il danse encore.',
+    'On ne laisse personne dans le noir.',
+  ],
+  jory: [
+    'Touché ! Bon, presque. La prochaine, c’est la bonne.',
+    'Mes moutons étaient plus disciplinés que vous.',
+    'J’ai encore des cailloux. J’ai toujours des cailloux.',
+  ],
+  sefa: [
+    'Je prends l’eau d’abord. On parle après.',
+    'Le sable efface les traces. Les miennes surtout.',
+    'Deux lames. Une pour toi, une pour ton ombre.',
+  ],
+  ansel: [
+    'Porte nord, rien à signaler. Enfin, presque rien.',
+    'Vingt ans de garde. Je sais attendre.',
+    'Derrière moi. Toujours derrière moi.',
+  ],
+  rhoswen: [
+    'Encore une étoile tombée. Je l’ai notée.',
+    'Le ciel ment rarement. Ce soir, il nous aide.',
+    'Regarde en haut. Il y a toujours une direction.',
+  ],
+  brakka: [
+    'C’est servi ! Chaud, comme toujours.',
+    'Dix mille bouches, et pas une plainte. Enfin, pas deux.',
+    'Je coupe, je tranche, je découpe. Même métier.',
+  ],
+  ilse: [
+    'Chut. Écoute la cloche.',
+    'Une note grave, et tout se fige.',
+    'Le beffroi sonne pour les tempêtes. Je suis la tempête.',
+  ],
+  naerys: [
+    'Le vent tourne. Ma flèche aussi.',
+    'Compte jusqu’à trois. Non, trop tard.',
+    'L’orage m’a appris la patience. Puis la vitesse.',
+  ],
+  gorm: [
+    'Vas-y. Frappe. J’ai le temps.',
+    'Cent ans d’enclume. Ça forge le caractère.',
+    'Mes poings ne refroidissent jamais.',
+  ],
+  zahra: [
+    'Bois. Le désert attendra.',
+    'L’eau monte quand je chante. Alors je chante.',
+    'Chaque goutte est une promesse. Je les tiens toutes.',
+  ],
 };
 
 /** Réplique suivante d'un héros (la citation de sa fiche, puis ses trois répliques). */

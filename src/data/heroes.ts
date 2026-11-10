@@ -1,6 +1,7 @@
 import type { HeroDef } from './types';
 import { CHAPTER_HEROES } from './heroesChapters';
 import { EXTRA_HEROES } from './heroesExtra';
+import { LOW_HEROES } from './heroesLow';
 
 // Première collection : 15 héros. Pour en ajouter, il suffit d'ajouter une entrée ici
 // (ses illustrations sont dans src/assets/heroes/<id>/).
@@ -263,7 +264,7 @@ const BASE_HEROES: HeroDef[] = [
   },
 ];
 
-export const HEROES: HeroDef[] = [...BASE_HEROES, ...CHAPTER_HEROES, ...EXTRA_HEROES];
+export const HEROES: HeroDef[] = [...BASE_HEROES, ...CHAPTER_HEROES, ...EXTRA_HEROES, ...LOW_HEROES];
 
 export const HERO_BY_ID: Record<string, HeroDef> = Object.fromEntries(HEROES.map((h) => [h.id, h]));
 

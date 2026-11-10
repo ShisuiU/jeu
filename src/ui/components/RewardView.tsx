@@ -5,11 +5,31 @@ import { fmt } from './common';
 import type { GearItem } from '../../save/schema';
 import { GearCard } from './GearCard';
 
-export function RewardView({ reward, gear = [] }: { reward: Reward; gear?: GearItem[] }) {
+export function RewardView({ reward, gear = [], compact }: { reward: Reward; gear?: GearItem[]; compact?: boolean }) {
   // Grille équilibrée : 4 récompenses sur une ligne, 5 ou 6 en deux lignes de 3 (jamais une seule toute seule).
   // L'équipement gagné se range dans la même grille, à côté de l'or et des ressources.
   const n = Object.keys(reward).length + gear.length;
   const cols = n <= 4 ? n : n <= 6 ? 3 : 4;
+  // Version compacte (écran de victoire) : petites tuiles horizontales, icône à gauche, quantité et nom à droite.
+  if (compact) return (
+    <div className="reward-compact">
+      {Object.entries(reward).map(([k, v], i) => {
+        const def = k === 'energy' ? null : RESOURCES[k as keyof typeof RESOURCES];
+        return (
+          <div key={k} className="rc-item" style={{ animationDelay: `${i * 0.06}s` }}>
+            {def ? <ResourceIcon icon={def.icon} color={def.color} size={30} res={k} /> : <Icon.energy size={28} />}
+            <span className="rc-txt"><b>{fmt(v ?? 0)}</b><small>{def ? def.name : 'Énergie'}</small></span>
+          </div>
+        );
+      })}
+      {gear.map((g, i) => (
+        <div key={g.uid} className="rc-item rc-gear" style={{ animationDelay: `${(Object.keys(reward).length + i) * 0.06}s` }}>
+          <span className="rc-gc"><GearCard g={g} hideMain /></span>
+          <span className="rc-txt"><b>{g.stars ? `${g.stars} ★` : 'Objet'}</b><small>Nouvel équipement</small></span>
+        </div>
+      ))}
+    </div>
+  );
   return (
     <div className="reward-list" style={{ ['--n' as string]: Math.max(1, cols) }}>
       {Object.entries(reward).map(([k, v], i) => {

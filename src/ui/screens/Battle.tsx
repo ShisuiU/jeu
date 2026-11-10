@@ -6,7 +6,6 @@ import type { SkillDef } from '../../data/types';
 import { useGame } from '../../state/store';
 import { useUI, type Route } from '../../state/ui';
 import { HERO_BY_ID } from '../../data/heroes';
-import { HERO_LINES } from '../../data/heroLines';
 import { createBattle, beginTurn, performAction, unitById, availableSkills, targetKind, validTargets, hpPct, shieldOf, predictOrder, autoLien, castLien, lienReady, LIEN_POWERS } from '../../game/battle/engine';
 import { LIEN_MAX, LIEN_USES, type LienPower } from '../../game/battle/types';
 import { groupStatuses, statusDescription, statusValueText, STATUS_LEGEND } from '../../game/battle/statusText';
@@ -474,14 +473,6 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
       {phase === 'result' && result && (
         <div className="result-overlay">
           <div className={`result-title ${result.won ? 'win' : 'lose'}`}>{spec.mode === 'worldboss' || spec.mode === 'guildboss' ? 'COMBAT TERMINÉ' : result.won ? 'VICTOIRE' : 'DÉFAITE'}</div>
-          {result.won && (() => {
-            // Un héros encore debout dit un mot (choisi selon le combat, toujours le même pour ce combat).
-            const alive = s.units.filter((u) => u.side === 'ally' && u.alive && u.kind === 'hero' && HERO_LINES[u.refId]);
-            if (!alive.length) return null;
-            const u = alive[(s.units.length * 7 + alive.length) % alive.length];
-            const lines = HERO_LINES[u.refId];
-            return <div className="result-voice">« {lines[(u.hp + s.units.length) % lines.length | 0]} »<span>{HERO_BY_ID[u.refId]?.name.split(/[ ,]/)[0]}</span></div>;
-          })()}
           {result.lines.map((l, i) => <div key={i} className="chip active" style={{ margin: '6px auto', display: 'flex', width: 'fit-content', textAlign: 'center' }}>{l}</div>)}
           {result.won && spec.mode === 'campaign' && (
             <div className="result-stars">
@@ -501,7 +492,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
                     <div><div className="faint">NOUVEL HÉRITIER</div><b style={{ fontSize: 17 }}>{HERO_BY_ID[id].name}</b><div className="muted">rejoint ta collection ! Ajoute-le à une équipe dans l’écran Équipe.</div></div>
                   </div>
                 ))}
-                <RewardView reward={{ ...result.reward, ...Object.fromEntries(Object.entries(result.loot).map(([k, v]) => [k, (result.reward[k as keyof typeof result.reward] ?? 0) + (v ?? 0)])) }} gear={result.gear} />
+                <RewardView reward={{ ...result.reward, ...Object.fromEntries(Object.entries(result.loot).map(([k, v]) => [k, (result.reward[k as keyof typeof result.reward] ?? 0) + (v ?? 0)])) }} gear={result.gear} compact />
                 <DamageRecap units={s.units} xp={result.heroXp} />
               </>
             ) : (

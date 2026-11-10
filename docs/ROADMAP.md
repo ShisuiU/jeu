@@ -558,6 +558,10 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.68.6 — Grande image dans la fiche d'un objet
+
+- Depuis que la statistique principale n'est plus écrite sur l'image (v1.67.1), la carte de l'objet rétrécissait à la taille de son contenu. Elle fait maintenant 112 px de large (environ trois fois plus de surface), avec un cadre plus épais, le niveau, l'emblème d'ensemble et les étoiles agrandis. Même chose au Marché.
+
 ## ✅ Version 1.68.5 — Combats en arrière-plan
 
 - **Nouveau bouton ⟳ sur l'écran de préparation** (campagne et donjons) : lance une série de 1 à 50 combats sur un niveau **déjà gagné une fois** (pas besoin de 3 étoiles, contrairement au Balayage).

@@ -916,3 +916,10 @@ body:has(.battle-controls) .toasts { bottom: auto; top: calc(var(--sat, 0px) + 1
 .bg-stop { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 12px; font-size: 14px; }
 .bg-stop input { width: 20px; height: 20px; accent-color: #d9a441; }
 body:has(.prep-bar) .bg-pill, body:has(.summon-bar) .bg-pill { bottom: calc(var(--nav-h) + var(--sab) + 92px); }
+
+/* v1.68.6 — Fiche d'un objet : grande image (la carte prenait la taille de son texte et rétrécissait). */
+.gd-card, .mk-gear-head .gd-card { width: 112px; flex-shrink: 0; }
+.gd-card .gear-card { width: 100%; border-width: 2px; border-radius: 8px; }
+.gd-card .gear-card .gc-lvl { font-size: 15px; top: 5px; left: 7px; }
+.gd-card .gear-card .gc-set { top: 6px; right: 6px; transform: scale(1.35); transform-origin: top right; }
+.gd-card .gear-card .gstars { transform: scale(1.5); transform-origin: bottom center; margin-bottom: 4px; }

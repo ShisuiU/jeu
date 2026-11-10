@@ -558,6 +558,28 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.68.19 — Roue de fortune ancienne
+
+- **Nouvel habillage de la roue**, façon roue de fortune ancienne : secteurs de pierre peinte teintés, épais cerclage d'or gravé et clouté, gemmes rouges au bout des rayons d'or, cristal d'Aeon au moyeu, griffe dorée en guise d'aiguille (qui vibre pendant que la roue tourne), halo lumineux. Chiffres en lettres de titre.
+- **12 cases** : énergie 5 / 10 / 30 / 50, **élixirs 1 / 3 / 5 / 10**, or 5 000 / 15 000, 30 cristaux, et l'Éclat de faille (toujours 3 %).
+
+| Case | Chance |
+|---|---|
+| 5 énergie | 14 % |
+| 10 énergie | 12 % |
+| 30 énergie | 7 % |
+| 50 énergie | 4 % |
+| 1 élixir | 12 % |
+| 3 élixirs | 10 % |
+| 5 élixirs | 7 % |
+| 10 élixirs | 4 % |
+| 5 000 or | 12 % |
+| 15 000 or | 6 % |
+| 30 cristaux | 9 % |
+| Éclat de faille | 3 % |
+
+- L'Accueil montre une **icône de roue** (au lieu d'une étoile).
+
 ## ✅ Version 1.68.18 — Roue quotidienne
 
 - **Nouveau bouton « Roue » sur l'Accueil** (point rouge quand le tour du jour est disponible) : **un tour gratuit par jour**.

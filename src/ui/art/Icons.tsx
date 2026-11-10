@@ -31,6 +31,7 @@ export const Icon = {
   save: (p: P) => <S {...p}><path d="M5 3h11l3 3v15H5z" /><path d="M8 3v5h7V3M8 21v-7h8v7" /></S>,
   lock: (p: P) => <S {...p}><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></S>,
   unlock: (p: P) => <S {...p}><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V8a4 4 0 0 1 7.5-2" /></S>,
+  wheel: (p: P) => <S {...p}><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="2.4" /><path d="M12 3v6.6M12 14.4V21M3 12h6.6M14.4 12H21M5.6 5.6l4.7 4.7M13.7 13.7l4.7 4.7M18.4 5.6l-4.7 4.7M10.3 13.7l-4.7 4.7" /></S>,
   loop: (p: P) => <S {...p}><path d="M4 12a8 8 0 0 1 13.7-5.6L20 9" /><path d="M20 3v6h-6" /><path d="M20 12a8 8 0 0 1-13.7 5.6L4 15" /><path d="M4 21v-6h6" /></S>,
   sword: (p: P) => <S {...p}><path d="M14.5 3H21v6.5L10 20.5 3.5 14z" /><path d="m7 17-3 3M5 13l6 6" /></S>,
   portal: (p: P) => <S {...p}><ellipse cx="12" cy="12" rx="6" ry="9" /><ellipse cx="12" cy="12" rx="2.5" ry="5" /><path d="M12 1v2M12 21v2M3 12H1M23 12h-2" /></S>,

@@ -558,6 +558,12 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.68.20 — Rotation de l'écran sur iPhone
+
+- **Correctif** : après être passé en paysage puis revenu en portrait, on ne pouvait plus rien toucher. En paysage, un iPhone est assez large pour que le jeu passe dans sa disposition « ordinateur » (colonne centrale) ; au retour, iOS gardait des zones de toucher décalées.
+  - Un téléphone couché garde maintenant la disposition téléphone : la disposition ordinateur demande aussi au moins 560 px de hauteur.
+  - À chaque rotation, le jeu se recale (page remise en haut, champ de saisie relâché, mise en page recalculée).
+
 ## ✅ Version 1.68.19 — Roue de fortune ancienne
 
 - **Nouvel habillage de la roue**, façon roue de fortune ancienne : secteurs de pierre peinte teintés, épais cerclage d'or gravé et clouté, gemmes rouges au bout des rayons d'or, cristal d'Aeon au moyeu, griffe dorée en guise d'aiguille (qui vibre pendant que la roue tourne), halo lumineux. Chiffres en lettres de titre.

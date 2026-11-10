@@ -2,7 +2,9 @@
    Le jeu est pensé pour un téléphone en hauteur. Sur un grand écran, il n'est plus étiré sur toute la largeur :
    il s'affiche dans une colonne centrale (comme une grande tablette), avec le monde peint et flouté autour.
    Les fenêtres plein écran (titre, invocations) gardent tout l'écran. */
-@media (min-width: 720px) {
+/* Hauteur minimale : un téléphone couché (≈ 390-430 px de haut) garde la disposition téléphone. Sur iPhone, basculer
+   de disposition pendant une rotation laissait des zones de toucher décalées au retour en portrait (v1.68.20). */
+@media (min-width: 720px) and (min-height: 560px) {
   /* Largeur réglée sur la HAUTEUR de l'écran (proportions d'un téléphone en hauteur, environ 0,6) : sur un portable
      peu haut, la colonne reste étroite et rien n'est démesuré ; sur un grand écran, elle s'élargit (640 px au plus). */
   :root { --col: clamp(380px, 60vh, 640px); --col-left: calc(50vw - var(--col) / 2); }

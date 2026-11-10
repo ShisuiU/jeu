@@ -1,4 +1,6 @@
 import { useGame } from '../../state/store';
+import { anyStarChest } from '../../game/starChests';
+import { DIFFICULTY_ORDER } from '../../data/campaign';
 import { useUI, type Route } from '../../state/ui';
 import { CHAPTERS } from '../../data/campaign';
 import { DUNGEONS, DUNGEON_FLOORS } from '../../data/dungeons';
@@ -24,7 +26,7 @@ export function Combats() {
   const keys = WORLD_BOSS.keysPerDay - save.worldBoss.keysUsed;
   const tickets = ARENA.ticketsPerDay - save.arena.ticketsUsed;
   const cards: { title: string; sub: string; art: string; color: string; route: Route; dot?: boolean; feature?: Feature }[] = [
-    { title: 'Campagne', sub: `Chapitre ${chap.n} · ${chap.name} · ★ ${st.stars}/${st.max}`, art: chap.stages[9].waves[1]?.find((w) => w.hpMult)?.enemy ?? 'herald', color: '#d9b36a', route: { name: 'campaign' } },
+    { title: 'Campagne', sub: `Chapitre ${chap.n} · ${chap.name} · ★ ${st.stars}/${st.max}`, art: chap.stages[9].waves[1]?.find((w) => w.hpMult)?.enemy ?? 'herald', color: '#d9b36a', route: { name: 'campaign' }, dot: DIFFICULTY_ORDER.some((d) => anyStarChest(save, d)) },
     { title: 'Donjons', sub: `Meilleur étage ${bestDungeon}/${DUNGEON_FLOORS}`, art: 'forge_golem', color: '#ff9a3c', route: { name: 'dungeons' }, feature: 'dungeons' },
     { title: 'Tour des Âges', sub: `Étage ${save.progress.tower.floor}/${TOWER_FLOORS}`, art: 'tower_sentinel', color: '#b98cff', route: { name: 'tower' }, feature: 'tower' },
     { title: 'Boss mondial', sub: `${WORLD_BOSS.name} · ${keys}/${WORLD_BOSS.keysPerDay} clés`, art: WORLD_BOSS.enemy, color: '#ffcc66', route: { name: 'worldboss' }, dot: keys > 0, feature: 'worldboss' },

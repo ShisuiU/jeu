@@ -558,6 +558,22 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.68.12 — Coffres d'étoiles de la campagne
+
+- **Dans chaque chapitre et chaque difficulté, 3 coffres d'étoiles** (à 10, 20 et 30 étoiles), sous la carte du chapitre, avec une barre de progression. Un coffre prêt brille ; on le touche pour le récupérer.
+- Récompenses, de plus en plus généreuses avec la difficulté (par chapitre) :
+
+| Difficulté | 10 ★ | 20 ★ | 30 ★ |
+|---|---|---|---|
+| Normal | 3 éclats ternes, 5 000 or | 1 éclat d'Aeon, 50 cristaux | **1 éclat de faille**, 100 cristaux |
+| Difficile | 1 éclat d'Aeon, 10 000 or | **1 éclat de faille**, 80 cristaux | **2 éclats de faille**, 150 cristaux |
+| Expert | 2 éclats d'Aeon, 20 000 or | **2 éclats de faille**, 100 cristaux | **3 éclats de faille**, 200 cristaux, 1 essence d'éveil |
+| Cauchemar | 3 éclats d'Aeon, 40 000 or | **3 éclats de faille**, 150 cristaux | **4 éclats de faille**, 300 cristaux, 2 essences d'éveil |
+
+- Les étoiles déjà gagnées comptent : les coffres des chapitres déjà faits sont récupérables tout de suite.
+- Un point rouge signale un coffre prêt (sur l'onglet de la difficulté, le chapitre, et la carte Campagne de l'écran Combats).
+- Tests : paliers, une seule récupération, étoiles déjà gagnées, éclats de faille en difficulté haute.
+
 ## ✅ Version 1.68.11 — L'équipement vient de la Forge Engloutie
 
 - **L'équipement ne se gagne plus qu'au donjon Forge Engloutie** (un objet garanti à chaque victoire, y compris en arrière-plan). La campagne ne donne plus d'équipement, seulement ses autres butins. Le Marché en vend toujours.

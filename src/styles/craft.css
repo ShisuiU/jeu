@@ -935,3 +935,21 @@ body:has(.prep-bar) .bg-pill, body:has(.summon-bar) .bg-pill { bottom: calc(var(
 
 /* v1.68.11 — fourchette d'étoiles de l'équipement de la Forge, sur chaque étage. */
 .forge-stars { color: #ffd36b; font-weight: 700; white-space: nowrap; }
+
+/* ─── Coffres d'étoiles de la campagne (v1.68.12) ─── */
+.star-chests { margin: 10px 0 12px; }
+.sc-bar { position: relative; height: 6px; border-radius: 3px; background: rgba(255,255,255,0.08); margin: 0 4px 8px; }
+.sc-bar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: linear-gradient(90deg, #b4863d, #ffe7ad); }
+.sc-bar b { position: absolute; top: -3px; width: 2px; height: 12px; background: rgba(255,255,255,0.35); transform: translateX(-1px); }
+.sc-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.sc-chest { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px; border-radius: 8px; background: rgba(12,10,16,0.75); border: 1px solid var(--line); color: var(--text); min-width: 0; }
+.sc-chest .scc-head { display: inline-flex; align-items: center; gap: 3px; font-weight: 800; color: var(--text-dim, #c9c1b3); font-size: 13px; }
+.sc-chest .reward-inline { justify-content: center; flex-wrap: wrap; gap: 4px 8px; }
+.sc-chest .reward-inline small { display: none; }
+.sc-chest.ready { border-color: #ffd36b; box-shadow: 0 0 12px rgba(255,211,107,0.35); background: linear-gradient(180deg, rgba(255,211,107,0.14), rgba(12,10,16,0.85)); animation: scPulse 1.8s ease-in-out infinite; }
+.sc-chest.ready .scc-head { color: var(--gold-hi); }
+.sc-chest.claimed { opacity: 0.5; }
+.scc-go { font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; color: #23180a; background: linear-gradient(180deg, #ffe7ad, #b4863d); border-radius: 4px; padding: 1px 6px; }
+@keyframes scPulse { 50% { box-shadow: 0 0 18px rgba(255,211,107,0.55); } }
+@media (prefers-reduced-motion: reduce) { .sc-chest.ready { animation: none; } }
+.chip-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #e0474f; margin-left: 4px; vertical-align: middle; }

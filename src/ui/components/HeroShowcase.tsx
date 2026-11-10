@@ -11,7 +11,7 @@ import { autoEquip } from '../../game/comfort';
 import { HeroArt } from '../art/HeroArt';
 import { Icon } from '../art/Icons';
 import { Modal } from './common';
-import { GearCard, SLOT_ICON } from './GearCard';
+import { GearBySet, GearCard, SLOT_ICON } from './GearCard';
 import { GearArt, gearArtUrl } from '../art/GearArt';
 import { GearDetail } from './GearDetail';
 import { GearStars, SetEmblem } from '../art/SetEmblem';
@@ -124,9 +124,7 @@ export function HeroShowcase({ heroId, h, onPrev, onNext, below }: { heroId: str
         <Modal onClose={() => setPick(null)}>
           <h2>{SLOTS.find((s) => s.id === pick)!.name}</h2>
           {candidates.length === 0 && <p className="muted" style={{ textAlign: 'center' }}>Aucun objet de ce type pour l’instant.</p>}
-          <div className="gear-grid">
-            {candidates.map((g) => <GearCard key={g.uid} g={g} owner={g.heroUid ? owners[g.heroUid] : undefined} onClick={() => { setOpen(g.uid); setPick(null); }} />)}
-          </div>
+          <GearBySet items={candidates} render={(g) => <GearCard key={g.uid} g={g} owner={g.heroUid ? owners[g.heroUid] : undefined} onClick={() => { setOpen(g.uid); setPick(null); }} />} />
           <button className="btn secondary block" style={{ marginTop: 12 }} onClick={() => setPick(null)}>Fermer</button>
         </Modal>
       )}

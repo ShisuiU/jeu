@@ -39,7 +39,7 @@ export function GearDetail({ gearUid, onClose, equipTo, place = 'hero', onReplac
   return (
     <Modal onClose={onClose}>
       <div className={`gd-head r-${g.rarity}`} style={{ ['--gc' as string]: r.color }}>
-        <div className="gd-card"><GearCard g={g} /></div>
+        <div className="gd-card"><GearCard g={g} hideMain /></div>
         <div className="grow">
           <div className="gd-rarity">{r.name}</div>
           <div className="gd-name">{SLOT_BY_ID[g.slot].name}</div>

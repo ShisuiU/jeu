@@ -84,7 +84,7 @@ export function Market() {
           {o.gear ? (
             <>
               <div className="mk-gear-head">
-                <div className="gd-card"><GearCard g={o.gear} /></div>
+                <div className="gd-card"><GearCard g={o.gear} hideMain /></div>
                 <div className="grow">
                   <div className="gd-stars"><GearStars n={o.gear.stars ?? 1} size={13} /><span className="faint"> {o.gear.stars}/{GEAR_MAX_STARS}</span></div>
                   <div className="gd-set" style={{ ['--sc' as string]: SETS[o.gear.set].color, marginTop: 6 }}>

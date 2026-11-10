@@ -7,7 +7,7 @@ import { HERO_BY_ID } from '../../data/heroes';
 import { dismantleGear } from '../../game/gear';
 import { heroGear } from '../../game/heroStats';
 import { Modal, Screen, fmt } from '../components/common';
-import { GearCard, GearSlotEmpty, SLOT_ICON } from '../components/GearCard';
+import { GearBySet, GearCard, GearSlotEmpty, SLOT_ICON } from '../components/GearCard';
 import { GearDetail } from '../components/GearDetail';
 import { HeroStrip, useHeroOrder } from '../components/HeroStrip';
 import { Icon, ResourceIcon } from '../art/Icons';
@@ -115,9 +115,7 @@ export function Gear({ gearUid }: { gearUid?: string }) {
             groups={GEAR_GROUPS} filters={prefs.filters} onFilters={(f) => setPrefs({ ...prefs, filters: f })}
             count={(f) => pool.filter((g) => gearMatches(f, g)).length} />
           {free.length === 0 && <p className="muted" style={{ textAlign: 'center' }}>{save.equipment.length === 0 ? 'Aucun équipement pour l’instant : gagne des combats pour en obtenir.' : pool.length ? 'Aucun objet ne correspond à ces filtres.' : 'Aucun objet libre ici.'}</p>}
-          <div className="gear-grid">
-            {free.map((g) => <GearCard key={g.uid} g={g} onClick={() => setOpen(g.uid)} />)}
-          </div>
+          <GearBySet items={free} render={(g) => <GearCard key={g.uid} g={g} onClick={() => setOpen(g.uid)} />} />
         </>
       )}
 

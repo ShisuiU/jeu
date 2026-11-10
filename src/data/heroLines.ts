@@ -252,6 +252,71 @@ export const HERO_LINES: Record<string, string[]> = {
     'L’eau monte quand je chante. Alors je chante.',
     'Chaque goutte est une promesse. Je les tiens toutes.',
   ],
+  bastien: [
+    'Le soleil est haut. On a encore le temps de faucher.',
+    'Ma mère disait : finis ton sillon. Je finis toujours.',
+    'Une faux, ça ne s’émousse pas si on sait la tenir.',
+  ],
+  tilde: [
+    'Boulon, arrête de bipper. Oui, je t’ai vu.',
+    'Si ça grince, je répare. Si ça mord, je répare plus vite.',
+    'Passe-moi la clé de douze. Non, l’autre.',
+  ],
+  roc: [
+    'Le fer se plie. Moi, non.',
+    'Encore un coup ? Vas-y, j’ai l’habitude.',
+    'Une bonne armure, c’est cent coups de marteau. Et toi, combien ?',
+  ],
+  wenna: [
+    'Assieds-toi. La mousse soigne, si on la laisse faire.',
+    'La lune sèche mieux les herbes que le soleil.',
+    'Ce qui pique guérit. Ce qui sent bon, je m’en méfie.',
+  ],
+  kesh: [
+    'Le sable me raconte où tu iras.',
+    'Ta peur a une odeur. Elle sent le métal.',
+    'Une pièce pour ton avenir. Deux pour le changer.',
+  ],
+  oriane: [
+    'La lune s’est couchée. À moi de jouer.',
+    'Une seule entaille. Les étoiles font le reste.',
+    'Ne regarde pas en haut. C’est là que je suis.',
+  ],
+  hadrien: [
+    'Le sel ne pourrit jamais. Moi non plus.',
+    'Derrière moi. Tout le monde, derrière moi.',
+    'Mon bouclier a goûté la Fracture. Il en redemande.',
+  ],
+  ysmae: [
+    'Chaque fil a sa place. Toi aussi, bientôt.',
+    'Ne bouge pas. Tu vas abîmer le motif.',
+    'J’ai une étagère libre. Elle t’attend.',
+  ],
+  tobbe: [
+    'Boum ! Boum ! Plus fort, la Légion !',
+    'Si je ris, c’est que tout va bien. Enfin, presque.',
+    'Mon tambour bat plus vite que ton cœur.',
+  ],
+  sorcha: [
+    'Neige, au pied. Non ? Bon, attaque alors.',
+    'Le froid ralentit tout. Sauf mes flèches.',
+    'La forêt se souvient. Moi aussi.',
+  ],
+  djeral: [
+    'J’ai vu deux de toi. J’ai tiré deux fois.',
+    'Le désert ment. Mon œil, jamais.',
+    'La chaleur tremble. Ma main, non.',
+  ],
+  cassien: [
+    'Tiens bon. Mes nanites sont déjà en route.',
+    'Je recolle les os, pas les cœurs. Désolé.',
+    'Respire avec moi. Un… deux… voilà.',
+  ],
+  vespera: [
+    'La fumée monte toujours. Toi, tu vas tomber.',
+    'On m’a jetée au feu. Le feu m’a rendue.',
+    'Chut. Écoute crépiter tes regrets.',
+  ],
 };
 
 /** Réplique suivante d'un héros (la citation de sa fiche, puis ses trois répliques). */

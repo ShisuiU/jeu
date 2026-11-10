@@ -558,6 +558,14 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.68.0 — Vague A : 13 héros de plus (63 en tout)
+
+Première des 4 vagues prévues dans `docs/HEROES_PLAN.md` (50 héros de plus, surtout de petites raretés, pour que les doublons deviennent rares).
+- **13 nouveaux héros** : 5 Communs (Bastien, Tilde, Roc, Wenna, Kesh), 4 Peu communs (Oriane, Hadrien, Ysmaë, Tobbe), 3 Rares (Sorcha, Djeral, Cassien) et 1 Épique (Vespera). Chacun a son portrait peint, ses compétences, son histoire et ses répliques, et une aura de chef à partir de Peu commun.
+- Répartition : 15 Communs, 14 Peu communs, 13 Rares, 11 Épiques, 8 Légendaires, 2 Mythiques.
+- **Paliers de collection jusqu'à 100 héros** : 60, 70, 80, 90 et 100 s'ajoutent (+1 % PV, ATQ et DÉF chacun).
+- Un adversaire imaginaire de l'Arène s'appelait Vespera : il est renommé Vesprine, pour ne pas le confondre avec la nouvelle héroïne.
+
 ## ✅ Version 1.67.1 — Équipement rangé par ensemble
 
 - **Listes rangées par ensemble**, comme dans les grands jeux du genre : le sac de la Forge, le Démantèlement et la liste « Changer » de la fiche d'un héros regroupent les objets sous un bandeau par ensemble (emblème, nom, nombre de pièces, bonus, nombre d'objets). Les ensembles les plus fournis passent en premier, et le tri choisi s'applique à l'intérieur de chaque ensemble.

@@ -69,3 +69,28 @@ describe('absorption de héros (Sanctuaire)', () => {
     expect(s.resources.shardPrimal).toBe(0);
   });
 });
+
+describe('absorption des doublons (v1.68.3)', () => {
+  it('un doublon vaut le double de sa base, se consomme et ne touche pas la collection', async () => {
+    const { copyKey, copyXp, copyCandidates, validFeed } = await import('../src/game/feed');
+    const s = createNewSave(1000);
+    s.resources.gold = 1e7;
+    const target = s.heroes[0];
+    s.heroCopies = { merrin: 2, jory: 1 };
+    const heroesBefore = s.heroes.length;
+    expect(copyCandidates(s).map((c) => c.heroId).sort()).toEqual(['jory', 'merrin']);
+    // on ne peut pas prendre plus de doublons qu'on n'en a
+    expect(validFeed(s, target.uid, [copyKey('merrin'), copyKey('merrin'), copyKey('merrin')])).toHaveLength(2);
+    const keys = [copyKey('merrin'), copyKey('merrin'), copyKey('jory')];
+    const p = feedPreview(s, target.uid, keys);
+    expect(p.xp).toBe(2 * copyXp('merrin') + copyXp('jory'));
+    expect(copyXp('merrin')).toBe(800);
+    const r = feedHeroes(s, target.uid, keys);
+    expect(r.ok).toBe(true);
+    expect(s.heroCopies.merrin).toBe(0);
+    expect(s.heroCopies.jory).toBe(0);
+    expect(s.heroes.length).toBe(heroesBefore);
+    expect(target.level).toBe(p.to);
+    expect(feedHeroes(s, target.uid, [copyKey('merrin')]).ok).toBe(false);
+  });
+});

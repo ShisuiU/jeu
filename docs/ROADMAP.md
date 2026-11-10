@@ -558,6 +558,14 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.68.3 — Absorber les doublons
+
+Les petites raretés en double avaient peu d'usage une fois les Liens remplis.
+- **Au Sanctuaire, « Absorber des héros » accepte maintenant les doublons en réserve.** Un doublon vaut le double de l'expérience de base de sa rareté (Commun 800, Peu commun 1 400, Rare 2 400, Épique 4 400…) pour 400 or, et **ne retire rien de la collection**.
+- La fenêtre de choix montre d'abord les doublons (compteur « 1/3 » : on en ajoute un à chaque toucher), puis les héros (qui, eux, quittent la collection).
+- L'annonce du premier doublon le dit aussi.
+- Test : valeur, consommation des doublons, collection intacte, impossible d'en prendre plus qu'on n'en a.
+
 ## ✅ Version 1.68.2 — Économie : moins d'invocations, plus de valeur
 
 L'audit a montré qu'un joueur régulier gagnait 500 à 800 cristaux par jour (2 à 3 invocations épiques), surtout grâce au boss mondial. D'où trop de doublons.

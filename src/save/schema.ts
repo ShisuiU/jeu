@@ -127,6 +127,8 @@ export interface SaveData {
   shop: { energyRefills: number; market?: { day: string; refreshes: number; offers: { id: string; reward?: Partial<Record<string, number>>; gear?: GearItem; price: { resource: 'gold' | 'crystals'; amount: number }; bought: boolean }[] } };
   /** Expéditions (héros envoyés en mission, retour en temps réel). */
   expeditions: ExpeditionState;
+  /** Série de combats en arrière-plan (v1.68.5) : en cours, ou résumé à fermer. */
+  bgRun?: import('../game/background').BgRun | null;
 }
 
 export interface ArenaOpponent {

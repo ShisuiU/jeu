@@ -898,3 +898,21 @@ body:has(.battle-controls) .toasts { bottom: auto; top: calc(var(--sat, 0px) + 1
 .prep-lead { font-size: 11px; }
 .feed-h { font-size: 14px; margin: 4px 0 4px; color: var(--gold-hi); font-family: var(--font-title); }
 .feed-slot .hero-card .lvl[style] { top: auto !important; bottom: 3px; right: 2px !important; left: 2px !important; text-align: center; padding: 0 2px; font-size: 11px; letter-spacing: -0.3px; }
+
+/* ─── Combats en arrière-plan (v1.68.5) ─── */
+.bg-pill { position: fixed; z-index: 30; left: 50%; transform: translateX(-50%); bottom: calc(var(--nav-h) + var(--sab) + 8px);
+  display: flex; align-items: center; gap: 7px; max-width: min(320px, calc(100% - 32px)); padding: 6px 12px 8px; border-radius: 999px; overflow: hidden;
+  background: rgba(14,11,20,0.94); border: 1px solid rgba(255,211,107,0.55); box-shadow: 0 4px 18px rgba(0,0,0,0.6), 0 0 10px rgba(255,211,107,0.18); color: var(--text); font-size: 12px; }
+.bg-pill > svg { color: var(--gold-hi); flex: none; animation: bgSpin 2.4s linear infinite; }
+.bg-pill.done > svg { animation: none; }
+.bg-pill.done { border-color: #7bd88f; }
+.bg-pill .bgp-t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.bg-pill b { color: var(--gold-hi); flex: none; }
+.bg-pill i { position: absolute; left: 0; bottom: 0; height: 3px; background: linear-gradient(90deg, #b4863d, #ffe7ad); transition: width 0.4s; }
+@keyframes bgSpin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .bg-pill > svg { animation: none; } }
+.bg-count { display: flex; align-items: center; justify-content: center; gap: 12px; }
+.bg-count b { font-size: 28px; color: var(--gold-hi); font-family: var(--font-title); min-width: 44px; text-align: center; }
+.bg-stop { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 12px; font-size: 14px; }
+.bg-stop input { width: 20px; height: 20px; accent-color: #d9a441; }
+body:has(.prep-bar) .bg-pill, body:has(.summon-bar) .bg-pill { bottom: calc(var(--nav-h) + var(--sab) + 92px); }

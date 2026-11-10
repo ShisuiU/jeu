@@ -18,6 +18,7 @@ import { powerOf } from '../../game/stats';
 import { msToNextEnergy } from '../../game/energy';
 import { canStart, payMode, resolveMode, type BattleSpec } from '../../game/modes';
 import { canSweep, sweep, type SweepSummary } from '../../game/comfort';
+import { BG_MAX, BG_RUN_MS, canBackground, startBackground } from '../../game/background';
 import { Modal } from '../components/common';
 import { GearCard } from '../components/GearCard';
 import { play } from '../../audio/sfx';
@@ -41,11 +42,15 @@ export function Prep({ spec }: { spec: BattleSpec }) {
   const [teamId, setTeamId] = useState(save.activeTeamId);
   const [summary, setSummary] = useState<(SweepSummary & { count: number }) | null>(null);
   const [sweepOpen, setSweepOpen] = useState(false);
+  const [bgOpen, setBgOpen] = useState(false);
+  const [bgCount, setBgCount] = useState(10);
+  const [bgStop, setBgStop] = useState(true);
   // Renfort d'un ami (campagne et donjons) : son meilleur héros prend une place libre, une fois par jour et par ami.
   const user = useAccount((st) => st.user);
   const [lenders, setLenders] = useState<FriendRow[]>(friendCache ?? []);
   const [guestOf, setGuestOf] = useState<string | null>(null);
   const sweepOk = canSweep(save, spec);
+  const bgOk = canBackground(save, spec);
   const team = save.teams.find((t) => t.id === teamId) ?? save.teams[0];
   const members = team.slots.map((u) => save.heroes.find((h) => h.uid === u));
   const power = members.reduce((a, h) => a + (h ? powerOf(heroTotalStats(save, h).total) : 0), 0);
@@ -83,6 +88,14 @@ export function Prep({ spec }: { spec: BattleSpec }) {
     mutate((d) => { r = sweep(d, spec, team.id, count, Date.now()); });
     play('claim');
     setSummary({ ...(r as unknown as SweepSummary), count });
+  };
+  const doBackground = () => {
+    let r: { ok: boolean; reason?: string } = { ok: false };
+    mutate((d) => { r = startBackground(d, spec, team.id, bgCount, bgStop, Date.now()); });
+    setBgOpen(false);
+    if (!r.ok) { toast(r.reason ?? 'Impossible.', 'error'); return; }
+    play('claim');
+    toast(`${bgCount} combat${bgCount > 1 ? 's' : ''} lancé${bgCount > 1 ? 's' : ''} en arrière-plan : continue à jouer, ils se font tout seuls.`, 'ok');
   };
   const maxRuns = info.cost.kind === 'energy' && info.cost.amount > 0 ? Math.floor(save.energy.current / info.cost.amount) : 0;
 
@@ -172,6 +185,11 @@ export function Prep({ spec }: { spec: BattleSpec }) {
           {(spec.mode === 'campaign' || spec.mode === 'dungeon') && (
             <button className="btn secondary prep-sweep" disabled={!sweepOk.ok || maxRuns < 1 || !count} onClick={() => setSweepOpen(true)} title={sweepOk.ok ? 'Rejouer automatiquement sans combat' : sweepOk.reason}>Balayer</button>
           )}
+          {(spec.mode === 'campaign' || spec.mode === 'dungeon') && (
+            <button className="btn secondary prep-sweep" disabled={!bgOk.ok || !count} onClick={() => setBgOpen(true)} title={bgOk.ok ? 'Combats automatiques pendant que tu joues ailleurs' : bgOk.reason} aria-label="Combats en arrière-plan">
+              <Icon.loop size={18} />
+            </button>
+          )}
           <button className="btn grow fight-btn" disabled={blocked} onClick={go}>
             Combattre {info.cost.kind === 'energy' && <><Icon.energy size={18} /> {info.cost.amount}</>}{info.cost.kind === 'key' && '· 1 clé'}{info.cost.kind === 'ticket' && '· 1 ticket'}{info.cost.kind === 'try' && '· 1 essai'}<span className="shine" />
           </button>
@@ -186,6 +204,32 @@ export function Prep({ spec }: { spec: BattleSpec }) {
             <button className="btn small grow" disabled={maxRuns < 1} onClick={() => { setSweepOpen(false); doSweep(maxRuns); }}>Max ({maxRuns})</button>
           </div>
           <button className="btn secondary block" style={{ marginTop: 10 }} onClick={() => setSweepOpen(false)}>Annuler</button>
+        </Modal>
+      )}
+      {bgOpen && (
+        <Modal onClose={() => setBgOpen(false)}>
+          <h2>Combats en arrière-plan</h2>
+          <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>
+            Ton équipe rejoue ce niveau toute seule, un combat toutes les {BG_RUN_MS / 1000} secondes, pendant que tu fais autre chose, même jeu fermé.
+            Vrais combats, mêmes récompenses. S’il manque de l’énergie, la série attend qu’elle revienne.
+          </p>
+          <div className="bg-count">
+            <button className="btn secondary small" onClick={() => setBgCount(Math.max(1, bgCount - 1))} aria-label="Un combat de moins">−</button>
+            <b>{bgCount}</b><span className="faint">combat{bgCount > 1 ? 's' : ''}</span>
+            <button className="btn secondary small" onClick={() => setBgCount(Math.min(BG_MAX, bgCount + 1))} aria-label="Un combat de plus">+</button>
+          </div>
+          <div className="row" style={{ gap: 6, marginTop: 8 }}>
+            {[5, 10, 20, BG_MAX].map((n) => <button key={n} className={`btn secondary small grow ${bgCount === n ? 'on' : ''}`} onClick={() => setBgCount(n)}>×{n}</button>)}
+          </div>
+          <label className="bg-stop"><input type="checkbox" checked={bgStop} onChange={(e) => setBgStop(e.target.checked)} /> S’arrêter à la première défaite</label>
+          <p className="faint" style={{ textAlign: 'center', margin: '6px 0 10px' }}>
+            {info.cost.kind === 'energy' ? <>Coût : {info.cost.amount} énergie par combat, soit {info.cost.amount * bgCount} en tout. </> : null}
+            Durée : environ {Math.ceil((bgCount * BG_RUN_MS) / 60000)} min.
+          </p>
+          <div className="row" style={{ gap: 8 }}>
+            <button className="btn secondary grow" onClick={() => setBgOpen(false)}>Annuler</button>
+            <button className="btn grow" onClick={doBackground}>Lancer</button>
+          </div>
         </Modal>
       )}
       {summary && (

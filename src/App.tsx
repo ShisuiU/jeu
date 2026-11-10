@@ -18,6 +18,7 @@ import { inTutorial } from './ui/components/Coach';
 import { UnlockAnnounce } from './ui/components/UnlockAnnounce';
 import { BondsIntro } from './ui/components/Copies';
 import { BottomNav } from './ui/components/BottomNav';
+import { BgIndicator } from './ui/components/BgIndicator';
 import { Toasts } from './ui/components/Toasts';
 import { Title } from './ui/screens/Title';
 import { Home } from './ui/screens/Home';
@@ -220,6 +221,7 @@ export default function App() {
               <Suspense fallback={<div className="screen"><div className="bg-ambient" /></div>}>{renderRoute(route)}</Suspense>
             </ErrorBoundary>
           </div>
+          {route.name !== 'battle' && <BgIndicator />}
           {route.name !== 'battle' && <BottomNav />}
           <CloudConflictModal />
           {(route.name === 'home' || route.name === 'combats' || route.name === 'campaign') && <UnlockAnnounce />}

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { stepBackground } from '../game/background';
 import { produce } from 'immer';
 import { observeTime } from '../core/time';
 import { regenEnergy } from '../game/energy';
@@ -55,7 +56,9 @@ export const useGame = create<GameState>((set, get) => ({
     const hwAdvanced = obs.time.highWater - save.time.highWater > 60_000;
     const rollbackChanged = obs.time.rollbackCount !== save.time.rollbackCount;
     const resetDue = save.resets.day !== dayKey(obs.trusted) || save.resets.week !== weekKey(obs.trusted);
-    if (energyChanged || hwAdvanced || rollbackChanged || resetDue) {
+    // Combats en arrière-plan : on joue ceux dont l'heure est venue.
+    const bgDue = !!save.bgRun && !save.bgRun.endedReason && obs.trusted >= save.bgRun.nextAt;
+    if (energyChanged || hwAdvanced || rollbackChanged || resetDue || bgDue) {
       set({
         now: obs.trusted,
         clockRollback: obs.rollback,
@@ -63,6 +66,7 @@ export const useGame = create<GameState>((set, get) => ({
           d.time = obs.time;
           d.energy = energy;
           applyResets(d, obs.trusted);
+          if (bgDue) stepBackground(d, obs.trusted);
           bump(d, obs.trusted);
         }),
       });

@@ -10,7 +10,7 @@ export type EventBonusKind = 'expedition' | 'arena' | 'dungeon' | 'worldBoss' | 
 
 export const BONUS_LABEL: Record<EventBonusKind, string> = {
   expedition: 'Butin des expéditions',
-  arena: 'Récompenses d’arène',
+  arena: 'Points d’arène gagnés à chaque victoire',
   dungeon: 'Butin des donjons',
   worldBoss: 'Coffres du boss mondial',
   campaignXp: 'Expérience des héros en campagne',
@@ -60,7 +60,7 @@ export const CYCLE_THEMES: CycleTheme[] = [
   },
   {
     id: 'tourney', name: 'Le Tournoi des Bannières', color: '#ffcc66', region: 'valcrest', art: 'hollow_knight',
-    tagline: 'Valcrest ouvre ses lices : l’arène paie double gloire.',
+    tagline: 'Valcrest ouvre ses lices : chaque victoire d’arène rapporte plus de points.',
     bonus: { kind: 'arena', mult: 1.5 },
     foes: ['hollow_soldier', 'hollow_shield', 'hollow_archer'], guardian: 'herald',
     trialNames: ['La Lice ouverte', 'Le Carré des Boucliers', 'Le Champion du Héraut'],

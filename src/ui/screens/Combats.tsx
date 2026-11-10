@@ -31,7 +31,7 @@ export function Combats() {
     { title: 'Tour des Âges', sub: `Étage ${save.progress.tower.floor}/${TOWER_FLOORS}`, art: 'tower_sentinel', color: '#b98cff', route: { name: 'tower' }, feature: 'tower' },
     { title: 'Boss mondial', sub: `${WORLD_BOSS.name} · ${keys}/${WORLD_BOSS.keysPerDay} clés`, art: WORLD_BOSS.enemy, color: '#ffcc66', route: { name: 'worldboss' }, dot: keys > 0, feature: 'worldboss' },
     { title: 'Expéditions', sub: (() => { const f = finishedExpeditions(save, now); const r = save.expeditions?.runs.length ?? 0; return f ? `${f} de retour : butin à récupérer` : r ? `${r} en cours` : `${EXPEDITION_SLOTS} missions par jour, même jeu fermé`; })(), art: 'seam_stalker', color: '#9fb7ff', route: { name: 'expeditions' }, feature: 'expeditions', dot: finishedExpeditions(save, now) > 0 || (save.expeditions?.runs.length ?? 0) + (save.expeditions?.done.length ?? 0) === 0 },
-    { title: 'Arène', sub: `Ligue ${arenaTier(save.arena.rating).name} · ${tickets}/${ARENA.ticketsPerDay} tickets`, art: 'hollow_knight', color: '#ff6b7d', route: { name: 'arena' }, dot: tickets > 0, feature: 'arena' },
+    { title: 'Arène', sub: `Ligue ${arenaTier(save.arena.rating).name} · ${tickets}/${ARENA.ticketsPerDay} tickets`, art: 'hollow_knight', color: '#ff6b7d', route: { name: 'arena' }, dot: tickets > 0 || !!save.arena.seasonReward, feature: 'arena' },
   ];
   // Les événements n'ont qu'une entrée : le raccourci « Événements » de l'Accueil.
   const open = cards.filter((c) => !c.feature || isUnlocked(save, c.feature));

@@ -2,6 +2,7 @@ import { DAILY_BONUS, DAILY_MISSIONS, KEY_FEATURE, WEEKLY_BONUS, WEEKLY_MISSIONS
 import { isUnlocked } from './unlocks';
 import { ACHIEVEMENTS } from '../data/achievements';
 import { dayKey, weekKey } from '../core/time';
+import { ARENA, arenaTier } from '../data/arena';
 import type { SaveData } from '../save/schema';
 import { applyReward } from './rewards';
 import { activeEvents, loginState, milestoneState } from './events';
@@ -21,6 +22,7 @@ export function applyResets(s: SaveData, now: number): boolean {
   }
   if (s.resets.week !== w) {
     s.resets.week = w;
+    arenaSeasonRollover(s, w);
     s.missions.weekly = { counters: {}, claimed: [], bonus: false };
     changed = true;
   }
@@ -131,3 +133,27 @@ export function eventClaimable(s: SaveData, now: number, eventId?: string): numb
 
 /** Pastille « Événements » : nouvel événement pas encore ouvert, ou récompense à réclamer. */
 export const eventsDot = (s: SaveData, now: number) => activeEvents(now).some((e) => !s.flags[`seen_${e.id}`]) || eventClaimable(s, now) > 0;
+
+// SAISONS D'ARÈNE (v1.68.15) — une saison = une semaine (elle finit au renouvellement hebdomadaire).
+// À la fin : si tu as combattu au moins une fois, la récompense de ta ligue t'attend dans l'Arène ;
+// puis ton classement est rapproché du départ (la moitié des points au-dessus de 1000 est gardée).
+export function arenaSeasonRollover(s: SaveData, w: string) {
+  const a = s.arena;
+  if (!a.season) { a.season = w; a.seasonFights = a.seasonFights ?? 0; return; }
+  if (a.season === w) return;
+  if ((a.seasonFights ?? 0) > 0) {
+    const t = arenaTier(a.rating);
+    a.seasonReward = { season: a.season, tier: t.id, rating: Math.round(a.rating), reward: { ...t.season } };
+  }
+  if (a.rating > ARENA.startRating) a.rating = Math.round(ARENA.startRating + (a.rating - ARENA.startRating) * ARENA.seasonKeep);
+  a.season = w;
+  a.seasonFights = 0;
+}
+/** Récupère la récompense de la saison passée (mutation). */
+export function claimSeasonReward(s: SaveData) {
+  const r = s.arena.seasonReward;
+  if (!r) return null;
+  applyReward(s, r.reward);
+  s.arena.seasonReward = null;
+  return r;
+}

@@ -558,6 +558,15 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.68.2 — Économie : moins d'invocations, plus de valeur
+
+L'audit a montré qu'un joueur régulier gagnait 500 à 800 cristaux par jour (2 à 3 invocations épiques), surtout grâce au boss mondial. D'où trop de doublons.
+- **Boss mondial** : cristaux par combat 15 / 25 / 40 / 60 (au lieu de 30 / 60 / 100 / 160). Or, minerai, potions et parchemins inchangés.
+- **Bonus des missions** : 100 cristaux par jour (au lieu de 150) et 250 par semaine (au lieu de 400).
+- Total : environ 1 à 1,5 invocation épique par jour en milieu de partie, un peu moins de 2 au plus haut niveau.
+- **Appel rare (éclats d'Aeon)** : un Épique une fois sur six (16 % au lieu de 7 %), Légendaire 1,8 %, Mythique 0,2 %, et un Légendaire garanti au 50e appel (au lieu du 100e, qui demandait environ 6 mois).
+- Tests : estimation des cristaux par jour et taux de l'appel rare.
+
 ## ✅ Version 1.68.1 — Corrections de l'audit complet
 
 - **Lisibilité** : plus aucun texte sous 11 px (« XP » sous le nom, « ♛ Chef » de la préparation).

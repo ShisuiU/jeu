@@ -7,7 +7,7 @@ export interface EnergyState {
 }
 
 /** Applique la régénération jusqu'à `trustedNow`. Ne régénère pas au-delà du maximum, sans « banque » de temps. */
-/** Maximum d'énergie selon le niveau de compte : 120 au niveau 1, +2 par niveau (240 au plus). */
+/** Maximum d'énergie selon le niveau de compte : 120 au niveau 1, +10 par niveau (900 au plus). */
 export function energyMax(accountLevel: number): number {
   const E = BALANCE.energy;
   return Math.min(E.maxCap, E.max + E.perLevel * Math.max(0, Math.floor(accountLevel) - 1));

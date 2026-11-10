@@ -13,7 +13,7 @@ export const ARENA_TIERS = [
 ];
 
 // Héritiers imaginaires (sans compte ou sans joueur en ligne de puissance proche). Aucun nom de héros du jeu.
-export const ARENA_NAMES = ['Vespera', 'Kaël le Gris', 'Ordre de Myrrhe', 'Les Veilleurs', 'Dame Ombreline', 'Le Clan Rouge', 'Orvan', 'Sœurs d’Astre', 'Hadrik', 'Les Sans-Nom', 'Liora',
+export const ARENA_NAMES = ['Vesprine', 'Kaël le Gris', 'Ordre de Myrrhe', 'Les Veilleurs', 'Dame Ombreline', 'Le Clan Rouge', 'Orvan', 'Sœurs d’Astre', 'Hadrik', 'Les Sans-Nom', 'Liora',
   'Maître Ancel', 'La Garde Cendrée', 'Ysmé la Lente', 'Corbeau-Sel', 'Les Fils du Gué', 'Thibalt', 'Nuée d’Opale', 'Brisemont', 'Sixte', 'Les Lanternes', 'Aube-Grise'];
 
 export function arenaTier(rating: number) {

@@ -5,7 +5,6 @@ import { RESOURCE_LIST } from '../../data/resources';
 import { BALANCE } from '../../data/balance';
 import { Panel, Screen, fmt } from '../components/common';
 import { Icon, ResourceIcon } from '../art/Icons';
-import { HERO_BY_ID } from '../../data/heroes';
 
 const GROUPS: { title: string; ids: string[] }[] = [
   { title: 'Monnaies', ids: ['gold', 'crystals'] },
@@ -21,7 +20,6 @@ export function Inventory() {
   const save = useGame((s) => s.save)!;
   const hidden = GROUPS.flatMap((g) => g.ids).filter((id) => !ALWAYS.includes(id) && !(save.resources[id as keyof typeof save.resources] > 0)).length;
   const toast = useUI((s) => s.toast);
-  const push = useUI((s) => s.push);
   return (
     <Screen title="Sac">
       <Panel title="Énergie">
@@ -33,18 +31,7 @@ export function Inventory() {
           </div>
         </div>
       </Panel>
-      {Object.values(save.heroCopies).some((n) => n > 0) && (
-        <Panel title="Doublons de héros">
-          {Object.entries(save.heroCopies).filter(([, n]) => n > 0).map(([id, n]) => {
-            const h = save.heroes.find((x) => x.heroId === id);
-            return (
-              <button key={id} className="stat-row" style={{ width: '100%' }} disabled={!h} onClick={() => h && push({ name: 'hero', uid: h.uid, heroId: id })}>
-                <span>{HERO_BY_ID[id]?.name ?? id}</span><b>×{n} ›</b>
-              </button>
-            );
-          })}
-        </Panel>
-      )}
+      {/* Les doublons de héros ne sont plus listés ici : ils se gèrent depuis l'onglet Héros (Liens) et le Sanctuaire. */}
       {GROUPS.map((g) => ({ g, list: RESOURCE_LIST.filter((r) => g.ids.includes(r.id) && (ALWAYS.includes(r.id) || save.resources[r.id] > 0)) })).filter((x) => x.list.length).map(({ g, list }) => (
         <Panel key={g.title} title={g.title}>
           <div className="res-grid">

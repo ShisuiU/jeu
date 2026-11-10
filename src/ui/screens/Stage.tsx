@@ -17,14 +17,12 @@ import { heroTotalStats } from '../../game/heroStats';
 import { powerOf } from '../../game/stats';
 import { energyMax, msToNextEnergy } from '../../game/energy';
 import { canStart, payMode, resolveMode, type BattleSpec } from '../../game/modes';
-import { canSweep, sweep, type SweepSummary } from '../../game/comfort';
 import { BG_MAX, BG_RUN_MS, canBackground, startBackground } from '../../game/background';
 import { Modal } from '../components/common';
-import { GearCard } from '../components/GearCard';
 import { play } from '../../audio/sfx';
 import { formatDuration } from '../../core/time';
 import { InfoButton, Panel, Screen, fmt } from '../components/common';
-import { RewardInline, RewardView } from '../components/RewardView';
+import { RewardInline } from '../components/RewardView';
 import { HeroCard } from '../components/HeroCard';
 import { EnemyArt } from '../art/EnemyArt';
 import { HeroArt } from '../art/HeroArt';
@@ -40,8 +38,6 @@ export function Prep({ spec }: { spec: BattleSpec }) {
   const info = resolveMode(save, spec);
   const start = canStart(save, spec);
   const [teamId, setTeamId] = useState(save.activeTeamId);
-  const [summary, setSummary] = useState<(SweepSummary & { count: number }) | null>(null);
-  const [sweepOpen, setSweepOpen] = useState(false);
   const [bgOpen, setBgOpen] = useState(false);
   const [bgCount, setBgCount] = useState(10);
   const [bgStop, setBgStop] = useState(true);
@@ -49,7 +45,6 @@ export function Prep({ spec }: { spec: BattleSpec }) {
   const user = useAccount((st) => st.user);
   const [lenders, setLenders] = useState<FriendRow[]>(friendCache ?? []);
   const [guestOf, setGuestOf] = useState<string | null>(null);
-  const sweepOk = canSweep(save, spec);
   const bgOk = canBackground(save, spec);
   const team = save.teams.find((t) => t.id === teamId) ?? save.teams[0];
   const members = team.slots.map((u) => save.heroes.find((h) => h.uid === u));
@@ -82,13 +77,6 @@ export function Prep({ spec }: { spec: BattleSpec }) {
     replace({ name: 'battle', spec, teamId: team.id, seed: Date.now(), guest });
   };
 
-  const doSweep = (count: number) => {
-    if (!count) return;
-    let r: SweepSummary | null = null;
-    mutate((d) => { r = sweep(d, spec, team.id, count, Date.now()); });
-    play('claim');
-    setSummary({ ...(r as unknown as SweepSummary), count });
-  };
   const doBackground = () => {
     let r: { ok: boolean; reason?: string } = { ok: false };
     mutate((d) => { r = startBackground(d, spec, team.id, bgCount, bgStop, Date.now()); });
@@ -97,7 +85,6 @@ export function Prep({ spec }: { spec: BattleSpec }) {
     play('claim');
     toast(`${bgCount} combat${bgCount > 1 ? 's' : ''} lancé${bgCount > 1 ? 's' : ''} en arrière-plan : continue à jouer, ils se font tout seuls.`, 'ok');
   };
-  const maxRuns = info.cost.kind === 'energy' && info.cost.amount > 0 ? Math.floor(save.energy.current / info.cost.amount) : 0;
 
   // Ennemis regroupés : chaque type une seule fois (avec le nombre), le boss en premier.
   const foes = (() => {
@@ -183,11 +170,8 @@ export function Prep({ spec }: { spec: BattleSpec }) {
         {blocked && <div className="prep-why">{!count ? 'Équipe vide : touche l’équipe pour ajouter des héros.' : !start.ok ? start.reason : `Énergie ${save.energy.current}/${info.cost.amount} · +1 dans ${formatDuration(msToNextEnergy(save.energy, now, energyMax(save.profile.level)))}`}</div>}
         <div className="row" style={{ gap: 8 }}>
           {(spec.mode === 'campaign' || spec.mode === 'dungeon') && (
-            <button className="btn secondary prep-sweep" disabled={!sweepOk.ok || maxRuns < 1 || !count} onClick={() => setSweepOpen(true)} title={sweepOk.ok ? 'Rejouer automatiquement sans combat' : sweepOk.reason}>Balayer</button>
-          )}
-          {(spec.mode === 'campaign' || spec.mode === 'dungeon') && (
             <button className="btn secondary prep-sweep" disabled={!bgOk.ok || !count} onClick={() => setBgOpen(true)} title={bgOk.ok ? 'Combats automatiques pendant que tu joues ailleurs' : bgOk.reason} aria-label="Combats en arrière-plan">
-              <Icon.loop size={18} />
+              <Icon.loop size={16} /> Répéter
             </button>
           )}
           <button className="btn grow fight-btn" disabled={blocked} onClick={go}>
@@ -195,17 +179,6 @@ export function Prep({ spec }: { spec: BattleSpec }) {
           </button>
         </div>
       </div>
-      {sweepOpen && (
-        <Modal onClose={() => setSweepOpen(false)}>
-          <h2>Balayer</h2>
-          <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>Rejoue ce niveau sans combattre, autant de fois que tu veux, contre de l’énergie.</p>
-          <div className="row" style={{ gap: 6 }}>
-            {[1, 5, 10].map((n) => <button key={n} className="btn secondary small grow" disabled={maxRuns < 1} onClick={() => { setSweepOpen(false); doSweep(Math.min(n, maxRuns)); }}>×{n}</button>)}
-            <button className="btn small grow" disabled={maxRuns < 1} onClick={() => { setSweepOpen(false); doSweep(maxRuns); }}>Max ({maxRuns})</button>
-          </div>
-          <button className="btn secondary block" style={{ marginTop: 10 }} onClick={() => setSweepOpen(false)}>Annuler</button>
-        </Modal>
-      )}
       {bgOpen && (
         <Modal onClose={() => setBgOpen(false)}>
           <h2>Combats en arrière-plan</h2>
@@ -229,20 +202,6 @@ export function Prep({ spec }: { spec: BattleSpec }) {
           <div className="row" style={{ gap: 8 }}>
             <button className="btn secondary grow" onClick={() => setBgOpen(false)}>Annuler</button>
             <button className="btn grow" onClick={doBackground}>Lancer</button>
-          </div>
-        </Modal>
-      )}
-      {summary && (
-        <Modal onClose={() => setSummary(null)}>
-          <h2>Balayage terminé</h2>
-          <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>{summary.wins} victoire(s) sur {summary.runs} combat(s){summary.stopReason ? ` · ${summary.stopReason}` : ''}</p>
-          <RewardView reward={summary.reward} />
-          {summary.gear.length > 0 && <div className="gear-grid" style={{ marginTop: 10 }}>{summary.gear.slice(0, 8).map((g) => <GearCard key={g.uid} g={g} />)}</div>}
-          {summary.gear.length > 8 && <p className="faint">+ {summary.gear.length - 8} autre(s) équipement(s)</p>}
-          {summary.levelUps.length > 0 && <p className="hint" style={{ marginTop: 10 }}>Niveau supérieur : {summary.levelUps.map((l) => `${HERO_BY_ID[l.heroId].name.split(/[ ,]/)[0]} (${l.to})`).join(', ')}</p>}
-          <div className="row" style={{ gap: 8, marginTop: 12 }}>
-            <button className="btn secondary grow" onClick={() => setSummary(null)}>Fermer</button>
-            <button className="btn grow" disabled={maxRuns < 1} onClick={() => doSweep(Math.min(summary.count, maxRuns))}>Encore ×{Math.min(summary.count, Math.max(1, maxRuns))}</button>
           </div>
         </Modal>
       )}

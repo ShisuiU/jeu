@@ -558,6 +558,17 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.68.9 — Difficultés des donjons, fin du Balayage
+
+- **Les 4 donjons ont maintenant les 4 difficultés de la campagne** : Normal, Difficile, Expert, Cauchemar (onglets en haut de chaque donjon, la difficulté choisie est retenue).
+  - Ennemis +15 / +30 / +45 niveaux et plus puissants (×1,25 / ×1,6 / ×2,1), un peu plus d'énergie par combat (+1 / +2 / +3).
+  - Récompenses ×1,6 / ×2,4 / ×3,5 (y compris l'expérience des héros) ; à la Forge Engloutie, l'équipement est tiré comme 3 / 6 / 9 étages plus haut (meilleure rareté, plus d'étoiles).
+  - Une difficulté s'ouvre quand l'étage 10 est terminé dans la précédente ; chaque donjon a sa propre progression. La liste des donjons montre la plus haute difficulté ouverte.
+  - Les combats en arrière-plan fonctionnent dans chaque difficulté.
+- **Le Balayage (multi-combat instantané) est retiré** de l'écran de préparation. Il reste le bouton **⟳ Répéter** (combats en arrière-plan). La montée rapide de la Tour, elle, ne change pas.
+- **Le sac n'affiche plus les doublons de héros** : ils se gèrent depuis l'onglet Héros (Liens) et le Sanctuaire (Absorber).
+- Tests : ouverture des difficultés, ennemis et récompenses, progression séparée, arrière-plan.
+
 ## ✅ Version 1.68.8 — +10 énergie maximum par niveau de compte
 
 - Le maximum d'énergie grandit maintenant de **10 par niveau de compte** (au lieu de 2) : 130 au niveau 2, 210 au niveau 10, 310 au niveau 20, 420 au niveau 31… jusqu'à 900. Chaque niveau recharge toujours toute l'énergie jusqu'au nouveau maximum.

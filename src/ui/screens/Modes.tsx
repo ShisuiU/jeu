@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
-import { DUNGEONS, DUNGEON_BY_ID, DUNGEON_FLOORS, dungeonEnergy, dungeonLevel } from '../../data/dungeons';
+import { DUNGEONS, DUNGEON_BY_ID, DUNGEON_DIFF_OPEN, DUNGEON_FLOORS, dungeonEnergy, dungeonLevel, dungeonRewardMult } from '../../data/dungeons';
+import { DIFFICULTIES, DIFFICULTY_ORDER, type DifficultyId } from '../../data/campaign';
+import { dungeonBest, dungeonDiffOpen, dungeonTopDiff } from '../../game/dungeons';
+import { usePersisted } from '../components/ListControls';
+import { scaleReward } from '../../game/modes';
 import { TOWER_FLOORS, towerLevel, towerReward, towerStatMult } from '../../data/tower';
 import { sweepTower, towerSweepMax } from '../../game/towerSweep';
 import type { Reward } from '../../data/resources';
@@ -36,6 +40,7 @@ export function Dungeons() {
       <div className="stack">
         {DUNGEONS.map((d) => {
           const best = save.progress.dungeons[d.id]?.bestFloor ?? 0;
+          const top = dungeonTopDiff(save, d.id);
           return (
             <button key={d.id} className="mode-card" style={{ ['--mc' as string]: d.color }} onClick={() => push({ name: 'dungeon', dungeonId: d.id })}>
               <div className="mc-art"><EnemyArt enemyId={d.boss} /></div>
@@ -44,7 +49,7 @@ export function Dungeons() {
                 <div className="faint">{d.description}</div>
                 <div className="row" style={{ gap: 6, marginTop: 6 }}>
                   <ResourceIcon icon={DICON[d.icon]} color={d.color} size={16} />
-                  <span className="faint">Étage {Math.min(best + 1, DUNGEON_FLOORS)} / {DUNGEON_FLOORS}{best >= DUNGEON_FLOORS ? ' · terminé' : ''}</span>
+                  <span className="faint">{top === 'normal' ? <>Étage {Math.min(best + 1, DUNGEON_FLOORS)} / {DUNGEON_FLOORS}{best >= DUNGEON_FLOORS ? ' · terminé' : ''}</> : <>{DIFFICULTIES[top].name} · étage {Math.min(dungeonBest(save, d.id, top) + 1, DUNGEON_FLOORS)} / {DUNGEON_FLOORS}</>}</span>
                 </div>
               </div>
               <span className="muted">›</span>
@@ -60,25 +65,39 @@ export function Dungeon({ dungeonId }: { dungeonId: string }) {
   const save = useGame((s) => s.save)!;
   const { push, toast } = useUI.getState();
   const d = DUNGEON_BY_ID[dungeonId];
-  const best = save.progress.dungeons[d.id]?.bestFloor ?? 0;
+  // Difficulté choisie (retenue par donjon) ; par défaut, la plus haute ouverte.
+  const [pick, setPick] = usePersisted<Record<string, DifficultyId>>('dungeonDiff', {});
+  const chosen = pick[d.id] ?? dungeonTopDiff(save, d.id);
+  const diff: DifficultyId = dungeonDiffOpen(save, d.id, chosen) ? chosen : 'normal';
+  const best = dungeonBest(save, d.id, diff);
+  const mult = dungeonRewardMult(diff);
   return (
     <Screen title={d.name}>
       <div className="mode-hero" style={{ ['--mc' as string]: d.color }}>
         <div className="mh-art"><EnemyArt enemyId={d.boss} /></div>
         <div className="mh-info"><b>{d.description}</b></div>
       </div>
+      <div className="seg camp-diff" style={{ margin: '10px 0' }}>
+        {DIFFICULTY_ORDER.map((k) => {
+          const open = dungeonDiffOpen(save, d.id, k);
+          const prev = DIFFICULTY_ORDER[DIFFICULTY_ORDER.indexOf(k) - 1];
+          return <button key={k} className={`${diff === k ? 'on' : ''} ${open ? '' : 'locked'}`} aria-disabled={!open}
+            onClick={() => { if (!open) { toast(`${DIFFICULTIES[k].name} : termine d’abord l’étage ${DUNGEON_DIFF_OPEN} en ${DIFFICULTIES[prev].name}.`); return; } setPick({ ...pick, [d.id]: k }); }}>{DIFFICULTIES[k].name}</button>;
+        })}
+      </div>
+      {diff !== 'normal' && <p className="faint" style={{ textAlign: 'center', margin: '0 0 10px' }}>Ennemis +{DIFFICULTIES[diff].levelAdd} niveaux et plus puissants · récompenses ×{mult}{d.gear ? ' · meilleur équipement' : ''}</p>}
       <div className="stage-path">
         {Array.from({ length: DUNGEON_FLOORS }, (_, i) => i + 1).map((f) => {
           const open = f <= best + 1;
           return (
             <button key={f} className={`stage-node ${open ? '' : 'locked'} ${f <= best ? 'cleared' : ''} ${f === DUNGEON_FLOORS ? 'boss' : ''}`}
-              onClick={() => (open ? push({ name: 'prep', spec: { mode: 'dungeon', dungeonId: d.id, floor: f } }) : toast('Termine l’étage précédent.'))}>
+              onClick={() => (open ? push({ name: 'prep', spec: { mode: 'dungeon', dungeonId: d.id, floor: f, ...(diff !== 'normal' ? { difficulty: diff } : {}) } }) : toast('Termine l’étage précédent.'))}>
               <span className="sn-idx">{f}</span>
               <div className="grow" style={{ textAlign: 'left' }}>
                 <div className="sn-name">Étage {f}</div>
-                <div className="faint">Ennemis niv. {dungeonLevel(f)} · <Icon.energy size={11} /> {dungeonEnergy(f)}</div>
+                <div className="faint">Ennemis niv. {dungeonLevel(f, diff)} · <Icon.energy size={11} /> {dungeonEnergy(f, diff)}</div>
               </div>
-              <span className="row" style={{ gap: 4 }}>{rewardMainIcon(d.reward(f), 18)}</span>
+              <span className="row" style={{ gap: 4 }}>{rewardMainIcon(scaleReward(d.reward(f), mult), 18)}</span>
               {!open && <Icon.lock size={16} />}
             </button>
           );

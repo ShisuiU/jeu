@@ -1,4 +1,5 @@
 import { BALANCE } from '../data/balance';
+import { dungeonBest } from './dungeons';
 import { HERO_BY_ID } from '../data/heroes';
 import { SLOTS } from '../data/equipment';
 import type { Reward } from '../data/resources';
@@ -17,7 +18,7 @@ import { computeStats, powerOf } from './stats';
 // ─── Balayage : rejouer instantanément un combat déjà maîtrisé ───
 export function canSweep(s: SaveData, spec: BattleSpec): { ok: boolean; reason?: string } {
   if (spec.mode === 'campaign') return stageProgress(s, spec.difficulty, spec.stageId).stars >= 3 ? { ok: true } : { ok: false, reason: 'Obtiens 3 étoiles pour débloquer le balayage.' };
-  if (spec.mode === 'dungeon') return (s.progress.dungeons[spec.dungeonId]?.bestFloor ?? 0) >= spec.floor ? { ok: true } : { ok: false, reason: 'Termine cet étage une première fois.' };
+  if (spec.mode === 'dungeon') return dungeonBest(s, spec.dungeonId, spec.difficulty ?? 'normal') >= spec.floor ? { ok: true } : { ok: false, reason: 'Termine cet étage une première fois.' };
   return { ok: false, reason: 'Balayage indisponible pour ce mode.' };
 }
 

@@ -558,6 +558,11 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.68.17 — Écran de victoire compact
+
+- La phrase d'un héros en haut de l'écran de victoire est retirée.
+- **Récompenses compactes** : petites tuiles de 3 par ligne (icône à gauche, quantité en gros, nom en dessous sur deux lignes au plus) ; l'équipement gagné s'y range aussi (miniature, nombre d'étoiles, « Nouvel équipement »). Sur un combat normal, tout l'écran tient désormais sans défiler.
+
 ## ✅ Version 1.68.16 — Écran de victoire plus court
 
 - **Une seule liste de héros** (« Tes héros ») au lieu de deux : chaque ligne montre la part des dégâts (barre, %, total, « Meilleur ») et, juste dessous, le niveau (« Niv. 37 ▲ » en vert s'il monte, ou « Niveau max ») et l'expérience gagnée.

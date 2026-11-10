@@ -117,3 +117,14 @@
 .reward-item.reward-gear { padding: 6px 6px 8px; justify-content: space-between; }
 .reward-item.reward-gear .gear-card { width: 100%; max-width: 72px; }
 .reward-item.reward-gear .gear-card svg { width: auto; height: auto; }
+
+/* v1.68.17 — Récompenses compactes (écran de victoire) : 3 tuiles par ligne, icône + quantité + nom. */
+.reward-compact { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.rc-item { display: flex; align-items: center; gap: 6px; min-width: 0; padding: 6px 7px; border-radius: 8px; background: rgba(255,255,255,0.04); border: 1px solid var(--line); animation: popIn 0.4s cubic-bezier(.2,1.4,.4,1) backwards; }
+.rc-item > svg, .rc-item > img, .rc-item > .res-ico { flex: none; }
+.rc-txt { display: flex; flex-direction: column; min-width: 0; line-height: 1.15; }
+.rc-txt b { font-size: 14px; color: var(--gold-hi); }
+.rc-txt small { font-size: 11px; color: var(--text-dim, #c9c1b3); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.rc-gc { width: 32px; flex: none; }
+.rc-gc .gear-card { width: 32px; padding: 1px; border-radius: 5px; }
+.rc-gc .gear-card .gc-lvl, .rc-gc .gear-card .gc-set, .rc-gc .gear-card .gstars { display: none; }

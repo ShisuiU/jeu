@@ -1,7 +1,7 @@
 {
   "name": "aeonfall",
   "private": true,
-  "version": "1.68.16",
+  "version": "1.68.17",
   "type": "module",
   "scripts": {
     "dev": "vite --host",

@@ -31,4 +31,17 @@ export function fixViewport() {
   apply();
   window.addEventListener('resize', apply);
   window.addEventListener('orientationchange', () => setTimeout(apply, 300));
+  // Après une rotation, iOS peut laisser la page légèrement défilée ou garder d'anciennes zones de toucher :
+  // on remet la page en place et on force un nouveau calcul de la mise en page (v1.68.20).
+  const settle = () => {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0; document.body.scrollTop = 0;
+    const el = document.activeElement as HTMLElement | null;
+    if (el && el !== document.body && /INPUT|TEXTAREA|SELECT/.test(el.tagName)) el.blur();
+    const app = document.querySelector<HTMLElement>('.app');
+    if (app) { app.style.transform = 'translateZ(0)'; void app.offsetHeight; requestAnimationFrame(() => { app.style.transform = ''; }); }
+  };
+  window.addEventListener('orientationchange', () => { setTimeout(settle, 350); setTimeout(settle, 900); });
+  screen.orientation?.addEventListener?.('change', () => setTimeout(settle, 350));
+  window.visualViewport?.addEventListener('resize', () => { if (window.scrollY || document.documentElement.scrollTop) settle(); });
 }

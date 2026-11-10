@@ -1,7 +1,8 @@
-import { CHAPTERS, STAGE_BY_ID, type DialogueLine, type DifficultyId, type WaveEnemy } from '../data/campaign';
+import { CHAPTERS, DIFFICULTIES, STAGE_BY_ID, type DialogueLine, type DifficultyId, type WaveEnemy } from '../data/campaign';
 import { GUILD_BOSS, GUILD_TIERS } from '../data/guild';
 import { addPending, triesLeft, useTry } from './guild';
-import { DUNGEON_BY_ID, DUNGEON_FLOORS, dungeonEnergy, dungeonWaves } from '../data/dungeons';
+import { DUNGEON_BY_ID, DUNGEON_FLOORS, DUNGEON_GEAR_BONUS, dungeonEnergy, dungeonRewardMult, dungeonWaves } from '../data/dungeons';
+import { dungeonBest, dungeonFloorCheck, setDungeonBest } from './dungeons';
 import { TOWER_FLOORS, towerReward, towerWaves } from '../data/tower';
 import { BOSS_TIERS, DAMAGE_CHESTS, WORLD_BOSS } from '../data/worldBoss';
 import { ARENA, arenaTier } from '../data/arena';
@@ -23,7 +24,7 @@ import { generateOpponents, ratingDelta } from './arena';
 
 export type BattleSpec =
   | { mode: 'campaign'; stageId: string; difficulty: DifficultyId }
-  | { mode: 'dungeon'; dungeonId: string; floor: number }
+  | { mode: 'dungeon'; dungeonId: string; floor: number; difficulty?: DifficultyId }
   | { mode: 'tower'; floor: number }
   | { mode: 'worldboss'; tier: string }
   | { mode: 'arena'; opponentId: string }
@@ -56,7 +57,7 @@ export interface ModeResult extends BattleResult {
 const toSetups = (waves: WaveEnemy[][], levelAdd = 0, statMult = 1): UnitSetup[][] =>
   waves.map((w) => w.map((e) => ({ kind: 'enemy' as const, refId: e.enemy, slot: e.slot, level: e.level + levelAdd, hpMult: e.hpMult, statMult: statMult * (e.statMult ?? 1) })));
 
-function scaleReward(r: Reward, m: number): Reward {
+export function scaleReward(r: Reward, m: number): Reward {
   const o: Reward = {};
   for (const [k, v] of Object.entries(r)) o[k as keyof Reward] = Math.max(1, Math.round((v ?? 0) * m));
   return o;
@@ -108,11 +109,12 @@ export function resolveMode(s: SaveData, spec: BattleSpec): ModeInfo {
     }
     case 'dungeon': {
       const d = DUNGEON_BY_ID[spec.dungeonId];
-      const bonus = dungeonBonus(s.time.highWater);
+      const diff = spec.difficulty ?? 'normal';
+      const bonus = dungeonBonus(s.time.highWater) * dungeonRewardMult(diff);
       return {
-        title: `${d.name} · Étage ${spec.floor}`, subtitle: d.description, region: ({ forge: 'ash', amber: 'akkar', alchemy: 'prism', archive: 'astral' } as Record<string, string>)[d.id] ?? 'valcrest', waves: toSetups(dungeonWaves(d, spec.floor)),
-        cost: { kind: 'energy', amount: dungeonEnergy(spec.floor) }, rewardPreview: scaleReward(d.reward(spec.floor), bonus), rewardLabel: bonus > 1 ? `Récompenses (bonus d’événement ×${bonus})` : 'Récompenses',
-        notes: [d.gear ? 'Équipement garanti' : ''].filter(Boolean), firstTime: (s.progress.dungeons[d.id]?.bestFloor ?? 0) < spec.floor,
+        title: `${d.name} · Étage ${spec.floor}${diff !== 'normal' ? ` · ${DIFFICULTIES[diff].name}` : ''}`, subtitle: d.description, region: ({ forge: 'ash', amber: 'akkar', alchemy: 'prism', archive: 'astral' } as Record<string, string>)[d.id] ?? 'valcrest', waves: toSetups(dungeonWaves(d, spec.floor, diff)),
+        cost: { kind: 'energy', amount: dungeonEnergy(spec.floor, diff) }, rewardPreview: scaleReward(d.reward(spec.floor), bonus), rewardLabel: dungeonBonus(s.time.highWater) > 1 ? `Récompenses (bonus d’événement ×${dungeonBonus(s.time.highWater)})` : diff !== 'normal' ? `Récompenses (${DIFFICULTIES[diff].name} ×${dungeonRewardMult(diff)})` : 'Récompenses',
+        notes: [d.gear ? 'Équipement garanti' : ''].filter(Boolean), firstTime: dungeonBest(s, d.id, diff) < spec.floor,
       };
     }
     case 'tower':
@@ -172,7 +174,7 @@ export function resolveMode(s: SaveData, spec: BattleSpec): ModeInfo {
 export function canStart(s: SaveData, spec: BattleSpec): { ok: boolean; reason?: string } {
   switch (spec.mode) {
     case 'campaign': return isStageUnlocked(s, spec.difficulty, STAGE_BY_ID[spec.stageId]) ? { ok: true } : { ok: false, reason: 'Niveau verrouillé.' };
-    case 'dungeon': return spec.floor <= Math.min(DUNGEON_FLOORS, (s.progress.dungeons[spec.dungeonId]?.bestFloor ?? 0) + 1) ? { ok: true } : { ok: false, reason: 'Termine l’étage précédent.' };
+    case 'dungeon': return dungeonFloorCheck(s, spec.dungeonId, spec.difficulty ?? 'normal', spec.floor);
     case 'tower': return spec.floor === s.progress.tower.floor + 1 && spec.floor <= TOWER_FLOORS ? { ok: true } : { ok: false, reason: 'Étage indisponible.' };
     case 'worldboss': return s.worldBoss.keysUsed < WORLD_BOSS.keysPerDay ? { ok: true } : { ok: false, reason: 'Plus de clés aujourd’hui.' };
     case 'guildboss': return !s.guild.id ? { ok: false, reason: 'Rejoins d’abord un clan.' } : triesLeft(s, s.time.highWater) > 0 ? { ok: true } : { ok: false, reason: 'Plus d’essais aujourd’hui.' };
@@ -223,21 +225,22 @@ export function applyMode(s: SaveData, spec: BattleSpec, o: Outcome, now: number
 
     case 'dungeon': {
       const d = DUNGEON_BY_ID[spec.dungeonId];
+      const diff = spec.difficulty ?? 'normal';
       const res = empty(o.won);
-      res.accountXp = dungeonEnergy(spec.floor) * (o.won ? 10 : 3);
+      res.accountXp = dungeonEnergy(spec.floor, diff) * (o.won ? 10 : 3);
       res.accountLevelsGained = addAccountXp(s, res.accountXp);
       if (!o.won) { s.stats.battlesLost++; return res; }
       s.stats.battlesWon++; track(s, 'battleWin'); track(s, 'dungeonWin');
-      const prog = (s.progress.dungeons[d.id] ??= { bestFloor: 0 });
-      res.firstClear = spec.floor > prog.bestFloor;
-      prog.bestFloor = Math.max(prog.bestFloor, spec.floor);
-      res.reward = scaleReward(d.reward(spec.floor), dungeonBonus(now));
+      res.firstClear = spec.floor > dungeonBest(s, d.id, diff);
+      setDungeonBest(s, d.id, diff, spec.floor);
+      res.reward = scaleReward(d.reward(spec.floor), dungeonBonus(now) * dungeonRewardMult(diff));
       applyReward(s, res.reward);
       if (d.gear && s.equipment.length < GEAR_INVENTORY_CAP) {
-        const g: GearItem = generateGear(r, pickWeighted(r, d.gear(spec.floor).filter(([, w]) => w > 0)), now, undefined, undefined, dungeonStars(r, spec.floor));
+        const gf = Math.min(DUNGEON_FLOORS, spec.floor + DUNGEON_GEAR_BONUS[diff]);
+        const g: GearItem = generateGear(r, pickWeighted(r, d.gear(gf).filter(([, w]) => w > 0)), now, undefined, undefined, dungeonStars(r, gf));
         s.equipment.push(g); res.gear.push(g);
       }
-      res.heroXp = heroXpFor(s, o.participants, 80 + spec.floor * 30);
+      res.heroXp = heroXpFor(s, o.participants, Math.round((80 + spec.floor * 30) * dungeonRewardMult(diff)));
       res.stars = 0;
       return res;
     }

@@ -94,7 +94,7 @@ export interface SaveData {
   daily: { lastLoginDay: string | null; cycleIndex: number; totalLogins: number };
   progress: {
     campaign: Record<string, { stars: number; clears: number }>;
-    dungeons: Record<string, { bestFloor: number }>;
+    dungeons: Record<string, { bestFloor: number; best?: Partial<Record<'hard' | 'expert' | 'nightmare', number>> }>;
     tower: { floor: number };
   };
   stats: { battlesWon: number; battlesLost: number; summons: number };

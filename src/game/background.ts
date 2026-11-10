@@ -4,6 +4,7 @@ import { BALANCE } from '../data/balance';
 import { createBattle } from './battle/engine';
 import { runToEnd } from './battle/simulate';
 import { stageProgress, teamSetups } from './campaign';
+import { dungeonBest } from './dungeons';
 import { applyMode, canStart, payMode, resolveMode, type BattleSpec } from './modes';
 
 // COMBATS EN ARRIÈRE-PLAN — on lance une série de combats déjà gagnés une fois (campagne ou étage de donjon) ;
@@ -41,7 +42,7 @@ export function canBackground(s: SaveData, spec: BattleSpec): { ok: boolean; rea
   if (spec.mode === 'campaign') {
     if ((stageProgress(s, spec.difficulty, spec.stageId).clears ?? 0) < 1) return { ok: false, reason: 'Gagne ce niveau une première fois.' };
   } else if (spec.mode === 'dungeon') {
-    if ((s.progress.dungeons[spec.dungeonId]?.bestFloor ?? 0) < spec.floor) return { ok: false, reason: 'Termine cet étage une première fois.' };
+    if (dungeonBest(s, spec.dungeonId, spec.difficulty ?? 'normal') < spec.floor) return { ok: false, reason: 'Termine cet étage une première fois.' };
   } else return { ok: false, reason: 'Indisponible pour ce mode.' };
   return canStart(s, spec).ok ? { ok: true } : canStart(s, spec);
 }

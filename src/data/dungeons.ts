@@ -1,5 +1,5 @@
 import type { Reward } from './resources';
-import type { WaveEnemy } from './campaign';
+import { DIFFICULTIES, DIFFICULTY_ORDER, type DifficultyId, type WaveEnemy } from './campaign';
 import type { GearRarity } from './equipment';
 
 // DONJONS — 4 donjons de 15 étages. Chaque étage : vagues générées à partir d'un modèle, puis le gardien.
@@ -45,16 +45,24 @@ export const DUNGEONS: DungeonDef[] = [
 
 export const DUNGEON_BY_ID: Record<string, DungeonDef> = Object.fromEntries(DUNGEONS.map((d) => [d.id, d]));
 
-export function dungeonLevel(floor: number) { return 2 + (floor - 1) * 4; }
+// DIFFICULTÉS (v1.68.9) — comme la campagne : Normal, Difficile, Expert, Cauchemar. Ennemis plus forts
+// (niveaux et puissance de la difficulté), récompenses multipliées, meilleur équipement à la Forge.
+// Une difficulté s'ouvre quand l'étage DUNGEON_DIFF_OPEN est terminé dans la précédente.
+export const DUNGEON_DIFF_OPEN = 10;
+/** Étages « gagnés » pour la table d'équipement et les étoiles : plus la difficulté est haute, meilleur est l'objet. */
+export const DUNGEON_GEAR_BONUS: Record<DifficultyId, number> = { normal: 0, hard: 3, expert: 6, nightmare: 9 };
+export const dungeonRewardMult = (diff: DifficultyId = 'normal') => DIFFICULTIES[diff].rewardMult;
+
+export function dungeonLevel(floor: number, diff: DifficultyId = 'normal') { return 2 + (floor - 1) * 4 + DIFFICULTIES[diff].levelAdd; }
 export const DUNGEON_STEP = 0.55;
 export const dungeonStatMult = (floor: number) => (floor <= 10 ? 1 : 1 + (floor - 10) * DUNGEON_STEP);
-export function dungeonEnergy(floor: number) { return 6 + Math.floor(floor / 2); }
+export function dungeonEnergy(floor: number, diff: DifficultyId = 'normal') { return 6 + Math.floor(floor / 2) + DIFFICULTY_ORDER.indexOf(diff); }
 
-export function dungeonWaves(d: DungeonDef, floor: number): WaveEnemy[][] {
-  const lv = dungeonLevel(floor);
+export function dungeonWaves(d: DungeonDef, floor: number, diff: DifficultyId = 'normal'): WaveEnemy[][] {
+  const lv = dungeonLevel(floor, diff);
   const m = d.minions;
   // Étages 11 à 15 (ajoutés pour la fin de jeu) : ennemis renforcés, comme la fin de la campagne.
-  const statMult = dungeonStatMult(floor);
+  const statMult = dungeonStatMult(floor) * DIFFICULTIES[diff].statMult;
   return [
     [{ enemy: m[0], level: lv, slot: 0, statMult }, { enemy: m[1], level: lv, slot: 1, statMult }, { enemy: m[2], level: lv, slot: 2, statMult }],
     [{ enemy: d.boss, level: lv + 1, slot: 1, hpMult: 3 + floor * 0.15, statMult }, { enemy: m[(floor + 1) % 3], level: lv, slot: 3, statMult }, { enemy: m[floor % 3], level: lv, slot: 4, statMult }],

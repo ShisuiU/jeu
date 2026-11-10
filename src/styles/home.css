@@ -128,3 +128,8 @@
 .rc-gc { width: 32px; flex: none; }
 .rc-gc .gear-card { width: 32px; padding: 1px; border-radius: 5px; }
 .rc-gc .gear-card .gc-lvl, .rc-gc .gear-card .gc-set, .rc-gc .gear-card .gstars { display: none; }
+
+/* v1.68.21 — Accueil : décor de l'écran de lancement (sans le fondu au noir ni le travelling d'ouverture). */
+.home-world::before { display: none; }
+.home-world img { animation: titleDrift 30s ease-in-out infinite alternate; }
+.reduced-motion .home-world img, .reduced-motion .home-world .title-heart { animation: none; }

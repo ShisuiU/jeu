@@ -138,9 +138,10 @@ service cloud.firestore {
           && changed().hasOnly(['name', 'nameLower', 'tag', 'description', 'emblem', 'open', 'officers', 'members', 'count'])
           && resource.data.members.keys().hasAll(request.resource.data.members.keys())
           && request.resource.data.members.keys().toSet().intersection(membersChanged()).size() == 0)
-        // Un adjoint : présentation, ouverture, et exclusion de simples membres (ni le chef, ni un adjoint).
+        // Un adjoint : présentation et exclusion de simples membres (ni le chef, ni un adjoint).
+        // Ouvrir ou fermer le clan est réservé au chef (v1.68.21).
         || (isOfficer(resource.data) && request.resource.data.leader == resource.data.leader
-          && changed().hasOnly(['description', 'open', 'members', 'count'])
+          && changed().hasOnly(['description', 'members', 'count'])
           && resource.data.members.keys().hasAll(request.resource.data.members.keys())
           && request.resource.data.members.keys().toSet().intersection(membersChanged()).size() == 0
           && !(resource.data.leader in membersChanged())

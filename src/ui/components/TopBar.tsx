@@ -25,7 +25,7 @@ export function TopBar() {
   const cost = refillCost(save);
   return (
     <div className="topbar">
-      <button className="avatar-btn" onClick={() => push({ name: 'settings' })}>
+      <button className="avatar-btn" onClick={() => push({ name: 'profile' })} aria-label="Mon profil">
         <div className="avatar-wrap"><div className="avatar"><HeroArt heroId={save.profile.avatarHeroId} /></div><span className="avatar-lvl" aria-hidden>{save.profile.level}</span></div>
         <div style={{ minWidth: 0, textAlign: 'left' }}>
           <div className="player-name">{save.profile.name}</div>

@@ -3,7 +3,7 @@ import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
 import { useAccount } from '../../cloud/account';
 import { GUILD_BOSS, GUILD_DESC_MAX, GUILD_MAX, GUILD_NAME_MAX, GUILD_TIERS, CHAT_MAX } from '../../data/guild';
-import { OFFICERS_MAX, ROLE_HELP, ROLE_NAMES, bossTotal, claimTier, claimableTiers, clanRights, myBossDamage, roleOf, triesLeft, type ChatMessage, type ClanRole, type GuildDoc } from '../../game/guild';
+import { ROLE_HELP, ROLE_NAMES, bossTotal, claimTier, claimableTiers, clanRights, myBossDamage, roleOf, triesLeft, type ChatMessage, type ClanRole, type GuildDoc } from '../../game/guild';
 import { HERO_BY_ID } from '../../data/heroes';
 import { play } from '../../audio/sfx';
 import { Modal, Panel, Screen, fmt } from '../components/common';
@@ -261,16 +261,10 @@ function Members({ g, uid, now, act, confirm, leave }: {
   const [report, setReport] = useState<ReportTarget | null>(null);
   const me = roleOf(g, uid);
   const list = Object.entries(g.members).sort((a, b) => ROLE_ORDER[roleOf(g, a[0])] - ROLE_ORDER[roleOf(g, b[0])] || b[1].power - a[1].power);
-  const officers = (g.officers ?? []).length;
   const m = sel ? g.members[sel] : null;
   const r = sel ? clanRights(g, uid, sel) : null;
   return (
     <>
-      <Panel title="Les rôles du clan">
-        {(['leader', 'officer', 'member'] as ClanRole[]).map((k) => (
-          <div key={k} className="stat-row"><b className={`cl-role ${k}`}>{ROLE_NAMES[k]}{k === 'officer' ? ` · ${officers}/${OFFICERS_MAX}` : ''}</b><span className="faint" style={{ maxWidth: '62%', textAlign: 'right' }}>{ROLE_HELP[k]}</span></div>
-        ))}
-      </Panel>
       <Panel title={`Membres · ${g.count}/${GUILD_MAX}`}>
         <p className="faint" style={{ marginTop: 0 }}>Ton rôle : <b className={`cl-role ${me}`}>{ROLE_NAMES[me]}</b>{me === 'leader' ? ' · touche un membre pour le nommer adjoint, chef, ou l’exclure.' : me === 'officer' ? ' · touche un simple membre pour l’exclure.' : ''}</p>
         {list.map(([id, mm]) => {
@@ -290,7 +284,7 @@ function Members({ g, uid, now, act, confirm, leave }: {
       {clanRights(g, uid, uid).settings && (
         <Panel title="Réglages du clan">
           <div className="row" style={{ gap: 8 }}>
-            <button className="btn secondary grow" onClick={() => void act((a) => a.updateSettings(g.id, { open: !g.open }), g.open ? 'Clan fermé.' : 'Clan ouvert.')}>{g.open ? 'Fermer le clan' : 'Ouvrir le clan'}</button>
+            {me === 'leader' && <button className="btn secondary grow" onClick={() => void act((a) => a.updateSettings(g.id, { open: !g.open }), g.open ? 'Clan fermé.' : 'Clan ouvert.')}>{g.open ? 'Fermer le clan' : 'Ouvrir le clan'}</button>}
             <button className="btn secondary grow" onClick={() => setDesc(g.description)}>Présentation</button>
           </div>
         </Panel>

@@ -35,6 +35,7 @@ export type Route =
   | { name: 'market' }
   | { name: 'camp' }
   | { name: 'wheel' }
+  | { name: 'profile' }
   | { name: 'guild' }
   | { name: 'ranks'; tab?: 'arena' | 'tower' | 'boss' | 'power' }
   | { name: 'account'; mode?: 'register' };

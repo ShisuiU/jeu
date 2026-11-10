@@ -9,11 +9,15 @@ import { InfoButton, Screen } from '../components/common';
 import { Icon } from '../art/Icons';
 import { BattleBackdrop } from '../art/BattleBackdrop';
 import { EnemyArt } from '../art/EnemyArt';
+import { STAR_STEPS, anyStarChest, claimStarChest, starChestClaimed, starChestReward, starChestsReady } from '../../game/starChests';
+import { RewardInline } from '../components/RewardView';
+import { play } from '../../audio/sfx';
 
 export function Campaign() {
   const save = useGame((s) => s.save)!;
   const push = useUI((s) => s.push);
   const toast = useUI((s) => s.toast);
+  const mutate = useGame((s) => s.mutate);
   const [diff, setDiff] = useState<DifficultyId>('normal');
   const latest = (d: DifficultyId) => [...CHAPTERS].reverse().find((c) => isStageUnlocked(save, d, c.stages[0]))?.n ?? 1;
   const [chap, setChap] = useState<number>(() => latest('normal'));
@@ -29,7 +33,7 @@ export function Campaign() {
       <div className="seg camp-diff" style={{ marginBottom: 10 }}>
         {DIFFICULTY_ORDER.map((d) => {
           const open = isStageUnlocked(save, d, CHAPTERS[0].stages[0]);
-          return <button key={d} className={`${diff === d ? 'on' : ''} ${open ? '' : 'locked'}`} aria-disabled={!open} onClick={() => { if (!open) { toast(`${DIFFICULTIES[d].name} : termine d’abord le chapitre 1 en ${DIFFICULTIES[DIFFICULTY_ORDER[DIFFICULTY_ORDER.indexOf(d) - 1]].name}.`); return; } setDiff(d); setChap(latest(d)); }}>{DIFFICULTIES[d].name}</button>;
+          return <button key={d} className={`${diff === d ? 'on' : ''} ${open ? '' : 'locked'}`} aria-disabled={!open} onClick={() => { if (!open) { toast(`${DIFFICULTIES[d].name} : termine d’abord le chapitre 1 en ${DIFFICULTIES[DIFFICULTY_ORDER[DIFFICULTY_ORDER.indexOf(d) - 1]].name}.`); return; } setDiff(d); setChap(latest(d)); }}>{DIFFICULTIES[d].name}{open && anyStarChest(save, d) && <span className="seg-dot" />}</button>;
         })}
       </div>
       <div className="chips camp-chaps" style={{ marginBottom: 12 }} ref={(el) => { const a = el?.querySelector<HTMLElement>('.chip.active'); if (a && el && (a.offsetLeft + a.offsetWidth > el.scrollLeft + el.clientWidth || a.offsetLeft < el.scrollLeft)) el.scrollLeft = a.offsetLeft - el.clientWidth / 2 + a.offsetWidth / 2; }}>
@@ -39,7 +43,7 @@ export function Campaign() {
           return (
             <button key={x.n} className={`chip ${chap === x.n ? 'active' : ''}`} style={open ? undefined : { opacity: 0.45 }}
               onClick={() => (open ? setChap(x.n) : toast(`Chapitre ${x.n} : bats d’abord le boss du chapitre ${x.n - 1}.`))}>
-              {!open && <Icon.lock size={12} />}Ch. {x.n}{done && ' ✓'}
+              {!open && <Icon.lock size={12} />}Ch. {x.n}{done && ' ✓'}{open && starChestsReady(save, diff, x.n).length > 0 && <span className="chip-dot" />}
             </button>
           );
         })}
@@ -56,6 +60,31 @@ export function Campaign() {
             {reward && <span className="faint chap-reward">Récompense : {HERO_BY_ID[reward].name.split(/[ ,]/)[0]}</span>}
             <span className="chip" style={{ marginLeft: 'auto' }}>{DIFFICULTIES[diff].name}{DIFFICULTIES[diff].levelAdd ? ` · +${DIFFICULTIES[diff].levelAdd}` : ''}</span>
           </div>
+        </div>
+      </div>
+
+      {/* Coffres d'étoiles du chapitre (10, 20, 30 étoiles), propres à chaque difficulté. */}
+      <div className="star-chests">
+        <div className="sc-bar"><i style={{ width: `${Math.min(100, (st.stars / st.max) * 100)}%` }} />{STAR_STEPS.map((n) => <b key={n} style={{ left: `${(n / st.max) * 100}%` }} />)}</div>
+        <div className="sc-row">
+          {STAR_STEPS.map((n) => {
+            const claimed = starChestClaimed(save, diff, c.n, n);
+            const ready = !claimed && st.stars >= n;
+            return (
+              <button key={n} className={`sc-chest ${ready ? 'ready' : ''} ${claimed ? 'claimed' : ''}`}
+                onClick={() => {
+                  if (claimed) { toast('Coffre déjà récupéré.'); return; }
+                  if (!ready) { toast(`Encore ${n - st.stars} étoile${n - st.stars > 1 ? 's' : ''} pour ouvrir ce coffre.`); return; }
+                  let got: ReturnType<typeof claimStarChest> = null;
+                  mutate((d) => { got = claimStarChest(d, diff, c.n, n); });
+                  if (got) { play('claim'); toast(`Coffre de ${n} étoiles récupéré !`, 'ok'); }
+                }}>
+                <span className="scc-head"><Icon.star size={13} /> {n}{claimed ? ' ✓' : ''}</span>
+                <RewardInline reward={starChestReward(diff, n)} />
+                {ready && <span className="scc-go">Récupérer</span>}
+              </button>
+            );
+          })}
         </div>
       </div>
 

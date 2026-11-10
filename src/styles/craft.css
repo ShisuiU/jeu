@@ -932,3 +932,6 @@ body:has(.prep-bar) .bg-pill, body:has(.summon-bar) .bg-pill { bottom: calc(var(
 .elx-bill > div > :first-child { grid-row: span 2; }
 .elx-bill b { font-size: 18px; color: var(--gold-hi); text-align: right; }
 .elx-bill small { grid-column: 3; text-align: right; color: var(--text-faint); font-size: 12px; }
+
+/* v1.68.11 — fourchette d'étoiles de l'équipement de la Forge, sur chaque étage. */
+.forge-stars { color: #ffd36b; font-weight: 700; white-space: nowrap; }

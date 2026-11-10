@@ -173,16 +173,14 @@ describe('équipement', () => {
     const geared = createBattle(teamSetups(s, team), [[{ kind: 'enemy', refId: 'hollow_soldier', slot: 0, level: 1 }]], { seed: 1 });
     expect(geared.units[0].base.hp).toBeGreaterThan(plain.units[0].base.hp);
   });
-  it('la campagne donne de l’équipement et du butin', () => {
+  it('la campagne donne du butin, mais plus d’équipement (réservé à la Forge Engloutie depuis v1.68.11)', () => {
     const s = createNewSave(1);
-    let gear = 0;
     for (let i = 0; i < 20; i++) {
       const r = applyStageResult(s, '1-1', 'normal', true, 0, [s.heroes[0].uid], 1000 + i * 37);
-      gear += r.gear.length;
+      expect(r.gear).toHaveLength(0);
       expect(Object.keys(r.loot)).toHaveLength(1);
     }
-    expect(gear).toBeGreaterThan(5);
-    expect(s.equipment.length).toBe(gear);
+    expect(s.equipment.length).toBe(0);
   });
 });
 

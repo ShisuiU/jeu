@@ -891,3 +891,8 @@ body:has(.battle-controls) .toasts { bottom: auto; top: calc(var(--sat, 0px) + 1
 .gs-bonus { font-size: 12px; color: var(--text-dim, #c9c1b3); line-height: 1.2; }
 .gs-count { min-width: 26px; padding: 2px 7px; border-radius: 10px; text-align: center; font-weight: 800; font-size: 12px;
   background: color-mix(in srgb, var(--sc) 22%, rgba(0,0,0,0.5)); color: #fff; }
+
+/* v1.68.1 — Combats : une carte seule sur la dernière ligne prend toute la largeur (pas de trou). */
+.combat-grid > .combat-card:last-child:nth-child(odd) { grid-column: 1 / -1; }
+/* Lisibilité : plus aucun texte sous 11 px (audit). */
+.prep-lead { font-size: 11px; }

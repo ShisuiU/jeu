@@ -8,7 +8,7 @@ import { NAME_MAX, cleanName, nameError } from '../../game/profile';
 
 // GUIDE DE DÉMARRAGE — quelques écrans au premier lancement (relançable depuis les paramètres).
 const STEPS: { icon: keyof typeof Icon; title: string; text: string }[] = [
-  { icon: 'portal', title: 'Bienvenue dans le Monde Cousu', text: 'Le Cœur d’Aeon s’est brisé et le Néant efface le monde. Toi, tu es le Lien : la seule personne capable d’appeler les Héritiers, des héros venus de toutes les époques, à travers les failles. On te montre tout en jouant.' },
+  { icon: 'portal', title: 'Tu es le Lien', text: 'Quand le Cœur d’Aeon s’est brisé, des morceaux de toutes les époques ont été recousus en un seul monde : le Monde Cousu. Aujourd’hui, le Néant l’efface. Tu es la seule personne capable d’appeler les Héritiers, des héros venus de toutes les époques, à travers les failles. On te montre tout en jouant.' },
 ];
 
 export function Guide() {

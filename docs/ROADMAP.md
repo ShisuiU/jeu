@@ -558,6 +558,16 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.68.1 — Corrections de l'audit complet
+
+- **Lisibilité** : plus aucun texte sous 11 px (« XP » sous le nom, « ♛ Chef » de la préparation).
+- **Premier lancement** : une seule fenêtre « Bienvenue », la suivante s'appelle « Tu es le Lien » et explique enfin ce qu'est le Monde Cousu.
+- **Écran Combats** : une carte seule sur la dernière ligne prend toute la largeur (plus de trou).
+- **Moins de points rouges** : le Marché n'en affiche plus (rien à récupérer), le Camp seulement après 8 h de butin, et le Camp n'allume plus l'onglet Accueil.
+- **Succès de collection** : 50, 75 et 100 héros.
+- **Hors ligne** : le téléphone garde jusqu'à 700 illustrations (100 héros, ennemis, équipements, ressources).
+- **Sécurité des mises en ligne** : chaque proposition de changement passe les tests et la construction du jeu avant sa fusion.
+
 ## ✅ Version 1.68.0 — Vague A : 13 héros de plus (63 en tout)
 
 Première des 4 vagues prévues dans `docs/HEROES_PLAN.md` (50 héros de plus, surtout de petites raretés, pour que les doublons deviennent rares).

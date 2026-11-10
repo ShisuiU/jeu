@@ -1,4 +1,3 @@
-import { dayKey } from '../../core/time';
 import { Coach } from '../components/Coach';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
@@ -40,8 +39,8 @@ export function Home() {
     ...(isUnlocked(save, 'events') ? [{ label: 'Événements', icon: Icon.calendar, dot: eventsDot(save, now), go: () => push({ name: 'events' }) }] : []),
   ];
   const places = [
-    ...(isUnlocked(save, 'camp') ? [{ label: 'Camp', icon: Icon.gift, dot: campElapsed(save, now) >= 4 * 3600_000, go: () => push({ name: 'camp' }) }] : []),
-    ...(isUnlocked(save, 'market') ? [{ label: 'Marché', icon: Icon.bag, dot: save.shop.market?.day !== dayKey(now), go: () => push({ name: 'market' }) }] : []),
+    ...(isUnlocked(save, 'camp') ? [{ label: 'Camp', icon: Icon.gift, dot: campElapsed(save, now) >= 8 * 3600_000, go: () => push({ name: 'camp' }) }] : []),
+    ...(isUnlocked(save, 'market') ? [{ label: 'Marché', icon: Icon.bag, go: () => push({ name: 'market' }) }] : []),
   ];
 
   return (

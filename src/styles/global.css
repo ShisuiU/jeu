@@ -217,7 +217,7 @@ button.res-cell { text-align: left; width: 100%; }
 .ax-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
 .ax-bar { position: relative; display: block; height: 5px; border-radius: 999px; background: rgba(255,255,255,0.1); box-shadow: inset 0 0 0 1px rgba(0,0,0,0.5); overflow: hidden; }
 .ax-bar i { position: absolute; inset: 0 auto 0 0; border-radius: inherit; background: linear-gradient(90deg, #b4863d, #ffd36b); box-shadow: 0 0 6px rgba(255,211,107,0.6); transition: width 0.8s cubic-bezier(.2,.8,.2,1); }
-.ax-num { font-size: 8.5px; font-weight: 700; color: var(--text-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.1; }
+.ax-num { font-size: 11px; font-weight: 700; color: var(--text-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.1; }
 .acct-xp.big { margin: 12px 0 0; padding: 10px 12px; gap: 10px; border-radius: 12px; background: rgba(10,8,14,0.55); border: 1px solid rgba(217,179,106,0.35); }
 .acct-xp.big .ax-lvl { font-size: 20px; padding: 4px 9px; border-radius: 9px; }
 .acct-xp.big .ax-lvl small { font-size: 10px; }
@@ -225,7 +225,7 @@ button.res-cell { text-align: left; width: 100%; }
 .acct-xp.big .ax-top em { font-style: normal; font-weight: 900; color: #ffd36b; }
 .acct-xp.big .ax-bar { height: 8px; margin: 3px 0 1px; }
 .acct-xp.big .ax-bar i { transform-origin: left; animation: axGrow 0.9s 0.3s cubic-bezier(.2,.8,.2,1) backwards; }
-.acct-xp.big .ax-num { font-size: 10.5px; }
+.acct-xp.big .ax-num { font-size: 12px; }
 @keyframes axGrow { from { transform: scaleX(0); } }
 .reduced-motion .acct-xp .ax-bar i { animation: none; transition: none; }
 /* En haut de l'écran : le niveau en médaillon sur l'avatar, la jauge sous le nom. */
@@ -234,4 +234,5 @@ button.res-cell { text-align: left; width: 100%; }
   font-size: 11.5px; font-weight: 900; color: #23180a; background: linear-gradient(180deg, #ffe7ad, #c99a48); border: 1.5px solid #1a1410; box-shadow: 0 0 8px rgba(255,211,107,0.5); }
 .acct-xp.compact { margin-top: 3px; }
 .acct-xp.compact .ax-bar { height: 6px; }
-.acct-xp.compact .ax-num { font-size: 9px; color: var(--gold); opacity: 0.85; }
+.acct-xp.compact .ax-num { font-size: 11px; letter-spacing: -0.2px; color: var(--gold); opacity: 0.85; }
+.acct-xp.compact .ax-num { padding-left: 10px; }

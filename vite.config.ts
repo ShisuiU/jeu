@@ -43,7 +43,7 @@ export default defineConfig({
         runtimeCaching: [{
           urlPattern: /\/assets\/(full|portrait|battle|gear|res)-[^/]+\.webp$/,
           handler: 'CacheFirst',
-          options: { cacheName: 'aeonfall-art', expiration: { maxEntries: 400, maxAgeSeconds: 60 * 60 * 24 * 365 } },
+          options: { cacheName: 'aeonfall-art', expiration: { maxEntries: 700, maxAgeSeconds: 60 * 60 * 24 * 365 } },
         }],
         maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
         navigateFallback: 'index.html',

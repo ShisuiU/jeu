@@ -971,11 +971,19 @@ body:has(.prep-bar) .bg-pill, body:has(.summon-bar) .bg-pill { bottom: calc(var(
 .sc-track::-webkit-scrollbar { display: none; }
 .sc-track .sc-chest { flex: 0 0 96px; }
 
-/* ─── Roue quotidienne (v1.68.18) ─── */
-.wheel-wrap { position: relative; width: min(330px, 86vw); aspect-ratio: 1; margin: 8px auto 0; }
-.wheel { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 0 18px rgba(217,164,65,0.35)); }
+/* ─── Roue quotidienne (v1.68.18, habillage v1.68.19) ─── */
+.wheel-wrap { position: relative; width: min(340px, 88vw); aspect-ratio: 1; margin: 18px auto 0; }
+.wheel-halo { position: absolute; inset: -6%; border-radius: 50%; background: radial-gradient(circle, rgba(255,211,107,0.22), rgba(184,36,62,0.12) 55%, transparent 72%); filter: blur(6px); animation: whHalo 3.5s ease-in-out infinite; }
+@keyframes whHalo { 50% { opacity: 0.6; transform: scale(1.03); } }
+.wheel-rot { position: absolute; inset: 0; }
+.wheel { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 6px 14px rgba(0,0,0,0.7)); }
 .wheel-labels { position: absolute; inset: 0; pointer-events: none; }
-.wl { position: absolute; left: 50%; top: 50%; width: 64px; margin: -50% 0 0 -32px; height: 100%; transform-origin: 50% 50%; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 14%; gap: 3px; }
-.wl span { font-size: 11px; font-weight: 800; color: #fff; text-shadow: 0 1px 2px #000; text-align: center; line-height: 1.05; max-width: 62px; }
-.wl.rare span { color: #ffd0dc; }
-.wheel-pin { position: absolute; z-index: 2; left: 50%; top: -6px; width: 0; height: 0; transform: translateX(-50%); border-left: 13px solid transparent; border-right: 13px solid transparent; border-top: 24px solid #ffd36b; filter: drop-shadow(0 2px 3px #000); }
+.wl { position: absolute; left: 50%; top: 0; width: 44px; height: 50%; margin-left: -22px; transform-origin: 50% 100%; display: flex; flex-direction: column; align-items: center; padding-top: 12%; gap: 2px; }
+.wl span { font-family: var(--font-title); font-size: 12px; font-weight: 700; color: #fff4d6; text-shadow: 0 1px 2px #000, 0 0 6px rgba(0,0,0,0.8); white-space: nowrap; }
+.wl svg, .wl img { filter: drop-shadow(0 1px 2px rgba(0,0,0,0.9)); }
+.wl.rare span { color: #ffc2d1; }
+.wl.won span { color: #ffe27a; }
+.wheel-pin { position: absolute; z-index: 3; left: 50%; top: -22px; width: 34px; height: 44px; transform: translateX(-50%); filter: drop-shadow(0 3px 4px rgba(0,0,0,0.8)); }
+.wheel-wrap.spinning .wheel-pin { animation: whTick 0.12s ease-in-out infinite alternate; }
+@keyframes whTick { to { transform: translateX(-50%) rotate(-7deg); } }
+@media (prefers-reduced-motion: reduce) { .wheel-halo, .wheel-wrap.spinning .wheel-pin { animation: none; } }

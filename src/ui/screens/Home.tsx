@@ -40,7 +40,7 @@ export function Home() {
     ...(isUnlocked(save, 'events') ? [{ label: 'Événements', icon: Icon.calendar, dot: eventsDot(save, now), go: () => push({ name: 'events' }) }] : []),
   ];
   const places = [
-    { label: 'Roue', icon: Icon.star, dot: wheelReady(save, now), go: () => push({ name: 'wheel' }) },
+    { label: 'Roue', icon: Icon.wheel, dot: wheelReady(save, now), go: () => push({ name: 'wheel' }) },
     ...(isUnlocked(save, 'camp') ? [{ label: 'Camp', icon: Icon.gift, dot: campElapsed(save, now) >= 8 * 3600_000, go: () => push({ name: 'camp' }) }] : []),
     ...(isUnlocked(save, 'market') ? [{ label: 'Marché', icon: Icon.bag, go: () => push({ name: 'market' }) }] : []),
   ];

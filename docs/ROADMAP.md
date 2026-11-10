@@ -558,6 +558,14 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.68.5 — Combats en arrière-plan
+
+- **Nouveau bouton ⟳ sur l'écran de préparation** (campagne et donjons) : lance une série de 1 à 50 combats sur un niveau **déjà gagné une fois** (pas besoin de 3 étoiles, contrairement au Balayage).
+- Les combats se jouent tout seuls, **un toutes les 30 secondes**, pendant que tu fais autre chose dans le jeu, et **même jeu fermé** : ceux qui auraient dû se jouer sont rattrapés au retour.
+- Vrais combats du moteur, mêmes coûts et mêmes récompenses ; s'il manque de l'énergie, la série **attend** qu'elle revienne ; option « S'arrêter à la première défaite ».
+- **Une pastille au-dessus de la navigation**, sur tous les écrans, montre la progression (par ex. « 3/10 ») ; on la touche pour voir le butin gagné, l'équipement obtenu, arrêter la série ou fermer le résumé. Un message prévient quand la série se termine.
+- Tests : niveau déjà gagné requis, un combat toutes les 30 s, rattrapage, attente d'énergie, arrêt à la défaite.
+
 ## ✅ Version 1.68.4 — Décors peints des combats
 
 - **9 vrais paysages peints**, un par région de la campagne (et des modes qui s'y déroulent), à la place d'un portrait de boss flouté et assombri : remparts de Valcrest, forêt de Sylvaran, citadelle du Prisme, dunes d'Akkar, abîme de la Légion, observatoire du Concordat, Cœur d'Aeon, Coutures du monde, Rivage gris.

@@ -12,7 +12,7 @@ import type { Reward } from '../../data/resources';
 import { BOSS_TIERS, DAMAGE_CHESTS, WORLD_BOSS } from '../../data/worldBoss';
 import { ARENA, ARENA_TIERS, arenaTier } from '../../data/arena';
 import { HERO_BY_ID } from '../../data/heroes';
-import { applyDefenseLog, arenaDefenses, defenseTeam, generateOpponents, opponentFromDefense, playerTeamPower, setArenaDefenses } from '../../game/arena';
+import { DEFENSE_LOSS, DEFENSE_WIN, ratingDelta, applyDefenseLog, arenaDefenses, defenseTeam, generateOpponents, leagueBounds, opponentFromDefense, refreshCost, refreshOpponents, setArenaDefenses } from '../../game/arena';
 import type { ArenaLogEntry } from '../../save/schema';
 import { ReportSheet, type ReportTarget } from '../components/ReportSheet';
 import { maskProfanity } from '../../game/moderation';
@@ -20,7 +20,7 @@ import { loadCloud, useAccount } from '../../cloud/account';
 import { seededRand } from '../../game/gear';
 import { dungeonBonus } from '../../game/events';
 import { formatDuration, msUntilReset } from '../../core/time';
-import { InfoButton, Panel, Screen, fmt } from '../components/common';
+import { InfoButton, Modal, Panel, Screen, fmt } from '../components/common';
 import { RewardInline, rewardMainIcon } from '../components/RewardView';
 import { EnemyArt } from '../art/EnemyArt';
 import { play } from '../../audio/sfx';
@@ -196,7 +196,7 @@ export function Arena() {
   const tier = arenaTier(save.arena.rating);
   const tickets = ARENA.ticketsPerDay - save.arena.ticketsUsed;
   const user = useAccount((s) => s.user);
-  const [online, setOnline] = useState<'idle' | 'loading' | 'ok' | 'error'>('idle');
+  const [, setOnline] = useState<'idle' | 'loading' | 'ok' | 'error'>('idle');
   useEffect(() => {
     if (save.arena.opponents.length === 0) mutate((s) => { s.arena.opponents = generateOpponents(s, seededRand(Date.now())); });
   }, [save.arena.opponents.length, mutate]);
@@ -213,9 +213,12 @@ export function Arena() {
         mutate((s) => { r = applyDefenseLog(s, log); });
         if (r.won + r.lost) toast(`Ta défense : ${r.won} victoire${r.won > 1 ? 's' : ''}, ${r.lost} défaite${r.lost > 1 ? 's' : ''} (${r.delta >= 0 ? '+' : ''}${r.delta} points).`, r.delta >= 0 ? 'ok' : 'info');
       }
-      if (!arenaDefenses().length) {
-        const bl = useGame.getState().save!.blocked ?? [];
-        setArenaDefenses((await c.fetchDefenses(playerTeamPower(useGame.getState().save!))).filter((d) => !bl.some((b) => b.uid === d.uid)));
+      // Joueurs de la même ligue (rechargés à chaque visite : les nouveaux joueurs apparaissent vite).
+      {
+        const sv = useGame.getState().save!;
+        const bl = sv.blocked ?? [];
+        const [min, max] = leagueBounds(sv.arena.rating);
+        setArenaDefenses((await c.fetchDefenses(min, max)).filter((d) => !bl.some((b) => b.uid === d.uid)));
         const cur = useGame.getState().save!.arena.opponents;
         if (alive && arenaDefenses().length && !cur.some((o) => o.real)) mutate((s) => { s.arena.opponents = generateOpponents(s, seededRand(Date.now())); });
       }
@@ -223,8 +226,9 @@ export function Arena() {
     }).catch(() => { if (alive) setOnline('error'); });
     return () => { alive = false; };
   }, [user, mutate]); // eslint-disable-line react-hooks/exhaustive-deps
-  const anyReal = save.arena.opponents.some((o) => o.real);
   const [report, setReport] = useState<ReportTarget | null>(null);
+  const [defOpen, setDefOpen] = useState(false);
+  const [leagueOpen, setLeagueOpen] = useState(false);
   const defTeam = defenseTeam(save);
   const setDefense = (id: string) => {
     mutate((s) => { s.arena.defenseTeamId = id; });
@@ -242,7 +246,10 @@ export function Arena() {
     } catch { toast('Serveur injoignable pour le moment.', 'error'); }
   };
   return (
-    <Screen title="Arène" right={<RanksBtn tab="arena" />}>
+    <Screen title="Arène" right={<span className="row" style={{ gap: 6 }}>
+      <button className="btn secondary small" onClick={() => setLeagueOpen(true)} aria-label="Les ligues de l’Arène"><Icon.star size={15} /> Ligues</button>
+      <button className="btn secondary small" onClick={() => setDefOpen(true)} aria-label="Gérer ta défense"><Icon.team size={16} /> Défense</button>
+    </span>}>
       <Panel>
         <div className="row between">
           <div><div className="faint">LIGUE</div><b style={{ fontSize: 20, color: tier.color }}>{tier.name}</b></div>
@@ -254,12 +261,16 @@ export function Arena() {
         </div>
         <p className="faint" style={{ marginBottom: 0 }}>Nouveaux tickets dans {formatDuration(msUntilReset(now))}</p>
       </Panel>
-      <p className="hint" style={{ margin: '0 0 10px' }}>
-        {anyReal
-          ? 'Les adversaires « Joueur » sont les vraies équipes de défense d’autres joueurs : leurs héros, niveaux, rangs, compétences et équipement.'
-          : user ? (online === 'loading' ? 'Recherche de joueurs de ta puissance…' : online === 'error' ? 'Serveur injoignable : l’Arène t’oppose des Héritiers imaginaires.' : 'Aucun joueur en ligne de ta puissance pour l’instant : l’Arène t’oppose des Héritiers imaginaires, calibrés sur ta puissance.')
-            : 'Ces adversaires sont des Héritiers imaginaires. Crée un compte (Menu → Sauvegarde) pour affronter les vraies équipes d’autres joueurs, et publier la tienne.'}
-      </p>
+      <div className="row between" style={{ margin: '0 0 8px' }}>
+        <span className="faint">Adversaires</span>
+        <button className="btn secondary small" onClick={() => {
+          let r: ReturnType<typeof refreshOpponents> = { ok: false, cost: 0 };
+          mutate((d) => { r = refreshOpponents(d, seededRand(Date.now())); });
+          if (r.ok) { play('tap'); toast(r.cost ? `Nouveaux adversaires (−${r.cost} cristaux).` : 'Nouveaux adversaires (actualisation gratuite du jour).', 'ok'); } else toast(r.reason ?? 'Impossible.', 'error');
+        }}>
+          <Icon.loop size={14} /> Actualiser {refreshCost(save) ? <><Icon.crystal size={14} /> {refreshCost(save)}</> : <span className="faint">· gratuit</span>}
+        </button>
+      </div>
       {save.arena.opponents.map((o, i) => (
         <Panel key={o.id}>
           <div className="row between" style={{ marginBottom: 8 }}>
@@ -274,7 +285,33 @@ export function Arena() {
           <div className="faint" style={{ marginTop: 4 }}>{o.heroes.map((h) => HERO_BY_ID[h.heroId].name.split(/[ ,]/)[0]).join(', ')}{o.real && o.uid && <button className="acc-link" style={{ marginLeft: 8 }} onClick={() => setReport({ uid: o.uid!, name: o.name, kind: 'name', where: 'Arène' })}>Signaler</button>}</div>
         </Panel>
       ))}
-      <Panel title="Ta défense">
+      {leagueOpen && (
+        <Modal onClose={() => setLeagueOpen(false)}>
+          <h2>Les ligues</h2>
+          <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>Ton classement te place dans une ligue. Tu affrontes les joueurs <b>de ta ligue</b>, et plus la ligue est haute, plus chaque victoire rapporte.</p>
+          <div className="league-list">
+            {[...ARENA_TIERS].reverse().map((t, i, arr) => {
+              const next = arr[i - 1];
+              return (
+                <div key={t.id} className={`league-row ${t.id === tier.id ? 'me' : ''}`} style={{ ['--lc' as string]: t.color }}>
+                  <div className="lr-head"><b>{t.name}</b><span className="faint">{next ? `${t.min} à ${next.min - 1} points` : `${t.min} points et plus`}</span>{t.id === tier.id && <span className="lr-me">Toi</span>}</div>
+                  <div className="lr-rew"><span className="faint">Par victoire :</span> <RewardInline reward={t.reward} /></div>
+                </div>
+              );
+            })}
+          </div>
+          <div className="league-rules">
+            <div><b>Victoire</b> : +{ratingDelta(true, 0)} (Accessible), +{ratingDelta(true, 1)} (Équilibré), +{ratingDelta(true, 2)} points (Redoutable)</div>
+            <div><b>Défaite</b> : {ratingDelta(false, 0)} points</div>
+            <div><b>Ta défense</b> : +{DEFENSE_WIN} quand elle gagne, −{DEFENSE_LOSS} quand elle perd</div>
+            <div><b>Tickets</b> : {ARENA.ticketsPerDay} combats par jour · <b>Actualiser</b> : 1 fois gratuit par jour, puis {ARENA.refreshCost} cristaux</div>
+          </div>
+          <button className="btn secondary block" style={{ marginTop: 12 }} onClick={() => setLeagueOpen(false)}>Compris</button>
+        </Modal>
+      )}
+      {defOpen && (
+        <Modal onClose={() => setDefOpen(false)}>
+          <h2>Ta défense</h2>
         <p className="faint" style={{ marginTop: 0 }}>{user ? 'L’équipe que les autres joueurs affrontent quand ils te défient. Une défense qui gagne te rapporte des points ; une défaite t’en coûte un peu.' : 'Avec un compte, cette équipe sera publiée : les autres joueurs l’affronteront.'}</p>
         <div className="seg" style={{ marginBottom: 8, flexWrap: 'wrap' }}>
           {save.teams.map((t) => <button key={t.id} className={t.id === defTeam.id ? 'on' : ''} onClick={() => setDefense(t.id)}>{t.name}</button>)}
@@ -283,7 +320,12 @@ export function Arena() {
           {defTeam.slots.map((u, k) => { const h = save.heroes.find((x) => x.uid === u); return h ? <div key={k} className="xp-ava" style={{ width: 46, height: 46, position: 'relative' }}><HeroArt heroId={h.heroId} /><span className="u-lvl">{h.level}</span></div> : null; })}
         </div>
         {!save.settings.showInRanks && user && <p className="hint" style={{ marginBottom: 0 }}>Tu as choisi de ne pas apparaître dans les classements : ta défense n’est pas publiée.</p>}
-      </Panel>
+          <div className="row" style={{ gap: 8, marginTop: 12 }}>
+            <button className="btn secondary grow" onClick={() => { setDefOpen(false); push({ name: 'team' }); }}>Modifier les équipes</button>
+            <button className="btn grow" onClick={() => setDefOpen(false)}>Fermer</button>
+          </div>
+        </Modal>
+      )}
       {save.arena.log.length > 0 && (
         <Panel title="Journal de défense">
           {save.arena.log.slice(0, 10).map((e) => (

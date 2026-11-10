@@ -16,17 +16,34 @@ describe('Arène honnête', () => {
     const heroNames = HEROES.map((h) => h.name.split(' ')[0]);
     for (const n of ARENA_NAMES) expect(heroNames, n).not.toContain(n.replace(/^Dame /, ''));
   });
-  it('avec un compte : les vraies équipes de défense de puissance proche', () => {
-    const s = createNewSave(T0);
+  it('avec un compte : de vrais joueurs DE SA LIGUE, quelle que soit leur puissance (v1.68.13)', () => {
+    const s = createNewSave(T0); // ligue Bronze (1000)
     const p = playerTeamPower(s);
-    const def = (uid: string, name: string, ratio: number, refId: string) => ({ uid, name, avatar: refId, level: 5, rating: 1000, updatedAt: 1, power: Math.round(p * ratio),
+    const def = (uid: string, name: string, ratio: number, refId: string, rating = 1000) => ({ uid, name, avatar: refId, level: 5, rating, updatedAt: 1, power: Math.round(p * ratio),
       team: [{ refId, slot: 0, level: 30, rank: 3, ascension: 2, awaken: 1, skillLevels: {}, gear: undefined }] });
-    const pool = [def('a', 'Alice', 0.72, 'kaedra'), def('b', 'Bilal', 0.98, 'solenne'), def('c', 'Chloé', 5, 'varkhaal')];
+    const pool = [def('c', 'Chloé', 5, 'varkhaal'), def('a', 'Alice', 0.72, 'kaedra'), def('b', 'Bilal', 0.98, 'solenne'), def('d', 'Dora', 1, 'brann', 1400)];
     const ops = generateOpponents(s, seededRand(2), pool);
-    expect(ops[0]).toMatchObject({ name: 'Alice', real: true, uid: 'a' });
-    expect(ops[1]).toMatchObject({ name: 'Bilal', real: true, uid: 'b' });
+    expect(ops.map((o) => o.uid)).toEqual(['a', 'b', 'c']); // rangés du plus faible au plus fort
+    expect(ops.every((o) => o.real)).toBe(true);
     expect(ops[0].heroes[0]).toMatchObject({ heroId: 'kaedra', level: 30, rank: 3, ascension: 2, awaken: 1 });
-    expect(ops[2].real).toBeFalsy(); // Chloé est bien trop forte
+    expect(ops.some((o) => o.uid === 'd')).toBe(false); // Dora est en ligue Or
+  });
+  it('ligues : bornes et actualisation (une gratuite par jour, puis payante)', async () => {
+    const { leagueBounds, refreshCost, refreshOpponents } = await import('../src/game/arena');
+    const { ARENA } = await import('../src/data/arena');
+    expect(leagueBounds(1000)).toEqual([0, 1150]);
+    expect(leagueBounds(1200)).toEqual([1150, 1350]);
+    expect(leagueBounds(2500)).toEqual([1900, null]);
+    const s = createNewSave(T0);
+    s.resources.crystals = 30;
+    expect(refreshCost(s)).toBe(0);
+    expect(refreshOpponents(s, seededRand(1)).ok).toBe(true);
+    expect(s.resources.crystals).toBe(30);
+    expect(refreshCost(s)).toBe(ARENA.refreshCost);
+    expect(refreshOpponents(s, seededRand(2)).ok).toBe(true);
+    expect(s.resources.crystals).toBe(30 - ARENA.refreshCost);
+    expect(refreshOpponents(s, seededRand(3)).ok).toBe(false); // plus assez de cristaux
+    expect(s.arena.opponents).toHaveLength(3);
   });
   it('ta défense publiée : ton équipe complète, ton nom', () => {
     const s = createNewSave(T0); s.profile.name = 'Sam';

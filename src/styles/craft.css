@@ -953,3 +953,15 @@ body:has(.prep-bar) .bg-pill, body:has(.summon-bar) .bg-pill { bottom: calc(var(
 @keyframes scPulse { 50% { box-shadow: 0 0 18px rgba(255,211,107,0.55); } }
 @media (prefers-reduced-motion: reduce) { .sc-chest.ready { animation: none; } }
 .chip-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #e0474f; margin-left: 4px; vertical-align: middle; }
+
+/* v1.68.13 — Fenêtre « Les ligues » de l'Arène. */
+.league-list { display: grid; gap: 6px; }
+.league-row { padding: 8px 10px; border-radius: 6px; border: 1px solid color-mix(in srgb, var(--lc) 45%, transparent); border-left: 3px solid var(--lc); background: linear-gradient(90deg, color-mix(in srgb, var(--lc) 14%, transparent), rgba(12,10,16,0.6) 70%); }
+.league-row.me { box-shadow: 0 0 12px color-mix(in srgb, var(--lc) 40%, transparent); }
+.lr-head { display: flex; align-items: baseline; gap: 8px; }
+.lr-head b { color: var(--lc); font-size: 15px; }
+.lr-head .faint { font-size: 12px; }
+.lr-me { margin-left: auto; font-size: 11px; font-weight: 900; text-transform: uppercase; color: #23180a; background: var(--lc); border-radius: 4px; padding: 0 6px; }
+.lr-rew { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-top: 4px; font-size: 12px; }
+.lr-rew .reward-inline small { display: none; }
+.league-rules { display: grid; gap: 4px; margin-top: 10px; font-size: 13px; color: var(--text-dim, #c9c1b3); }

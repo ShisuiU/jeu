@@ -970,3 +970,12 @@ body:has(.prep-bar) .bg-pill, body:has(.summon-bar) .bg-pill { bottom: calc(var(
 .sc-track { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 6px; scrollbar-width: none; }
 .sc-track::-webkit-scrollbar { display: none; }
 .sc-track .sc-chest { flex: 0 0 96px; }
+
+/* ─── Roue quotidienne (v1.68.18) ─── */
+.wheel-wrap { position: relative; width: min(330px, 86vw); aspect-ratio: 1; margin: 8px auto 0; }
+.wheel { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 0 18px rgba(217,164,65,0.35)); }
+.wheel-labels { position: absolute; inset: 0; pointer-events: none; }
+.wl { position: absolute; left: 50%; top: 50%; width: 64px; margin: -50% 0 0 -32px; height: 100%; transform-origin: 50% 50%; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 14%; gap: 3px; }
+.wl span { font-size: 11px; font-weight: 800; color: #fff; text-shadow: 0 1px 2px #000; text-align: center; line-height: 1.05; max-width: 62px; }
+.wl.rare span { color: #ffd0dc; }
+.wheel-pin { position: absolute; z-index: 2; left: 50%; top: -6px; width: 0; height: 0; transform: translateX(-50%); border-left: 13px solid transparent; border-right: 13px solid transparent; border-top: 24px solid #ffd36b; filter: drop-shadow(0 2px 3px #000); }

@@ -1,3 +1,4 @@
+import { energyMax } from '../../game/energy';
 import { AccountXp } from '../components/AccountXp';
 import { Coach } from '../components/Coach';
 import { useCallback, useEffect, useLayoutEffect, useReducer, useRef, useState } from 'react';
@@ -535,7 +536,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
             )}
             {!result.won && <DamageRecap units={s.units} />}
             {result.accountXp ? <AccountXp big level={useGame.getState().save!.profile.level} xp={useGame.getState().save!.profile.xp} gain={result.accountXp} /> : null}
-            {result.accountLevelsGained > 0 && <div className="chip active" style={{ margin: '10px auto 0', display: 'flex', width: 'fit-content' }}>Niveau de compte {useGame.getState().save!.profile.level} ! +2 000 or, +30 énergie</div>}
+            {result.accountLevelsGained > 0 && <div className="chip active" style={{ margin: '10px auto 0', display: 'flex', width: 'fit-content' }}>Niveau de compte {useGame.getState().save!.profile.level} ! +2 000 or, énergie rechargée ({energyMax(useGame.getState().save!.profile.level)} max)</div>}
           </div>
           <div className="result-actions">
             <button className="btn secondary grow" onClick={() => popTo(backTo())}>Retour</button>

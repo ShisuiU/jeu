@@ -3,7 +3,7 @@ import { useGame } from '../../state/store';
 import { Counter } from './Counter';
 import { useUI } from '../../state/ui';
 import { BALANCE } from '../../data/balance';
-import { msToNextEnergy } from '../../game/energy';
+import { energyMax, msToNextEnergy } from '../../game/energy';
 import { formatDuration } from '../../core/time';
 import { Icon } from '../art/Icons';
 import { HeroArt } from '../art/HeroArt';
@@ -18,7 +18,8 @@ export function TopBar() {
   const push = useUI((s) => s.push);
   const toast = useUI((s) => s.toast);
   const e = save.energy;
-  const next = msToNextEnergy(e, now);
+  const eMax = energyMax(save.profile.level);
+  const next = msToNextEnergy(e, now, eMax);
   const [open, setOpen] = useState(false);
   const mutate = useGame((s) => s.mutate);
   const cost = refillCost(save);
@@ -32,15 +33,16 @@ export function TopBar() {
         </div>
       </button>
       <button className="pill" onClick={() => setOpen(true)}>
-        <Icon.energy size={20} /> <span className={e.current > BALANCE.energy.max ? 'over-cap' : ''}><Counter id="energy" value={e.current} format={String} /></span><small>/{BALANCE.energy.max}</small>
+        <Icon.energy size={20} /> <span className={e.current > eMax ? 'over-cap' : ''}><Counter id="energy" value={e.current} format={String} /></span><small>/{eMax}</small>
       </button>
       <button className="pill" onClick={() => push({ name: 'inventory' })}><Icon.coin size={20} /><Counter id="gold" value={save.resources.gold} /></button>
       <button className="pill" onClick={() => push({ name: 'inventory' })}><Icon.crystal size={20} /><Counter id="crystals" value={save.resources.crystals} /></button>
       {open && (
         <Modal onClose={() => setOpen(false)}>
           <h2>Énergie</h2>
-          <div style={{ textAlign: 'center', fontSize: 30, fontWeight: 800 }}><Icon.energy size={30} /> {e.current}<span className="faint" style={{ fontSize: 16 }}> / {BALANCE.energy.max}</span></div>
-          <p className="faint" style={{ textAlign: 'center' }}>{e.current > BALANCE.energy.max ? 'Bonus au-delà du maximum grâce aux récompenses (la régénération reprend sous le maximum).' : e.current >= BALANCE.energy.max ? 'Énergie au maximum (la régénération est en pause).' : `+1 dans ${formatDuration(next)} · 1 point toutes les ${BALANCE.energy.regenMs / 60000} min, même jeu fermé.`}</p>
+          <div style={{ textAlign: 'center', fontSize: 30, fontWeight: 800 }}><Icon.energy size={30} /> {e.current}<span className="faint" style={{ fontSize: 16 }}> / {eMax}</span></div>
+          <p className="faint" style={{ textAlign: 'center' }}>{e.current > eMax ? 'Bonus au-delà du maximum grâce aux récompenses (la régénération reprend sous le maximum).' : e.current >= eMax ? 'Énergie au maximum (la régénération est en pause).' : `+1 dans ${formatDuration(next)} · 1 point toutes les ${BALANCE.energy.regenMs / 60000} min, même jeu fermé.`}</p>
+          <p className="faint" style={{ textAlign: 'center', marginTop: 0 }}>Ton maximum grandit de {BALANCE.energy.perLevel} à chaque niveau de compte (jusqu’à {BALANCE.energy.maxCap}), et chaque nouveau niveau recharge toute ton énergie.</p>
           <div className="panel" style={{ marginTop: 8 }}>
             <div className="row between"><b>Recharge +{BALANCE.energyRefill.amount}</b><span className="faint">{BALANCE.energyRefill.costs.length - save.shop.energyRefills} / {BALANCE.energyRefill.costs.length} aujourd’hui</span></div>
             <button className="btn block" style={{ marginTop: 10 }} disabled={cost === null || save.resources.crystals < (cost ?? 0)} onClick={() => { let r = { ok: false } as { ok: boolean; reason?: string }; mutate((d) => { r = refillEnergy(d); }); if (r.ok) { play('claim'); toast(`+${BALANCE.energyRefill.amount} énergie !`, 'ok'); } else toast(r.reason ?? 'Impossible.', 'error'); }}>

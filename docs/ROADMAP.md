@@ -558,6 +558,12 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.68.7 — L'énergie grandit avec le compte
+
+- **Maximum d'énergie selon le niveau de compte** : 120 au niveau 1, **+2 à chaque niveau** (140 au niveau 11, 158 au niveau 20, 180 au niveau 31), jusqu'à 240. La régénération va jusqu'à ce maximum ; l'affichage (barre du haut, sac, préparation) et les notifications « énergie pleine » le suivent.
+- **Chaque nouveau niveau de compte recharge toute l'énergie** jusqu'au nouveau maximum (au lieu de +30). Un surplus déjà au-delà du maximum, venu des récompenses, est gardé. Le résultat de combat l'annonce.
+- Tests : maximum par niveau, recharge au passage de niveau, surplus gardé, régénération jusqu'au nouveau maximum.
+
 ## ✅ Version 1.68.6 — Grande image d'objet, coût du bouton Max
 
 - **Bouton « Max » des élixirs (Sanctuaire)** : le coût s'affiche avant de valider : une ligne sous les élixirs (« Max : niv. 22 → 25 · 40 élixirs · 112 k or ») et une fenêtre de confirmation avec le détail exact (élixirs et or utilisés sur ce que tu as, niveau atteint, et ce qui manque s'il n'y en a pas assez pour aller jusqu'au bout). Le bouton « +1 » indique aussi son prix en or. Test : l'aperçu correspond exactement à la dépense.

@@ -1,7 +1,6 @@
 import { maxLevelForRank } from './stats';
 import type { HeroInstance, SaveData } from '../save/schema';
-import { BALANCE } from '../data/balance';
-import { addEnergy } from './energy';
+import { energyMax } from './energy';
 
 /** Expérience nécessaire pour passer du niveau L au niveau L+1. */
 export function heroXpToNext(level: number): number {
@@ -35,7 +34,10 @@ export function addAccountXp(s: SaveData, amount: number): number {
     s.profile.level += 1;
     ups += 1;
     s.resources.gold += 2000;
-    s.energy = addEnergy(s.energy, Math.min(BALANCE.energy.max, 30));
+    // Nouveau niveau de compte : maximum d'énergie relevé, et énergie rechargée jusqu'au nouveau maximum
+    // (un surplus au-delà, venu des récompenses, est gardé).
+    const m = energyMax(s.profile.level);
+    if (s.energy.current < m) s.energy = { ...s.energy, current: m };
   }
   return ups;
 }

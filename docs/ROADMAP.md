@@ -558,6 +558,11 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.68.16 — Écran de victoire plus court
+
+- **Une seule liste de héros** (« Tes héros ») au lieu de deux : chaque ligne montre la part des dégâts (barre, %, total, « Meilleur ») et, juste dessous, le niveau (« Niv. 37 ▲ » en vert s'il monte, ou « Niveau max ») et l'expérience gagnée.
+- **Les boutons Retour, Rejouer et Suivant restent toujours visibles en bas** de l'écran de résultat : plus besoin de faire défiler pour passer au niveau suivant.
+
 ## ✅ Version 1.68.15 — Saisons d'Arène
 
 - **L'Arène se joue en saisons d'une semaine** (elles finissent au renouvellement hebdomadaire, le lundi à 5 h). Le compte à rebours est affiché dans l'Arène.

@@ -11,6 +11,7 @@ import { sweepTower, towerSweepMax } from '../../game/towerSweep';
 import type { Reward } from '../../data/resources';
 import { BOSS_TIERS, DAMAGE_CHESTS, WORLD_BOSS } from '../../data/worldBoss';
 import { ARENA, ARENA_TIERS, arenaTier } from '../../data/arena';
+import { claimSeasonReward } from '../../game/missions';
 import { HERO_BY_ID } from '../../data/heroes';
 import { DEFENSE_LOSS, DEFENSE_WIN, ratingDelta, applyDefenseLog, arenaDefenses, defenseTeam, generateOpponents, leagueBounds, opponentFromDefense, refreshCost, refreshOpponents, setArenaDefenses } from '../../game/arena';
 import type { ArenaLogEntry } from '../../save/schema';
@@ -19,13 +20,16 @@ import { maskProfanity } from '../../game/moderation';
 import { loadCloud, useAccount } from '../../cloud/account';
 import { seededRand } from '../../game/gear';
 import { dungeonBonus } from '../../game/events';
-import { formatDuration, msUntilReset } from '../../core/time';
+import { formatDuration, msUntilReset, msUntilWeekReset } from '../../core/time';
 import { InfoButton, Modal, Panel, Screen, fmt } from '../components/common';
 import { RewardInline, rewardMainIcon } from '../components/RewardView';
 import { EnemyArt } from '../art/EnemyArt';
 import { play } from '../../audio/sfx';
 import { HeroArt } from '../art/HeroArt';
 import { Icon, ResourceIcon } from '../art/Icons';
+
+/** Temps restant de la saison : en jours et heures au-delà d'un jour. */
+const seasonLeft = (ms: number) => (ms >= 86400_000 ? `${Math.floor(ms / 86400_000)} j ${Math.floor((ms % 86400_000) / 3600_000)} h` : formatDuration(ms));
 
 const DICON = { forge: 'ore', flask: 'flask', potion: 'potion', book: 'book' } as const;
 
@@ -259,8 +263,19 @@ export function Arena() {
           <span className="faint">{save.arena.wins} victoires · {save.arena.losses} défaites</span>
           <span>Tickets : <b style={{ color: 'var(--gold-hi)' }}>{tickets}</b>/{ARENA.ticketsPerDay}</span>
         </div>
-        <p className="faint" style={{ marginBottom: 0 }}>Nouveaux tickets dans {formatDuration(msUntilReset(now))}</p>
+        <p className="faint" style={{ marginBottom: 0 }}>Nouveaux tickets dans {formatDuration(msUntilReset(now))} · Fin de saison dans {seasonLeft(msUntilWeekReset(now))}</p>
       </Panel>
+      {save.arena.seasonReward && (() => {
+        const sr = save.arena.seasonReward;
+        const t = ARENA_TIERS.find((x) => x.id === sr.tier) ?? ARENA_TIERS[0];
+        return (
+          <Panel title="Saison terminée">
+            <p className="muted" style={{ marginTop: 0 }}>Tu as fini la saison en ligue <b style={{ color: t.color }}>{t.name}</b> ({sr.rating} points). Voici ta récompense :</p>
+            <RewardInline reward={sr.reward} />
+            <button className="btn block" style={{ marginTop: 10 }} onClick={() => { let got: ReturnType<typeof claimSeasonReward> = null; mutate((d) => { got = claimSeasonReward(d); }); if (got) { play('claim'); toast('Récompense de saison récupérée !', 'ok'); } }}>Récupérer</button>
+          </Panel>
+        );
+      })()}
       <div className="row between" style={{ margin: '0 0 8px' }}>
         <span className="faint">Adversaires</span>
         <button className="btn secondary small" onClick={() => {
@@ -288,14 +303,18 @@ export function Arena() {
       {leagueOpen && (
         <Modal onClose={() => setLeagueOpen(false)}>
           <h2>Les ligues</h2>
-          <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>Ton classement te place dans une ligue. Tu affrontes les joueurs <b>de ta ligue</b>, et plus la ligue est haute, plus chaque victoire rapporte.</p>
+          <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>
+            L’Arène se joue en <b>saisons d’une semaine</b>. Ton classement te place dans une ligue et tu affrontes les joueurs <b>de ta ligue</b>.
+            Les victoires ne rapportent que des points : <b>la récompense arrive à la fin de la saison</b>, selon la ligue où tu termines (il faut avoir combattu au moins une fois).
+          </p>
+          <p className="faint" style={{ textAlign: 'center', marginTop: 0 }}>Fin de la saison dans <b>{seasonLeft(msUntilWeekReset(now))}</b>. Ensuite, ton classement repart de plus bas : tu gardes la moitié de tes points au-dessus de {ARENA.startRating}.</p>
           <div className="league-list">
             {[...ARENA_TIERS].reverse().map((t, i, arr) => {
               const next = arr[i - 1];
               return (
                 <div key={t.id} className={`league-row ${t.id === tier.id ? 'me' : ''}`} style={{ ['--lc' as string]: t.color }}>
                   <div className="lr-head"><b>{t.name}</b><span className="faint">{next ? `${t.min} à ${next.min - 1} points` : `${t.min} points et plus`}</span>{t.id === tier.id && <span className="lr-me">Toi</span>}</div>
-                  <div className="lr-rew"><span className="faint">Par victoire :</span> <RewardInline reward={t.reward} /></div>
+                  <div className="lr-rew"><span className="faint">Fin de saison :</span> <RewardInline reward={t.season} /></div>
                 </div>
               );
             })}
@@ -340,11 +359,6 @@ export function Arena() {
         </Panel>
       )}
       {report && <ReportSheet target={report} onClose={() => setReport(null)} />}
-      <Panel title="Ligues et récompenses de victoire">
-        {ARENA_TIERS.map((t) => (
-          <div key={t.id} className="stat-row"><b style={{ color: t.color }}>{t.name}</b><span className="faint">dès {t.min} · {Object.entries(t.reward).map(([k, v]) => `${v} ${k === 'gold' ? 'or' : k === 'crystals' ? 'cristaux' : k === 'shardAeon' ? 'éclat d’Aeon' : 'éclat terne'}`).join(', ')}</span></div>
-        ))}
-      </Panel>
     </Screen>
   );
 }

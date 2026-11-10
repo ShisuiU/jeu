@@ -558,6 +558,25 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.68.15 — Saisons d'Arène
+
+- **L'Arène se joue en saisons d'une semaine** (elles finissent au renouvellement hebdomadaire, le lundi à 5 h). Le compte à rebours est affiché dans l'Arène.
+- **Plus de récompense à chaque victoire** : les victoires ne donnent que des points de classement (et l'expérience habituelle). **La récompense arrive en fin de saison**, selon la ligue où tu termines, si tu as combattu au moins une fois :
+
+| Ligue | Récompense de saison |
+|---|---|
+| Bronze | 10 000 or, 50 cristaux, 3 éclats ternes |
+| Argent | 20 000 or, 100 cristaux, 1 éclat d'Aeon |
+| Or | 35 000 or, 180 cristaux, 2 éclats d'Aeon |
+| Platine | 50 000 or, 260 cristaux, 3 éclats d'Aeon, 1 éclat de faille |
+| Diamant | 80 000 or, 400 cristaux, 5 éclats d'Aeon, 2 éclats de faille |
+
+- La récompense t'attend dans l'Arène (« Saison terminée » → Récupérer) ; un point rouge le signale sur la carte Arène.
+- **Nouvelle saison** : le classement repart de plus bas (tu gardes la moitié de tes points au-dessus de 1000 ; un classement sous 1000 ne baisse pas).
+- Le fonctionnement est expliqué dans la fenêtre **« Ligues »** (saisons, récompenses par ligue, points, défense, tickets).
+- L'événement « Tournoi des Bannières » donne maintenant **plus de points** à chaque victoire (au lieu de plus de récompenses).
+- Tests : pas de récompense à la victoire, récompense de fin de saison selon la ligue, remise à niveau du classement, rien sans combat.
+
 ## ✅ Version 1.68.14 — Coffres d'étoiles par difficulté
 
 - Les coffres d'étoiles ne sont plus par chapitre mais **par difficulté** (Normal, Difficile, Expert, Cauchemar) : toutes les étoiles gagnées dans les 9 chapitres d'une difficulté (270 au plus) ouvrent **un coffre tous les 30 étoiles** (9 coffres par difficulté), sur une piste en haut de l'écran de campagne.

@@ -145,8 +145,8 @@ export function resolveMode(s: SaveData, spec: BattleSpec): ModeInfo {
         title: `Arène · ${o?.name ?? '?'}`, subtitle: o?.revenge ? 'Vengeance' : o?.real ? 'Défense d’un vrai joueur' : `Classement ${s.arena.rating}`, region: 'valcrest',
         // Vrai joueur : son équipe complète (rangs, ascension, éveil, compétences, équipement).
         waves: [(o?.heroes ?? []).map((h) => ({ kind: 'hero' as const, refId: h.heroId, slot: h.slot, level: h.level, rank: h.rank, ascension: h.ascension, awaken: h.awaken, skillLevels: h.skillLevels, gear: h.gear }))],
-        cost: { kind: 'ticket', amount: 1 }, rewardPreview: scaleReward(arenaTier(s.arena.rating).reward, eventBonus(s.time.highWater, 'arena')), rewardLabel: eventBonus(s.time.highWater, 'arena') > 1 ? 'Récompense de victoire (bonus d’événement)' : 'Récompense de victoire',
-        notes: [`Victoire : +${ratingDelta(true, Math.max(0, i))} points · Défaite : ${ratingDelta(false, 0)}`], firstTime: false,
+        cost: { kind: 'ticket', amount: 1 }, rewardPreview: arenaTier(s.arena.rating).season, rewardLabel: `Fin de saison en ligue ${arenaTier(s.arena.rating).name} (rien à chaque victoire)`,
+        notes: [`Victoire : +${Math.round(ratingDelta(true, Math.max(0, i)) * eventBonus(s.time.highWater, 'arena'))} points · Défaite : ${ratingDelta(false, 0)}`], firstTime: false,
       };
     }
     case 'challenge': {
@@ -286,15 +286,16 @@ export function applyMode(s: SaveData, spec: BattleSpec, o: Outcome, now: number
       const foe = s.arena.opponents[i];
       const res = empty(o.won);
       track(s, 'arenaFight');
+      s.arena.seasonFights = (s.arena.seasonFights ?? 0) + 1;
       // Vengeance : une seule fois par combat du journal, points d'un adversaire « équilibré ».
       if (foe?.revenge && !s.arena.revenged.includes(foe.revenge)) s.arena.revenged = [foe.revenge, ...s.arena.revenged].slice(0, 40);
-      const delta = ratingDelta(o.won, Math.min(2, Math.max(0, foe?.revenge ? 1 : i)));
+      // Événement « Tournoi » : plus de points pour chaque victoire (les récompenses arrivent en fin de saison).
+      const base = ratingDelta(o.won, Math.min(2, Math.max(0, foe?.revenge ? 1 : i)));
+      const delta = o.won ? Math.round(base * eventBonus(now, 'arena')) : base;
       s.arena.rating = Math.max(0, s.arena.rating + delta);
       res.rating = { delta, rating: s.arena.rating };
       if (o.won) {
         s.arena.wins++; track(s, 'arenaWin'); track(s, 'battleWin');
-        res.reward = scaleReward(arenaTier(s.arena.rating).reward, eventBonus(now, 'arena'));
-        applyReward(s, res.reward);
       } else s.arena.losses++;
       s.arena.opponents = generateOpponents(s, r);
       res.lines.push(`Classement : ${s.arena.rating} (${delta > 0 ? '+' : ''}${delta}) · Ligue ${arenaTier(s.arena.rating).name}`);

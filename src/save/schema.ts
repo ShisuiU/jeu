@@ -107,6 +107,8 @@ export interface SaveData {
   arena: { rating: number; wins: number; losses: number; ticketsUsed: number; opponents: ArenaOpponent[];
     /** Actualisations des adversaires aujourd'hui (la première est gratuite). */
     refreshes?: number;
+    /** Saison d'Arène en cours (clé de semaine), combats joués cette saison, récompense de la saison passée à récupérer. */
+    season?: string; seasonFights?: number; seasonReward?: { season: string; tier: string; rating: number; reward: Partial<Record<string, number>> } | null;
     /** Équipe publiée en défense (par défaut : l'équipe active). */ defenseTeamId: string;
     /** Journal de défense déjà compté dans le classement (date du dernier combat appliqué). */ logSeen: number;
     log: ArenaLogEntry[]; revenged: string[] };

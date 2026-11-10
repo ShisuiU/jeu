@@ -564,6 +564,7 @@
 - Les joueurs de ta ligue sont rechargés à **chaque visite** de l'Arène (avant : une fois par session), pour que les nouveaux joueurs apparaissent vite.
 - **Bouton « Actualiser »** : de nouveaux adversaires, **une fois gratuitement par jour**, ensuite **20 cristaux**. Une vengeance en cours est gardée.
 - **Écran allégé** : le bouton « Classement » et le texte d'explication sont retirés (les classements restent dans Menu → Classements). À la place, un bouton **« Défense »** ouvre la gestion de ton équipe de défense (choix de l'équipe, et accès direct aux équipes).
+- **Bouton « Ligues »** à côté de « Défense » : les 5 ligues avec leurs points (et la tienne mise en avant), la récompense de chaque victoire, les points gagnés ou perdus (victoire, défaite, défense), les tickets et l'actualisation.
 - Rappel : un joueur apparaît dans l'Arène une fois connecté à son compte et l'Arène débloquée (après le niveau 3-4).
 - Tests : choix dans la ligue, bornes des ligues, actualisation gratuite puis payante.
 

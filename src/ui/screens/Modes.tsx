@@ -12,7 +12,7 @@ import type { Reward } from '../../data/resources';
 import { BOSS_TIERS, DAMAGE_CHESTS, WORLD_BOSS } from '../../data/worldBoss';
 import { ARENA, ARENA_TIERS, arenaTier } from '../../data/arena';
 import { HERO_BY_ID } from '../../data/heroes';
-import { applyDefenseLog, arenaDefenses, defenseTeam, generateOpponents, leagueBounds, opponentFromDefense, refreshCost, refreshOpponents, setArenaDefenses } from '../../game/arena';
+import { DEFENSE_LOSS, DEFENSE_WIN, ratingDelta, applyDefenseLog, arenaDefenses, defenseTeam, generateOpponents, leagueBounds, opponentFromDefense, refreshCost, refreshOpponents, setArenaDefenses } from '../../game/arena';
 import type { ArenaLogEntry } from '../../save/schema';
 import { ReportSheet, type ReportTarget } from '../components/ReportSheet';
 import { maskProfanity } from '../../game/moderation';
@@ -228,6 +228,7 @@ export function Arena() {
   }, [user, mutate]); // eslint-disable-line react-hooks/exhaustive-deps
   const [report, setReport] = useState<ReportTarget | null>(null);
   const [defOpen, setDefOpen] = useState(false);
+  const [leagueOpen, setLeagueOpen] = useState(false);
   const defTeam = defenseTeam(save);
   const setDefense = (id: string) => {
     mutate((s) => { s.arena.defenseTeamId = id; });
@@ -245,7 +246,10 @@ export function Arena() {
     } catch { toast('Serveur injoignable pour le moment.', 'error'); }
   };
   return (
-    <Screen title="Arène" right={<button className="btn secondary small" onClick={() => setDefOpen(true)} aria-label="Gérer ta défense"><Icon.team size={16} /> Défense</button>}>
+    <Screen title="Arène" right={<span className="row" style={{ gap: 6 }}>
+      <button className="btn secondary small" onClick={() => setLeagueOpen(true)} aria-label="Les ligues de l’Arène"><Icon.star size={15} /> Ligues</button>
+      <button className="btn secondary small" onClick={() => setDefOpen(true)} aria-label="Gérer ta défense"><Icon.team size={16} /> Défense</button>
+    </span>}>
       <Panel>
         <div className="row between">
           <div><div className="faint">LIGUE</div><b style={{ fontSize: 20, color: tier.color }}>{tier.name}</b></div>
@@ -281,6 +285,30 @@ export function Arena() {
           <div className="faint" style={{ marginTop: 4 }}>{o.heroes.map((h) => HERO_BY_ID[h.heroId].name.split(/[ ,]/)[0]).join(', ')}{o.real && o.uid && <button className="acc-link" style={{ marginLeft: 8 }} onClick={() => setReport({ uid: o.uid!, name: o.name, kind: 'name', where: 'Arène' })}>Signaler</button>}</div>
         </Panel>
       ))}
+      {leagueOpen && (
+        <Modal onClose={() => setLeagueOpen(false)}>
+          <h2>Les ligues</h2>
+          <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>Ton classement te place dans une ligue. Tu affrontes les joueurs <b>de ta ligue</b>, et plus la ligue est haute, plus chaque victoire rapporte.</p>
+          <div className="league-list">
+            {[...ARENA_TIERS].reverse().map((t, i, arr) => {
+              const next = arr[i - 1];
+              return (
+                <div key={t.id} className={`league-row ${t.id === tier.id ? 'me' : ''}`} style={{ ['--lc' as string]: t.color }}>
+                  <div className="lr-head"><b>{t.name}</b><span className="faint">{next ? `${t.min} à ${next.min - 1} points` : `${t.min} points et plus`}</span>{t.id === tier.id && <span className="lr-me">Toi</span>}</div>
+                  <div className="lr-rew"><span className="faint">Par victoire :</span> <RewardInline reward={t.reward} /></div>
+                </div>
+              );
+            })}
+          </div>
+          <div className="league-rules">
+            <div><b>Victoire</b> : +{ratingDelta(true, 0)} (Accessible), +{ratingDelta(true, 1)} (Équilibré), +{ratingDelta(true, 2)} points (Redoutable)</div>
+            <div><b>Défaite</b> : {ratingDelta(false, 0)} points</div>
+            <div><b>Ta défense</b> : +{DEFENSE_WIN} quand elle gagne, −{DEFENSE_LOSS} quand elle perd</div>
+            <div><b>Tickets</b> : {ARENA.ticketsPerDay} combats par jour · <b>Actualiser</b> : 1 fois gratuit par jour, puis {ARENA.refreshCost} cristaux</div>
+          </div>
+          <button className="btn secondary block" style={{ marginTop: 12 }} onClick={() => setLeagueOpen(false)}>Compris</button>
+        </Modal>
+      )}
       {defOpen && (
         <Modal onClose={() => setDefOpen(false)}>
           <h2>Ta défense</h2>

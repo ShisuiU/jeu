@@ -6,8 +6,8 @@ export const BALANCE = {
   energy: {
     /** Maximum au niveau de compte 1 ; il augmente de `perLevel` à chaque niveau, jusqu'à `maxCap`. */
     max: 120,
-    perLevel: 2,
-    maxCap: 240,
+    perLevel: 10,
+    maxCap: 900,
     regenMs: 4 * 60 * 1000, // 1 énergie toutes les 4 minutes (≈ 360/jour)
     /** Plafond de surcharge (récompenses) au-delà du maximum. */
     overflowCap: 999,

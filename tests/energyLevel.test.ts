@@ -6,18 +6,18 @@ import { payEnergy } from '../src/game/campaign';
 import { BALANCE } from '../src/data/balance';
 
 describe('énergie et niveau de compte (v1.68.7)', () => {
-  it('le maximum grandit de 2 par niveau, plafonné', () => {
+  it('le maximum grandit de 10 par niveau, plafonné', () => {
     expect(energyMax(1)).toBe(120);
-    expect(energyMax(2)).toBe(122);
-    expect(energyMax(31)).toBe(180);
-    expect(energyMax(500)).toBe(BALANCE.energy.maxCap);
+    expect(energyMax(2)).toBe(130);
+    expect(energyMax(31)).toBe(420);
+    expect(energyMax(5000)).toBe(BALANCE.energy.maxCap);
   });
   it('un nouveau niveau de compte recharge toute l’énergie jusqu’au nouveau maximum', () => {
     const s = createNewSave(0);
     s.energy.current = 7;
     addAccountXp(s, accountXpToNext(s.profile.level));
     expect(s.profile.level).toBe(2);
-    expect(s.energy.current).toBe(122);
+    expect(s.energy.current).toBe(130);
   });
   it('un surplus au-delà du maximum (récompenses) est gardé', () => {
     const s = createNewSave(0);
@@ -27,7 +27,7 @@ describe('énergie et niveau de compte (v1.68.7)', () => {
   });
   it('la régénération va jusqu’au maximum du niveau', () => {
     const s = createNewSave(0);
-    s.profile.level = 11; // maximum 140
+    s.profile.level = 3; // maximum 140
     s.energy = { current: 120, lastTick: 0 };
     expect(regenEnergy(s.energy, 100 * BALANCE.energy.regenMs, energyMax(s.profile.level)).current).toBe(140);
     s.energy = { current: 140, lastTick: 0 };

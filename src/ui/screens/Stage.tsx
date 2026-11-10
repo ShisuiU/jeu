@@ -15,7 +15,7 @@ import { STAGE_BY_ID } from '../../data/campaign';
 import { stageProgress } from '../../game/campaign';
 import { heroTotalStats } from '../../game/heroStats';
 import { powerOf } from '../../game/stats';
-import { msToNextEnergy } from '../../game/energy';
+import { energyMax, msToNextEnergy } from '../../game/energy';
 import { canStart, payMode, resolveMode, type BattleSpec } from '../../game/modes';
 import { canSweep, sweep, type SweepSummary } from '../../game/comfort';
 import { BG_MAX, BG_RUN_MS, canBackground, startBackground } from '../../game/background';
@@ -180,7 +180,7 @@ export function Prep({ spec }: { spec: BattleSpec }) {
 
       {/* Barre d'action : toujours visible en bas, au-dessus de la navigation. */}
       <div className="prep-bar">
-        {blocked && <div className="prep-why">{!count ? 'Équipe vide : touche l’équipe pour ajouter des héros.' : !start.ok ? start.reason : `Énergie ${save.energy.current}/${info.cost.amount} · +1 dans ${formatDuration(msToNextEnergy(save.energy, now))}`}</div>}
+        {blocked && <div className="prep-why">{!count ? 'Équipe vide : touche l’équipe pour ajouter des héros.' : !start.ok ? start.reason : `Énergie ${save.energy.current}/${info.cost.amount} · +1 dans ${formatDuration(msToNextEnergy(save.energy, now, energyMax(save.profile.level)))}`}</div>}
         <div className="row" style={{ gap: 8 }}>
           {(spec.mode === 'campaign' || spec.mode === 'dungeon') && (
             <button className="btn secondary prep-sweep" disabled={!sweepOk.ok || maxRuns < 1 || !count} onClick={() => setSweepOpen(true)} title={sweepOk.ok ? 'Rejouer automatiquement sans combat' : sweepOk.reason}>Balayer</button>

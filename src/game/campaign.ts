@@ -5,7 +5,7 @@ import { HERO_BY_ID } from '../data/heroes';
 import type { SaveData, TeamPreset } from '../save/schema';
 import { createHeroInstance } from '../save/schema';
 import type { UnitSetup } from './battle/types';
-import { spendEnergy } from './energy';
+import { energyMax, spendEnergy } from './energy';
 import { applyReward } from './rewards';
 import { addAccountXp, addHeroXp } from './progression';
 import { rollCampaignGear, seededRand, pickWeighted } from './gear';
@@ -74,7 +74,7 @@ export function stageEnergy(stage: StageDef, diff: DifficultyId = 'normal'): num
 }
 
 export function payEnergy(s: SaveData, amount: number, now: number): boolean {
-  const e = spendEnergy(s.energy, amount, now);
+  const e = spendEnergy(s.energy, amount, now, energyMax(s.profile.level));
   if (!e) return false;
   s.energy = e;
   track(s, 'energySpent', amount);

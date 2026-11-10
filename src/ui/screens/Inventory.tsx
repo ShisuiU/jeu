@@ -1,3 +1,4 @@
+import { energyMax } from '../../game/energy';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
 import { RESOURCE_LIST } from '../../data/resources';
@@ -27,7 +28,7 @@ export function Inventory() {
         <div className="row">
           <Icon.energy size={34} />
           <div className="grow">
-            <b style={{ fontSize: 18 }}>{save.energy.current}</b> <span className="muted">/ {BALANCE.energy.max}</span>
+            <b style={{ fontSize: 18 }}>{save.energy.current}</b> <span className="muted">/ {energyMax(save.profile.level)}</span>
             <div className="faint">+1 toutes les {BALANCE.energy.regenMs / 60000} min, même jeu fermé.</div>
           </div>
         </div>

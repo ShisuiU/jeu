@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { stepBackground } from '../game/background';
 import { produce } from 'immer';
 import { observeTime } from '../core/time';
-import { regenEnergy } from '../game/energy';
+import { energyMax, regenEnergy } from '../game/energy';
 import { claimDaily as claimDailyRule } from '../game/daily';
 import { applyResets } from '../game/missions';
 import { dayKey, weekKey } from '../core/time';
@@ -51,7 +51,7 @@ export const useGame = create<GameState>((set, get) => ({
     const { save } = get();
     if (!save) return;
     const obs = observeTime(save.time, Date.now());
-    const energy = regenEnergy(save.energy, obs.trusted);
+    const energy = regenEnergy(save.energy, obs.trusted, energyMax(save.profile.level));
     const energyChanged = energy.current !== save.energy.current;
     const hwAdvanced = obs.time.highWater - save.time.highWater > 60_000;
     const rollbackChanged = obs.time.rollbackCount !== save.time.rollbackCount;

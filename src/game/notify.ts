@@ -1,6 +1,6 @@
 import type { SaveData } from '../save/schema';
 import { BALANCE } from '../data/balance';
-import { regenEnergy } from './energy';
+import { energyMax, regenEnergy } from './energy';
 import { campMsToFull } from './camp';
 import { isUnlocked } from './unlocks';
 
@@ -11,7 +11,7 @@ export interface PushPrefs { camp: boolean; energy: boolean; gifts: boolean }
 export const DEFAULT_PREFS: PushPrefs = { camp: true, energy: true, gifts: true };
 
 export function pushTimes(s: SaveData, now: number): PushTimes {
-  const max = BALANCE.energy.max;
+  const max = energyMax(s.profile.level);
   const e = regenEnergy(s.energy, now, max);
   const energyAt = e.current >= max ? 0 : e.lastTick + (max - e.current) * BALANCE.energy.regenMs;
   const toFull = isUnlocked(s, 'camp') ? campMsToFull(s, now) : 0;

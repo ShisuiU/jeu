@@ -896,3 +896,5 @@ body:has(.battle-controls) .toasts { bottom: auto; top: calc(var(--sat, 0px) + 1
 .combat-grid > .combat-card:last-child:nth-child(odd) { grid-column: 1 / -1; }
 /* Lisibilité : plus aucun texte sous 11 px (audit). */
 .prep-lead { font-size: 11px; }
+.feed-h { font-size: 14px; margin: 4px 0 4px; color: var(--gold-hi); font-family: var(--font-title); }
+.feed-slot .hero-card .lvl[style] { top: auto !important; bottom: 3px; right: 2px !important; left: 2px !important; text-align: center; padding: 0 2px; font-size: 11px; letter-spacing: -0.3px; }

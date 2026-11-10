@@ -141,6 +141,7 @@ export function BondsIntro() {
           <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>
             Dans le Monde Cousu, les Héritiers sont liés. Un héros en double peut renforcer <b>toute sa famille</b> (Valcrest, Prisme…) ou <b>toute son affinité</b> (Solaire, Lunaire…) :
             +{BOND_PCT} % de PV, ATQ et DÉF pour chacun d’eux, jusqu’à +{BOND_MAX * BOND_PCT} %.
+            {' '}Il peut aussi éveiller ce héros, ou être absorbé au Sanctuaire pour donner beaucoup d’expérience à un autre héros.
           </p>
           <div className="bonds-intro-aff">
             {(['solar', 'telluric', 'lunar'] as AffinityId[]).map((a, i) => (

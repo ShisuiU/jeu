@@ -558,6 +558,12 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.68.4 — Décors peints des combats
+
+- **9 vrais paysages peints**, un par région de la campagne (et des modes qui s'y déroulent), à la place d'un portrait de boss flouté et assombri : remparts de Valcrest, forêt de Sylvaran, citadelle du Prisme, dunes d'Akkar, abîme de la Légion, observatoire du Concordat, Cœur d'Aeon, Coutures du monde, Rivage gris.
+- Chaque décor laisse une zone dégagée au milieu pour les combattants, et n'est presque plus flouté.
+- Téléchargés seulement quand on combat dans la région (environ 100 Ko chacun), puis gardés pour jouer hors ligne.
+
 ## ✅ Version 1.68.3 — Absorber les doublons
 
 Les petites raretés en double avaient peu d'usage une fois les Liens remplis.

@@ -104,14 +104,7 @@
 .theme-v2 .btn.secondary.prep-sweep { min-height: 60px; border-width: 0 22px; border-image: url('../assets/kit/p_btn_repeat.webp') 0 18% 0 18% fill / 0 22px stretch; padding-left: 26px; }
 .prep-lead.on { display: inline-block; padding: 2px 12px; background: url('../assets/kit/p_chef.webp') center / 100% 100% no-repeat; color: #2b1a06 !important; font-weight: 800; }
 
-/* Combat : barres de vie et de tour peintes, commandes et compétences dans des cadres dorés. */
-.u-hp { height: 8px; border: 0 !important; border-radius: 0 !important; background: url('../assets/kit/b_hp_track.webp') center / 100% 100% no-repeat !important; }
-.unit.ally .u-hp > div:first-child { background: url('../assets/kit/b_hp_green.webp') left center / 100% 100% no-repeat !important; }
-.unit.enemy .u-hp > div:first-child { background: url('../assets/kit/b_hp_red.webp') left center / 100% 100% no-repeat !important; }
-.u-tm { height: 4px; border-radius: 0 !important; background: url('../assets/kit/b_tm_track.webp') center / 100% 100% no-repeat !important; }
-.u-tm > div { background: url('../assets/kit/b_tm_fill.webp') left center / 100% 100% no-repeat !important; }
-.theme-v2 .u-art { border-radius: 0 !important; }
-.theme-v2 .u-art::before { content: ''; position: absolute; inset: 0; z-index: 3; pointer-events: none; border-style: solid; border-color: transparent; border-width: 7px; border-image: url('../assets/kit/p_slot_gold.webp') 8% / 7px stretch; }
+/* Combat : commandes et compétences dans des cadres dorés (cartes des héros sans ornement, v1.73.7). */
 .theme-v2 .ctrl { border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: none !important; border-style: solid !important; border-color: transparent !important; border-width: 8px !important; border-image: url('../assets/kit/p_tile_sm.webp') 14% fill / 8px stretch !important; color: #f1e4c6; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 14px; }
 .theme-v2 .ctrl.on { border-image-source: url('../assets/kit/c_dtab_on.webp') !important; border-image-slice: 22% 12% 22% 12% fill !important; color: #ffe6a8; }
 .theme-v2 .lien-btn { background: url('../assets/kit/b_rbtn.webp') center / 112% 112% no-repeat !important; border: 0 !important; box-shadow: none !important; padding: 7px; }
@@ -184,3 +177,18 @@
 .hdr-icon-btn svg { width: 18px; height: 18px; }
 /* En-tête d'écran opaque : plus de bande de couleur du décor entre le titre et le contenu. */
 .theme-v2 .screen-header { background: linear-gradient(180deg, #07060b, #0c0a11) !important; box-shadow: 0 1px 0 rgba(201,157,79,0.35), 0 8px 16px rgba(0,0,0,0.45) !important; }
+
+/* ═══ v1.73.7 ═══ */
+/* Niveaux de campagne / étages : numéro centré dans le médaillon (chiffres alignés), texte décollé du médaillon. */
+.theme-v2 .stage-node { padding-left: 10px !important; padding-right: 26px !important; gap: 6px; }
+.theme-v2 .stage-node .faint { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.theme-v2 .stage-node .sn-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.theme-v2 .stage-node .sn-stars { flex-shrink: 0; }
+.theme-v2 .stage-node .sn-idx { left: -46px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; justify-content: center; line-height: 1; font-variant-numeric: lining-nums; font-feature-settings: 'lnum' 1; }
+/* Titre sur la plaque à cristal : descendu au centre du cadre (le cristal occupe le haut). */
+.theme-v2 .screen-header h1 { box-sizing: border-box; padding-top: 8px; line-height: 36px; }
+.app[data-tab='collection'] .screen-header h1, .app[data-tab='combats'] .screen-header h1, .app[data-tab='menu'] .screen-header h1 { padding-top: 0; line-height: 44px; }
+.app[data-tab='combats'] .screen-header h1 { line-height: 46px; }
+/* Combat : bouton pause rond. */
+.pause-btn { width: 42px; height: 42px; flex-shrink: 0; display: grid; place-items: center; border-radius: 50%; border: 1.5px solid rgba(232,190,110,0.75); background: radial-gradient(circle at 50% 35%, #2a2233, #0d0a12); box-shadow: 0 2px 8px rgba(0,0,0,0.6), inset 0 0 0 2px rgba(0,0,0,0.5); color: #f4dfa8; padding: 0; }
+.pause-btn:active { transform: scale(0.94); }

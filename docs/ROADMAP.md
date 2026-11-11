@@ -558,6 +558,13 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.73.7 — Bouton pause, cartes de combat épurées, campagne alignée
+
+- **Combat** : le bouton en haut à droite devient un vrai bouton **pause** (deux barres). Il fige le combat et propose « Reprendre » ou « Abandonner » (compté comme une défaite).
+- **Combat** : les cartes des héros et des ennemis perdent leur cadre doré et leurs barres de vie à pointes ; les barres redeviennent simples et lisibles.
+- **Campagne et donjons** : le numéro du niveau est centré dans son médaillon (chiffres alignés, plus de « 3 » ou « 9 » qui descendent) et le texte ne touche plus le médaillon. Les textes trop longs s'arrêtent proprement au lieu de passer à la ligne.
+- **Titres d'écran** : le titre (« Campagne »…) est centré verticalement dans sa plaque à cristal.
+
 ## ✅ Version 1.73.6 — Fiche du héros allégée
 
 - La phrase du héros (sa citation) et son nom en grand sous l'illustration sont retirés de la fiche : le nom reste dans le titre en haut, le titre du héros (« Druidesse du Cercle Vert »…) et ses rareté, affinité, rôle et famille restent sous l'illustration.

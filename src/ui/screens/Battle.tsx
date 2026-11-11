@@ -35,7 +35,10 @@ import { HeroCard } from '../components/HeroCard';
 
 type Phase = 'intro' | 'fight' | 'outro' | 'result';
 interface Popup { id: number; text: string; cls: string }
-const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+// Pause (v1.73.7) : tant que le menu pause est ouvert, le déroulé du combat attend.
+let paused = false;
+const wait = async (ms: number) => { await sleep(ms); while (paused) await sleep(120); };
 let popSeq = 0;
 
 export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId: string; seed: number; guest?: UnitSetup }) {
@@ -102,7 +105,8 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
   const busy = useRef(false);
   const finished = useRef(false);
 
-  useEffect(() => () => { alive.current = false; }, []);
+  useEffect(() => () => { alive.current = false; paused = false; }, []);
+  useEffect(() => { paused = quit; }, [quit]);
 
   const addPopup = (unitId: string, text: string, cls: string) => {
     const id = ++popSeq;
@@ -380,7 +384,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
           </div>
           <div className="row" style={{ gap: 6 }}>
             <button className="fx-legend-btn" aria-label="Légende des effets" onClick={() => { play('tap'); setLegend(true); }}><StatusIcon id="atkUp" size={14} /><StatusIcon id="poison" size={14} /><span>Effets</span></button>
-            {phase === 'fight' && <button className="back-btn" aria-label="Abandonner" onClick={() => setQuit(true)}><Icon.menu /></button>}
+            {phase === 'fight' && <button className="pause-btn" aria-label="Pause" onClick={() => { play('tap'); setQuit(true); }}><Icon.pause size={20} /></button>}
           </div>
         </div>
         <div className="turn-order">
@@ -577,12 +581,11 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
       )}
       {quit && (
         <Modal onClose={() => setQuit(false)}>
-          <h2>Abandonner ?</h2>
-          <p className="muted" style={{ textAlign: 'center' }}>Compté comme une défaite. L’énergie n’est pas rendue.</p>
-          <div className="row" style={{ gap: 8 }}>
-            <button className="btn secondary grow" onClick={() => setQuit(false)}>Continuer</button>
-            <button className="btn danger grow" onClick={doQuit}>Abandonner</button>
-          </div>
+          <h2>Pause</h2>
+          <p className="muted" style={{ textAlign: 'center' }}>Le combat est en attente.</p>
+          <button className="btn block" onClick={() => setQuit(false)}>Reprendre</button>
+          <p className="faint" style={{ textAlign: 'center', margin: '14px 0 6px' }}>Abandonner compte comme une défaite. L’énergie n’est pas rendue.</p>
+          <button className="btn danger block" onClick={doQuit}>Abandonner</button>
         </Modal>
       )}
     </div>

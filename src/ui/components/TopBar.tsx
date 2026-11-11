@@ -11,6 +11,10 @@ import { Modal } from './common';
 import { useState } from 'react';
 import { refillCost, refillEnergy } from '../../game/comfort';
 import { play } from '../../audio/sfx';
+import { isUnlocked } from '../../game/unlocks';
+import icEnergy from '../../assets/home/top_energy.webp';
+import icGold from '../../assets/home/top_gold.webp';
+import icCrystal from '../../assets/home/top_crystal.webp';
 
 export function TopBar() {
   const save = useGame((s) => s.save)!;
@@ -32,11 +36,17 @@ export function TopBar() {
           <AccountXp level={save.profile.level} xp={save.profile.xp} compact />
         </div>
       </button>
-      <button className="pill" onClick={() => setOpen(true)}>
-        <Icon.energy size={20} /> <span className={e.current > eMax ? 'over-cap' : ''}><Counter id="energy" value={e.current} format={String} /></span><small>/{eMax}</small>
-      </button>
-      <button className="pill" onClick={() => push({ name: 'inventory' })}><Icon.coin size={20} /><Counter id="gold" value={save.resources.gold} /></button>
-      <button className="pill" onClick={() => push({ name: 'inventory' })}><Icon.crystal size={20} /><Counter id="crystals" value={save.resources.crystals} /></button>
+      {/* Compteurs façon maquette : icônes peintes, minuteur de la prochaine énergie, « + » vers le Marché. */}
+      <div className="pill-wrap">
+        <button className="pill" onClick={() => setOpen(true)} aria-label="Énergie">
+          <img className="pill-ico" src={icEnergy} alt="" /> <span className={e.current > eMax ? 'over-cap' : ''}><Counter id="energy" value={e.current} format={String} /></span><small>/{eMax}</small>
+        </button>
+        {e.current < eMax && <span className="pill-timer">{formatDuration(next)}</span>}
+      </div>
+      <button className="pill" onClick={() => push({ name: 'inventory' })} aria-label="Or"><img className="pill-ico" src={icGold} alt="" /><Counter id="gold" value={save.resources.gold} />
+        <span className="pill-plus" role="button" aria-label="Marché" onClick={(ev) => { ev.stopPropagation(); push(isUnlocked(save, 'market') ? { name: 'market' } : { name: 'inventory' }); }}>+</span></button>
+      <button className="pill" onClick={() => push({ name: 'inventory' })} aria-label="Cristaux"><img className="pill-ico" src={icCrystal} alt="" /><Counter id="crystals" value={save.resources.crystals} />
+        <span className="pill-plus" role="button" aria-label="Marché" onClick={(ev) => { ev.stopPropagation(); push(isUnlocked(save, 'market') ? { name: 'market' } : { name: 'inventory' }); }}>+</span></button>
       {open && (
         <Modal onClose={() => setOpen(false)}>
           <h2>Énergie</h2>

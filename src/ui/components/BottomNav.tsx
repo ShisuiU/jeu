@@ -20,8 +20,8 @@ import { cloudWanted, useAccount } from '../../cloud/account';
 const ITEMS: { tab: Tab; label: string; img: string }[] = [
   { tab: 'home', label: 'Accueil', img: navHome },
   { tab: 'collection', label: 'Héros', img: navHeroes },
-  { tab: 'summon', label: 'Invoquer', img: navSummon },
-  { tab: 'combats', label: 'Combats', img: navBattle },
+  { tab: 'summon', label: 'Invocation', img: navSummon },
+  { tab: 'combats', label: 'Combat', img: navBattle },
   { tab: 'menu', label: 'Menu', img: navMenu },
 ];
 

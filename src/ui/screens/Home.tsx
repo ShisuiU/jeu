@@ -1,4 +1,5 @@
 import stageArt from '../../assets/home/stage.webp';
+import stageSky from '../../assets/home/stage-sky.webp';
 import { wheelReady } from '../../game/wheel';
 import { Coach } from '../components/Coach';
 import { useGame } from '../../state/store';
@@ -51,6 +52,8 @@ export function Home() {
       <TopBar />
 
       <div className="home-stage" style={{ backgroundImage: `url(${stageArt})` }}>
+        {/* Ciel prolongé au-dessus de l'image (écrans plus hauts que la maquette, v1.72.2). */}
+        <div className="home-stage-sky" style={{ backgroundImage: `url(${stageSky})` }} aria-hidden />
         <div className="home-rift" aria-hidden />
         {spots.map((sp) => {
           const locked = !!sp.feature && !isUnlocked(save, sp.feature);

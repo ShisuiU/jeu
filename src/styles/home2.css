@@ -8,10 +8,10 @@
    les boutons et textes sont placés en % de l'image, la taille du texte suit la largeur (unités cqw). */
 .home { --serif-ui: 'Cormorant Garamond', Georgia, serif; font-variant-numeric: lining-nums; }
 .bottom-nav, .home .topbar, .home-stage { font-variant-numeric: lining-nums tabular-nums; }
-.home-sky { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 100%, #1b1430 0%, #0c0a14 55%, #07060b 100%); }
+.home-sky { position: absolute; inset: 0; background: #07060b; }
 .home-sky-motes { position: absolute; inset: 0 0 50% 0; opacity: 0.6; }
-.home-stage { position: absolute; z-index: 2; left: 0; right: 0; bottom: calc(var(--nav-h) + var(--sab)); aspect-ratio: 1152 / 1562; background-size: 100% 100%; background-repeat: no-repeat; container-type: inline-size;
-  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 7%); mask-image: linear-gradient(180deg, transparent 0, #000 7%); }
+.home-stage { position: absolute; z-index: 2; left: 0; right: 0; bottom: calc(var(--nav-h) + var(--sab)); aspect-ratio: 1152 / 1562; background-size: 100% 100%; background-repeat: no-repeat; container-type: inline-size; }
+.home-stage-sky { position: absolute; left: 0; right: 0; bottom: 100%; aspect-ratio: 1152 / 1012; background-size: 100% 100%; background-repeat: no-repeat; pointer-events: none; }
 .home-rift { position: absolute; left: 50%; top: 13%; width: 70%; height: 30%; transform: translate(-50%, -50%); background: radial-gradient(ellipse, rgba(190,140,255,0.22), transparent 70%); mix-blend-mode: screen; animation: heartPulse 5s ease-in-out infinite; pointer-events: none; }
 .reduced-motion .home-rift { animation: none; }
 @media (prefers-reduced-motion: reduce) { .home-rift { animation: none; } }

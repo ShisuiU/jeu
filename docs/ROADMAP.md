@@ -558,6 +558,10 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.72.2 — Accueil : plus de bande noire sur les grands iPhone
+
+- Sur les téléphones plus hauts que la maquette (iPhone Pro Max, etc.), une grande bande noire restait entre la barre du haut et le décor. Le ciel d'orage est maintenant prolongé au-dessus de l'image (ciel peint assorti, fondu sans raccord), quelle que soit la hauteur de l'écran.
+
 ## ✅ Version 1.72.1 — Accueil identique à la maquette SpriteCook
 
 - **La maquette sert maintenant de décor** : son image (le Monde Cousu, le Lien de dos, les six cadres d'icônes peintes et le panneau orné de la Campagne) est utilisée telle quelle, textes effacés. Le jeu pose dessus, exactement aux mêmes endroits, les vrais boutons, les étiquettes, les points rouges et les textes de la campagne (chapitre, nom, étoiles). L'image suit la largeur de l'écran et le ciel se prolonge au-dessus.

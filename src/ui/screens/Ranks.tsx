@@ -7,6 +7,7 @@ import { GHOST_PREFIX, RANK_TABS, ghostRanks, rankEntry, type RankEntry, type Ra
 import { Screen, fmt } from '../components/common';
 import { HeroArt } from '../art/HeroArt';
 import { ReportSheet, type ReportTarget } from '../components/ReportSheet';
+import { PlayerCard } from '../components/PlayerCard';
 import { maskProfanity } from '../../game/moderation';
 
 // CLASSEMENTS EN LIGNE — les 50 meilleurs Héritiers par mode. Il faut un compte pour y figurer ;
@@ -23,6 +24,7 @@ export function Ranks({ tab: initial }: { tab?: RankField }) {
   const [err, setErr] = useState<string | null>(null);
   const [uid, setUid] = useState<string | null>(null);
   const [report, setReport] = useState<ReportTarget | null>(null);
+  const [view, setView] = useState<Row | null>(null);
   const blocked = useGame((st) => st.save?.blocked ?? []);
   const me = rankEntry(save);
   const def = RANK_TABS.find((t) => t.id === tab)!;
@@ -68,7 +70,7 @@ export function Ranks({ tab: initial }: { tab?: RankField }) {
       {rows && rows.length > 0 && (
         <ol className="rk-list">
           {rows.map((r, i) => (
-            <li key={r.uid} className={`rk-row ${r.uid === uid ? 'me' : ''} ${isGhost(r) ? 'ghost' : ''} ${i < 3 ? `top top${i + 1}` : ''}`} onClick={() => { if (r.uid !== uid && user && !isGhost(r)) setReport({ uid: r.uid, name: r.name, kind: 'name', where: `Classement ${def.label}` }); }}>
+            <li key={r.uid} className={`rk-row ${r.uid === uid ? 'me' : ''} ${isGhost(r) ? 'ghost' : ''} ${i < 3 ? `top top${i + 1}` : ''}`} onClick={() => { if (r.uid !== uid) setView(r); }}>
               <span className="rk-pos">{i + 1}</span>
               <div className="rk-av"><HeroArt heroId={HERO_BY_ID[r.avatar] ? r.avatar : 'aldric'} /></div>
               <div className="grow rk-name"><b>{maskProfanity(r.name)}</b><small className="faint">{isGhost(r) ? 'Imaginaire · ' : ''}Niv. {r.level}</small></div>
@@ -77,8 +79,10 @@ export function Ranks({ tab: initial }: { tab?: RankField }) {
           ))}
         </ol>
       )}
+      {view && <PlayerCard uid={view.uid} entry={view} ghost={isGhost(view)} signedIn={!!user} canReport={!!user && !isGhost(view)}
+        onReport={() => { setReport({ uid: view.uid, name: view.name, kind: 'name', where: `Classement ${def.label}` }); setView(null); }} onClose={() => setView(null)} />}
       {report && <ReportSheet target={report} onClose={() => setReport(null)} />}
-      {rows && rows.length > 0 && user && <p className="faint" style={{ fontSize: 12, textAlign: 'center' }}>Touche un joueur pour le signaler ou le bloquer.</p>}
+      {rows && rows.length > 0 && <p className="faint" style={{ fontSize: 12, textAlign: 'center' }}>Touche un joueur pour voir son profil.</p>}
       {user && (
         <button className="btn secondary block" style={{ marginTop: 14 }} onClick={toggle}>
           {save.settings.showInRanks ? 'Ne plus apparaître au classement' : 'Apparaître au classement'}

@@ -7,6 +7,7 @@ import { Icon } from '../art/Icons';
 import { Modal } from './common';
 import { RewardView } from './RewardView';
 import { GearCard } from './GearCard';
+import { GearDetail } from './GearDetail';
 import { play } from '../../audio/sfx';
 
 // COMBATS EN ARRIÈRE-PLAN — une pastille au-dessus de la navigation, sur tous les écrans :
@@ -18,6 +19,7 @@ export function BgIndicator() {
   const mutate = useGame((s) => s.mutate);
   const toast = useUI((s) => s.toast);
   const [open, setOpen] = useState(false);
+  const [gearOpen, setGearOpen] = useState<string | null>(null);
   // Fin de série : un petit message, une seule fois.
   const endedRef = useRef(run?.endedReason);
   useEffect(() => {
@@ -47,7 +49,7 @@ export function BgIndicator() {
           </p>
           {!ended && <div className="progress" style={{ margin: '4px 0 12px' }}><div style={{ width: `${(run.done / run.total) * 100}%` }} /></div>}
           {Object.keys(run.reward).length > 0 ? <RewardView reward={run.reward} /> : <p className="faint" style={{ textAlign: 'center' }}>Pas encore de butin.</p>}
-          {run.gear.length > 0 && <div className="gear-grid" style={{ marginTop: 10 }}>{run.gear.slice(0, 8).map((g) => <GearCard key={g.uid} g={g} />)}</div>}
+          {run.gear.length > 0 && <div className="gear-grid" style={{ marginTop: 10 }}>{run.gear.slice(0, 8).map((g) => <GearCard key={g.uid} g={g} onClick={() => setGearOpen(g.uid)} />)}</div>}
           {run.gear.length > 8 && <p className="faint">+ {run.gear.length - 8} autre(s) équipement(s)</p>}
           {!ended && <p className="faint" style={{ textAlign: 'center', fontSize: 12 }}>Un combat toutes les {BG_RUN_MS / 1000} s, même jeu fermé. Le butin arrive au fur et à mesure.</p>}
           <div className="row" style={{ gap: 8, marginTop: 12 }}>
@@ -62,6 +64,7 @@ export function BgIndicator() {
           </div>
         </Modal>
       )}
+      {gearOpen && <GearDetail gearUid={gearOpen} place="forge" onClose={() => setGearOpen(null)} />}
     </>
   );
 }

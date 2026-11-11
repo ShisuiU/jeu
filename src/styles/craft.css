@@ -1020,3 +1020,15 @@ body:has(.prep-bar) .bg-pill, body:has(.summon-bar) .bg-pill { bottom: calc(var(
 .pf-ava-pick { aspect-ratio: 1; border-radius: 50%; overflow: hidden; padding: 0; border: 2px solid var(--rc); }
 .pf-ava-pick > * { width: 100%; height: 100%; }
 .pf-ava-pick.on { box-shadow: 0 0 0 3px var(--gold-hi); }
+/* Aperçu d'un joueur (classements, v1.70.1) */
+.pc-head { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+.pc-ava { position: relative; width: 72px; height: 72px; flex: none; }
+.pc-ava > div:first-child, .pc-ava > img { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; border: 2px solid var(--gold-hi); }
+.pc-name { display: block; font-family: var(--font-title); font-size: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pc-tier { font-size: 13px; font-weight: 800; margin-top: 2px; }
+.pc-grid { grid-template-columns: repeat(2, 1fr); }
+.pc-team { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.pc-hero { position: relative; aspect-ratio: 3 / 4; border-radius: 6px; overflow: hidden; border: 2px solid var(--rc); }
+.pc-hero > div:first-child, .pc-hero > img { width: 100%; height: 100%; }
+.pc-hero span { position: absolute; right: 2px; bottom: 2px; font-size: 10px; font-weight: 900; padding: 0 4px; border-radius: 4px; background: rgba(0,0,0,0.75); color: #fff; }
+.rk-row { cursor: pointer; }

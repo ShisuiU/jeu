@@ -1,4 +1,5 @@
 import type { Reward } from './resources';
+import { BALANCE } from './balance';
 import { DIFFICULTIES, DIFFICULTY_ORDER, type DifficultyId, type WaveEnemy } from './campaign';
 import type { GearRarity } from './equipment';
 
@@ -45,10 +46,10 @@ export const DUNGEONS: DungeonDef[] = [
 
 export const DUNGEON_BY_ID: Record<string, DungeonDef> = Object.fromEntries(DUNGEONS.map((d) => [d.id, d]));
 
-// DIFFICULTÉS (v1.68.9) — comme la campagne : Normal, Difficile, Expert, Cauchemar. Ennemis plus forts
-// (niveaux et puissance de la difficulté), récompenses multipliées, meilleur équipement à la Forge.
-// Une difficulté s'ouvre quand l'étage DUNGEON_DIFF_OPEN est terminé dans la précédente.
-export const DUNGEON_DIFF_OPEN = 10;
+// DIFFICULTÉS (v1.68.9, revues en v1.70.1) — Normal, Difficile, Expert, Cauchemar. Une difficulté s'ouvre quand la
+// précédente est TERMINÉE (étage 15), et elle reprend là où l'autre s'arrêtait : l'étage 1 en Difficile est déjà un peu
+// plus dur que l'étage 15 en Normal, et ainsi de suite. Récompenses multipliées, meilleur équipement à la Forge.
+export const DUNGEON_DIFF_OPEN = 15;
 /** Étages « gagnés » pour la table d'équipement et les étoiles : plus la difficulté est haute, meilleur est l'objet. */
 export const DUNGEON_GEAR_BONUS: Record<DifficultyId, number> = { normal: 0, hard: 3, expert: 6, nightmare: 9 };
 export const dungeonRewardMult = (diff: DifficultyId = 'normal') => DIFFICULTIES[diff].rewardMult;
@@ -71,16 +72,33 @@ export function rollForgeStars(r: () => number, floor: number, diff: DifficultyI
   return hi;
 }
 
-export function dungeonLevel(floor: number, diff: DifficultyId = 'normal') { return 2 + (floor - 1) * 4 + DIFFICULTIES[diff].levelAdd; }
 export const DUNGEON_STEP = 0.55;
 export const dungeonStatMult = (floor: number) => (floor <= 10 ? 1 : 1 + (floor - 10) * DUNGEON_STEP);
+/** Niveau des ennemis : Normal 2 → 58 ; au-delà, on monte jusqu'au niveau 70 (le plafond) et c'est la puissance qui grimpe. */
+export function dungeonLevel(floor: number, diff: DifficultyId = 'normal') {
+  const i = DIFFICULTY_ORDER.indexOf(diff);
+  return i <= 0 ? 2 + (floor - 1) * 4 : Math.min(70, 58 + i * 2 + floor - 1);
+}
+/** Force des ennemis (niveau × puissance, 1 = un ennemi niveau 1) au premier et au dernier étage de chaque difficulté.
+ *  Normal finit vers 19,8 ; Difficile 21 → 33 ; Expert 34 → 50 ; Cauchemar 52 → 80 (pour les équipes très bien équipées). */
+const DIFF_FORCE: Record<Exclude<DifficultyId, 'normal'>, [number, number]> = { hard: [21, 33], expert: [34, 50], nightmare: [52, 80] };
+const growth = (lv: number) => 1 + BALANCE.hero.growthPerLevel * (lv - 1);
+/** Multiplicateur de puissance des ennemis d'un étage. */
+export function dungeonPower(floor: number, diff: DifficultyId = 'normal') {
+  if (diff === 'normal') return dungeonStatMult(floor);
+  const [a, b] = DIFF_FORCE[diff];
+  const force = a * Math.pow(b / a, (floor - 1) / (DUNGEON_FLOORS - 1));
+  return Math.round((force / growth(dungeonLevel(floor, diff))) * 100) / 100;
+}
+/** Force d'un étage comparée à l'étage 1 en Normal (pour l'affichage). */
+export const dungeonForce = (floor: number, diff: DifficultyId = 'normal') => growth(dungeonLevel(floor, diff)) * dungeonPower(floor, diff);
 export function dungeonEnergy(floor: number, diff: DifficultyId = 'normal') { return 6 + Math.floor(floor / 2) + DIFFICULTY_ORDER.indexOf(diff); }
 
 export function dungeonWaves(d: DungeonDef, floor: number, diff: DifficultyId = 'normal'): WaveEnemy[][] {
   const lv = dungeonLevel(floor, diff);
   const m = d.minions;
-  // Étages 11 à 15 (ajoutés pour la fin de jeu) : ennemis renforcés, comme la fin de la campagne.
-  const statMult = dungeonStatMult(floor) * DIFFICULTIES[diff].statMult;
+  // Étages 11 à 15 (fin de jeu) et difficultés supérieures : ennemis renforcés.
+  const statMult = dungeonPower(floor, diff);
   return [
     [{ enemy: m[0], level: lv, slot: 0, statMult }, { enemy: m[1], level: lv, slot: 1, statMult }, { enemy: m[2], level: lv, slot: 2, statMult }],
     [{ enemy: d.boss, level: lv + 1, slot: 1, hpMult: 3 + floor * 0.15, statMult }, { enemy: m[(floor + 1) % 3], level: lv, slot: 3, statMult }, { enemy: m[floor % 3], level: lv, slot: 4, statMult }],

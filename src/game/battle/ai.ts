@@ -46,13 +46,17 @@ function scoreEnemyTarget(s: BattleState, u: Unit, t: Unit, sk: SkillDef): numbe
   return score;
 }
 
-export function chooseAction(s: BattleState, u: Unit): Action {
+/** `focusId` (v1.70.1) : ennemi désigné par le joueur en combat auto ; ses héros le visent dès qu'ils peuvent
+ *  (la provocation reste respectée : si la cible n'est pas atteignable, l'IA choisit comme d'habitude). */
+export function chooseAction(s: BattleState, u: Unit, focusId?: string | null): Action {
   const skills = availableSkills(u).sort((a, b) => ORDER[a.slot] - ORDER[b.slot]);
   const sk = skills.find((x) => usefulness(s, u, x)) ?? skills[skills.length - 1] ?? u.skills[0];
   const kind = targetKind(sk);
   const targets = validTargets(s, u, sk);
   if (kind === 'none' || targets.length === 0) return { skillId: sk.id };
   if (kind === 'ally') return { skillId: sk.id, targetId: [...targets].sort((a, b) => hpPct(a) - hpPct(b))[0].id };
+  const focus = focusId ? targets.find((t) => t.id === focusId) : undefined;
+  if (focus) return { skillId: sk.id, targetId: focus.id };
   const best = [...targets].sort((a, b) => scoreEnemyTarget(s, u, b, sk) - scoreEnemyTarget(s, u, a, sk))[0];
   return { skillId: sk.id, targetId: best.id };
 }

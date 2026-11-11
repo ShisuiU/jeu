@@ -43,7 +43,6 @@
 .unit.acting.ally { transform: translateY(-18px) scale(1.06); }
 .unit.acting.enemy { transform: translateY(18px) scale(1.06); }
 .unit.hit .u-art { animation: hitShake 0.35s; }
-.unit.hit .u-art::after { content: ''; position: absolute; inset: 0; background: rgba(255,80,80,0.35); animation: fadeIn 0.1s reverse forwards 0.2s; }
 @keyframes hitShake { 20% { transform: translateX(-5px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-3px); } 80% { transform: translateX(2px); } }
 .unit.dead { filter: grayscale(1) brightness(0.4); opacity: 0.45; }
 .unit.targetable .u-art { animation: targetPulse 1s infinite; }
@@ -140,7 +139,6 @@
 .mini-slot .hero-card .name { font-size: 8.5px; }
 
 /* ─── Effets visuels (phase 5) ─── */
-.battle.flash::after { content: ''; position: absolute; inset: 0; z-index: 25; background: rgba(255,255,255,0.22); pointer-events: none; }
 .vfx { position: absolute; left: 0; right: 0; top: 0; aspect-ratio: 1 / 1.08; pointer-events: none; z-index: 4; border-radius: 10px; overflow: visible; }
 .vfx.slash::before, .vfx.slash::after { content: ''; position: absolute; left: -15%; right: -15%; top: 48%; height: 4px; border-radius: 4px;
   background: linear-gradient(90deg, transparent, #fff, var(--vc), transparent); box-shadow: 0 0 12px var(--vc), 0 0 24px var(--vc); transform: rotate(-35deg) scaleX(0); animation: slash 0.38s ease-out forwards; }
@@ -286,3 +284,8 @@
 .dr-xp .lvlup { color: #7bd88f; font-weight: 800; }
 .result-actions { position: sticky; bottom: calc(-16px - var(--sab)); z-index: 2; margin: 14px -16px calc(-16px - var(--sab)); padding: 14px 16px calc(var(--sab) + 16px);
   background: linear-gradient(180deg, rgba(5,4,8,0), rgba(5,4,8,0.96) 30%); }
+/* Cible prioritaire (v1.70.1) : viseur rouge au centre de la carte de l'ennemi désigné. */
+.unit.focus .u-art { box-shadow: 0 0 0 2px #ff4d4d, 0 0 14px rgba(255,77,77,0.6); }
+.u-focus { position: absolute; left: 50%; top: 30%; transform: translate(-50%, -50%); z-index: 5; color: #ff5a5a; filter: drop-shadow(0 0 4px rgba(0,0,0,0.9)); pointer-events: none; animation: focusSpin 4s linear infinite; }
+@keyframes focusSpin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .u-focus { animation: none; } }

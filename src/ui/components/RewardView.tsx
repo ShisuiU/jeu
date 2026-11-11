@@ -3,12 +3,19 @@ import { RESOURCES } from '../../data/resources';
 import { ResourceIcon, Icon } from '../art/Icons';
 import { fmt } from './common';
 import type { GearItem } from '../../save/schema';
-import { GearCard } from './GearCard';
+import { useState } from 'react';
+import { GearCard, statText } from './GearCard';
+import { GearDetail } from './GearDetail';
+import { GEAR_RARITIES, SLOT_BY_ID } from '../../data/equipment';
+import { defaultStars, mainValue } from '../../game/gear';
 
 export function RewardView({ reward, gear = [], compact }: { reward: Reward; gear?: GearItem[]; compact?: boolean }) {
   // Grille équilibrée : 4 récompenses sur une ligne, 5 ou 6 en deux lignes de 3 (jamais une seule toute seule).
   // L'équipement gagné se range dans la même grille, à côté de l'or et des ressources.
   const n = Object.keys(reward).length + gear.length;
+  // L'équipement gagné s'ouvre d'un toucher : sa fiche complète (statistiques, ensemble, renforcer…). (v1.70.1)
+  const [open, setOpen] = useState<string | null>(null);
+  const detail = open && <GearDetail gearUid={open} place="forge" onClose={() => setOpen(null)} />;
   const cols = n <= 4 ? n : n <= 6 ? 3 : 4;
   // Version compacte (écran de victoire) : petites tuiles horizontales, icône à gauche, quantité et nom à droite.
   if (compact) return (
@@ -23,11 +30,13 @@ export function RewardView({ reward, gear = [], compact }: { reward: Reward; gea
         );
       })}
       {gear.map((g, i) => (
-        <div key={g.uid} className="rc-item rc-gear" style={{ animationDelay: `${(Object.keys(reward).length + i) * 0.06}s` }}>
+        <div key={g.uid} role="button" tabIndex={0} aria-label="Voir l’équipement" className="rc-item rc-gear" style={{ animationDelay: `${(Object.keys(reward).length + i) * 0.06}s`, ['--gc' as string]: GEAR_RARITIES[g.rarity].color }}
+          onClick={() => setOpen(g.uid)} onKeyDown={(e) => { if (e.key === 'Enter') setOpen(g.uid); }}>
           <span className="rc-gc"><GearCard g={g} hideMain /></span>
-          <span className="rc-txt"><b>{g.stars ? `${g.stars} ★` : 'Objet'}</b><small>Nouvel équipement</small></span>
+          <span className="rc-txt"><b>{g.stars ?? defaultStars(g.rarity)} ★ · {SLOT_BY_ID[g.slot].name}</b><small>{statText(g.main, mainValue(g))} · toucher pour voir</small></span>
         </div>
       ))}
+      {detail}
     </div>
   );
   return (
@@ -44,10 +53,11 @@ export function RewardView({ reward, gear = [], compact }: { reward: Reward; gea
       })}
       {gear.map((g, i) => (
         <div key={g.uid} className="reward-item reward-gear" style={{ animationDelay: `${(Object.keys(reward).length + i) * 0.08}s` }}>
-          <GearCard g={g} />
-          <span className="muted">Nouvel équipement</span>
+          <GearCard g={g} onClick={() => setOpen(g.uid)} />
+          <span className="muted">{statText(g.main, mainValue(g))}</span>
         </div>
       ))}
+      {detail}
     </div>
   );
 }

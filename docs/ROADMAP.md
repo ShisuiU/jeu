@@ -558,6 +558,15 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.70.1 — Retours : combat, donjons, niveau de compte, classements
+
+- **Plus de flashs quand les cartes frappent** : l'écran ne blanchit plus sur les coups critiques, et l'éclair coloré et le voile rouge sur la carte touchée ont disparu. Restent les traits de l'arme et de l'élément, et le léger tremblement.
+- **Donjons : difficultés qui se suivent.** Difficile ne s'ouvre qu'une fois le Normal terminé (étage 15), Expert une fois Difficile terminé, etc. Chaque difficulté reprend là où la précédente s'arrête : l'étage 1 en Difficile est déjà plus dur que l'étage 15 en Normal (force des ennemis : Normal jusqu'à ~20, Difficile 21 → 33, Expert 34 → 50, Cauchemar 52 → 80). Chaque étage affiche le niveau et la puissance de ses ennemis.
+- **Équipement gagné visible** : sur l'écran de victoire, l'objet montre ses étoiles, sa pièce et sa statistique principale ; le toucher ouvre sa fiche complète (secondaires, ensemble, renforcer, verrouiller, démanteler). Pareil dans le résumé des combats en arrière-plan.
+- **Niveau de compte plus lent** : il fallait moins d'expérience pour un niveau qu'une barre d'énergie n'en rapporte, et chaque niveau rechargeait l'énergie : on montait en boucle. Désormais ~2 barres par niveau au niveau 10, 3 au niveau 20, 4 au niveau 30, 6 au niveau 50.
+- **Cible prioritaire en combat auto** : toucher un ennemi le désigne (viseur rouge) ; l'équipe le vise dès qu'elle peut, la provocation restant prioritaire. Re-toucher l'annule.
+- **Classements : aperçu du joueur** : toucher un joueur ouvre sa fiche (avatar, niveau, ligue, scores, puissance et son équipe de défense d'Arène) ; « Signaler ou bloquer » reste en bas.
+
 ## ✅ Version 1.70.0 — Vague C : 12 héros de plus (88 en tout)
 
 Troisième des 4 vagues de `docs/HEROES_PLAN.md`.

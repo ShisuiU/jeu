@@ -21,8 +21,12 @@ export function addHeroXp(h: HeroInstance, amount: number): { gained: number; ca
   return { gained: h.level - start, capped: h.level >= cap };
 }
 
+/** Expérience de compte pour passer au niveau suivant (v1.70.1 : bien plus lente). Chaque énergie dépensée en donne 10 ;
+ *  une barre d'énergie pleine suffit pour ~2 niveaux au tout début, puis il en faut de plus en plus : ~2 barres au
+ *  niveau 10, 3 au niveau 20, 4 au niveau 30, 6 au niveau 50. Avant, une barre rechargée donnait plus d'un niveau,
+ *  qui la rechargeait à nouveau : on montait en boucle. */
 export function accountXpToNext(level: number): number {
-  return 100 + 60 * level;
+  return 200 + 250 * level + 10 * level * level;
 }
 
 /** Expérience de compte (gagnée en dépensant de l'énergie). Chaque niveau donne de l'or et de l'énergie. */

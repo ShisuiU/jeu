@@ -23,6 +23,7 @@ export const Icon = {
   team: (p: P) => <S {...p}><path d="M12 2 4 6v6c0 5 3.5 8.5 8 10 4.5-1.5 8-5 8-10V6z" /><path d="m9 12 2 2 4-4" /></S>,
   bag: (p: P) => <S {...p}><path d="M5 8h14l-1 12H6z" /><path d="M9 8V6a3 3 0 0 1 6 0v2" /></S>,
   menu: (p: P) => <S {...p}><path d="M4 6h16M4 12h16M4 18h16" /></S>,
+  pause: (p: P) => <S {...p}><path d="M9 5v14M15 5v14" /></S>,
   back: (p: P) => <S {...p}><path d="M15 5 8 12l7 7" /></S>,
   gift: (p: P) => <S {...p}><rect x="3" y="9" width="18" height="12" rx="1.5" /><path d="M12 9v12M3 13h18" /><path d="M12 9C9 9 7 7.5 7.5 5.5S11 5 12 9c1-4 4-5.5 4.5-3.5S15 9 12 9z" /></S>,
   scroll: (p: P) => <S {...p}><path d="M7 3h11a2 2 0 0 1 0 4H7" /><path d="M7 3a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7" /><path d="M9 11h7M9 15h5" /></S>,

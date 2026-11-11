@@ -6,7 +6,8 @@ import type { GearItem } from '../../save/schema';
 import { useState } from 'react';
 import { GearCard, statText } from './GearCard';
 import { GearDetail } from './GearDetail';
-import { GEAR_RARITIES, SLOT_BY_ID } from '../../data/equipment';
+import { GEAR_RARITIES, SETS, SLOT_BY_ID } from '../../data/equipment';
+import { GearStars, SetEmblem } from '../art/SetEmblem';
 import { defaultStars, mainValue } from '../../game/gear';
 
 export function RewardView({ reward, gear = [], compact }: { reward: Reward; gear?: GearItem[]; compact?: boolean }) {
@@ -18,8 +19,11 @@ export function RewardView({ reward, gear = [], compact }: { reward: Reward; gea
   const detail = open && <GearDetail gearUid={open} place="forge" onClose={() => setOpen(null)} />;
   const cols = n <= 4 ? n : n <= 6 ? 3 : 4;
   // Version compacte (écran de victoire) : petites tuiles horizontales, icône à gauche, quantité et nom à droite.
+  // Les ressources se partagent toute la largeur (1 à 3 par ligne, 4 en 2×2) ; chaque objet a sa propre ligne en dessous (v1.71.1).
+  const nr = Object.keys(reward).length;
+  const rcols = nr === 4 ? 2 : Math.max(1, Math.min(3, nr));
   if (compact) return (
-    <div className="reward-compact">
+    <div className="reward-compact" style={{ ['--rc-cols' as string]: rcols }}>
       {Object.entries(reward).map(([k, v], i) => {
         const def = k === 'energy' ? null : RESOURCES[k as keyof typeof RESOURCES];
         return (
@@ -29,13 +33,20 @@ export function RewardView({ reward, gear = [], compact }: { reward: Reward; gea
           </div>
         );
       })}
-      {gear.map((g, i) => (
-        <div key={g.uid} role="button" tabIndex={0} aria-label="Voir l’équipement" className="rc-item rc-gear" style={{ animationDelay: `${(Object.keys(reward).length + i) * 0.06}s`, ['--gc' as string]: GEAR_RARITIES[g.rarity].color }}
-          onClick={() => setOpen(g.uid)} onKeyDown={(e) => { if (e.key === 'Enter') setOpen(g.uid); }}>
-          <span className="rc-gc"><GearCard g={g} hideMain /></span>
-          <span className="rc-txt"><b>{g.stars ?? defaultStars(g.rarity)} ★ · {SLOT_BY_ID[g.slot].name}</b><small>{statText(g.main, mainValue(g))} · toucher pour voir</small></span>
-        </div>
-      ))}
+      {gear.map((g, i) => {
+        const r = GEAR_RARITIES[g.rarity];
+        return (
+          <div key={g.uid} role="button" tabIndex={0} aria-label="Voir l’équipement" className="rc-item rc-gear" style={{ animationDelay: `${(nr + i) * 0.06}s`, ['--gc' as string]: r.color }}
+            onClick={() => setOpen(g.uid)} onKeyDown={(e) => { if (e.key === 'Enter') setOpen(g.uid); }}>
+            <span className="rc-gc"><GearCard g={g} hideMain /></span>
+            <span className="rc-gtxt">
+              <span className="rc-gname"><b>{SLOT_BY_ID[g.slot].name}</b><em>{r.name}</em><GearStars n={g.stars ?? defaultStars(g.rarity)} size={11} /></span>
+              <span className="rc-gstat"><b>{statText(g.main, mainValue(g))}</b><span style={{ color: SETS[g.set].color }}><SetEmblem id={g.set} size={12} /> {SETS[g.set].name}</span></span>
+            </span>
+            <span className="rc-chev" aria-hidden>›</span>
+          </div>
+        );
+      })}
       {detail}
     </div>
   );

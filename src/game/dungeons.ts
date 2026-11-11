@@ -16,7 +16,7 @@ export function setDungeonBest(s: SaveData, dungeonId: string, diff: DifficultyI
   else (p.best ??= {})[diff] = Math.max(p.best[diff] ?? 0, floor);
 }
 
-/** La difficulté est-elle ouverte pour ce donjon ? (étage 10 de la précédente terminé) */
+/** La difficulté est-elle ouverte pour ce donjon ? (la précédente terminée : étage 15) */
 export function dungeonDiffOpen(s: SaveData, dungeonId: string, diff: DifficultyId): boolean {
   const i = DIFFICULTY_ORDER.indexOf(diff);
   if (i <= 0) return true;
@@ -28,7 +28,7 @@ export function dungeonDiffOpen(s: SaveData, dungeonId: string, diff: Difficulty
 export function dungeonFloorCheck(s: SaveData, dungeonId: string, diff: DifficultyId, floor: number): { ok: boolean; reason?: string } {
   if (!dungeonDiffOpen(s, dungeonId, diff)) {
     const prev = DIFFICULTIES[DIFFICULTY_ORDER[DIFFICULTY_ORDER.indexOf(diff) - 1]].name;
-    return { ok: false, reason: `${DIFFICULTIES[diff].name} : termine d’abord l’étage ${DUNGEON_DIFF_OPEN} en ${prev}.` };
+    return { ok: false, reason: `${DIFFICULTIES[diff].name} : termine d’abord le ${prev} (étage ${DUNGEON_DIFF_OPEN}).` };
   }
   if (floor > Math.min(DUNGEON_FLOORS, dungeonBest(s, dungeonId, diff) + 1)) return { ok: false, reason: 'Termine l’étage précédent.' };
   return { ok: true };

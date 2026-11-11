@@ -125,8 +125,11 @@
 .rc-txt { display: flex; flex-direction: column; min-width: 0; line-height: 1.15; }
 .rc-txt b { font-size: 14px; color: var(--gold-hi); }
 .rc-txt small { font-size: 11px; color: var(--text-dim, #c9c1b3); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-.rc-gc { width: 32px; flex: none; }
-.rc-gc .gear-card { width: 32px; padding: 1px; border-radius: 5px; }
+.rc-gear { grid-column: span 2; cursor: pointer; border-color: color-mix(in srgb, var(--gc, var(--line)) 60%, transparent); }
+.rc-gear:active { transform: scale(0.97); }
+.rc-gc { width: 40px; flex: none; }
+.rc-gc .gear-card { pointer-events: none; }
+.rc-gc .gear-card { width: 40px; padding: 1px; border-radius: 5px; }
 .rc-gc .gear-card .gc-lvl, .rc-gc .gear-card .gc-set, .rc-gc .gear-card .gstars { display: none; }
 
 /* v1.68.21 — Accueil : décor de l'écran de lancement (sans le fondu au noir ni le travelling d'ouverture). */

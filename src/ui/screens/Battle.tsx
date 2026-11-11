@@ -67,7 +67,6 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
   const [hits, setHits] = useState<Set<string>>(new Set());
   const [popups, setPopups] = useState<Record<string, Popup[]>>({});
   const [vfx, setVfx] = useState<Record<string, { id: number; cls: string; color: string }>>({});
-  const [flash, setFlash] = useState(false);
   // Sensations : tremblement sur les gros coups, ralenti sur le coup fatal.
   const [shake, setShake] = useState<'' | 'soft' | 'hard'>('');
   const [waveCard, setWaveCard] = useState<{ n: number; total: number; boss: boolean } | null>(null);
@@ -95,6 +94,9 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
     try { if (!localStorage.getItem('aeonfall.tip.unitInfo')) { localStorage.setItem('aeonfall.tip.unitInfo', '1'); setTimeout(() => useUI.getState().toast(window.matchMedia?.('(pointer: fine)').matches ? 'Astuce : clic droit (ou clic maintenu) sur une carte pour voir ses effets.' : 'Astuce : garde le doigt appuyé sur une carte pour voir ses effets.'), 1500); } } catch { /* ignoré */ }
   }, [phase]); // eslint-disable-line react-hooks/exhaustive-deps
   const autoRef = useRef(auto); autoRef.current = auto;
+  // Cible prioritaire (v1.70.1) : en combat auto, toucher un ennemi le désigne ; l'équipe le vise dès qu'elle peut.
+  const [focusId, setFocusId] = useState<string | null>(null);
+  const focusRef = useRef(focusId); focusRef.current = focusId;
   const speedRef = useRef(speed); speedRef.current = speed;
   const alive = useRef(true);
   const busy = useRef(false);
@@ -146,7 +148,6 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
         case 'damage': {
           const f = fx && e.source === actorId ? fx : fxFor(e.source);
           addVfx(e.target, `impact w-${f.weapon} e-${f.element}${e.crit ? ' crit' : ''}`, f.color);
-          if (e.crit) { setFlash(true); setTimeout(() => setFlash(false), 140); }
           { const t = s.units.find((u) => u.id === e.target); const big = !!t && e.amount > t.base.hp * 0.25; if (e.crit || big) doShake(e.crit && big ? 'hard' : 'soft'); }
           if (!soundOnce.has('hit:' + e.source)) { soundOnce.add('hit:' + e.source); playImpact(f, { crit: ev.some((x) => x.kind === 'damage' && x.source === e.source && x.crit), many: ev.filter((x) => x.kind === 'damage' && x.source === e.source).length > 1 }); }
           if (f.weapon === 'blunt' || e.crit) heavy.add(e.target);
@@ -289,7 +290,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
           force();
           return;
         }
-        await doAction(chooseAction(s, actor));
+        await doAction(chooseAction(s, actor, actor.side === 'ally' ? focusRef.current : null));
       }
       if (alive.current && s.outcome !== 'running') { await wait(500 / speedRef.current); finish(); }
     } finally { busy.current = false; }
@@ -309,7 +310,15 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
     void run();
   };
 
-  const onUnit = (u: Unit) => { if (targetable.has(u.id)) void act(u.id); };
+  const onUnit = (u: Unit) => {
+    if (targetable.has(u.id)) { void act(u.id); return; }
+    // Hors ciblage manuel : toucher un ennemi en fait la cible prioritaire (re-toucher l'annule).
+    if (u.side !== 'enemy' || !u.alive || s.outcome !== 'running') return;
+    play('tap');
+    if (focusId === u.id) { setFocusId(null); toast('Cible prioritaire annulée.'); return; }
+    setFocusId(u.id);
+    toast(`Cible prioritaire : ${u.name}. ${auto ? 'L’équipe la vise dès qu’elle peut.' : 'En AUTO, l’équipe la visera.'}`);
+  };
   // Pouvoir du Lien (le joueur agit lui-même) : ne consomme pas le tour du héros.
   const [lienOpen, setLienOpen] = useState(false);
   const castPower = async (p: LienPower) => {
@@ -346,13 +355,13 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
   const row = (sd: 'ally' | 'enemy', back: boolean) => side(sd).filter((u) => (back ? u.slot >= 3 : u.slot < 3)).sort((a, b) => a.slot - b.slot);
 
   const renderUnit = (u: Unit) => (
-    <UnitView key={u.id} u={u} vfx={vfx[u.id]} active={s.activeId === u.id} acting={acting === u.id} hit={hits.has(u.id)} heavy={heavyHits.has(u.id)}
+    <UnitView key={u.id} u={u} vfx={vfx[u.id]} focus={focusId === u.id && u.alive} active={s.activeId === u.id} acting={acting === u.id} hit={hits.has(u.id)} heavy={heavyHits.has(u.id)}
       targetable={targetable.has(u.id)} popups={popups[u.id] ?? []} onClick={() => onUnit(u)} onInfo={() => setInfoId(u.id)}
       edge={awaiting && active && targetable.has(u.id) && u.side !== active.side ? affinityEdge(active.affinity, u.affinity) : undefined} />
   );
 
   return (
-    <div ref={battleRef} className={`battle ${flash ? 'flash' : ''} ${shake ? `shake ${shake}` : ''} ${slowmo ? 'slowmo' : ''}`}>
+    <div ref={battleRef} className={`battle ${shake ? `shake ${shake}` : ''} ${slowmo ? 'slowmo' : ''}`}>
       <BattleBackdrop region={initial.info.region} />
       <div className="battle-top">
         <div className="row between">
@@ -417,7 +426,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
       <FxLayer items={fxItems} />
       {/* Tutoriel du combat : une seule bulle au premier combat ; AUTO au combat suivant (les affinités sont expliquées à la préparation). Bulles en haut : l'équipe reste visible. */}
       <Coach id="battle_skill" place="top" target=".battle-controls .skills" when={awaiting && !auto && phase === 'fight'} text="C’est ton tour : choisis une compétence en bas, puis touche un ennemi." />
-      <Coach id="battle_auto" place="top" target=".ctrl-col" when={secondFight && awaiting && !auto && phase === 'fight'} text="AUTO fait jouer l’équipe toute seule ; ×1 / ×2 / ×3 accélère le combat." />
+      <Coach id="battle_auto" place="top" target=".ctrl-col" when={secondFight && awaiting && !auto && phase === 'fight'} text="AUTO fait jouer l’équipe toute seule (touche un ennemi pour qu’elle le vise en priorité) ; ×1 / ×2 / ×3 accélère le combat." />
 
       <div className="battle-controls">
         {/* Hauteur de l'aide = plus longue description de l'équipe (mesurée une fois) : texte complet, sans saut d'écran. */}
@@ -635,7 +644,7 @@ function SkillInfoBody({ unit, sk, onLaunch }: { unit: Unit; sk: SkillDef; onLau
 
 const shortName = (n: string) => n.replace(/^(Le|La|Les|L’|L')\s*/i, '').split(' ')[0];
 
-function UnitView({ u, vfx, active, acting, hit, heavy, targetable, popups, onClick, onInfo, edge }: { u: Unit; vfx?: { id: number; cls: string; color: string }; active: boolean; acting: boolean; hit: boolean; heavy?: boolean; targetable: boolean; popups: Popup[]; onClick: () => void; onInfo: () => void; edge?: -1 | 0 | 1 }) {
+function UnitView({ u, vfx, focus, active, acting, hit, heavy, targetable, popups, onClick, onInfo, edge }: { u: Unit; vfx?: { id: number; cls: string; color: string }; focus?: boolean; active: boolean; acting: boolean; hit: boolean; heavy?: boolean; targetable: boolean; popups: Popup[]; onClick: () => void; onInfo: () => void; edge?: -1 | 0 | 1 }) {
   const sh = Math.min(1, shieldOf(u) / u.base.hp);
   // Appui long (0,45 s) : fiche de l'unité ; le toucher simple garde son rôle (cibler).
   const timer = useRef<number | undefined>(undefined);
@@ -646,7 +655,7 @@ function UnitView({ u, vfx, active, acting, hit, heavy, targetable, popups, onCl
   const has = (id: string) => u.alive && u.statuses.some((x) => x.status === id);
   const stCls = [has('freeze') && 'st-freeze', has('burn') && 'st-burn', has('poison') && 'st-poison', has('stun') && 'st-stun', has('taunt') && 'st-taunt', u.alive && sh > 0 && 'st-shield'].filter(Boolean).join(' ');
   return (
-    <button className={`unit ${u.side} ${u.alive ? '' : 'dead'} ${active ? 'active' : ''} ${acting ? 'acting' : ''} ${hit ? 'hit' : ''} ${targetable ? 'targetable' : ''} ${u.isBoss ? 'boss' : ''} ${heavy ? 'heavy' : ''} ${stCls}`} data-uid={u.id}
+    <button className={`unit ${u.side} ${u.alive ? '' : 'dead'} ${active ? 'active' : ''} ${acting ? 'acting' : ''} ${hit ? 'hit' : ''} ${targetable ? 'targetable' : ''} ${u.isBoss ? 'boss' : ''} ${heavy ? 'heavy' : ''} ${focus ? 'focus' : ''} ${stCls}`} data-uid={u.id}
       onClick={() => { if (longDone.current) { longDone.current = false; return; } onClick(); }}
       onPointerDown={startPress} onPointerUp={endPress} onPointerLeave={endPress} onPointerCancel={endPress}
       onContextMenu={(e) => { e.preventDefault(); if (e.nativeEvent instanceof MouseEvent && (e.nativeEvent as PointerEvent).pointerType !== 'touch') { window.clearTimeout(timer.current); onInfo(); } }}>
@@ -662,6 +671,7 @@ function UnitView({ u, vfx, active, acting, hit, heavy, targetable, popups, onCl
       {stCls.includes('st-stun') && <span className="u-stars" aria-hidden>✦ ✦ ✦</span>}
       {u.alive && u.flags.carapaceMax > 0 && <span className={`u-cara ${u.flags.carapace ? '' : 'broken'}`} title="Carapace">{u.flags.carapace || '✕'}</span>}
       {u.alive && u.isBoss && u.flags.enraged > 0 && <span className="u-rage" title="Enragé">ENRAGÉ</span>}
+      {focus && <span className="u-focus" aria-label="Cible prioritaire"><svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" strokeWidth="2" /><path d="M12 1v6M12 17v6M1 12h6M17 12h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg></span>}
       {edge === 1 && <span className="u-edge up">▲ +30 %</span>}
       {edge === -1 && <span className="u-edge down">▼ −20 %</span>}
       {vfx && <span key={vfx.id} className={`vfx ${vfx.cls}`} style={{ ['--vc' as string]: vfx.color }}><i /><i /><i /></span>}

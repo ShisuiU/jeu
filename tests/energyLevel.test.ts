@@ -34,4 +34,8 @@ describe('énergie et niveau de compte (v1.68.7)', () => {
     expect(payEnergy(s, 10, 1000)).toBe(true);
     expect(s.energy.current).toBe(130);
   });
+  it('plus de montée en boucle : dès le niveau 8, une barre pleine ne suffit plus pour un niveau (v1.70.1)', () => {
+    for (let L = 8; L <= 120; L++) expect(accountXpToNext(L), `niveau ${L}`).toBeGreaterThan(energyMax(L) * 10);
+    expect(accountXpToNext(30) / (energyMax(30) * 10)).toBeGreaterThan(3.5);
+  });
 });

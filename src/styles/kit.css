@@ -1,0 +1,91 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   KIT D'INTERFACE SPRITECOOK (v1.73.0) — pièces peintes générées à partir des maquettes des écrans
+   Héros, Invocation, Combats et Menu, appliquées dans tout le jeu :
+   titres d'écran, boutons, panneaux, barres de progression, cadres des cartes de héros, tuiles et icônes.
+   Les cadres extensibles utilisent border-image (9 tranches) pour garder les coins intacts.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Titre d'écran : plaque ornée centrée (une par onglet) ── */
+.theme-v2 .screen-header { background: linear-gradient(180deg, rgba(7,6,11,0.94), rgba(7,6,11,0.55) 75%, transparent); border-bottom: 0; box-shadow: none; justify-content: center; min-height: 58px; }
+.theme-v2 .screen-header::after { display: none; }
+.screen-header .back-btn { position: absolute; left: 10px; bottom: 10px; z-index: 2; }
+.theme-v2 .screen-header h1 { flex: 0 1 auto; margin: 0 auto; min-width: 52%; max-width: calc(100% - 110px); padding: 0 6px; height: 44px; line-height: 44px; text-align: center; font-size: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  border-style: solid; border-color: transparent; border-width: 0 40px; border-image: url('../assets/kit/title_summon.webp') 0 22% 0 22% fill / 0 40px stretch;
+  color: #f4dfa8; text-shadow: 0 1px 2px #000, 0 0 12px rgba(255,210,130,0.25); }
+.app[data-tab='collection'] .screen-header h1 { border-width: 0 34px; border-image: url('../assets/kit/title_heroes.webp') 0 16% 0 16% fill / 0 34px stretch; }
+.app[data-tab='combats'] .screen-header h1 { border-width: 0 60px; border-image: url('../assets/kit/title_combats.webp') 0 28% 0 28% fill / 0 60px stretch; height: 46px; line-height: 46px; }
+.app[data-tab='menu'] .screen-header h1 { border-width: 0 38px; border-image: url('../assets/kit/title_menu.webp') 0 19% 0 19% fill / 0 38px stretch; }
+
+/* ── Boutons : or peint (principal), pierre sombre bordée d'or (secondaire) ── */
+.theme-v2 .btn:not(.secondary):not(.danger) { background: none; box-shadow: none; border-style: solid; border-color: transparent; border-width: 0 16px; border-image: url('../assets/kit/btn_gold.webp') 0 14% 0 14% fill / 0 16px stretch; color: #2b1a06; text-shadow: 0 1px 0 rgba(255,240,200,0.5); border-radius: 0; }
+.theme-v2 .btn.secondary { background: none; box-shadow: none; border-style: solid; border-color: transparent; border-width: 0 13px; border-image: url('../assets/kit/pill_dark.webp') 0 10% 0 10% fill / 0 13px stretch; color: #f1e4c6; border-radius: 0; }
+.theme-v2 .btn.small:not(.secondary):not(.danger) { border-width: 0 11px; border-image-width: 0 11px; }
+.theme-v2 .btn.small.secondary { border-width: 0 10px; border-image-width: 0 10px; }
+.theme-v2 .btn:disabled { filter: grayscale(0.75) brightness(0.65); }
+
+/* ── Panneaux : pierre sombre au cadre doré ── */
+.theme-v2 .panel { background: none; box-shadow: none; border-style: solid; border-color: transparent; border-width: 10px 12px; border-image: url('../assets/kit/stat.webp') 18% 8% 18% 8% fill / 10px 12px stretch; border-radius: 0; padding: 4px 4px; }
+.theme-v2 .panel::before, .theme-v2 .panel::after { display: none; }
+
+/* ── Barres de progression peintes ── */
+.progress { height: 9px; border-radius: 0; background: url('../assets/kit/bar_track.webp') center / 100% 100% no-repeat; box-shadow: none; border: 0; overflow: hidden; }
+.progress > div { height: 100%; border-radius: 0; background: url('../assets/kit/bar_fill.webp') left center / 100% 100% no-repeat !important; box-shadow: 0 0 6px rgba(255,200,100,0.35); }
+
+/* ── Cartes de héros : cadre peint selon la rareté ── */
+.hero-card { aspect-ratio: 300 / 348; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: #07060b; overflow: visible; }
+.hero-card .art { inset: 8% 8% 22% 8%; overflow: hidden; }
+.hero-card .shade { inset: auto 8% 22% 8%; height: 26%; }
+.hero-card .hc-frame { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: url('../assets/kit/card_common.webp') center / 100% 100% no-repeat; }
+.hero-card.uncommon .hc-frame { background-image: url('../assets/kit/card_uncommon.webp'); }
+.hero-card.rare .hc-frame { background-image: url('../assets/kit/card_rare.webp'); }
+.hero-card.epic .hc-frame { background-image: url('../assets/kit/card_epic.webp'); }
+.hero-card.legendary .hc-frame { background-image: url('../assets/kit/card_legendary.webp'); }
+.hero-card.mythic .hc-frame { background-image: url('../assets/kit/card_mythic.webp'); }
+.hero-card .lvl { z-index: 2; top: 4.5%; left: 4.5%; width: 19%; aspect-ratio: 1; height: auto; padding: 0; display: grid; place-items: center; border: 0; border-radius: 50%; background: radial-gradient(circle, #1a1520, #07060b); font-size: 9.5px; line-height: 1; color: #f4dfa8; }
+.hero-card .hc-id { z-index: 2; top: 4.5%; right: 4.5%; }
+.hero-card .hc-id > :first-child { border-radius: 50%; background: radial-gradient(circle, #1a1520, #07060b); padding: 3px; box-sizing: content-box; }
+.hero-card .meta { z-index: 2; left: 9%; right: 9%; bottom: 5%; }
+.hero-card .hc-line { position: absolute; left: 0; right: 0; bottom: 270%; justify-content: center; }
+.hero-card .name { text-align: center; font-size: 10.5px; color: #f4e6c8; -webkit-line-clamp: 1; }
+.hero-card.selected { outline: 2px solid var(--gold-hi); outline-offset: 1px; }
+
+/* ── Héros : les quatre lieux en tuiles peintes ── */
+.hp-tile.kit { position: relative; height: auto; aspect-ratio: 1; padding: 0; gap: 0; background: none !important; border: 0 !important; box-shadow: none !important; }
+.hp-tile.kit img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.6)); }
+.hp-tile.kit span:not(.badge-dot) { position: absolute; left: 0; right: 0; bottom: 9%; z-index: 1; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 700; font-size: 13px; color: #f4e6c8; text-shadow: 0 1px 3px #000, 0 0 6px #000; }
+.hp-tile.kit .badge-dot { z-index: 2; top: 6%; right: 6%; }
+
+/* ── Combats : cadres dorés peints et médaillons ── */
+.combat-card { border-radius: 0 !important; }
+.combat-card .cc-frame { position: absolute; inset: 0; z-index: 2; pointer-events: none; border-style: solid; border-color: transparent; border-width: 14px 18px; border-image: url('../assets/kit/frame_wide.webp') 18% 6% 18% 6% / 14px 18px stretch; }
+.combat-card.compact .cc-frame { border-width: 14px; border-image: url('../assets/kit/frame_square.webp') 12% 10% 12% 10% / 14px stretch; }
+.combat-card .cc-medal { position: relative; z-index: 3; width: 44px; height: 44px; flex: none; margin-left: 4px; filter: drop-shadow(0 2px 4px #000); }
+.combat-card .cc-medal.sm { width: 24px; height: 24px; margin: 0 5px -6px 0; vertical-align: -6px; }
+.combat-card .cc-text { position: relative; z-index: 3; }
+.combat-card > svg, .combat-card .badge-dot { z-index: 3; }
+
+/* ── Menu : carte de profil, statistiques et tuiles peintes ── */
+.profile-card { background: none !important; border-style: solid !important; border-color: transparent !important; border-width: 12px 14px !important; border-image: url('../assets/kit/stat.webp') 18% 8% 18% 8% fill / 12px 14px stretch !important; border-radius: 0 !important; box-shadow: none !important; }
+.pc-stats > div { display: grid !important; grid-template-columns: 26px 1fr; grid-template-rows: auto auto; align-items: center; column-gap: 5px; padding: 6px 8px !important; background: none !important; border-style: solid !important; border-color: transparent !important; border-width: 6px 8px !important; border-image: url('../assets/kit/stat.webp') 18% 8% 18% 8% fill / 6px 8px stretch !important; border-radius: 0 !important; text-align: left; }
+.pc-stats > div img { grid-row: 1 / span 2; width: 26px; height: 26px; object-fit: contain; }
+.pc-stats > div span { font-size: 10.5px; line-height: 1.1; }
+.pc-stats > div b { font-size: 13.5px; line-height: 1.1; color: #f4dfa8; }
+.menu-title { display: flex; align-items: center; gap: 10px; justify-content: center; text-align: center; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 17px; font-weight: 700; letter-spacing: 0.02em; text-transform: none; color: #f2ddb0; margin: 12px 2px 8px; }
+.menu-title::before, .menu-title::after { content: ''; flex: 1; height: 10px; background: url('../assets/kit/divider.webp') center / 100% 100% no-repeat; opacity: 0.9; }
+.menu-tile.kit { background: none !important; border-style: solid !important; border-color: transparent !important; border-width: 10px !important; border-image: url('../assets/kit/tile.webp') 14% fill / 10px stretch !important; border-radius: 0 !important; box-shadow: none !important; padding: 0 !important; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 700; font-size: 13px; color: #f1e4c6; }
+.menu-tile.kit .mt-ico { width: 40px; height: 40px; object-fit: contain; filter: drop-shadow(0 2px 3px #000); }
+
+/* ── Invocation : onglets d'éclats, panneau de l'appel, jauge et boutons peints ── */
+.shard-tab { background: none !important; border-style: solid !important; border-color: transparent !important; border-width: 9px !important; border-image: url('../assets/kit/tab.webp') 14% fill / 9px stretch !important; border-radius: 0 !important; box-shadow: none !important; padding: 0 2px 2px !important; }
+.shard-tab.on { border-image-source: url('../assets/kit/tab_on.webp') !important; }
+.shard-tab .st-ico { height: 30px; width: auto; filter: drop-shadow(0 0 5px var(--bc)); }
+.altar-caption { padding: 22px 16px 14px; text-align: center; border-style: solid; border-color: transparent; border-width: 28px 40px 16px; border-image: url('../assets/kit/panel_banner.webp') 22% 12% 14% 12% fill / 28px 40px 16px stretch; }
+.altar-caption h2 { color: #f4dfa8; }
+.pity-bar { height: 12px !important; border-radius: 0 !important; background: url('../assets/kit/pity_track.webp') center / 100% 100% no-repeat !important; border: 0 !important; overflow: hidden; }
+.pity-bar > div { background: url('../assets/kit/pity_fill.webp') left center / 100% 100% no-repeat !important; border-radius: 0 !important; margin: 2px 4px; height: calc(100% - 4px) !important; }
+.theme-v2 .summon-btn.kit-s1, .theme-v2 .summon-btn.kit-s10 { min-height: 66px; border-width: 0 34px; padding-left: 26px; border-image: url('../assets/kit/btn_summon1.webp') 0 24% 0 24% fill / 0 34px stretch; color: #2b1a06; }
+.theme-v2 .summon-btn.kit-s10 { border-image-source: url('../assets/kit/btn_summon10.webp'); }
+.summon-btn small { color: #3a2408; }
+/* Titres longs : la plaque s'élargit et le texte rétrécit un peu au lieu d'être coupé. */
+.theme-v2 .screen-header h1 { font-size: clamp(14px, 4.3vw, 18px); letter-spacing: 0.03em; max-width: calc(100% - 96px); padding: 0 2px; }
+.theme-v2 .screen-header h1 { border-width: 0 32px; border-image-width: 0 32px; }

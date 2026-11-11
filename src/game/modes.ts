@@ -1,7 +1,7 @@
 import { CHAPTERS, DIFFICULTIES, STAGE_BY_ID, type DialogueLine, type DifficultyId, type WaveEnemy } from '../data/campaign';
 import { GUILD_BOSS, GUILD_TIERS } from '../data/guild';
 import { addPending, triesLeft, useTry } from './guild';
-import { DUNGEON_BY_ID, DUNGEON_FLOORS, DUNGEON_GEAR_BONUS, dungeonEnergy, dungeonRewardMult, dungeonWaves, forgeStarRange, rollForgeStars } from '../data/dungeons';
+import { DUNGEON_BY_ID, DUNGEON_FLOORS, DUNGEON_GEAR_BONUS, dungeonEnergy, dungeonHeroXp, dungeonReward, dungeonWaves, forgeStarRange, rollForgeStars } from '../data/dungeons';
 import { dungeonBest, dungeonFloorCheck, setDungeonBest } from './dungeons';
 import { TOWER_FLOORS, towerReward, towerWaves } from '../data/tower';
 import { BOSS_TIERS, DAMAGE_CHESTS, WORLD_BOSS } from '../data/worldBoss';
@@ -110,10 +110,10 @@ export function resolveMode(s: SaveData, spec: BattleSpec): ModeInfo {
     case 'dungeon': {
       const d = DUNGEON_BY_ID[spec.dungeonId];
       const diff = spec.difficulty ?? 'normal';
-      const bonus = dungeonBonus(s.time.highWater) * dungeonRewardMult(diff);
+      const bonus = dungeonBonus(s.time.highWater);
       return {
         title: `${d.name} · Étage ${spec.floor}${diff !== 'normal' ? ` · ${DIFFICULTIES[diff].name}` : ''}`, subtitle: d.description, region: d.region ?? 'valcrest', waves: toSetups(dungeonWaves(d, spec.floor, diff)),
-        cost: { kind: 'energy', amount: dungeonEnergy(spec.floor, diff) }, rewardPreview: scaleReward(d.reward(spec.floor), bonus), rewardLabel: dungeonBonus(s.time.highWater) > 1 ? `Récompenses (bonus d’événement ×${dungeonBonus(s.time.highWater)})` : diff !== 'normal' ? `Récompenses (${DIFFICULTIES[diff].name} ×${dungeonRewardMult(diff)})` : 'Récompenses',
+        cost: { kind: 'energy', amount: dungeonEnergy(spec.floor, diff) }, rewardPreview: scaleReward(dungeonReward(d, spec.floor, diff), bonus), rewardLabel: dungeonBonus(s.time.highWater) > 1 ? `Récompenses (bonus d’événement ×${dungeonBonus(s.time.highWater)})` : diff !== 'normal' ? `Récompenses (${DIFFICULTIES[diff].name})` : 'Récompenses',
         notes: [d.gear ? (() => { const [lo, hi] = forgeStarRange(spec.floor, diff); return `Équipement garanti : ${lo === hi ? lo : `${lo} à ${hi}`} étoiles`; })() : ''].filter(Boolean), firstTime: dungeonBest(s, d.id, diff) < spec.floor,
       };
     }
@@ -233,7 +233,7 @@ export function applyMode(s: SaveData, spec: BattleSpec, o: Outcome, now: number
       s.stats.battlesWon++; track(s, 'battleWin'); track(s, 'dungeonWin');
       res.firstClear = spec.floor > dungeonBest(s, d.id, diff);
       setDungeonBest(s, d.id, diff, spec.floor);
-      res.reward = scaleReward(d.reward(spec.floor), dungeonBonus(now) * dungeonRewardMult(diff));
+      res.reward = scaleReward(dungeonReward(d, spec.floor, diff), dungeonBonus(now));
       applyReward(s, res.reward);
       if (d.gear && s.equipment.length < GEAR_INVENTORY_CAP) {
         const gf = Math.min(DUNGEON_FLOORS, spec.floor + DUNGEON_GEAR_BONUS[diff]);
@@ -242,7 +242,7 @@ export function applyMode(s: SaveData, spec: BattleSpec, o: Outcome, now: number
         const g: GearItem = generateGear(r, pickWeighted(r, d.gear(gf).filter(([, w]) => w > 0)), now, undefined, set, rollForgeStars(r, spec.floor, diff));
         s.equipment.push(g); res.gear.push(g);
       }
-      res.heroXp = heroXpFor(s, o.participants, Math.round((80 + spec.floor * 30) * dungeonRewardMult(diff)));
+      res.heroXp = heroXpFor(s, o.participants, dungeonHeroXp(spec.floor, diff));
       res.stars = 0;
       return res;
     }

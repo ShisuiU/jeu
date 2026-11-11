@@ -15,6 +15,7 @@ export function HeroCard({ heroId, level, owned = true, selected, onClick, badge
     <Tag className={`hero-card ${d.rarity} ${owned ? '' : 'unowned'} ${selected ? 'selected' : ''}`} style={{ ['--rc' as string]: r.color }} onClick={onClick}>
       <div className="art"><HeroArt heroId={heroId} /></div>
       <div className="shade" />
+      <i className="hc-frame" aria-hidden />
       {level !== undefined && owned && <span className="lvl">Nv {level}</span>}
       {badge && <span className="lvl" style={{ left: 'auto', right: 4, top: 48 }}>{badge}</span>}
       <span className="hc-id"><AffinityIcon id={d.affinity} size={18} /><span className="hc-role"><RoleIcon id={d.role} size={12} /></span></span>

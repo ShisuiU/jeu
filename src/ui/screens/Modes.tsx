@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
-import { DUNGEONS, DUNGEON_BY_ID, DUNGEON_DIFF_OPEN, DUNGEON_FLOORS, dungeonEnergy, dungeonLevel, dungeonPower, dungeonRewardMult, forgeStarRange } from '../../data/dungeons';
+import { DUNGEONS, DUNGEON_BY_ID, DUNGEON_DIFF_OPEN, DUNGEON_FLOORS, dungeonEnergy, dungeonLevel, dungeonPower, dungeonReward, forgeStarRange } from '../../data/dungeons';
 import { DIFFICULTIES, DIFFICULTY_ORDER, type DifficultyId } from '../../data/campaign';
 import { dungeonBest, dungeonDiffOpen, dungeonTopDiff } from '../../game/dungeons';
 import { usePersisted } from '../components/ListControls';
-import { scaleReward } from '../../game/modes';
 import { TOWER_FLOORS, towerLevel, towerReward, towerStatMult } from '../../data/tower';
 import { sweepTower, towerSweepMax } from '../../game/towerSweep';
 import type { Reward } from '../../data/resources';
@@ -80,7 +79,6 @@ export function Dungeon({ dungeonId }: { dungeonId: string }) {
   const chosen = pick[d.id] ?? dungeonTopDiff(save, d.id);
   const diff: DifficultyId = dungeonDiffOpen(save, d.id, chosen) ? chosen : 'normal';
   const best = dungeonBest(save, d.id, diff);
-  const mult = dungeonRewardMult(diff);
   return (
     <Screen title={d.name}>
       <div className="mode-hero" style={{ ['--mc' as string]: d.color }}>
@@ -102,7 +100,7 @@ export function Dungeon({ dungeonId }: { dungeonId: string }) {
             onClick={() => { if (!open) { toast(`${DIFFICULTIES[k].name} : termine d’abord le ${DIFFICULTIES[prev].name} (étage ${DUNGEON_DIFF_OPEN}).`); return; } setPick({ ...pick, [d.id]: k }); }}>{DIFFICULTIES[k].name}</button>;
         })}
       </div>
-      {diff !== 'normal' && <p className="faint" style={{ textAlign: 'center', margin: '0 0 10px' }}>Plus dur que l’étage {DUNGEON_FLOORS} en {DIFFICULTIES[DIFFICULTY_ORDER[DIFFICULTY_ORDER.indexOf(diff) - 1]].name} · récompenses ×{mult}{d.gear ? ' · meilleur équipement' : ''}</p>}
+      {diff !== 'normal' && <p className="faint" style={{ textAlign: 'center', margin: '0 0 10px' }}>Plus dur que l’étage {DUNGEON_FLOORS} en {DIFFICULTIES[DIFFICULTY_ORDER[DIFFICULTY_ORDER.indexOf(diff) - 1]].name} · meilleures récompenses{d.gear ? ' et meilleur équipement' : ''}</p>}
       <div className="stage-path">
         {Array.from({ length: DUNGEON_FLOORS }, (_, i) => i + 1).map((f) => {
           const open = f <= best + 1;
@@ -114,7 +112,7 @@ export function Dungeon({ dungeonId }: { dungeonId: string }) {
                 <div className="sn-name">Étage {f}</div>
                 <div className="faint">Ennemis niv. {dungeonLevel(f, diff)}{dungeonPower(f, diff) > 1 ? ` · puissance +${Math.round((dungeonPower(f, diff) - 1) * 100)} %` : ''} · <Icon.energy size={11} /> {dungeonEnergy(f, diff)}{d.gear && (() => { const [lo, hi] = forgeStarRange(f, diff); return <> · <span className="forge-stars">★ {lo === hi ? lo : `${lo} à ${hi}`}</span></>; })()}</div>
               </div>
-              <span className="row" style={{ gap: 4 }}>{rewardMainIcon(scaleReward(d.reward(f), mult), 18)}</span>
+              <span className="row" style={{ gap: 4 }}>{rewardMainIcon(dungeonReward(d, f, diff), 18)}</span>
               {!open && <Icon.lock size={16} />}
             </button>
           );

@@ -122,3 +122,20 @@ describe('4 donjons d’équipement (v1.71.0)', () => {
     expect(canStart(m, { mode: 'dungeon', dungeonId: 'forge', floor: 1 }).ok).toBe(false);
   });
 });
+
+describe('récompenses des donjons par difficulté (v1.73.0)', () => {
+  it('l’étage 1 d’une difficulté rapporte plus que l’étage 15 de la précédente, et ça grandit d’étage en étage', async () => {
+    const { DUNGEONS, dungeonReward, dungeonHeroXp } = await import('../src/data/dungeons');
+    const total = (r: Record<string, number | undefined>) => Object.values(r).reduce<number>((a, v) => a + (v ?? 0), 0);
+    for (const d of DUNGEONS) {
+      for (let i = 1; i < DIFFICULTY_ORDER.length; i++) {
+        const prev = DIFFICULTY_ORDER[i - 1], cur = DIFFICULTY_ORDER[i];
+        const lastPrev = dungeonReward(d, DUNGEON_FLOORS, prev), first = dungeonReward(d, 1, cur);
+        for (const k of Object.keys(lastPrev)) expect((first as Record<string, number>)[k], `${d.id} ${cur} ${k}`).toBeGreaterThanOrEqual((lastPrev as Record<string, number>)[k]);
+        expect(total(first as Record<string, number>)).toBeGreaterThan(total(lastPrev as Record<string, number>));
+        expect(dungeonHeroXp(1, cur)).toBeGreaterThan(dungeonHeroXp(DUNGEON_FLOORS, prev));
+        expect(total(dungeonReward(d, DUNGEON_FLOORS, cur) as Record<string, number>)).toBeGreaterThan(total(first as Record<string, number>));
+      }
+    }
+  });
+});

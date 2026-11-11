@@ -89,3 +89,64 @@
 /* Titres longs : la plaque s'élargit et le texte rétrécit un peu au lieu d'être coupé. */
 .theme-v2 .screen-header h1 { font-size: clamp(14px, 4.3vw, 18px); letter-spacing: 0.03em; max-width: calc(100% - 96px); padding: 0 2px; }
 .theme-v2 .screen-header h1 { border-width: 0 32px; border-image-width: 0 32px; }
+
+/* ═══ v1.73.1 — kits Campagne, Préparation et Combat ═══ */
+/* Bouton retour rond peint (tous les écrans). */
+.theme-v2 .back-btn { width: 42px; height: 42px; border: 0; border-radius: 50%; background: url('../assets/kit/c_back.webp') center / 100% 100% no-repeat; box-shadow: none; color: transparent; }
+.theme-v2 .back-btn svg { opacity: 0; }
+
+/* Onglets (difficultés, etc.) : plaques sombres, l'onglet choisi s'allume en or. */
+.theme-v2 .seg { border-bottom: 0; gap: 4px; }
+.theme-v2 .seg button { height: 38px; border-style: solid; border-color: transparent; border-width: 0 12px; border-image: url('../assets/kit/c_dtab.webp') 0 12% 0 12% fill / 0 12px stretch; color: #b9ad98; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 15px; font-weight: 700; padding: 0 2px; }
+.theme-v2 .seg button.on { border-image-source: url('../assets/kit/c_dtab_on.webp'); color: #ffe6a8; }
+.theme-v2 .seg button.on::after { display: none; }
+.theme-v2 .seg button.locked { opacity: 0.55; }
+
+/* Niveaux de campagne et étages de donjon : plaques peintes (or, boss rouge au crâne, verrouillée au cadenas). */
+.stage-path::before { display: none; }
+.stage-path { padding-left: 0; gap: 6px; }
+.theme-v2 .stage-node { min-height: 58px; padding: 0 30px 0 0 !important; gap: 10px; background: none !important; box-shadow: none !important; border-style: solid !important; border-color: transparent !important; border-width: 0 40px 0 64px !important; border-image: url('../assets/kit/c_row.webp') 0 7% 0 15% fill / 0 40px 0 64px stretch !important; border-radius: 0 !important; opacity: 1; }
+.theme-v2 .stage-node.boss { border-image-source: url('../assets/kit/c_row_boss.webp') !important; }
+.theme-v2 .stage-node.locked { border-image-source: url('../assets/kit/c_row_lock.webp') !important; opacity: 1; }
+.theme-v2 .stage-node .sn-idx { position: absolute; left: -54px; width: 44px; height: 44px; margin: 0; border: 0 !important; background: none !important; box-shadow: none !important; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 22px; color: #f4dfa8; }
+.theme-v2 .stage-node.boss .sn-idx, .theme-v2 .stage-node.locked .sn-idx { visibility: hidden; }
+.theme-v2 .stage-node.locked > svg { display: none; }
+.theme-v2 .stage-node.locked .sn-name, .theme-v2 .stage-node.locked .faint { opacity: 0.55; }
+.theme-v2 .stage-node .sn-name { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 16px; font-weight: 700; color: #f2e6cd; }
+.theme-v2 .stage-node > *:not(.sn-idx) { position: relative; z-index: 1; }
+
+/* Carte du chapitre : cadre doré peint. */
+.theme-v2 .chapter-card { border: 0 !important; overflow: visible; }
+.theme-v2 .chapter-card::after { content: ''; position: absolute; inset: -6px; z-index: 3; pointer-events: none; border-style: solid; border-color: transparent; border-width: 18px 22px; border-image: url('../assets/kit/c_banner.webp') 14% 5% 14% 5% / 18px 22px stretch; }
+
+/* Préparation : cases de l'équipe en cadres peints, gros bouton « Combattre » doré, « Répéter » en pierre. */
+.theme-v2 .mini-slot { border: 0 !important; border-radius: 0 !important; background: url('../assets/kit/p_slot_empty.webp') center / 100% 100% no-repeat; }
+.theme-v2 .mini-slot > .faint { opacity: 0; }
+.theme-v2 .foe-art { border: 0 !important; border-radius: 0 !important; }
+.theme-v2 .foe-art::after { content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none; background: url('../assets/kit/p_tile_sm.webp') center / 100% 100% no-repeat; }
+.theme-v2 .foe.boss .foe-art { box-shadow: 0 0 12px rgba(255,61,110,0.5); }
+.theme-v2 .btn.fight-btn:not(.secondary) { min-height: 60px; border-width: 0 54px; padding-left: 30px; border-image: url('../assets/kit/p_btn_fight.webp') 0 30% 0 30% fill / 0 54px stretch; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 21px; letter-spacing: 0.06em; font-variant: small-caps; color: #2b1a06; }
+.theme-v2 .btn.secondary.prep-sweep { min-height: 60px; border-width: 0 22px; border-image: url('../assets/kit/p_btn_repeat.webp') 0 18% 0 18% fill / 0 22px stretch; padding-left: 26px; }
+.prep-lead.on { display: inline-block; padding: 2px 12px; background: url('../assets/kit/p_chef.webp') center / 100% 100% no-repeat; color: #2b1a06 !important; font-weight: 800; }
+
+/* Combat : barres de vie et de tour peintes, commandes et compétences dans des cadres dorés. */
+.u-hp { height: 8px; border: 0 !important; border-radius: 0 !important; background: url('../assets/kit/b_hp_track.webp') center / 100% 100% no-repeat !important; }
+.unit.ally .u-hp > div:first-child { background: url('../assets/kit/b_hp_green.webp') left center / 100% 100% no-repeat !important; }
+.unit.enemy .u-hp > div:first-child { background: url('../assets/kit/b_hp_red.webp') left center / 100% 100% no-repeat !important; }
+.u-tm { height: 4px; border-radius: 0 !important; background: url('../assets/kit/b_tm_track.webp') center / 100% 100% no-repeat !important; }
+.u-tm > div { background: url('../assets/kit/b_tm_fill.webp') left center / 100% 100% no-repeat !important; }
+.theme-v2 .u-art { border-radius: 0 !important; }
+.theme-v2 .u-art::before { content: ''; position: absolute; inset: 0; z-index: 3; pointer-events: none; border-style: solid; border-color: transparent; border-width: 7px; border-image: url('../assets/kit/p_slot_gold.webp') 8% / 7px stretch; }
+.theme-v2 .ctrl { border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: none !important; border-style: solid !important; border-color: transparent !important; border-width: 8px !important; border-image: url('../assets/kit/p_tile_sm.webp') 14% fill / 8px stretch !important; color: #f1e4c6; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 14px; }
+.theme-v2 .ctrl.on { border-image-source: url('../assets/kit/c_dtab_on.webp') !important; border-image-slice: 22% 12% 22% 12% fill !important; color: #ffe6a8; }
+.theme-v2 .lien-btn { background: url('../assets/kit/b_rbtn.webp') center / 112% 112% no-repeat !important; border: 0 !important; box-shadow: none !important; padding: 7px; }
+.theme-v2 .lien-btn.full { background-image: url('../assets/kit/b_sk_ult.webp') !important; }
+.theme-v2 .skill-card { background: none !important; box-shadow: none !important; border-style: solid !important; border-color: transparent !important; border-width: 0 12px !important; border-image: url('../assets/kit/c_dtab.webp') 0 12% 0 12% fill / 0 12px stretch !important; border-radius: 0 !important; padding: 4px 2px !important; }
+.theme-v2 .skill-card.ultimate { border-image-source: url('../assets/kit/c_dtab_on.webp') !important; }
+.theme-v2 .skill-card.sel { transform: translateY(-3px); filter: drop-shadow(0 0 8px rgba(255,210,120,0.6)); box-shadow: none !important; }
+/* « Combattre » : moins de bordure peinte, le texte ne passe plus sur les épées ; « Répéter » plus étroit. */
+.theme-v2 .btn.fight-btn:not(.secondary) { border-width: 0 34px 0 46px; border-image-width: 0 34px 0 46px; border-image-slice: 0 22% 0 26% fill; padding: 0 2px; font-size: 18px; }
+.theme-v2 .btn.secondary.prep-sweep { flex: 0 0 auto; padding: 0 2px 0 18px; border-width: 0 14px 0 20px; border-image-width: 0 14px 0 20px; font-size: 13px; }
+.theme-v2 .btn.fight-btn:not(.secondary) { padding-left: 10px; color: #2b1a06; }
+.theme-v2 .btn.secondary.prep-sweep > svg { display: none; }
+.theme-v2 .btn.secondary.prep-sweep { padding-left: 30px; }

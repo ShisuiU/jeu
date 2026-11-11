@@ -558,6 +558,14 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.73.1 — Kits SpriteCook : Campagne, Préparation, Combat
+
+Trois nouvelles maquettes et leurs kits (43 pièces peintes) :
+- **bouton retour** rond peint sur tous les écrans ; **onglets** (difficultés…) en plaques sombres, l'onglet choisi s'allume en or ;
+- **Campagne et donjons** : chaque niveau sur une plaque peinte (or ; rouge au crâne pour le boss ; grise au cadenas si verrouillé) ; carte du chapitre dans un cadre doré ;
+- **Préparation** : cases de l'équipe et ennemis dans des cadres peints, gros bouton « Combattre » doré aux épées croisées, « Répéter » en pierre, ruban « Chef » ;
+- **Combat** : barres de vie (verte pour l'équipe, rouge pour les ennemis) et de tour peintes, cartes des combattants cerclées d'or, boutons AUTO et vitesse, jauge du Lien et compétences dans des cadres dorés (l'ultime en or).
+
 ## ✅ Version 1.73.0 — Kit d'interface SpriteCook dans tout le jeu, récompenses des donjons
 
 - **Quatre nouvelles maquettes SpriteCook** (Héros, Invocation, Combats, Menu), dans le même style que l'accueil, et leurs kits de pièces peintes (61 pièces) appliqués dans le jeu :

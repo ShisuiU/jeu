@@ -78,3 +78,6 @@ export const useUI = create<UIState>((set, get) => ({
   },
   dismiss: (id) => set({ toasts: get().toasts.filter((t) => t.id !== id) }),
 }));
+
+// Vérification visuelle automatique : avec « ?qa » dans l'adresse, la navigation est accessible aux scripts de test.
+if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('qa')) (window as unknown as { __ui: typeof useUI }).__ui = useUI;

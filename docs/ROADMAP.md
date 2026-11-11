@@ -558,6 +558,11 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.72.3 — Accueil en pièces séparées (plein écran sur tous les téléphones)
+
+- Le décor de la maquette, **refait par SpriteCook sans aucun bouton**, remplit maintenant tout l'écran quelle que soit sa hauteur (plus de grand ciel vide en haut sur les iPhone allongés).
+- Les six cadres d'icônes peintes et le panneau Campagne sont devenus des **pièces séparées** (tirées de la maquette, textes effacés) : les boutons se rangent juste sous la barre du haut, comme sur la maquette, et le panneau se pose au-dessus de la barre du bas ; les textes et points rouges restent écrits par le jeu.
+
 ## ✅ Version 1.72.2 — Accueil : plus de bande noire sur les grands iPhone
 
 - Sur les téléphones plus hauts que la maquette (iPhone Pro Max, etc.), une grande bande noire restait entre la barre du haut et le décor. Le ciel d'orage est maintenant prolongé au-dessus de l'image (ciel peint assorti, fondu sans raccord), quelle que soit la hauteur de l'écran.

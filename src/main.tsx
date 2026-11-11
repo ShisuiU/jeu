@@ -18,6 +18,7 @@ import './styles/summon.css';
 import './styles/theme-v2.css';
 import './styles/desktop.css';
 import './styles/home2.css';
+import './styles/kit.css';
 import App from './App';
 import { setupPWA } from './pwa';
 import { fixViewport } from './viewport';

@@ -558,6 +558,16 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.73.0 — Kit d'interface SpriteCook dans tout le jeu, récompenses des donjons
+
+- **Quatre nouvelles maquettes SpriteCook** (Héros, Invocation, Combats, Menu), dans le même style que l'accueil, et leurs kits de pièces peintes (61 pièces) appliqués dans le jeu :
+  - **titres d'écran** sur une plaque ornée (une par onglet), **boutons** dorés et pierre sombre, **panneaux** à cadre doré, **barres de progression** peintes ;
+  - **cartes de héros** dans un cadre peint selon la rareté (Commun gris, Peu commun vert, Rare bleu, Épique violet, Légendaire or, Mythique rouge) ;
+  - Héros : les quatre lieux en tuiles peintes ; Invocation : onglets d'éclats peints, panneau de l'appel, jauge et boutons d'appel dorés ; Combats : cadres dorés et médaillons par mode ; Menu : carte de profil, statistiques avec icônes et tuiles peintes, séparateurs ornés.
+- **Donjons : récompenses par difficulté** : comme les ennemis, chaque difficulté reprend là où la précédente s'arrête. L'étage 1 en Difficile rapporte maintenant plus que l'étage 15 en Normal (base de l'étage 15, ×1,1 → ×1,6 en Difficile, ×1,7 → ×2,4 en Expert, ×2,5 → ×3,5 en Cauchemar), expérience des héros comprise.
+- **Barre du haut** : chiffres des compteurs dans une police nette, compteur d'énergie aligné avec l'or et les cristaux (le minuteur passe dessous sans le décaler).
+- Barre du bas : plus de carré noir autour du cristal d'Invocation quand l'onglet est ouvert.
+
 ## ✅ Version 1.72.4 — Accueil : kit d'interface SpriteCook complet
 
 Toutes les pièces de l'accueil viennent maintenant du **kit d'interface généré par SpriteCook** à partir de la maquette (22 composants, deux fois plus détaillés) :

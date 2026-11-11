@@ -1,3 +1,20 @@
+import icBag from '../../assets/kit/ic_bag.webp';
+import icCodex from '../../assets/kit/ic_codex.webp';
+import icHand from '../../assets/kit/ic_hand.webp';
+import icBanner from '../../assets/kit/ic_banner.webp';
+import icTrophy from '../../assets/kit/ic_trophy.webp';
+import icSave from '../../assets/kit/ic_save.webp';
+import icGear from '../../assets/kit/ic_gear.webp';
+import icHelp from '../../assets/kit/ic_help.webp';
+import icHero from '../../assets/kit/ic_hero.webp';
+import icBook from '../../assets/kit/ic_book.webp';
+import icTower from '../../assets/kit/ic_tower.webp';
+import icLaurel from '../../assets/kit/ic_laurel.webp';
+import icSwords from '../../assets/kit/ic_swords.webp';
+import icCrystal from '../../assets/kit/ic_crystal.webp';
+// Icônes peintes du kit SpriteCook (v1.73.0).
+const TILE_ICON: Record<string, string> = { 'Sac': icBag, 'Codex': icCodex, 'Amis': icHand, 'Clan': icBanner, 'Classements': icTrophy, 'Sauvegarde et compte': icSave, 'Paramètres': icGear, 'Modération': icHelp };
+const STAT_ICON: Record<string, string> = { 'Héros': icHero, 'Histoire': icBook, 'Tour': icTower, 'Arène': icLaurel, 'Victoires': icSwords, 'Invocations': icCrystal };
 import { cloudWanted, useAccount } from '../../cloud/account';
 import { isUnlocked } from '../../game/unlocks';
 import { useGame } from '../../state/store';
@@ -49,8 +66,8 @@ export function Menu() {
             {g.items.map((e) => {
               const I = Icon[e.icon] as (p: { size?: number }) => JSX.Element;
               return (
-                <button key={e.label} className="menu-tile" onClick={() => push(e.route)}>
-                  <I size={24} />
+                <button key={e.label} className="menu-tile kit" onClick={() => push(e.route)}>
+                  {TILE_ICON[e.label] ? <img className="mt-ico" src={TILE_ICON[e.label]} alt="" /> : <I size={24} />}
                   <span>{e.label}</span>
                   {e.dot && <span className="badge-dot" style={{ top: 8, right: 10 }} />}
                 </button>
@@ -97,7 +114,7 @@ function Profile() {
         <div className="faint">Le Lien · niveau {save.profile.level}</div>
       </div>
       <div className="pc-stats">
-        {stats.map(([k, v]) => <div key={k}><b>{v}</b><span>{k}</span></div>)}
+        {stats.map(([k, v]) => <div key={k}><img src={STAT_ICON[k]} alt="" /><span>{k}</span><b>{v}</b></div>)}
       </div>
       {edit != null && (
         <Modal onClose={() => setEdit(null)}>

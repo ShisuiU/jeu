@@ -65,7 +65,6 @@
 .nav-item.active .nav-ico { opacity: 1; filter: sepia(1) saturate(3.2) hue-rotate(-12deg) brightness(1.15) drop-shadow(0 0 6px rgba(255,190,90,0.75)); animation: navPop 0.42s cubic-bezier(.2,1.6,.4,1); }
 .nav-item.active::after { content: '' !important; position: absolute; top: auto !important; bottom: 3px; left: 50% !important; width: 46px !important; height: 2px !important; border-radius: 0 !important; transform: translateX(-50%) !important; background: linear-gradient(90deg, transparent, #ffcf73, transparent) !important; box-shadow: 0 0 6px rgba(255,190,90,0.7) !important; z-index: 0 !important; }
 .nav-item.summon .nav-crystal { width: 54px; height: 54px; margin-top: -24px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 1px #000, 0 0 16px rgba(160,100,255,0.55), 0 4px 10px rgba(0,0,0,0.7); transition: box-shadow 0.2s, transform 0.2s; }
-.nav-item.summon.active .nav-crystal { box-shadow: 0 0 0 1px #000, 0 0 22px rgba(255,190,90,0.7), 0 0 34px rgba(160,100,255,0.7); }
 .nav-item.summon.active::after { display: none; }
 .nav-item.summon .badge-dot { top: -18px; right: calc(50% - 30px); }
 /* Barre d'expérience violette sous le nom, comme la maquette. */
@@ -101,7 +100,19 @@
 .nav-item.active .nav-ico { filter: drop-shadow(0 0 4px rgba(255,190,90,0.6)); }
 .nav-item + .nav-item { border-left: 0; }
 .nav-item.summon .nav-crystal { width: 56px; height: auto; aspect-ratio: 310 / 297; margin-top: -40px; margin-bottom: 1px; border-radius: 0; box-shadow: none; filter: drop-shadow(0 0 12px rgba(160,100,255,0.5)) drop-shadow(0 4px 8px rgba(0,0,0,0.7)); }
-.nav-item.summon.active .nav-crystal { filter: drop-shadow(0 0 16px rgba(255,190,90,0.6)) drop-shadow(0 0 22px rgba(160,100,255,0.7)); }
+.nav-item.summon.active .nav-crystal { box-shadow: none; filter: drop-shadow(0 0 16px rgba(255,190,90,0.6)) drop-shadow(0 0 22px rgba(160,100,255,0.7)); }
 /* Étiquettes de la barre du bas toutes sur la même ligne (le cristal d'invocation dépasse vers le haut). */
 .bottom-nav .nav-item { justify-content: flex-end; padding-bottom: 7px; }
 .nav-item.summon .nav-crystal { margin-top: 0; margin-bottom: 0; position: relative; top: -2px; }
+/* v1.73.0 — compteurs du haut : chiffres en police nette (Inter), énergie alignée avec l'or et les cristaux
+   (le minuteur passe sous le compteur sans le décaler). */
+.home .pill.kit { font-family: var(--font-body); font-weight: 700; font-size: 12.5px; letter-spacing: 0; font-variant-numeric: tabular-nums lining-nums; color: #f6ecd6; text-shadow: 0 1px 2px #000; }
+.home .pill.kit small { font-family: var(--font-body); font-size: 10px; font-weight: 600; color: #b9ad98; }
+.home .pill-wrap { position: relative; display: block; }
+.home .pill-timer { position: absolute; left: 0; right: 0; top: 100%; margin-top: 1px; text-align: center; font-family: var(--font-body); font-size: 10px; font-weight: 600; color: #a99e8e; pointer-events: none; }
+.home .topbar { align-items: center; }
+/* Compteurs plus compacts pour laisser la place au nom et à l'expérience. */
+.home .pill.kit { font-size: 11.5px; padding: 0; }
+.home .pill.kit small { font-size: 9px; }
+.home .topbar { gap: 2px; }
+.home .avatar-btn > div:last-child { min-width: 70px; }

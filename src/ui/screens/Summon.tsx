@@ -1,3 +1,9 @@
+import shCommon from '../../assets/kit/shard_common.webp';
+import shAeon from '../../assets/kit/shard_aeon.webp';
+import shEpic from '../../assets/kit/shard_epic.webp';
+import shRift from '../../assets/kit/shard_rift.webp';
+// Éclats peints du kit SpriteCook (v1.73.0), un par appel.
+const SHARD_IMG: Record<string, string> = { standard: shCommon, aeon: shAeon, epic: shEpic, event_ash: shRift };
 import { Coach } from '../components/Coach';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useGame } from '../../state/store';
@@ -53,7 +59,7 @@ export function Summon() {
       <div className="shard-tabs" role="tablist" aria-label="Type d’éclat">
         {BANNERS.filter((x) => bannerAvailable(x.id, now)).map((x) => (
           <button key={x.id} role="tab" aria-selected={x.id === bannerId} className={`shard-tab ${x.id === bannerId ? 'on' : ''}`} style={{ ['--bc' as string]: x.color, ['--bg2' as string]: x.glow }} onClick={() => { play('tap'); setBannerId(x.id); }}>
-            <Crystal color={x.color} glow={x.glow} size={20} />
+            {SHARD_IMG[x.id] ? <img className="st-ico" src={SHARD_IMG[x.id]} alt="" /> : <Crystal color={x.color} glow={x.glow} size={20} />}
             <span>{SHORT[x.id] ?? x.name}</span>
             {/* Invocation payée en cristaux : on montre l'icône des cristaux, pour ne pas confondre avec des éclats. */}
             {x.cost.resource === 'crystals'
@@ -93,10 +99,10 @@ export function Summon() {
       )}
 
       <div className="row summon-bar" style={{ gap: 10, marginTop: 12 }}>
-        <button className="btn secondary grow summon-btn summon-one" disabled={!canAfford(save, b.id, 1)} onClick={() => doSummon(1)}>
+        <button className="btn grow summon-btn summon-one kit-s1" disabled={!canAfford(save, b.id, 1)} onClick={() => doSummon(1)}>
           Appeler ×1<small><ResourceIcon icon={res.icon} color={res.color} size={14} /> {fmt(b.cost.amount)} · tu as : {fmt(have)}</small>
         </button>
-        <button className="btn grow summon-btn" disabled={!canAfford(save, b.id, 10)} onClick={() => doSummon(10)}>
+        <button className="btn grow summon-btn kit-s10" disabled={!canAfford(save, b.id, 10)} onClick={() => doSummon(10)}>
           Appeler ×10<small><ResourceIcon icon={res.icon} color={res.color} size={14} /> {fmt(b.cost.amount * 10)}</small>
         </button>
       </div>

@@ -1,3 +1,7 @@
+import kSanct from '../../assets/kit/pl_sanct.webp';
+import kForge from '../../assets/kit/pl_forge.webp';
+import kTeams from '../../assets/kit/pl_teams.webp';
+import kBonds from '../../assets/kit/pl_bonds.webp';
 import { useEffect, useMemo, useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
@@ -10,7 +14,6 @@ import { HERO_GROUPS, HERO_SORTS, heroMatches, sortHeroes } from '../components/
 import { BondsSheet } from '../components/Copies';
 import { copiesOf, markCopiesSeen } from '../../game/copies';
 import { canImprove } from '../../game/upgrade';
-import { Icon } from '../art/Icons';
 import { COLLECTION_PCT, claimCollection, collectionClaimable, collectionPct, collectionReward, nextCollectionStep, ownedCount } from '../../game/collection';
 import { RewardInline } from '../components/RewardView';
 import { play } from '../../audio/sfx';
@@ -35,10 +38,10 @@ export function Collection() {
     <Screen title={`Héros  ${ownedIds.size}/${HEROES.length}`}>
       {/* Tout ce qui fait progresser les héros, au même endroit. */}
       <div className="hero-places">
-        <button className="hp-tile" onClick={() => push({ name: 'sanctuary' })}><Icon.temple size={22} /><span>Sanctuaire</span>{improvable && <span className="badge-dot" />}</button>
-        <button className="hp-tile" onClick={() => push({ name: 'gear' })}><Icon.forge size={22} /><span>Forge</span></button>
-        <button className="hp-tile" onClick={() => push({ name: 'team' })}><Icon.team size={22} /><span>Équipes</span></button>
-        <button className="hp-tile" onClick={() => setBonds(true)}><Icon.heroes size={22} /><span>Liens</span></button>
+        <button className="hp-tile kit" onClick={() => push({ name: 'sanctuary' })}><img src={kSanct} alt="" /><span>Sanctuaire</span>{improvable && <span className="badge-dot" />}</button>
+        <button className="hp-tile kit" onClick={() => push({ name: 'gear' })}><img src={kForge} alt="" /><span>Forge</span></button>
+        <button className="hp-tile kit" onClick={() => push({ name: 'team' })}><img src={kTeams} alt="" /><span>Équipes</span></button>
+        <button className="hp-tile kit" onClick={() => setBonds(true)}><img src={kBonds} alt="" /><span>Liens</span></button>
       </div>
       <CollectionBar />
       {bonds && <BondsSheet onClose={() => setBonds(false)} />}

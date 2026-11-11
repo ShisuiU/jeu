@@ -75,6 +75,25 @@ export const DUNGEON_DIFF_OPEN = 15;
 /** Étages « gagnés » pour la table d'équipement et les étoiles : plus la difficulté est haute, meilleur est l'objet. */
 export const DUNGEON_GEAR_BONUS: Record<DifficultyId, number> = { normal: 0, hard: 3, expert: 6, nightmare: 9 };
 export const dungeonRewardMult = (diff: DifficultyId = 'normal') => DIFFICULTIES[diff].rewardMult;
+/** Récompenses par difficulté (v1.73.0) : comme les ennemis, chaque difficulté reprend là où la précédente s'arrête.
+ *  Au-delà du Normal, la base est l'étage 15 du Normal, multipliée de plus en plus d'étage en étage :
+ *  Difficile ×1,1 → ×1,6, Expert ×1,7 → ×2,4, Cauchemar ×2,5 → ×3,5. L'étage 1 d'une difficulté donne donc
+ *  toujours plus que l'étage 15 de la précédente. */
+const REWARD_RANGE: Record<Exclude<DifficultyId, 'normal'>, [number, number]> = { hard: [1.1, 1.6], expert: [1.7, 2.4], nightmare: [2.5, 3.5] };
+export function dungeonRewardFactor(floor: number, diff: DifficultyId = 'normal'): number {
+  if (diff === 'normal') return 1;
+  const [a, b] = REWARD_RANGE[diff];
+  return Math.round((a + (b - a) * (floor - 1) / (DUNGEON_FLOORS - 1)) * 100) / 100;
+}
+/** Récompense d'un étage dans une difficulté (avant les bonus d'événement). */
+export function dungeonReward(d: DungeonDef, floor: number, diff: DifficultyId = 'normal'): Reward {
+  if (diff === 'normal') return d.reward(floor);
+  const k = dungeonRewardFactor(floor, diff);
+  return Object.fromEntries(Object.entries(d.reward(DUNGEON_FLOORS)).map(([key, v]) => [key, Math.max(1, Math.round((v ?? 0) * k))])) as Reward;
+}
+/** Expérience de héros d'un étage (suit la même progression que les récompenses). */
+export const dungeonHeroXp = (floor: number, diff: DifficultyId = 'normal') =>
+  diff === 'normal' ? 80 + floor * 30 : Math.round((80 + DUNGEON_FLOORS * 30) * dungeonRewardFactor(floor, diff));
 
 /** Étoiles de l'équipement des donjons d'équipement (v1.68.11) : étages 1-2 → 1 à 2 ★, 3-9 → 1 à 3 ★, 10 et plus → 3 à 4 ★ ;
  *  chaque difficulté décale la fourchette vers le haut (Difficile +1, Expert +2, Cauchemar +3), sans dépasser 6 ★. */

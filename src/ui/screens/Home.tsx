@@ -1,5 +1,11 @@
-import stageArt from '../../assets/home/stage.webp';
-import stageSky from '../../assets/home/stage-sky.webp';
+import bgArt from '../../assets/home/bg.webp';
+import panelArt from '../../assets/home/panel.webp';
+import bWheel from '../../assets/home/btn_wheel.webp';
+import bCamp from '../../assets/home/btn_camp.webp';
+import bMarket from '../../assets/home/btn_market.webp';
+import bMissions from '../../assets/home/btn_missions.webp';
+import bMail from '../../assets/home/btn_mail.webp';
+import bEvents from '../../assets/home/btn_events.webp';
 import { wheelReady } from '../../game/wheel';
 import { Coach } from '../components/Coach';
 import { useGame } from '../../state/store';
@@ -16,10 +22,9 @@ import { unreadMail } from './Mail';
 import { campElapsed } from '../../game/camp';
 import { useGifts } from '../../state/gifts';
 
-// ACCUEIL (v1.72.1) — la maquette SpriteCook elle-même sert de décor : le Monde Cousu, le Lien de dos, les six cadres
-// d'icônes peintes et le panneau orné de la Campagne sont dans l'image (textes effacés). Le jeu pose par-dessus, aux
-// mêmes endroits, les vrais boutons, les étiquettes, les points rouges et les textes de la campagne. L'image s'adapte
-// à la largeur de l'écran ; le ciel se prolonge en dégradé au-dessus.
+// ACCUEIL (v1.72.3, maquette SpriteCook) — en pièces séparées : le décor de la maquette sans aucun bouton (refait par
+// SpriteCook) remplit tout l'écran ; les six cadres d'icônes peintes se rangent sous la barre du haut ; le panneau orné
+// de la Campagne se pose au-dessus de la barre du bas. Le jeu écrit les étiquettes, les points rouges et les textes.
 // Tout le reste est accessible par la barre du bas (Héros, Invoquer, Combats, Menu).
 export function Home() {
   const save = useGame((s) => s.save)!;
@@ -32,41 +37,47 @@ export function Home() {
   // (Sanctuaire, Forge, Équipes, Liens : onglet Héros. Modes de combat : onglet Combats. Clan, amis : Menu.)
   const toast = useUI((st) => st.toast);
   // Les six cadres sont peints dans le décor : un lieu pas encore ouvert reste visible, assombri, avec un cadenas.
-  type Spot = { label: string; side: 'l' | 'r'; row: 0 | 1 | 2; dot?: boolean; go: () => void; feature?: Feature };
+  type Spot = { label: string; side: 'l' | 'r'; row: 0 | 1 | 2; img: string; dot?: boolean; go: () => void; feature?: Feature };
   const spots: Spot[] = [
-    { label: 'Roue', side: 'l', row: 0, dot: wheelReady(save, now), go: () => push({ name: 'wheel' }) },
-    { label: 'Camp', side: 'l', row: 1, feature: 'camp', dot: campElapsed(save, now) >= 8 * 3600_000, go: () => push({ name: 'camp' }) },
-    { label: 'Marché', side: 'l', row: 2, feature: 'market', go: () => push({ name: 'market' }) },
-    { label: 'Missions', side: 'r', row: 0, dot: claimableCount(save) > 0, go: () => push({ name: 'missions' }) },
-    { label: 'Courrier', side: 'r', row: 1, dot: unreadMail(save.flags) || canClaimDaily(save, now) || gifts > 0, go: () => push({ name: 'mail' }) },
-    { label: 'Événements', side: 'r', row: 2, feature: 'events', dot: eventsDot(save, now), go: () => push({ name: 'events' }) },
+    { label: 'Roue', img: bWheel, side: 'l', row: 0, dot: wheelReady(save, now), go: () => push({ name: 'wheel' }) },
+    { label: 'Camp', img: bCamp, side: 'l', row: 1, feature: 'camp', dot: campElapsed(save, now) >= 8 * 3600_000, go: () => push({ name: 'camp' }) },
+    { label: 'Marché', img: bMarket, side: 'l', row: 2, feature: 'market', go: () => push({ name: 'market' }) },
+    { label: 'Missions', img: bMissions, side: 'r', row: 0, dot: claimableCount(save) > 0, go: () => push({ name: 'missions' }) },
+    { label: 'Courrier', img: bMail, side: 'r', row: 1, dot: unreadMail(save.flags) || canClaimDaily(save, now) || gifts > 0, go: () => push({ name: 'mail' }) },
+    { label: 'Événements', img: bEvents, side: 'r', row: 2, feature: 'events', dot: eventsDot(save, now), go: () => push({ name: 'events' }) },
   ];
   const chapter = CHAPTERS.find((c) => c.n === (nextStage?.chapter ?? CHAPTERS.length));
 
   return (
     <div className="home screen">
       <div className="home-scene">
-        <div className="home-sky" aria-hidden />
+        <img className="home-bg" src={bgArt} alt="" draggable={false} />
+        <div className="home-rift" aria-hidden />
         {!save.settings.reducedMotion && <div className="home-sky-motes" aria-hidden><Particles count={10} /></div>}
+        <div className="home-shade" />
       </div>
       <TopBar />
 
-      <div className="home-stage" style={{ backgroundImage: `url(${stageArt})` }}>
-        {/* Ciel prolongé au-dessus de l'image (écrans plus hauts que la maquette, v1.72.2). */}
-        <div className="home-stage-sky" style={{ backgroundImage: `url(${stageSky})` }} aria-hidden />
-        <div className="home-rift" aria-hidden />
-        {spots.map((sp) => {
-          const locked = !!sp.feature && !isUnlocked(save, sp.feature);
-          return (
-            <button key={sp.label} className={`hs-btn ${sp.side} r${sp.row} ${locked ? 'locked' : ''}`} aria-label={sp.label}
-              onClick={() => (locked ? toast(`${sp.label} : ${unlockText(sp.feature!).toLowerCase()} de la campagne.`) : sp.go())}>
-              {locked && <span className="hs-lock"><Icon.lock size={18} /></span>}
-              {!locked && sp.dot && <span className="badge-dot" />}
-              <span className={`hs-label ${sp.label.length > 8 ? "long" : ""}`}>{sp.label}</span>
-            </button>
-          );
-        })}
+      {(['l', 'r'] as const).map((side) => (
+        <div key={side} className={`hs-col ${side}`}>
+          {spots.filter((sp) => sp.side === side).map((sp) => {
+            const locked = !!sp.feature && !isUnlocked(save, sp.feature);
+            return (
+              <button key={sp.label} className={`hs-btn ${locked ? 'locked' : ''}`} aria-label={sp.label}
+                onClick={() => (locked ? toast(`${sp.label} : ${unlockText(sp.feature!).toLowerCase()} de la campagne.`) : sp.go())}>
+                <img src={sp.img} alt="" draggable={false} />
+                {locked && <span className="hs-lock"><Icon.lock size={18} /></span>}
+                {!locked && sp.dot && <span className="badge-dot" />}
+                <span className={`hs-label ${sp.label.length > 8 ? 'long' : ''}`}>{sp.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      ))}
+
+      <div className="home-bottom">
         <button className="campaign-cta hs-campaign" onClick={() => push({ name: 'campaign' })}>
+          <img src={panelArt} alt="" draggable={false} />
           <span className="big">Campagne</span>
           <span className="sub">{nextStage && chapter ? `Chapitre ${chapter.n} — ${chapter.name}` : 'Histoire terminée'}</span>
           <span className="cc-stars"><Icon.star size={15} /> {stars.stars} / {stars.max}</span>

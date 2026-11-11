@@ -558,6 +558,16 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.70.0 — Vague C : 12 héros de plus (88 en tout)
+
+Troisième des 4 vagues de `docs/HEROES_PLAN.md`.
+- **4 Communs** : Mirka Fil-de-Lune (novice brodeuse d'étoiles, soins), Dov Poing-Sec (lutteur des arènes, étourdissement), Hesta Pelle-à-Feu (cantinière, soupe qui soigne et régénère), Rook Plume-Grise (braconnier, pièges et poison).
+- **4 Peu communs** : Cyprien Sceau-Clair (héraut, ATQ de l'équipe), Zéphine Brise-Vitre (pilote d'essai, gantelets propulseurs), Tarq Mâchoire-d'Os (dompteur de hyènes, défenseur), Elwy Sève-Ardente (gardienne des ruches, régénération et purification).
+- **3 Rares** : Anouk Tisse-Orage (augure des tempêtes, étourdissements de groupe), Brévine Croc-Rouge (éclaireuse, fait reculer la jauge de tour), Malo Ancre-Grise (docker, boucliers pour toute l'équipe).
+- **1 Épique** : Sahar aux Mille Puits (reine des sables, ATQ et VIT de l'équipe, purification).
+- Répartition : 24 Communs, 22 Peu communs, 19 Rares, 13 Épiques, 8 Légendaires, 2 Mythiques.
+- **Campagne : plus de héros Mythique offert.** Le boss du chapitre 7 donnait Solenne ; il donne désormais 3 Éclats de faille. Solenne reste dans l'histoire et dans les invocations.
+
 ## ✅ Version 1.69.0 — Vague B : 13 héros de plus (76 en tout)
 
 Deuxième des 4 vagues de `docs/HEROES_PLAN.md`.

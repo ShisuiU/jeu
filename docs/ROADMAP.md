@@ -558,6 +558,16 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.71.0 — 4 donjons d'équipement
+
+Pour les joueurs qui ont tout fini : l'ancienne Forge Engloutie est remplacée par **4 donjons d'équipement**, chacun avec son gardien (portrait peint), ses ennemis, ses 15 étages et ses 4 difficultés. Chacun donne un objet garanti à chaque victoire, **uniquement dans ses propres ensembles** :
+- **Forge de Guerre** (gardien : le Forgeur de Guerre) : attaque, avec Fureur, Acuité et Massacre.
+- **Bastion Englouti** (le Rempart Noyé) : défense, avec Vigueur, Rempart et Résolution.
+- **Galerie des Vents** (la Matriarche des Vents) : vitesse, avec Célérité, Élan et Concentration.
+- **Jardin Vermeil** (la Reine des Ronces) : survie, avec Sang-vif et Pérennité.
+
+L'écran Donjons sépare « Équipement » et « Ressources » et montre les ensembles de chaque donjon ; dans le donjon, chaque ensemble est détaillé avec son bonus. La progression et une éventuelle série en arrière-plan de l'ancienne Forge sont effacées. Étoiles, rareté et minerai de forge suivent les mêmes règles qu'avant.
+
 ## ✅ Version 1.70.1 — Retours : combat, donjons, niveau de compte, classements
 
 - **Plus de flashs quand les cartes frappent** : l'écran ne blanchit plus sur les coups critiques, et l'éclair coloré et le voile rouge sur la carte touchée ont disparu. Restent les traits de l'arme et de l'élément, et le léger tremblement.

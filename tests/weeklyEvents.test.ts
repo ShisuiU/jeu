@@ -85,7 +85,7 @@ describe('bonus de la semaine', () => {
     setEvents([]); // sans la Faille de Cendre (qui donne déjà ×1,5 aux donjons)
     expect(eventBonus(forgeAt, 'dungeon')).toBe(1.5);
     expect(eventBonus(otherAt, 'dungeon')).toBe(1);
-    const run = (t: number) => { const s = fresh(t); const spec = { mode: 'dungeon' as const, dungeonId: 'forge', floor: 1 }; payMode(s, spec, t); return applyMode(s, spec, { won: true, alliesDead: 0, participants: [s.heroes[0].uid] }, t).reward; };
+    const run = (t: number) => { const s = fresh(t); const spec = { mode: 'dungeon' as const, dungeonId: 'warforge', floor: 1 }; payMode(s, spec, t); return applyMode(s, spec, { won: true, alliesDead: 0, participants: [s.heroes[0].uid] }, t).reward; };
     const a = run(forgeAt), b = run(otherAt);
     const k = Object.keys(b)[0] as keyof typeof a;
     expect((a[k] ?? 0)).toBeGreaterThan(b[k] ?? 0);

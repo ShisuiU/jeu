@@ -27,6 +27,9 @@ import { EnemyArt } from '../art/EnemyArt';
 import { play } from '../../audio/sfx';
 import { HeroArt } from '../art/HeroArt';
 import { Icon, ResourceIcon } from '../art/Icons';
+import { SetEmblem } from '../art/SetEmblem';
+import { SETS } from '../../data/equipment';
+import type { DungeonDef } from '../../data/dungeons';
 
 /** Temps restant de la saison : en jours et heures au-delà d'un jour. */
 const seasonLeft = (ms: number) => (ms >= 86400_000 ? `${Math.floor(ms / 86400_000)} j ${Math.floor((ms % 86400_000) / 3600_000)} h` : formatDuration(ms));
@@ -38,19 +41,16 @@ export function Dungeons() {
   const now = useGame((s) => s.now);
   const push = useUI((s) => s.push);
   const bonus = dungeonBonus(now);
-  return (
-    <Screen title="Donjons">
-      {bonus > 1 && <div className="hint" style={{ marginBottom: 12 }}>Événement en cours : butin des donjons <b>×{bonus}</b>.</div>}
-      <div className="stack">
-        {DUNGEONS.map((d) => {
-          const best = save.progress.dungeons[d.id]?.bestFloor ?? 0;
-          const top = dungeonTopDiff(save, d.id);
-          return (
-            <button key={d.id} className="mode-card" style={{ ['--mc' as string]: d.color }} onClick={() => push({ name: 'dungeon', dungeonId: d.id })}>
+  const card = (d: DungeonDef) => {
+    const best = save.progress.dungeons[d.id]?.bestFloor ?? 0;
+    const top = dungeonTopDiff(save, d.id);
+    return (
+      <button key={d.id} className="mode-card" style={{ ['--mc' as string]: d.color }} onClick={() => push({ name: 'dungeon', dungeonId: d.id })}>
               <div className="mc-art"><EnemyArt enemyId={d.boss} /></div>
               <div className="grow" style={{ textAlign: 'left' }}>
                 <div className="mc-name">{d.name}</div>
-                <div className="faint">{d.description}</div>
+                <div className="faint">{d.sets ? 'Équipement garanti à chaque victoire' : d.description}</div>
+                {d.sets && <div className="dg-sets">{d.sets.map((id) => <span key={id} style={{ ['--sc' as string]: SETS[id].color }}><SetEmblem id={id} size={13} />{SETS[id].name}</span>)}</div>}
                 <div className="row" style={{ gap: 6, marginTop: 6 }}>
                   <ResourceIcon icon={DICON[d.icon]} color={d.color} size={16} />
                   <span className="faint">{top === 'normal' ? <>Étage {Math.min(best + 1, DUNGEON_FLOORS)} / {DUNGEON_FLOORS}{best >= DUNGEON_FLOORS ? ' · terminé' : ''}</> : <>{DIFFICULTIES[top].name} · étage {Math.min(dungeonBest(save, d.id, top) + 1, DUNGEON_FLOORS)} / {DUNGEON_FLOORS}</>}</span>
@@ -58,9 +58,15 @@ export function Dungeons() {
               </div>
               <span className="muted">›</span>
             </button>
-          );
-        })}
-      </div>
+    );
+  };
+  return (
+    <Screen title="Donjons">
+      {bonus > 1 && <div className="hint" style={{ marginBottom: 12 }}>Événement en cours : butin des donjons <b>×{bonus}</b>.</div>}
+      <div className="pf-sub">Équipement</div>
+      <div className="stack">{DUNGEONS.filter((d) => d.sets).map(card)}</div>
+      <div className="pf-sub">Ressources</div>
+      <div className="stack">{DUNGEONS.filter((d) => !d.sets).map(card)}</div>
     </Screen>
   );
 }
@@ -68,7 +74,7 @@ export function Dungeons() {
 export function Dungeon({ dungeonId }: { dungeonId: string }) {
   const save = useGame((s) => s.save)!;
   const { push, toast } = useUI.getState();
-  const d = DUNGEON_BY_ID[dungeonId];
+  const d = DUNGEON_BY_ID[dungeonId] ?? DUNGEONS[0];
   // Difficulté choisie (retenue par donjon) ; par défaut, la plus haute ouverte.
   const [pick, setPick] = usePersisted<Record<string, DifficultyId>>('dungeonDiff', {});
   const chosen = pick[d.id] ?? dungeonTopDiff(save, d.id);
@@ -81,6 +87,13 @@ export function Dungeon({ dungeonId }: { dungeonId: string }) {
         <div className="mh-art"><EnemyArt enemyId={d.boss} /></div>
         <div className="mh-info"><b>{d.description}</b></div>
       </div>
+      {d.sets && (
+        <div className="dg-setlist">
+          {d.sets.map((id) => (
+            <div key={id} style={{ ['--sc' as string]: SETS[id].color }}><SetEmblem id={id} size={18} /><b>{SETS[id].name}</b><span className="faint">{SETS[id].pieces} pièces · {SETS[id].description}</span></div>
+          ))}
+        </div>
+      )}
       <div className="seg camp-diff" style={{ margin: '10px 0' }}>
         {DIFFICULTY_ORDER.map((k) => {
           const open = dungeonDiffOpen(save, d.id, k);

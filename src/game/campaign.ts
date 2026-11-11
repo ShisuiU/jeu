@@ -127,7 +127,7 @@ export function applyStageResult(s: SaveData, stageId: string, diff: DifficultyI
   }
   s.progress.campaign[key] = { stars: Math.max(prog.stars, stars), clears: prog.clears + 1 };
 
-  // Butin aléatoire : matériaux d'amélioration. L'équipement ne vient plus que de la Forge Engloutie (v1.68.11).
+  // Butin aléatoire : matériaux d'amélioration. L'équipement ne vient que des donjons d'équipement (v1.68.11, 4 donjons depuis la v1.71.0).
   const r = seededRand(now ^ (prog.clears * 7919) ^ stage.index);
   // Chapitre 1 : seulement ce qui sert tout de suite (les potions d'ascension ne servent qu'au niveau 10).
   const table = stage.chapter === 1 ? CAMPAIGN_LOOT.filter((l) => !['potionMinor', 'potionGreater', 'rankSigil', 'awakenEssence'].includes(l.resource)) : CAMPAIGN_LOOT;

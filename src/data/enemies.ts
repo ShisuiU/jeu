@@ -114,6 +114,47 @@ export const ENEMIES: Record<string, EnemyDef> = {
       s('ra_3', 'Élixir interdit', 'ultimate', 5, 'Soigne ses alliés de 25 %.', [{ kind: 'heal', target: 'allAllies', pctMaxHp: 0.25 }]),
     ],
   },
+  // ─── Gardiens des donjons d'équipement (v1.71.0) ───
+  war_smith: {
+    id: 'war_smith', name: 'Le Forgeur de Guerre', role: 'attacker', affinity: 'solar', mult: 0.95, baseSpd: 102, boss: true, shape: 'golem',
+    bias: { hp: 1.25, atk: 1.1 },
+    look: 'Seigneur de guerre creux en armure de fer noirci fendue de lave, heaume sans visage, marteau de guerre encore rouge de l’enclume.', palette: ['#2a1a14', '#ff6b3c'],
+    skills: [
+      s('ws_1', 'Marteau rougi', 'basic', 0, 'Frappe et brûle (40 %).', [{ kind: 'damage', target: 'enemy', mult: 3.3 }, { kind: 'status', target: 'enemy', status: 'burn', chance: 0.4, turns: 2 }]),
+      s('ws_2', 'Pluie d’étincelles', 'special', 3, 'Attaque tous les ennemis et réduit leur DÉF (35 %).', [{ kind: 'damage', target: 'allEnemies', mult: 1.6 }, { kind: 'status', target: 'allEnemies', status: 'defDown', chance: 0.35, turns: 2, value: 0.3 }]),
+      s('ws_3', 'Trempe de guerre', 'ultimate', 5, 'ATQ +40 % puis frappe un ennemi très fort.', [{ kind: 'status', target: 'self', status: 'atkUp', chance: 1, turns: 2, value: 0.4 }, { kind: 'damage', target: 'enemy', mult: 4.6, bonusVs: ['defDown'] }]),
+    ],
+  },
+  drowned_bulwark: {
+    id: 'drowned_bulwark', name: 'Le Rempart Noyé', role: 'defender', affinity: 'lunar', mult: 0.95, baseSpd: 90, boss: true, shape: 'knight',
+    bias: { hp: 1.4, def: 1.3 },
+    look: 'Chevalier colossal englouti, armure couverte de coquillages, grand heaume aux yeux bleus glacés, bouclier-tour couvert de corail.', palette: ['#1a2a3a', '#8fb6ff'],
+    skills: [
+      s('db_1', 'Coup de bouclier', 'basic', 0, 'Frappe (DÉF) et réduit la VIT (35 %).', [{ kind: 'damage', target: 'enemy', mult: 1.9, scaling: 'def' }, { kind: 'status', target: 'enemy', status: 'spdDown', chance: 0.35, turns: 2, value: 0.25 }]),
+      s('db_2', 'Marée montante', 'special', 3, 'Attaque tous les ennemis (DÉF), 25 % de gel.', [{ kind: 'damage', target: 'allEnemies', mult: 1.1, scaling: 'def' }, { kind: 'status', target: 'allEnemies', status: 'freeze', chance: 0.25, turns: 1 }]),
+      s('db_3', 'Mur des abysses', 'ultimate', 5, 'Bouclier de 20 % pour ses alliés et DÉF +40 %.', [{ kind: 'shield', target: 'allAllies', pctMaxHp: 0.2, turns: 2 }, { kind: 'status', target: 'allAllies', status: 'defUp', chance: 1, turns: 2, value: 0.4 }]),
+    ],
+  },
+  storm_matriarch: {
+    id: 'storm_matriarch', name: 'La Matriarche des Vents', role: 'assassin', affinity: 'telluric', mult: 0.9, baseSpd: 118, boss: true, shape: 'archer',
+    bias: { hp: 1.2 },
+    look: 'Chasseresse ailée aux plumes grises, masque de crâne d’oiseau, yeux cyan, lames aux avant-bras, éclairs dans les plumes.', palette: ['#3a4048', '#5fe0ff'],
+    skills: [
+      s('sm_1', 'Serres jumelles', 'basic', 0, 'Frappe 2 fois et fait reculer la jauge de tour (15 %).', [{ kind: 'damage', target: 'enemy', mult: 1.7, hits: 2 }, { kind: 'turnMeter', target: 'enemy', delta: -0.15 }]),
+      s('sm_2', 'Rafale', 'special', 3, 'Attaque tous les ennemis et fait reculer leur jauge de tour (20 %).', [{ kind: 'damage', target: 'allEnemies', mult: 1.4 }, { kind: 'turnMeter', target: 'allEnemies', delta: -0.2 }]),
+      s('sm_3', 'Œil du cyclone', 'ultimate', 5, 'VIT +30 % pour ses alliés, puis frappe un ennemi.', [{ kind: 'status', target: 'allAllies', status: 'spdUp', chance: 1, turns: 2, value: 0.3 }, { kind: 'damage', target: 'enemy', mult: 4.2, executeBelow: 0.35 }]),
+    ],
+  },
+  briar_queen: {
+    id: 'briar_queen', name: 'La Reine des Ronces', role: 'healer', affinity: 'void', mult: 0.85, baseSpd: 104, boss: true, shape: 'tree',
+    bias: { hp: 1.35 },
+    look: 'Reine sylvestre creuse faite d’épines, couronne de roses rouge sang, yeux cramoisis, robe de ronces et de pétales.', palette: ['#2a0e14', '#ff4d7a'],
+    skills: [
+      s('bq_1', 'Épine vermeille', 'basic', 0, 'Frappe, empoisonne (40 %) et vole 30 % des dégâts.', [{ kind: 'damage', target: 'enemy', mult: 2.8, lifestealPct: 0.3 }, { kind: 'status', target: 'enemy', status: 'poison', chance: 0.4, turns: 2 }]),
+      s('bq_2', 'Roncier', 'special', 3, 'Attaque tous les ennemis, poison (35 %).', [{ kind: 'damage', target: 'allEnemies', mult: 1.3 }, { kind: 'status', target: 'allEnemies', status: 'poison', chance: 0.35, turns: 2 }]),
+      s('bq_3', 'Sève de sang', 'ultimate', 6, 'Soigne ses alliés de 15 % et leur donne une régénération de 4 %.', [{ kind: 'heal', target: 'allAllies', pctMaxHp: 0.15 }, { kind: 'status', target: 'allAllies', status: 'regen', chance: 1, turns: 2, value: 0.04 }]),
+    ],
+  },
   mute_archivist: {
     id: 'mute_archivist', name: 'Archiviste Muet', role: 'controller', affinity: 'void', mult: 0.9, baseSpd: 102, boss: true, shape: 'archivist',
     bias: { hp: 1.2 },

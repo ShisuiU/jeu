@@ -34,9 +34,9 @@ describe('balayage', () => {
   });
   it('donjon : étage déjà terminé seulement', () => {
     const s = fresh();
-    const spec = { mode: 'dungeon' as const, dungeonId: 'forge', floor: 1 };
+    const spec = { mode: 'dungeon' as const, dungeonId: 'warforge', floor: 1 };
     expect(canSweep(s, spec).ok).toBe(false);
-    s.progress.dungeons.forge = { bestFloor: 1 };
+    s.progress.dungeons.warforge = { bestFloor: 1 };
     expect(canSweep(s, spec).ok).toBe(true);
     expect(canSweep(s, { mode: 'tower', floor: 1 }).ok).toBe(false);
   });

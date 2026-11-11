@@ -38,13 +38,6 @@
 .hp-tile.kit .badge-dot { z-index: 2; top: 6%; right: 6%; }
 
 /* ── Combats : cadres dorés peints et médaillons ── */
-.combat-card { border-radius: 0 !important; }
-.combat-card .cc-frame { position: absolute; inset: 0; z-index: 2; pointer-events: none; border-style: solid; border-color: transparent; border-width: 14px 18px; border-image: url('../assets/kit/frame_wide.webp') 18% 6% 18% 6% / 14px 18px stretch; }
-.combat-card.compact .cc-frame { border-width: 14px; border-image: url('../assets/kit/frame_square.webp') 12% 10% 12% 10% / 14px stretch; }
-.combat-card .cc-medal { position: relative; z-index: 3; width: 44px; height: 44px; flex: none; margin-left: 4px; filter: drop-shadow(0 2px 4px #000); }
-.combat-card .cc-medal.sm { width: 24px; height: 24px; margin: 0 5px -6px 0; vertical-align: -6px; }
-.combat-card .cc-text { position: relative; z-index: 3; }
-.combat-card > svg, .combat-card .badge-dot { z-index: 3; }
 
 /* ── Menu : carte de profil, statistiques et tuiles peintes ── */
 .profile-card { background: none !important; border-style: solid !important; border-color: transparent !important; border-width: 12px 14px !important; border-image: url('../assets/kit/stat.webp') 18% 8% 18% 8% fill / 12px 14px stretch !important; border-radius: 0 !important; box-shadow: none !important; }
@@ -157,12 +150,6 @@
 .theme-v2 .seg button { border-width: 0 7px; border-image-width: 0 7px; font-size: clamp(11px, 3.3vw, 15px); letter-spacing: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.1; padding: 0 1px; min-width: 0; }
 
 /* Combats : texte à l'intérieur des cadres dorés. */
-.combat-card .cc-text { padding-right: 18px; }
-.combat-card.compact { padding: 0 16px 16px !important; }
-.combat-card.compact .cc-title { font-size: 14px; }
-.combat-card.compact .cc-sub { padding-right: 2px; }
-.combat-card:not(.compact) .cc-medal { margin-left: 14px; }
-.combat-card:not(.compact) { padding-right: 24px; }
 
 /* Invocation : la description de l'appel reste dans son panneau, au-dessus des boutons. */
 .altar-caption { bottom: 6px; left: 8px; right: 8px; padding: 2px 6px 4px; border-width: 18px 26px 10px; border-image-width: 18px 26px 10px; }
@@ -173,7 +160,6 @@
 .theme-v2 .btn.fight-btn:not(.secondary) { color: #fff4d6; text-shadow: 0 1px 2px #000, 0 0 8px rgba(0,0,0,0.6); }
 .theme-v2 .panel { padding: 13px 14px 12px 18px; }
 .altar-stage { height: clamp(220px, calc(100dvh - 400px), 430px); }
-.combat-card.compact .cc-text { padding-bottom: 2px; }
 /* Boutons dorés sur deux lignes : la plaque s'agrandit pour garder tout le texte sur l'or. */
 .theme-v2 .btn { padding-top: 9px; padding-bottom: 9px; min-height: 44px; }
 .theme-v2 .btn.small { padding-top: 5px; padding-bottom: 5px; min-height: 30px; }
@@ -188,11 +174,13 @@
 .pc-stats > div img { width: 20px; height: 20px; }
 .pc-stats > div span, .pc-stats > div b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* Combats : titres des petites cartes sur une ligne. */
-.combat-card.compact .cc-title { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* Petits sélecteurs (vitesse ×1 ×2 ×3…) : texte lisible. */
 .theme-v2 .seg[style] button { font-size: 13px; font-family: var(--font-body); font-weight: 700; }
 /* Profil : tuiles de progression assez hautes pour leur texte. */
 .pf-grid > div { min-height: 0; height: auto; }
-.combat-card.compact .cc-medal.sm { display: none; }
-.combat-card.compact .cc-title { font-size: 13.5px; }
 .pc-stats > div span { font-size: 9.5px; }
+/* Bouton rond à droite du titre (verrou du héros…) : distinct du bouton retour, icône visible. */
+.hdr-icon-btn { flex: none; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; color: #f0d48f; background: radial-gradient(circle, #1d1724, #0b090f); box-shadow: 0 0 0 1px #8a6a33, inset 0 0 0 2px rgba(233,198,122,0.15); }
+.hdr-icon-btn svg { width: 18px; height: 18px; }
+/* En-tête d'écran opaque : plus de bande de couleur du décor entre le titre et le contenu. */
+.theme-v2 .screen-header { background: linear-gradient(180deg, #07060b, #0c0a11) !important; box-shadow: 0 1px 0 rgba(201,157,79,0.35), 0 8px 16px rgba(0,0,0,0.45) !important; }

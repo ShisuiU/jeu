@@ -1,11 +1,3 @@
-import mdCompass from '../../assets/kit/md_compass.webp';
-import mdGate from '../../assets/kit/md_gate.webp';
-import mdTower from '../../assets/kit/md_tower.webp';
-import mdBoss from '../../assets/kit/md_boss.webp';
-import mdWheel from '../../assets/kit/md_wheel.webp';
-import mdSwords from '../../assets/kit/md_swords.webp';
-// Médaillons peints du kit SpriteCook (v1.73.0), un par mode.
-const MEDAL: Record<string, string> = { 'Campagne': mdCompass, 'Donjons': mdGate, 'Tour des Âges': mdTower, 'Boss mondial': mdBoss, 'Expéditions': mdWheel, 'Arène': mdSwords };
 import { useGame } from '../../state/store';
 import { anyStarChest } from '../../game/starChests';
 import { DIFFICULTY_ORDER } from '../../data/campaign';
@@ -54,8 +46,6 @@ export function Combats() {
         {open.slice(0, 1).map((c) => (
           <button key={c.title} className="combat-card" style={{ ['--mc' as string]: c.color }} onClick={() => push(c.route)}>
             <div className="cc-art"><EnemyArt enemyId={c.art} /></div>
-            <i className="cc-frame" aria-hidden />
-            <img className="cc-medal" src={MEDAL[c.title]} alt="" />
             <div className="cc-text">
               <div className="cc-title">{c.title}</div>
               <div className="cc-sub">{c.sub}</div>
@@ -69,9 +59,8 @@ export function Combats() {
             {open.slice(1).map((c) => (
               <button key={c.title} className="combat-card compact" style={{ ['--mc' as string]: c.color }} onClick={() => push(c.route)}>
                 <div className="cc-art"><EnemyArt enemyId={c.art} /></div>
-                <i className="cc-frame" aria-hidden />
                 <div className="cc-text">
-                  <div className="cc-title"><img className="cc-medal sm" src={MEDAL[c.title]} alt="" />{c.title}</div>
+                  <div className="cc-title">{c.title}</div>
                   <div className="cc-sub">{c.sub}</div>
                 </div>
                 {c.dot && <span className="badge-dot" style={{ top: 8, right: 8 }} />}

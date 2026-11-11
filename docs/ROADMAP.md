@@ -558,6 +558,12 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.73.4 — Barre du bas, Combats, fiche du héros
+
+- **Barre du bas** sobre : fond sombre jusqu'en bas de l'écran (zone de l'iPhone comprise), filet doré en haut, icônes et noms alignés et centrés ; le cristal d'Invocation dépasse au-dessus. Le cadre peint, qui ne s'ajustait pas aux iPhone, est retiré.
+- **Combats** : ornements dorés et médaillons retirés des cartes des modes ; la carte Campagne s'affiche de nouveau normalement.
+- **Fiche du héros** : le bouton retour ramène bien en arrière (le bouton du verrou avait pris son apparence et sa place) ; le verrou a son propre bouton rond à droite. En-tête opaque sur tous les écrans : plus de bande de couleur au-dessus du héros.
+
 ## ✅ Version 1.73.3 — Passe de propreté sur tous les écrans
 
 - **Cartes de héros** : retour au style d'avant le kit SpriteCook (cadres peints retirés).

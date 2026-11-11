@@ -558,6 +558,11 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.73.2 — Cartes de héros et barre du bas remises au propre
+
+- **Cartes de héros** : le niveau (chiffre seul) dans le médaillon de gauche, l'**affinité** dans le médaillon de droite (l'emblème peint qui pouvait passer pour une affinité a été retiré du cadre), le rôle juste dessous ; les étoiles et l'emblème de famille au-dessus de la plaque du nom ; le nom sur une ligne (prénom seul pour les noms longs) ; les doublons et le verrou dans de petits badges sur le côté, plus au milieu du portrait. Tailles proportionnelles à la carte, avec un minimum lisible pour les petites cartes.
+- **Barre du bas** : le cadre peint ne couvre plus la zone du bas de l'iPhone ; icônes et noms sont centrés dans leur emplacement.
+
 ## ✅ Version 1.73.1 — Kits SpriteCook : Campagne, Préparation, Combat
 
 Trois nouvelles maquettes et leurs kits (43 pièces peintes) :

@@ -9,8 +9,8 @@ const ART = Object.keys(import.meta.glob('../src/assets/heroes/*/*.webp'));
 const hasArt = (id: string, kind: string) => ART.includes(`../src/assets/heroes/${id}/${kind}.webp`);
 
 describe('données des héros', () => {
-  it('63 héros aux identifiants uniques et cohérents', () => {
-    expect(HEROES).toHaveLength(63);
+  it('76 héros aux identifiants uniques et cohérents', () => {
+    expect(HEROES).toHaveLength(76);
     expect(new Set(HEROES.map((h) => h.id)).size).toBe(HEROES.length);
     const skillIds = HEROES.flatMap((h) => h.skills.map((s) => s.id));
     expect(new Set(skillIds).size).toBe(skillIds.length);

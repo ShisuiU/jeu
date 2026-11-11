@@ -382,6 +382,66 @@ export const HERO_LINES: Record<string, string[]> = {
     'Inachevée, mais pas incomplète.',
     'J’ai choisi mon nom. Et mes ennemis.',
   ],
+  mirka: [
+    'Un point par étoile. Il en manque encore.',
+    'Ne t’inquiète pas, le fil tient.',
+    'La lune me guide l’aiguille.',
+  ],
+  dov: [
+    'Cent combats. Cent et un, bientôt.',
+    'Pas d’arme ? Pas besoin.',
+    'Relève-toi, je n’ai pas fini.',
+  ],
+  hesta: [
+    'Qui a encore faim ?',
+    'La marmite ne refroidit jamais.',
+    'Trop salé ? Personne ne s’est plaint.',
+  ],
+  rook: [
+    'Le piège est déjà posé.',
+    'Les Gardiens font semblant de ne pas me voir.',
+    'Un pas de plus… voilà.',
+  ],
+  cyprien: [
+    'Oyez, oyez !',
+    'Le sceau brille : en avant !',
+    'La Couronne compte sur vous.',
+  ],
+  zephine: [
+    'Quatorze prototypes. Celui-là tient.',
+    'Trop vite ? Jamais assez.',
+    'Attention à la verrière !',
+  ],
+  tarq: [
+    'La meute a faim.',
+    'Mes os sont plus durs que tes lames.',
+    'Elles rient encore. Cours.',
+  ],
+  elwy: [
+    'Bourdonnez, mes belles.',
+    'Le miel guérit. Le dard punit.',
+    'La ruche protège les siens.',
+  ],
+  anouk: [
+    'L’orage approche. Je le sens.',
+    'Je l’avais prédit.',
+    'Que le ciel tombe sur eux.',
+  ],
+  brevine: [
+    'Déjà derrière toi.',
+    'Une dent de plus pour le collier.',
+    'La Légion suit. Moi, je devance.',
+  ],
+  malo: [
+    'Personne ne passe le quai.',
+    'Ancre jetée. On ne bouge plus.',
+    'J’ai porté plus lourd.',
+  ],
+  sahar: [
+    'Que les puits s’ouvrent.',
+    'Mes tribus ne plient pas.',
+    'Le soleil se lève pour sa reine.',
+  ],
 };
 
 /** Réplique suivante d'un héros (la citation de sa fiche, puis ses trois répliques). */

@@ -4,7 +4,7 @@ import type { Reward } from './resources';
 // CHAPITRES 2 À 9 — vagues générées par règles (niveau, composition croissante), histoire écrite à la main.
 interface ChapterCfg {
   n: number; name: string; region: string; backdrop: ChapterDef['backdrop']; intro: string;
-  levelStart: number; pool: [string, string, string]; elite: string; boss: string; heroReward: string; midHero?: string;
+  levelStart: number; pool: [string, string, string]; elite: string; boss: string; heroReward?: string; midHero?: string;
   names: string[]; story: Partial<Record<number, { before?: DialogueLine[]; after?: DialogueLine[] }>>;
 }
 
@@ -33,7 +33,7 @@ function buildStages(c: ChapterCfg): StageDef[] {
     if (i === 5) firstClear.potionGreater = 3;
     if (i === 5 && c.midHero) firstClear.heroes = [c.midHero];
     if (i === 8) firstClear.skillTome = 2;
-    if (boss) Object.assign(firstClear, { shardAeon: 1, awakenEssence: 2, heroes: [c.heroReward] }, c.n >= 7 ? { crystals: (firstClear.crystals ?? 0) + 300 } : {});
+    if (boss) Object.assign(firstClear, { shardAeon: 1, awakenEssence: 2 }, c.heroReward ? { heroes: [c.heroReward] } : { shardEvent: 3 }, c.n >= 7 ? { crystals: (firstClear.crystals ?? 0) + 300 } : {});
     const repeat: Reward = { gold: 1200 + c.n * 300 + i * 60, ...(i >= 5 ? { xpElixir: 1 } : {}) };
     return {
       id: `${c.n}-${i}`, chapter: c.n, index: i, name, energy: 6 + Math.floor(c.n / 2) + (boss ? 2 : 0),
@@ -122,7 +122,7 @@ const CFGS: ChapterCfg[] = [
   {
     n: 7, name: 'Le Cœur d’Aeon', region: 'Le Cœur du Monde Cousu', backdrop: 'heart', levelStart: 51,
     intro: 'Au centre du Monde Cousu, là où le Cœur d’Aeon s’est brisé, le Néant Silencieux a trouvé une voix.',
-    pool: ['hollow_heir', 'void_weaver', 'heart_shard'], elite: 'hollow_heir', boss: 'voice_of_void', heroReward: 'solenne',
+    pool: ['hollow_heir', 'void_weaver', 'heart_shard'], elite: 'hollow_heir', boss: 'voice_of_void', /* plus de Mythique offert (v1.70.0) : 3 éclats de faille à la place */
     names: ['La faille originelle', 'Les échos des époques', 'Le champ des Héritiers tombés', 'Le pont de lumière', 'Le jardin du temps', 'La mémoire effacée', 'Les portes du Cœur', 'La chambre de cristal', 'Le dernier silence', 'La Voix du Néant'],
     story: {
       1: { before: [L('narrator', 'Au centre du monde, le temps n’avance plus. Des fragments de toutes les époques flottent en silence.'), L('elowen', 'Plus aucun bruit. Même mon cœur, je ne l’entends plus.'), L('aldric', 'Alors écoutez le mien. Il bat encore. En avant.'), L('player', 'Et le mien avec. On avance ensemble.')] },
@@ -131,7 +131,7 @@ const CFGS: ChapterCfg[] = [
       9: { before: [L('azhar', 'Il est temps. Quand j’ai brisé le Cœur, une part de moi est restée ici. Le Néant s’en est nourri.'), L('kaedra', 'Alors nous la reprendrons. Ensemble.'), L('solenne', 'La Voix va parler avec la tienne, {nom}. N’écoute pas. Ou écoute… et réponds non.')] },
       10: {
         before: [L('voice_of_void', 'Bonjour, {nom}. Je suis toi. La version de toi qui a perdu, qui a tout vu disparaître, et qui a compris : le silence est la seule paix.'), L('solenne', 'Ne lui donne pas raison. Donne-lui un nom. Ce qui a un nom ne peut pas être effacé.'), L('player', 'Non. Toi, tu es ce que j’aurais pu devenir. Moi, je m’appelle {nom}. Et je ne marche pas dans le silence : je marche avec eux.'), L('aldric', 'Héritiers. Une dernière fois : derrière moi. Toujours derrière moi !')],
-        after: [L('narrator', 'La Voix se brise comme du verre. Dans le silence qui suit, un premier son revient : un battement.'), L('solenne', 'Le Cœur bat. Fêlé, cousu, mais vivant. Je peux le maintenir… si je reste avec vous.'), L('azhar', 'Le rituel est enfin terminé. Pas comme je le voulais : mieux.'), L('elowen', 'J’entends la forêt. Elle chante.'), L('vaelshira', 'Le Néant recule. Il n’a pas disparu… mais il a appris à nous craindre.'), L('narrator', 'Le Monde Cousu ne sera jamais plus comme avant. Les époques resteront mêlées. Mais il vivra, et les Héritiers veilleront sur ses coutures.'), L('narrator', 'Solenne, l’Éclat Premier, rejoint les Héritiers. Fin de l’histoire principale… pour l’instant.')],
+        after: [L('narrator', 'La Voix se brise comme du verre. Dans le silence qui suit, un premier son revient : un battement.'), L('solenne', 'Le Cœur bat. Fêlé, cousu, mais vivant. Je peux le maintenir… si je reste avec vous.'), L('azhar', 'Le rituel est enfin terminé. Pas comme je le voulais : mieux.'), L('elowen', 'J’entends la forêt. Elle chante.'), L('vaelshira', 'Le Néant recule. Il n’a pas disparu… mais il a appris à nous craindre.'), L('narrator', 'Le Monde Cousu ne sera jamais plus comme avant. Les époques resteront mêlées. Mais il vivra, et les Héritiers veilleront sur ses coutures.'), L('narrator', 'Solenne, l’Éclat Premier, veille désormais sur le Cœur. Fin de l’histoire principale… pour l’instant.')],
       },
     },
   },

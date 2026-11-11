@@ -39,3 +39,12 @@ describe('chapitres', () => {
     expect(applyStageResult(s, '8-10', 'normal', true, 0, [s.heroes[0].uid], 1000).newHeroes).toEqual(['ondine']);
   });
 });
+
+it('la campagne n’offre aucun héros Mythique (v1.70.0)', async () => {
+  const { CHAPTERS } = await import('../src/data/campaign');
+  const { HERO_BY_ID } = await import('../src/data/heroes');
+  const given = CHAPTERS.flatMap((c) => c.stages).flatMap((st) => st.firstClear.heroes ?? []);
+  expect(given.length).toBeGreaterThan(5);
+  expect(given.filter((id) => HERO_BY_ID[id].rarity === 'mythic')).toEqual([]);
+  expect(CHAPTERS[6].stages[9].firstClear.shardEvent).toBe(3);
+});

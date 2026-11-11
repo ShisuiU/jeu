@@ -47,7 +47,7 @@ Format : `id` · Nom · titre · rareté · faction · rôle · affinité · id�
 - `okoro` · Okoro Corne-Brûlée · Bélier de la Légion · R · ash · defender · solar · casque à cornes, provocation
 - `lyssandre` · Lyssandre l'Inachevée · Prototype Éveillé · E · prism · attacker · void · androïde inachevé, frappes multiples
 
-## Vague C — v1.70.0
+## Vague C — v1.70.0 ✅ livrée
 - `mirka` · Mirka Fil-de-Lune · Novice du Concordat · C · astral · healer · lunar · novice aux mains lumineuses
 - `dov` · Dov Poing-Sec · Lutteur des Arènes · C · akkar · attacker · telluric · lutteur, étourdissement
 - `hesta` · Hesta Pelle-à-Feu · Cantinière du Front · C · ash · healer · solar · soupe chaude, soins

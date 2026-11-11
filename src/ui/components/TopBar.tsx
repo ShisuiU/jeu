@@ -12,9 +12,7 @@ import { useState } from 'react';
 import { refillCost, refillEnergy } from '../../game/comfort';
 import { play } from '../../audio/sfx';
 import { isUnlocked } from '../../game/unlocks';
-import icEnergy from '../../assets/home/top_energy.webp';
-import icGold from '../../assets/home/top_gold.webp';
-import icCrystal from '../../assets/home/top_crystal.webp';
+import avatarRing from '../../assets/home/avatar_ring.webp';
 
 export function TopBar() {
   const save = useGame((s) => s.save)!;
@@ -29,24 +27,24 @@ export function TopBar() {
   const cost = refillCost(save);
   return (
     <div className="topbar">
+      {/* Kit SpriteCook (v1.72.4) : anneau d'avatar doré avec médaillon de niveau, compteurs à cadre peint (icône et « + » dans l'image). */}
       <button className="avatar-btn" onClick={() => push({ name: 'profile' })} aria-label="Mon profil">
-        <div className="avatar-wrap"><div className="avatar"><HeroArt heroId={save.profile.avatarHeroId} /></div><span className="avatar-lvl" aria-hidden>{save.profile.level}</span></div>
+        <div className="avatar-wrap kit"><div className="avatar"><HeroArt heroId={save.profile.avatarHeroId} /></div><img className="avatar-ring" src={avatarRing} alt="" draggable={false} /><span className="avatar-lvl" aria-hidden>{save.profile.level}</span></div>
         <div style={{ minWidth: 0, textAlign: 'left' }}>
           <div className="player-name">{save.profile.name}</div>
           <AccountXp level={save.profile.level} xp={save.profile.xp} compact />
         </div>
       </button>
-      {/* Compteurs façon maquette : icônes peintes, minuteur de la prochaine énergie, « + » vers le Marché. */}
       <div className="pill-wrap">
-        <button className="pill" onClick={() => setOpen(true)} aria-label="Énergie">
-          <img className="pill-ico" src={icEnergy} alt="" /> <span className={e.current > eMax ? 'over-cap' : ''}><Counter id="energy" value={e.current} format={String} /></span><small>/{eMax}</small>
+        <button className="pill kit k-energy" onClick={() => setOpen(true)} aria-label="Énergie">
+          <span className={e.current > eMax ? 'over-cap' : ''}><Counter id="energy" value={e.current} format={String} /></span><small>/{eMax}</small>
         </button>
         {e.current < eMax && <span className="pill-timer">{formatDuration(next)}</span>}
       </div>
-      <button className="pill" onClick={() => push({ name: 'inventory' })} aria-label="Or"><img className="pill-ico" src={icGold} alt="" /><Counter id="gold" value={save.resources.gold} />
-        <span className="pill-plus" role="button" aria-label="Marché" onClick={(ev) => { ev.stopPropagation(); push(isUnlocked(save, 'market') ? { name: 'market' } : { name: 'inventory' }); }}>+</span></button>
-      <button className="pill" onClick={() => push({ name: 'inventory' })} aria-label="Cristaux"><img className="pill-ico" src={icCrystal} alt="" /><Counter id="crystals" value={save.resources.crystals} />
-        <span className="pill-plus" role="button" aria-label="Marché" onClick={(ev) => { ev.stopPropagation(); push(isUnlocked(save, 'market') ? { name: 'market' } : { name: 'inventory' }); }}>+</span></button>
+      <button className="pill kit k-gold" onClick={() => push({ name: 'inventory' })} aria-label="Or"><Counter id="gold" value={save.resources.gold} />
+        <span className="pill-plus" role="button" aria-label="Marché" onClick={(ev) => { ev.stopPropagation(); push(isUnlocked(save, 'market') ? { name: 'market' } : { name: 'inventory' }); }} /></button>
+      <button className="pill kit k-crystal" onClick={() => push({ name: 'inventory' })} aria-label="Cristaux"><Counter id="crystals" value={save.resources.crystals} />
+        <span className="pill-plus" role="button" aria-label="Marché" onClick={(ev) => { ev.stopPropagation(); push(isUnlocked(save, 'market') ? { name: 'market' } : { name: 'inventory' }); }} /></button>
       {open && (
         <Modal onClose={() => setOpen(false)}>
           <h2>Énergie</h2>

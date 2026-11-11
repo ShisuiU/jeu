@@ -558,6 +558,13 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.72.1 — Accueil identique à la maquette SpriteCook
+
+- **La maquette sert maintenant de décor** : son image (le Monde Cousu, le Lien de dos, les six cadres d'icônes peintes et le panneau orné de la Campagne) est utilisée telle quelle, textes effacés. Le jeu pose dessus, exactement aux mêmes endroits, les vrais boutons, les étiquettes, les points rouges et les textes de la campagne (chapitre, nom, étoiles). L'image suit la largeur de l'écran et le ciel se prolonge au-dessus.
+- Un lieu pas encore ouvert (Camp, Marché, Événements) reste visible, assombri avec un cadenas ; le toucher dit quand il s'ouvre.
+- **Barre du haut comme la maquette** : avatar rond cerclé d'or avec le niveau en médaillon, barre d'expérience violette, compteurs à bord doré avec les icônes peintes (éclair, pièce, cristal), minuteur de la prochaine énergie et « + » vers le Marché.
+- **Police de la maquette** (Cormorant Garamond) pour l'accueil et la barre du bas ; onglets « Invocation » et « Combat » comme sur la maquette.
+
 ## ✅ Version 1.72.0 — Nouvel accueil (maquette SpriteCook)
 
 Accueil redessiné d'après une maquette générée avec SpriteCook, à partir du décor du jeu :

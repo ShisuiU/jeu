@@ -4,52 +4,59 @@
    avec le cristal d'invocation au centre.
    ══════════════════════════════════════════════════════════════════════════ */
 
-/* Décor : l'image est remontée pour que le Lien (de dos, en bas de l'image) tienne au-dessus du panneau Campagne. */
-.home-world2 { position: absolute; inset: 0; background: #07060b; overflow: hidden; }
-.home-world2 img { position: absolute; left: 0; width: 100%; top: -6%; height: calc(100% - var(--nav-h) - var(--sab) + 2%); object-fit: cover; object-position: 50% 82%; transform-origin: 50% 70%; animation: homeDrift 34s ease-in-out infinite alternate; will-change: transform; }
-.home-rift { position: absolute; left: 50%; top: 13%; width: 80vmin; height: 60vmin; transform: translate(-50%, -50%); background: radial-gradient(ellipse, rgba(190,140,255,0.28), rgba(140,90,255,0.1) 45%, transparent 70%); mix-blend-mode: screen; animation: heartPulse 5s ease-in-out infinite; pointer-events: none; }
-@keyframes homeDrift { from { transform: scale(1.03); } to { transform: scale(1.07) translateX(-1%); } }
-.reduced-motion .home-world2 img, .reduced-motion .home-rift { animation: none; }
-@media (prefers-reduced-motion: reduce) { .home-world2 img, .home-rift { animation: none; } }
-.home .home-shade { background: linear-gradient(180deg, rgba(5,4,8,0.7) 0%, rgba(5,4,8,0.15) 16%, transparent 30%, transparent 62%, rgba(5,4,8,0.55) 76%, #07060b 92%); }
+/* v1.72.1 — la maquette sert de décor (« scène ») : image calée en bas, au-dessus de la barre, sur toute la largeur ;
+   les boutons et textes sont placés en % de l'image, la taille du texte suit la largeur (unités cqw). */
+.home { --serif-ui: 'Cormorant Garamond', Georgia, serif; font-variant-numeric: lining-nums; }
+.bottom-nav, .home .topbar, .home-stage { font-variant-numeric: lining-nums tabular-nums; }
+.home-sky { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 100%, #1b1430 0%, #0c0a14 55%, #07060b 100%); }
+.home-sky-motes { position: absolute; inset: 0 0 50% 0; opacity: 0.6; }
+.home-stage { position: absolute; z-index: 2; left: 0; right: 0; bottom: calc(var(--nav-h) + var(--sab)); aspect-ratio: 1152 / 1562; background-size: 100% 100%; background-repeat: no-repeat; container-type: inline-size;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 7%); mask-image: linear-gradient(180deg, transparent 0, #000 7%); }
+.home-rift { position: absolute; left: 50%; top: 13%; width: 70%; height: 30%; transform: translate(-50%, -50%); background: radial-gradient(ellipse, rgba(190,140,255,0.22), transparent 70%); mix-blend-mode: screen; animation: heartPulse 5s ease-in-out infinite; pointer-events: none; }
+.reduced-motion .home-rift { animation: none; }
+@media (prefers-reduced-motion: reduce) { .home-rift { animation: none; } }
 
-/* Boutons : cadre carré doré, icône peinte, étiquette sur une petite plaque en dessous. */
-.home .home-places, .home .home-shortcuts { position: absolute; z-index: 3; top: calc(var(--sat) + 62px); display: flex; flex-direction: column; gap: 8px; }
-.home .home-places { left: 4px; }
-.home .home-shortcuts { right: 4px; }
-.hb-btn { display: flex; flex-direction: column; align-items: center; gap: 0; width: 74px; padding: 0; background: none; border: 0; color: inherit; }
-.hb-frame { position: relative; width: 52px; height: 52px; display: grid; place-items: center; border-radius: 4px;
-  background: radial-gradient(circle at 50% 40%, #1c1824, #0b0a10 75%);
-  border: 1px solid #9c7a3e; box-shadow: inset 0 0 0 2px #0b0a10, inset 0 0 0 3px rgba(233,198,122,0.35), 0 4px 12px rgba(0,0,0,0.6); }
-.hb-frame::before, .hb-frame::after { content: ''; position: absolute; width: 7px; height: 7px; border: 1.5px solid #e9c67a; pointer-events: none; }
-.hb-frame::before { top: -3px; left: -3px; border-right: 0; border-bottom: 0; }
-.hb-frame::after { bottom: -3px; right: -3px; border-left: 0; border-top: 0; }
-.hb-frame img { width: 40px; height: 40px; object-fit: contain; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.8)); }
-.hb-frame .badge-dot { top: -4px; right: -4px; width: 11px; height: 11px; }
-.hb-label { margin-top: -6px; position: relative; z-index: 1; min-width: 58px; max-width: 74px; padding: 2px 5px 3px; font-family: var(--font-title); font-size: 10px; letter-spacing: 0.02em; font-weight: 700; color: #f1e6cc; white-space: nowrap; text-align: center;
-  background: linear-gradient(180deg, #1d1922, #0d0b11); border: 1px solid rgba(156,122,62,0.8); border-radius: 3px; box-shadow: 0 2px 6px rgba(0,0,0,0.6); }
-.hb-btn:active .hb-frame { transform: scale(0.94); }
-@media (hover: hover) { .hb-btn:hover .hb-frame { border-color: #e9c67a; } }
+.hs-btn { position: absolute; width: 13.02%; height: 10.2%; padding: 0; background: none; border: 0; border-radius: 4px; }
+.hs-btn.l { left: 2.43%; } .hs-btn.r { left: 84.55%; }
+.hs-btn.r0 { top: 3.2%; } .hs-btn.r1 { top: 15.17%; } .hs-btn.r2 { top: 27.14%; }
+.hs-btn:active { transform: scale(0.95); filter: brightness(1.2); }
+.hs-label { position: absolute; left: 0; right: 0; top: 83%; transform: translateY(-50%); text-align: center; font-family: var(--serif-ui); font-weight: 700; font-size: 3.35cqw; line-height: 1; color: #f3e7cc; text-shadow: 0 1px 2px #000; white-space: nowrap; letter-spacing: 0.01em; }
+.hs-btn .badge-dot { top: -1.5%; right: 4%; left: auto; width: 2.6cqw; height: 2.6cqw; min-width: 9px; min-height: 9px; }
+.hs-btn.locked::before { content: ''; position: absolute; left: 8%; top: 1%; width: 83%; height: 75%; background: rgba(5,4,8,0.62); border-radius: 3px; }
+.hs-lock { position: absolute; left: 50%; top: 38%; transform: translate(-50%, -50%); color: #d9b36a; filter: drop-shadow(0 1px 3px #000); }
+.hs-btn.locked .hs-label { color: #a59b8a; }
 
-/* Panneau Campagne orné : double filet doré, fond violet sombre, coins en losange, cristal au sommet. */
-.home .home-bottom { bottom: calc(var(--nav-h) + var(--sab) + 14px); padding: 0 14px; }
-.campaign-cta.ornate { position: relative; height: auto; min-height: 92px; padding: 14px 16px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; overflow: visible; clip-path: none; border-radius: 6px; text-align: center;
-  background: radial-gradient(ellipse at 50% 0%, rgba(150,95,255,0.35), transparent 70%), linear-gradient(180deg, #2a1846, #150c26 60%, #0d0818);
-  border: 1.5px solid #c99d4f; box-shadow: inset 0 0 0 3px #120b1f, inset 0 0 0 4px rgba(233,198,122,0.55), 0 0 0 1px #000, 0 10px 30px rgba(0,0,0,0.7), 0 0 26px rgba(150,95,255,0.25); }
-.campaign-cta.ornate::before { display: none; }
-.campaign-cta.ornate .big { font-family: var(--font-title); font-size: 27px; font-weight: 800; letter-spacing: 0.08em; line-height: 1.05; text-transform: none;
-  background: linear-gradient(180deg, #fff3d0, #e9c67a 55%, #a87b35); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.8)); }
-.campaign-cta.ornate .sub { font-family: var(--font-title); font-size: 13px; color: #e6d7f5; }
-.cc-meta { display: flex; align-items: center; gap: 10px; font-size: 11.5px; color: var(--text-dim); }
-.cc-stars { display: inline-flex; align-items: center; gap: 3px; font-weight: 800; color: var(--gold-hi); }
-.cc-gem { position: absolute; top: -21px; left: 50%; width: 120px; height: 40px; transform: translateX(-50%); filter: drop-shadow(0 0 8px rgba(170,110,255,0.8)); pointer-events: none; }
-.cc-corner { position: absolute; width: 9px; height: 9px; background: #e9c67a; transform: rotate(45deg); box-shadow: 0 0 6px rgba(233,198,122,0.6); }
-.cc-corner.tl { top: -5px; left: -5px; } .cc-corner.tr { top: -5px; right: -5px; } .cc-corner.bl { bottom: -5px; left: -5px; } .cc-corner.br { bottom: -5px; right: -5px; }
+/* Panneau Campagne : le cadre est peint dans le décor ; le bouton en a exactement la taille et pose les textes. */
+.campaign-cta.hs-campaign { position: absolute; left: 15.6%; width: 69%; top: 82.07%; height: 14.72%; min-height: 0; margin: 0; padding: 0; display: block; clip-path: none; border: 0; border-radius: 10px; background: none; box-shadow: none; overflow: visible; text-align: center; }
+.campaign-cta.hs-campaign::before, .campaign-cta.hs-campaign::after { display: none; }
+.hs-campaign > span { position: absolute; left: 0; right: 0; transform: translateY(-50%); white-space: nowrap; }
+.hs-campaign .big { top: 28%; font-family: var(--serif-ui); font-weight: 700; font-size: 7.4cqw; letter-spacing: 0.04em; font-variant: small-caps; line-height: 1;
+  background: linear-gradient(180deg, #fff1cf, #e7c37c 55%, #b48a43); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.8)); }
+.hs-campaign .sub { top: 55%; font-family: var(--serif-ui); font-weight: 600; font-size: 3.25cqw; color: #cfc3b6; overflow: hidden; text-overflow: ellipsis; padding: 0 9%; }
+.hs-campaign .cc-stars { top: 77%; display: inline-flex; justify-content: center; align-items: center; gap: 1.4cqw; font-family: var(--serif-ui); font-weight: 700; font-size: 3.7cqw; color: #f1e6cf; }
+.hs-campaign .cc-stars svg { width: 4.2cqw; height: 4.2cqw; color: #f2c75c; }
+.campaign-cta.hs-campaign:active { transform: scale(0.98); filter: brightness(1.15); }
+
+/* Barre du haut (accueil) comme la maquette : avatar rond cerclé d'or, niveau en médaillon, barre d'expérience violette,
+   compteurs à bord doré avec icônes peintes et « + ». */
+.home .topbar { position: relative; z-index: 5; }
+.home .avatar { width: 46px; height: 46px; border-radius: 50%; border: 2px solid #c99d4f; box-shadow: 0 0 0 1px #000, 0 0 0 3px rgba(201,157,79,0.35), 0 0 14px rgba(0,0,0,0.6); }
+.home .avatar-lvl { left: -4px; right: auto; bottom: -4px; min-width: 22px; height: 22px; padding: 0; border-radius: 50%; background: radial-gradient(circle, #2a2232, #0e0b12); color: #f0dcae; border: 1.5px solid #c99d4f; font-family: var(--serif-ui); font-size: 13px; font-weight: 700; }
+.home .player-name { font-family: var(--serif-ui); font-size: 17px; font-weight: 700; color: #f2e6cd; letter-spacing: 0; }
+.home .topbar { gap: 5px; }
+.home .pill { height: 28px; gap: 2px; padding: 0 5px 0 3px; border-radius: 4px; background: linear-gradient(180deg, rgba(20,17,26,0.92), rgba(8,7,11,0.92)); border: 1px solid rgba(201,157,79,0.75); font-family: var(--serif-ui); font-size: 14.5px; font-weight: 700; color: #f1e6cf; }
+.home .pill small { font-size: 11px; }
+.home .avatar-btn { min-width: 0; flex: 1 1 auto; }
+.home .avatar-btn > div:last-child { min-width: 64px; }
+.home .pill .pill-ico { width: 20px; height: 20px; object-fit: contain; }
+.home .pill .pill-plus { display: grid; place-items: center; width: 16px; height: 16px; margin-left: 2px; border-radius: 50%; border: 1px solid #c99d4f; color: #f0dcae; font-size: 13px; line-height: 1; font-family: var(--font-body, sans-serif); }
+.pill-wrap { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+.pill-timer { font-family: var(--serif-ui); font-size: 11.5px; color: #a99e8e; margin-top: 1px; line-height: 1; font-variant-numeric: tabular-nums; }
 
 /* Barre du bas : icônes peintes, filet doré, cristal d'invocation qui dépasse au centre. */
 .bottom-nav { background: linear-gradient(180deg, #13101b, #08070c) !important; border-top: 1px solid #6e5528 !important; }
 .bottom-nav::before { display: block !important; left: 0 !important; right: 0 !important; top: -1px !important; height: 1px !important; background: linear-gradient(90deg, transparent, #e9c67a 20%, #e9c67a 80%, transparent) !important; }
-.nav-item { gap: 1px; font-family: var(--font-title); font-size: 11.5px; font-weight: 700; color: #b7ab98; }
+.nav-item { gap: 1px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 14.5px; font-weight: 700; color: #b7ab98; letter-spacing: 0; }
 .nav-item + .nav-item { border-left: 1px solid rgba(255,255,255,0.04); }
 .nav-ico { width: 30px; height: 30px; object-fit: contain; opacity: 0.8; filter: drop-shadow(0 1px 2px #000); transition: filter 0.2s, opacity 0.2s; }
 .nav-item.active { color: #ffcf73 !important; }
@@ -59,3 +66,10 @@
 .nav-item.summon.active .nav-crystal { box-shadow: 0 0 0 1px #000, 0 0 22px rgba(255,190,90,0.7), 0 0 34px rgba(160,100,255,0.7); }
 .nav-item.summon.active::after { display: none; }
 .nav-item.summon .badge-dot { top: -18px; right: calc(50% - 30px); }
+/* Barre d'expérience violette sous le nom, comme la maquette. */
+.home .topbar .ax-bar { height: 7px; border-radius: 1px; background: #15111c; box-shadow: inset 0 0 0 1px rgba(201,157,79,0.55); }
+.home .topbar .ax-bar i { border-radius: 0; background: linear-gradient(90deg, #6d3fd6, #a97bff); box-shadow: 0 0 6px rgba(150,100,255,0.6); }
+.home .topbar .ax-num { font-family: var(--serif-ui); font-size: 12px; color: #a99e8e; }
+.home .topbar .ax-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.hs-label.long { font-size: 2.75cqw; letter-spacing: 0; }
+.hs-campaign .sub { font-size: 3.05cqw; padding: 0 11%; }

@@ -136,3 +136,13 @@
 .nav-item.summon { padding-bottom: 7px !important; }
 .nav-item.summon .nav-crystal { width: 54px !important; margin: -30px 0 -2px !important; top: 0 !important; position: relative; }
 .bottom-nav .nav-item.active::after { bottom: 2px !important; }
+
+/* v1.73.5 — barre du bas sur iPhone : la zone du bas (au-dessus de la barre d'accueil de l'iPhone) n'est plus laissée vide.
+   Icônes et noms sont centrés sur toute la hauteur de la barre ; on ne garde qu'une petite marge (10 px) pour la barre d'accueil. */
+.bottom-nav { padding-bottom: min(var(--sab), 10px) !important; align-items: stretch !important; }
+.bottom-nav .nav-item { height: auto !important; align-self: stretch; justify-content: center !important; padding: 0 !important; gap: 3px !important; }
+.bottom-nav .nav-ico { height: 25px !important; }
+.nav-item.summon { justify-content: center !important; padding: 0 !important; }
+.nav-item.summon .nav-crystal { width: 50px !important; margin: -26px 0 -2px !important; }
+.nav-item.summon .nav-crystal { margin: -25px 0 0 !important; }
+.bottom-nav .nav-item.active::after { bottom: calc(50% - 28px) !important; }

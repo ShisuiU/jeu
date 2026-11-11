@@ -558,6 +558,16 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.69.0 — Vague B : 13 héros de plus (76 en tout)
+
+Deuxième des 4 vagues de `docs/HEROES_PLAN.md`.
+- **5 Communs** : Ivo Pique-Feu (recrue de la Légion, lance brûlante), Pell Carapace (pêcheur d'oasis, bouclier-carapace), Linnea Rosée (cueilleuse de rosée, accélère l'équipe), Gaspard Pot-de-Colle (alchimiste, ralentit les ennemis), Nim Étincelle (gamin des conduits, double frappe).
+- **4 Peu communs** : Maud Cloche-Noire (fossoyeuse-prêtresse, soins et résurrection), Arek Tranche-Dune (lame des caravanes, achèvement), Selka Nuage-Bas (brumière, gel), Fennor Racine-Lente (jeune sylvain, régénération et provocation).
+- **3 Rares** : Isaure Lame-Vitrail (duelliste à la rapière de vitrail), Quill Chante-Vide (barde du Néant, ATQ et DÉF de l'équipe), Okoro Corne-Brûlée (bélier de la Légion, défenseur).
+- **1 Épique** : Lyssandre l'Inachevée (androïde éveillée, frappes multiples).
+- Chacun a son portrait peint, ses compétences, son histoire et ses répliques (aura de chef dès Peu commun).
+- Répartition : 20 Communs, 18 Peu communs, 16 Rares, 12 Épiques, 8 Légendaires, 2 Mythiques.
+
 ## ✅ Version 1.68.21 — Accueil, page de profil, rôles du clan
 
 - **Accueil** : le décor est celui de l'écran de lancement (le Monde Cousu sous le Cœur d'Aeon, halo et particules) au lieu du portrait du chef d'équipe ; le nom du chef en bas est retiré.

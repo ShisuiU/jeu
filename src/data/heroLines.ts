@@ -317,6 +317,71 @@ export const HERO_LINES: Record<string, string[]> = {
     'On m’a jetée au feu. Le feu m’a rendue.',
     'Chut. Écoute crépiter tes regrets.',
   ],
+  ivo: [
+    'Encore un tour de garde ? Avec plaisir !',
+    'Ma lance est chaude. Mon courage aussi, presque.',
+    'Un jour, ils chanteront mon nom. Enfin, j’espère.',
+  ],
+  pell: [
+    'La tortue ne se presse jamais. Moi non plus.',
+    'Reste derrière la carapace, petit.',
+    'Le filet attrape tout. Même les ennuis.',
+  ],
+  linnea: [
+    'La rosée ne ment pas : on court plus vite !',
+    'Une goutte pour toi, une goutte pour toi…',
+    'Le matin est le plus beau moment pour se battre.',
+  ],
+  gaspard: [
+    'Attention, ça colle. Non, vraiment, ça colle.',
+    'Encore une explosion ? C’était prévu.',
+    'La science demande des sacrifices. Surtout mes sourcils.',
+  ],
+  nim: [
+    'Trouvé, volé, rangé.',
+    'Les conduits, c’est chez moi. Bienvenue.',
+    'Bzzt ! Encore un qui n’a rien vu venir.',
+  ],
+  maud: [
+    'Chaque cloche a son mort. Pas toi, pas aujourd’hui.',
+    'J’ai creusé assez de tombes pour cette vie.',
+    'Repose-toi plus tard. Bats-toi maintenant.',
+  ],
+  arek: [
+    'La dune se fend toujours du bon côté.',
+    'Les caravanes passent. Les Échos, non.',
+    'Mon cimeterre a soif de sable.',
+  ],
+  selka: [
+    'Plus haut, l’air est plus pur. Et plus froid.',
+    'Je tisse la brume. Toi, tu t’y perds.',
+    'Le givre arrive en silence.',
+  ],
+  fennor: [
+    'Je… suis… prêt.',
+    'Mes racines… tiennent… bon.',
+    'Pousse… doucement… et ne recule jamais.',
+  ],
+  isaure: [
+    'Chaque éclat a une couleur. Chaque couleur, un saint.',
+    'Un duel, c’est une prière rapide.',
+    'La lumière passe toujours à travers.',
+  ],
+  quill: [
+    'Une dernière chanson avant la bataille ?',
+    'Le Néant fredonne. Je lui réponds.',
+    'Mes cordes vibrent : l’ennemi tremble.',
+  ],
+  okoro: [
+    'Douze portes. La treizième aura moins de chance.',
+    'Frappe-moi plus fort, je n’ai rien senti.',
+    'Le bélier ne recule pas.',
+  ],
+  lyssandre: [
+    'Analyse terminée. Résultat : tu perds.',
+    'Inachevée, mais pas incomplète.',
+    'J’ai choisi mon nom. Et mes ennemis.',
+  ],
 };
 
 /** Réplique suivante d'un héros (la citation de sa fiche, puis ses trois répliques). */

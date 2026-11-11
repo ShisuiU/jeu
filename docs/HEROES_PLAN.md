@@ -32,7 +32,7 @@ Format : `id` · Nom · titre · rareté · faction · rôle · affinité · id�
 - `cassien` · Cassien Verre-Brisé · Médecin de Terrain · R · prism · healer · telluric · nanites soignantes, boucliers
 - `vespera` · Vespera Fille-des-Cendres · Sorcière de Fumée · E · ash · controller · void · fumée qui étourdit, brûlure
 
-## Vague B — v1.69.0
+## Vague B — v1.69.0 ✅ livrée
 - `ivo` · Ivo Pique-Feu · Recrue de la Légion · C · ash · attacker · solar · jeune recrue à la lance, brûlure
 - `pell` · Pell Carapace · Pêcheur d'Oasis · C · akkar · defender · telluric · bouclier en carapace de tortue
 - `linnea` · Linnea Rosée · Cueilleuse de l'Aube · C · sylvaran · support · telluric · rosée qui accélère (VIT+)

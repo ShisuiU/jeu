@@ -124,3 +124,15 @@
 .bottom-nav .nav-ico { height: 25px; }
 .nav-item.summon { justify-content: flex-end !important; padding-bottom: 6px !important; }
 .nav-item.summon .nav-crystal { width: 52px; margin-top: -26px; top: 0 !important; }
+
+/* v1.73.4 — barre du bas sobre : fond sombre jusqu'en bas de l'écran (zone de l'iPhone comprise), filet doré en haut,
+   icônes et noms alignés et centrés dans la barre ; le cristal d'invocation dépasse au-dessus. */
+.bottom-nav { height: calc(var(--nav-h) + var(--sab)) !important; padding: 0 4px var(--sab) !important; background: linear-gradient(180deg, #17121f 0%, #0b090f 70%) !important; border-top: 0 !important; box-shadow: 0 -10px 24px rgba(0,0,0,0.55) !important; }
+.bottom-nav::after { display: none !important; }
+.bottom-nav::before { display: block !important; content: '' !important; position: absolute !important; top: 0 !important; left: 0 !important; right: 0 !important; height: 1px !important; background: linear-gradient(90deg, transparent, #c99d4f 15%, #f0d48f 50%, #c99d4f 85%, transparent) !important; }
+.bottom-nav > .nav-item:first-child, .bottom-nav > .nav-item:last-child { margin: 0 !important; }
+.bottom-nav .nav-item { height: var(--nav-h) !important; justify-content: flex-end !important; padding: 0 0 7px !important; gap: 3px !important; }
+.bottom-nav .nav-ico { height: 26px !important; width: auto; }
+.nav-item.summon { padding-bottom: 7px !important; }
+.nav-item.summon .nav-crystal { width: 54px !important; margin: -30px 0 -2px !important; top: 0 !important; position: relative; }
+.bottom-nav .nav-item.active::after { bottom: 2px !important; }

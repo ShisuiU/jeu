@@ -41,7 +41,7 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
 
   return (
     <Screen title={d.name} right={inst && (
-      <button className="back-btn" aria-label={inst.locked ? 'Déverrouiller' : 'Verrouiller'} onClick={() => { toggleLock(inst.uid); toast(inst.locked ? 'Héros déverrouillé.' : 'Héros verrouillé : il ne pourra pas être sacrifié par erreur.'); }}>
+      <button className="hdr-icon-btn" aria-label={inst.locked ? 'Déverrouiller' : 'Verrouiller'} onClick={() => { toggleLock(inst.uid); toast(inst.locked ? 'Héros déverrouillé.' : 'Héros verrouillé : il ne pourra pas être sacrifié par erreur.'); }}>
         {inst.locked ? <Icon.lock /> : <Icon.unlock />}
       </button>
     )}>

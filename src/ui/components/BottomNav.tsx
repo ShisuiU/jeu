@@ -1,7 +1,11 @@
 import { useUI, type Tab } from '../../state/ui';
 import { useGame } from '../../state/store';
 import { canClaimDaily } from '../../game/daily';
-import { Icon } from '../art/Icons';
+import navHome from '../../assets/home/nav_home.webp';
+import navHeroes from '../../assets/home/nav_heroes.webp';
+import navSummon from '../../assets/home/nav_summon.webp';
+import navBattle from '../../assets/home/nav_battle.webp';
+import navMenu from '../../assets/home/nav_menu.webp';
 import { unreadMail } from '../screens/Mail';
 import { claimableCount, eventsDot } from '../../game/missions';
 import { isUnlocked } from '../../game/unlocks';
@@ -12,12 +16,13 @@ import type { SaveData } from '../../save/schema';
 import { newCopies } from '../../game/copies';
 import { cloudWanted, useAccount } from '../../cloud/account';
 
-const ITEMS: { tab: Tab; label: string; icon: keyof typeof Icon }[] = [
-  { tab: 'home', label: 'Accueil', icon: 'home' },
-  { tab: 'collection', label: 'Héros', icon: 'heroes' },
-  { tab: 'summon', label: 'Invoquer', icon: 'portal' },
-  { tab: 'combats', label: 'Combats', icon: 'sword' },
-  { tab: 'menu', label: 'Menu', icon: 'menu' },
+// Icônes peintes (v1.72.0, maquette SpriteCook) ; Invoquer est un cristal rond qui dépasse de la barre.
+const ITEMS: { tab: Tab; label: string; img: string }[] = [
+  { tab: 'home', label: 'Accueil', img: navHome },
+  { tab: 'collection', label: 'Héros', img: navHeroes },
+  { tab: 'summon', label: 'Invoquer', img: navSummon },
+  { tab: 'combats', label: 'Combats', img: navBattle },
+  { tab: 'menu', label: 'Menu', img: navMenu },
 ];
 
 const teamCanImprove = (s: SaveData) => { const t = s.teams.find((x) => x.id === s.activeTeamId) ?? s.teams[0]; return t.slots.some((u) => { const h = s.heroes.find((x) => x.uid === u); return !!h && canImprove(s, h); }); };
@@ -43,10 +48,9 @@ export function BottomNav() {
   return (
     <nav className="bottom-nav">
       {ITEMS.map((it) => {
-        const I = Icon[it.icon] as (p: { size?: number }) => JSX.Element;
         return (
-          <button key={it.tab} className={`nav-item ${root === it.tab ? 'active' : ''}`} onClick={() => tab(it.tab)}>
-            <I />
+          <button key={it.tab} className={`nav-item ${it.tab === 'summon' ? 'summon' : ''} ${root === it.tab ? 'active' : ''}`} onClick={() => tab(it.tab)}>
+            <img className={it.tab === 'summon' ? 'nav-crystal' : 'nav-ico'} src={it.img} alt="" draggable={false} />
             {it.label}
             {dots[it.tab] && <span className="badge-dot" />}
           </button>

@@ -45,7 +45,7 @@ describe('robustesse : 300 actions aléatoires', () => {
       (d) => d.equipment.length && upgradeGear(d, d.equipment[Math.floor(r() * d.equipment.length)].uid, r),
       (d) => d.equipment.length && dismantleGear(d, d.equipment[Math.floor(r() * d.equipment.length)].uid),
       (d) => applyStageResult(d, '1-' + (1 + Math.floor(r() * 10)), 'normal', r() < 0.8, Math.floor(r() * 3), d.heroes.slice(0, 4).map((h) => h.uid), now),
-      (d) => applyMode(d, { mode: 'dungeon', dungeonId: 'forge', floor: 1 }, { won: r() < 0.7, alliesDead: 0, participants: [d.heroes[0].uid] }, now),
+      (d) => applyMode(d, { mode: 'dungeon', dungeonId: 'warforge', floor: 1 }, { won: r() < 0.7, alliesDead: 0, participants: [d.heroes[0].uid] }, now),
       (d) => applyMode(d, { mode: 'worldboss', tier: 'normal' }, { won: false, alliesDead: 4, participants: [], bossDamage: { dealt: r() * 100, max: 100 } }, now),
       (d) => { d.arena.opponents = generateOpponents(d, r); applyMode(d, { mode: 'arena', opponentId: d.arena.opponents[0].id }, { won: r() < 0.5, alliesDead: 0, participants: [] }, now); },
       (d) => { track(d, 'battleWin', 1); DAILY_MISSIONS.forEach((m) => claimMission(d, 'daily', m.id)); },

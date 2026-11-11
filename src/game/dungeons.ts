@@ -1,6 +1,6 @@
 import type { SaveData } from '../save/schema';
 import { DIFFICULTIES, DIFFICULTY_ORDER, type DifficultyId } from '../data/campaign';
-import { DUNGEON_DIFF_OPEN, DUNGEON_FLOORS } from '../data/dungeons';
+import { DUNGEON_BY_ID, DUNGEON_DIFF_OPEN, DUNGEON_FLOORS } from '../data/dungeons';
 
 // Progression des donjons par difficulté. Normal garde son ancien champ `bestFloor` (sauvegardes existantes) ;
 // les autres difficultés vont dans `best`.
@@ -26,6 +26,7 @@ export function dungeonDiffOpen(s: SaveData, dungeonId: string, diff: Difficulty
 
 /** Peut-on combattre cet étage ? */
 export function dungeonFloorCheck(s: SaveData, dungeonId: string, diff: DifficultyId, floor: number): { ok: boolean; reason?: string } {
+  if (!DUNGEON_BY_ID[dungeonId]) return { ok: false, reason: 'Ce donjon n’existe plus.' };
   if (!dungeonDiffOpen(s, dungeonId, diff)) {
     const prev = DIFFICULTIES[DIFFICULTY_ORDER[DIFFICULTY_ORDER.indexOf(diff) - 1]].name;
     return { ok: false, reason: `${DIFFICULTIES[diff].name} : termine d’abord le ${prev} (étage ${DUNGEON_DIFF_OPEN}).` };

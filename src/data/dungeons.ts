@@ -1,9 +1,9 @@
 import type { Reward } from './resources';
 import { BALANCE } from './balance';
 import { DIFFICULTIES, DIFFICULTY_ORDER, type DifficultyId, type WaveEnemy } from './campaign';
-import type { GearRarity } from './equipment';
+import type { GearRarity, SetId } from './equipment';
 
-// DONJONS — 4 donjons de 15 étages. Chaque étage : vagues générées à partir d'un modèle, puis le gardien.
+// DONJONS — 7 donjons de 15 étages : 4 d'équipement (un par famille d'ensembles, v1.71.0) et 3 de ressources. Chaque étage : vagues générées à partir d'un modèle, puis le gardien.
 export interface DungeonDef {
   id: string;
   name: string;
@@ -14,33 +14,55 @@ export interface DungeonDef {
   reward: (floor: number) => Reward;
   /** Équipement garanti (donjon d'équipement) : table de rareté selon l'étage. */
   gear?: (floor: number) => [GearRarity, number][];
+  /** Ensembles que ce donjon d'équipement peut donner (v1.71.0). */
+  sets?: SetId[];
+  /** Décor de combat (région). */
+  region?: string;
   color: string;
   icon: 'forge' | 'flask' | 'potion' | 'book';
 }
 
 export const DUNGEON_FLOORS = 15;
 
+/** Rareté de l'équipement des donjons d'équipement selon l'étage (meilleure avec la difficulté, voir DUNGEON_GEAR_BONUS). */
+const GEAR_TABLE = (f: number): [GearRarity, number][] => [['uncommon', Math.max(0, 50 - f * 6)], ['rare', 40], ['epic', 6 + f * 4], ['legendary', f >= 6 ? f - 4 : 0], ['mythic', f >= 9 ? (f - 8) * 0.8 : 0]];
+
 export const DUNGEONS: DungeonDef[] = [
+  // ─── Donjons d'équipement (v1.71.0) : chacun donne un objet garanti à chaque victoire, dans SES ensembles. ───
   {
-    id: 'forge', name: 'Forge Engloutie', description: 'Équipement garanti et minerai de forge.', boss: 'forge_golem', minions: ['hollow_shield', 'hollow_soldier', 'hollow_archer'],
-    reward: (f) => ({ forgeOre: 10 + f * 6, gold: 800 + f * 300 }),
-    gear: (f) => [['uncommon', Math.max(0, 50 - f * 6)], ['rare', 40], ['epic', 6 + f * 4], ['legendary', f >= 6 ? f - 4 : 0], ['mythic', f >= 9 ? (f - 8) * 0.8 : 0]],
-    color: '#ff9a3c', icon: 'forge',
+    id: 'warforge', name: 'Forge de Guerre', description: 'Équipement d’attaque : Fureur, Acuité, Massacre.', boss: 'war_smith', minions: ['ash_imp', 'chain_warden', 'pyre_priest'],
+    reward: (f) => ({ forgeOre: 10 + f * 6, gold: 800 + f * 300 }), gear: GEAR_TABLE, sets: ['fury', 'keen', 'savage'], region: 'ash',
+    color: '#ff6b3c', icon: 'forge',
+  },
+  {
+    id: 'bastion', name: 'Bastion Englouti', description: 'Équipement de défense : Vigueur, Rempart, Résolution.', boss: 'drowned_bulwark', minions: ['tide_knight', 'drowned_sentinel', 'brine_siren'],
+    reward: (f) => ({ forgeOre: 10 + f * 6, gold: 800 + f * 300 }), gear: GEAR_TABLE, sets: ['vigor', 'bulwark', 'resolve'], region: 'abyss',
+    color: '#8fb6ff', icon: 'forge',
+  },
+  {
+    id: 'gale', name: 'Galerie des Vents', description: 'Équipement de vitesse : Célérité, Élan, Concentration.', boss: 'storm_matriarch', minions: ['star_husk', 'fallen_seraph', 'rogue_drone'],
+    reward: (f) => ({ forgeOre: 10 + f * 6, gold: 800 + f * 300 }), gear: GEAR_TABLE, sets: ['swift', 'momentum', 'focus'], region: 'astral',
+    color: '#5fe0ff', icon: 'forge',
+  },
+  {
+    id: 'briar', name: 'Jardin Vermeil', description: 'Équipement de survie : Sang-vif, Pérennité.', boss: 'briar_queen', minions: ['thorn_wisp', 'rot_treant', 'feral_stalker'],
+    reward: (f) => ({ forgeOre: 10 + f * 6, gold: 800 + f * 300 }), gear: GEAR_TABLE, sets: ['leech', 'perennial'], region: 'sylvaran',
+    color: '#ff4d7a', icon: 'forge',
   },
   {
     id: 'amber', name: 'Grotte d’Ambre', description: 'Élixirs d’expérience et or.', boss: 'amber_wyrm', minions: ['rift_hound', 'hollow_soldier', 'hollow_archer'],
     reward: (f) => ({ xpElixir: 3 + f * 2, gold: 2000 + f * 900 }),
-    color: '#ffcf5a', icon: 'flask',
+    color: '#ffcf5a', icon: 'flask', region: 'akkar',
   },
   {
     id: 'alchemy', name: 'Laboratoire Brisé', description: 'Potions d’ascension.', boss: 'rogue_alchemist', minions: ['hollow_cantor', 'rift_hound', 'hollow_soldier'],
     reward: (f) => (f <= 3 ? { potionMinor: 2 + f * 2 } : f <= 7 ? { potionMinor: 4 + f, potionGreater: f - 2 } : { potionGreater: Math.min(f, 10), potionSupreme: f - 6 }),
-    color: '#7fe7ff', icon: 'potion',
+    color: '#7fe7ff', icon: 'potion', region: 'prism',
   },
   {
     id: 'archive', name: 'Archives Effacées', description: 'Grimoires de compétence et sceaux de rang.', boss: 'mute_archivist', minions: ['hollow_cantor', 'hollow_knight', 'hollow_archer'],
     reward: (f) => ({ skillTome: 1 + Math.floor(f / 2), ...(f % 3 === 0 ? { rankSigil: 1 } : {}), ...(f >= 8 ? { awakenEssence: f >= 12 ? 2 : 1 } : {}) }),
-    color: '#c7a0ff', icon: 'book',
+    color: '#c7a0ff', icon: 'book', region: 'astral',
   },
 ];
 
@@ -54,7 +76,7 @@ export const DUNGEON_DIFF_OPEN = 15;
 export const DUNGEON_GEAR_BONUS: Record<DifficultyId, number> = { normal: 0, hard: 3, expert: 6, nightmare: 9 };
 export const dungeonRewardMult = (diff: DifficultyId = 'normal') => DIFFICULTIES[diff].rewardMult;
 
-/** Étoiles de l'équipement de la Forge Engloutie (v1.68.11) : étages 1-2 → 1 à 2 ★, 3-9 → 1 à 3 ★, 10 et plus → 3 à 4 ★ ;
+/** Étoiles de l'équipement des donjons d'équipement (v1.68.11) : étages 1-2 → 1 à 2 ★, 3-9 → 1 à 3 ★, 10 et plus → 3 à 4 ★ ;
  *  chaque difficulté décale la fourchette vers le haut (Difficile +1, Expert +2, Cauchemar +3), sans dépasser 6 ★. */
 const STAR_SHIFT: Record<DifficultyId, number> = { normal: 0, hard: 1, expert: 2, nightmare: 3 };
 export function forgeStarRange(floor: number, diff: DifficultyId = 'normal'): [number, number] {

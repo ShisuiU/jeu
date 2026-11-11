@@ -27,7 +27,7 @@ export function Combats() {
   const tickets = ARENA.ticketsPerDay - save.arena.ticketsUsed;
   const cards: { title: string; sub: string; art: string; color: string; route: Route; dot?: boolean; feature?: Feature }[] = [
     { title: 'Campagne', sub: `Chapitre ${chap.n} · ${chap.name} · ★ ${st.stars}/${st.max}`, art: chap.stages[9].waves[1]?.find((w) => w.hpMult)?.enemy ?? 'herald', color: '#d9b36a', route: { name: 'campaign' }, dot: DIFFICULTY_ORDER.some((d) => anyStarChest(save, d)) },
-    { title: 'Donjons', sub: `Meilleur étage ${bestDungeon}/${DUNGEON_FLOORS}`, art: 'forge_golem', color: '#ff9a3c', route: { name: 'dungeons' }, feature: 'dungeons' },
+    { title: 'Donjons', sub: `Meilleur étage ${bestDungeon}/${DUNGEON_FLOORS}`, art: 'war_smith', color: '#ff6b3c', route: { name: 'dungeons' }, feature: 'dungeons' },
     { title: 'Tour des Âges', sub: `Étage ${save.progress.tower.floor}/${TOWER_FLOORS}`, art: 'tower_sentinel', color: '#b98cff', route: { name: 'tower' }, feature: 'tower' },
     { title: 'Boss mondial', sub: `${WORLD_BOSS.name} · ${keys}/${WORLD_BOSS.keysPerDay} clés`, art: WORLD_BOSS.enemy, color: '#ffcc66', route: { name: 'worldboss' }, dot: keys > 0, feature: 'worldboss' },
     { title: 'Expéditions', sub: (() => { const f = finishedExpeditions(save, now); const r = save.expeditions?.runs.length ?? 0; return f ? `${f} de retour : butin à récupérer` : r ? `${r} en cours` : `${EXPEDITION_SLOTS} missions par jour, même jeu fermé`; })(), art: 'seam_stalker', color: '#9fb7ff', route: { name: 'expeditions' }, feature: 'expeditions', dot: finishedExpeditions(save, now) > 0 || (save.expeditions?.runs.length ?? 0) + (save.expeditions?.done.length ?? 0) === 0 },

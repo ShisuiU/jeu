@@ -20,7 +20,7 @@ describe('difficultés des donjons (v1.68.9)', () => {
     s.progress.dungeons.amber = { bestFloor: 15 };
     expect(dungeonDiffOpen(s, 'amber', 'hard')).toBe(true);
     expect(dungeonDiffOpen(s, 'amber', 'expert')).toBe(false);
-    expect(dungeonDiffOpen(s, 'forge', 'hard')).toBe(false); // chaque donjon a sa progression
+    expect(dungeonDiffOpen(s, 'warforge', 'hard')).toBe(false); // chaque donjon a sa progression
     expect(canStart(s, { mode: 'dungeon', dungeonId: 'amber', floor: 1, difficulty: 'hard' }).ok).toBe(true);
     expect(canStart(s, { mode: 'dungeon', dungeonId: 'amber', floor: 2, difficulty: 'hard' }).ok).toBe(false);
     s.progress.dungeons.amber.best = { hard: 10 };
@@ -55,10 +55,10 @@ describe('difficultés des donjons (v1.68.9)', () => {
 
   it('les combats en arrière-plan marchent dans chaque difficulté', () => {
     const s = fresh();
-    s.progress.dungeons.forge = { bestFloor: 15, best: { hard: 2 } };
-    expect(canBackground(s, { mode: 'dungeon', dungeonId: 'forge', floor: 2, difficulty: 'hard' }).ok).toBe(true);
-    expect(canBackground(s, { mode: 'dungeon', dungeonId: 'forge', floor: 3, difficulty: 'hard' }).ok).toBe(false);
-    expect(DUNGEON_BY_ID.forge.gear).toBeTruthy();
+    s.progress.dungeons.warforge = { bestFloor: 15, best: { hard: 2 } };
+    expect(canBackground(s, { mode: 'dungeon', dungeonId: 'warforge', floor: 2, difficulty: 'hard' }).ok).toBe(true);
+    expect(canBackground(s, { mode: 'dungeon', dungeonId: 'warforge', floor: 3, difficulty: 'hard' }).ok).toBe(false);
+    expect(DUNGEON_BY_ID.warforge.gear).toBeTruthy();
   });
 });
 
@@ -83,10 +83,42 @@ describe('étoiles de l’équipement de la Forge (v1.68.11)', () => {
   it('la Forge donne un objet à chaque victoire, avec des étoiles dans la fourchette', () => {
     const s = fresh();
     for (let i = 0; i < 10; i++) {
-      const res = applyMode(s, { mode: 'dungeon', dungeonId: 'forge', floor: 1 }, { won: true, alliesDead: 0, participants: [s.heroes[0].uid] }, NOW + i * 1000);
+      const res = applyMode(s, { mode: 'dungeon', dungeonId: 'warforge', floor: 1 }, { won: true, alliesDead: 0, participants: [s.heroes[0].uid] }, NOW + i * 1000);
       expect(res.gear).toHaveLength(1);
       expect(res.gear[0].stars).toBeGreaterThanOrEqual(1);
       expect(res.gear[0].stars).toBeLessThanOrEqual(2);
     }
+  });
+});
+
+describe('4 donjons d’équipement (v1.71.0)', () => {
+  it('chaque donjon ne donne que ses propres ensembles, et tous les ensembles sont couverts une fois', async () => {
+    const { DUNGEONS } = await import('../src/data/dungeons');
+    const { SET_LIST } = await import('../src/data/equipment');
+    const gearDungeons = DUNGEONS.filter((d) => d.sets);
+    expect(gearDungeons.map((d) => d.id)).toEqual(['warforge', 'bastion', 'gale', 'briar']);
+    expect(DUNGEONS.some((d) => d.id === 'forge')).toBe(false);
+    const all = gearDungeons.flatMap((d) => d.sets!);
+    expect([...all].sort()).toEqual(SET_LIST.map((x) => x.id).sort());
+    for (const d of gearDungeons) {
+      const s = fresh();
+      for (let i = 0; i < 25; i++) {
+        const res = applyMode(s, { mode: 'dungeon', dungeonId: d.id, floor: 1 }, { won: true, alliesDead: 0, participants: [s.heroes[0].uid] }, NOW + i * 977);
+        expect(res.gear).toHaveLength(1);
+        expect(d.sets, d.id).toContain(res.gear[0].set);
+      }
+    }
+  });
+  it('l’ancienne Forge Engloutie disparaît des sauvegardes', async () => {
+    const { migrateSave } = await import('../src/save/migrations');
+    const s = fresh();
+    (s.progress.dungeons as Record<string, unknown>).forge = { bestFloor: 15, best: { hard: 4 } };
+    s.progress.dungeons.amber = { bestFloor: 3 };
+    s.bgRun = { spec: { mode: 'dungeon', dungeonId: 'forge', floor: 2 }, teamId: s.teams[0].id, total: 5, done: 1, wins: 1, stopOnLoss: false, startedAt: NOW, nextAt: NOW, waiting: false, reward: {}, gear: [] };
+    const m = migrateSave(JSON.parse(JSON.stringify(s)));
+    expect(m.progress.dungeons.forge).toBeUndefined();
+    expect(m.progress.dungeons.amber.bestFloor).toBe(3);
+    expect(m.bgRun).toBeNull();
+    expect(canStart(m, { mode: 'dungeon', dungeonId: 'forge', floor: 1 }).ok).toBe(false);
   });
 });

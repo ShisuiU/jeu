@@ -1,3 +1,4 @@
+import { DUNGEON_BY_ID } from '../data/dungeons';
 import { HERO_BY_ID } from '../data/heroes';
 import { DUPLICATE_FRAGMENTS } from '../data/summons';
 import { createNewSave, SAVE_VERSION, type SaveData } from './schema';
@@ -70,6 +71,9 @@ export function migrateSave(raw: unknown): SaveData {
   delete (merged as { heroFragments?: unknown }).heroFragments;
   delete (merged.settings as { theme?: unknown }).theme;
   merged.equipment = (merged.equipment ?? []).map((g) => (g.heroUid && !s.heroes.some((h: { uid: string }) => h.uid === g.heroUid) ? { ...g, heroUid: null } : g));
+  // Donjons retirés (v1.71.0 : l'ancienne Forge Engloutie) : progression effacée, série en arrière-plan arrêtée.
+  for (const id of Object.keys(merged.progress?.dungeons ?? {})) if (!DUNGEON_BY_ID[id]) delete merged.progress.dungeons[id];
+  if (merged.bgRun && merged.bgRun.spec.mode === 'dungeon' && !DUNGEON_BY_ID[merged.bgRun.spec.dungeonId]) merged.bgRun = null;
   // Nettoyage : héros dont la définition n'existe plus (contenu retiré) et équipes pointant vers des héros absents.
   merged.heroes = merged.heroes.filter((h) => h && HERO_BY_ID[h.heroId]);
   const uids = new Set(merged.heroes.map((h) => h.uid));

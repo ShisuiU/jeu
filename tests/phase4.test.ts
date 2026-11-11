@@ -92,14 +92,14 @@ describe('événements', () => {
 describe('modes de jeu', () => {
   it('donjon : coût, victoire, étage suivant, équipement garanti', () => {
     const s = fresh();
-    const spec = { mode: 'dungeon' as const, dungeonId: 'forge', floor: 1 };
+    const spec = { mode: 'dungeon' as const, dungeonId: 'warforge', floor: 1 };
     expect(canStart(s, { ...spec, floor: 2 }).ok).toBe(false);
     const e0 = s.energy.current;
     expect(payMode(s, spec, NOW).ok).toBe(true);
     expect(s.energy.current).toBeLessThan(e0);
     const res = applyMode(s, spec, { won: true, alliesDead: 0, participants: [s.heroes[0].uid] }, NOW);
     expect(res.gear).toHaveLength(1);
-    expect(s.progress.dungeons.forge.bestFloor).toBe(1);
+    expect(s.progress.dungeons.warforge.bestFloor).toBe(1);
     expect(canStart(s, { ...spec, floor: 2 }).ok).toBe(true);
     expect(nextSpec(s, spec)).toEqual({ ...spec, floor: 2 });
     expect(s.missions.daily.counters.dungeonWin).toBe(1);

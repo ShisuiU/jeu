@@ -558,6 +558,11 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.71.1 — Écran de victoire : blocs de récompense plus propres
+
+- Les ressources gagnées se partagent toute la largeur (plus de case vide à droite, « Minerai de forge » tient sur une ligne).
+- L'objet gagné a sa propre ligne, teintée de sa rareté : pièce, rareté, étoiles, statistique principale et ensemble (avec son emblème), et une flèche pour ouvrir sa fiche.
+
 ## ✅ Version 1.71.0 — 4 donjons d'équipement
 
 Pour les joueurs qui ont tout fini : l'ancienne Forge Engloutie est remplacée par **4 donjons d'équipement**, chacun avec son gardien (portrait peint), ses ennemis, ses 15 étages et ses 4 difficultés. Chacun donne un objet garanti à chaque victoire, **uniquement dans ses propres ensembles** :

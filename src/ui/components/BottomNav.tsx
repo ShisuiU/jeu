@@ -6,6 +6,10 @@ import navHeroes from '../../assets/home/nav_heroes.webp';
 import navSummon from '../../assets/home/nav_summon.webp';
 import navBattle from '../../assets/home/nav_battle.webp';
 import navMenu from '../../assets/home/nav_menu.webp';
+import navHomeOn from '../../assets/home/nav_home_on.webp';
+import navHeroesOn from '../../assets/home/nav_heroes_on.webp';
+import navBattleOn from '../../assets/home/nav_battle_on.webp';
+import navMenuOn from '../../assets/home/nav_menu_on.webp';
 import { unreadMail } from '../screens/Mail';
 import { claimableCount, eventsDot } from '../../game/missions';
 import { isUnlocked } from '../../game/unlocks';
@@ -17,12 +21,12 @@ import { newCopies } from '../../game/copies';
 import { cloudWanted, useAccount } from '../../cloud/account';
 
 // Icônes peintes (v1.72.0, maquette SpriteCook) ; Invoquer est un cristal rond qui dépasse de la barre.
-const ITEMS: { tab: Tab; label: string; img: string }[] = [
-  { tab: 'home', label: 'Accueil', img: navHome },
-  { tab: 'collection', label: 'Héros', img: navHeroes },
+const ITEMS: { tab: Tab; label: string; img: string; on?: string }[] = [
+  { tab: 'home', label: 'Accueil', img: navHome, on: navHomeOn },
+  { tab: 'collection', label: 'Héros', img: navHeroes, on: navHeroesOn },
   { tab: 'summon', label: 'Invocation', img: navSummon },
-  { tab: 'combats', label: 'Combat', img: navBattle },
-  { tab: 'menu', label: 'Menu', img: navMenu },
+  { tab: 'combats', label: 'Combat', img: navBattle, on: navBattleOn },
+  { tab: 'menu', label: 'Menu', img: navMenu, on: navMenuOn },
 ];
 
 const teamCanImprove = (s: SaveData) => { const t = s.teams.find((x) => x.id === s.activeTeamId) ?? s.teams[0]; return t.slots.some((u) => { const h = s.heroes.find((x) => x.uid === u); return !!h && canImprove(s, h); }); };
@@ -50,7 +54,7 @@ export function BottomNav() {
       {ITEMS.map((it) => {
         return (
           <button key={it.tab} className={`nav-item ${it.tab === 'summon' ? 'summon' : ''} ${root === it.tab ? 'active' : ''}`} onClick={() => tab(it.tab)}>
-            <img className={it.tab === 'summon' ? 'nav-crystal' : 'nav-ico'} src={it.img} alt="" draggable={false} />
+            <img className={it.tab === 'summon' ? 'nav-crystal' : 'nav-ico'} src={root === it.tab && it.on ? it.on : it.img} alt="" draggable={false} />
             {it.label}
             {dots[it.tab] && <span className="badge-dot" />}
           </button>

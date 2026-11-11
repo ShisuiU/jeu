@@ -558,6 +558,13 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.72.4 — Accueil : kit d'interface SpriteCook complet
+
+Toutes les pièces de l'accueil viennent maintenant du **kit d'interface généré par SpriteCook** à partir de la maquette (22 composants, deux fois plus détaillés) :
+- les six boutons à cadre doré et le panneau Campagne orné ;
+- la barre du haut : anneau d'avatar peint avec médaillon de niveau, barre d'expérience violette peinte, compteurs d'énergie, d'or et de cristaux à cadre peint (icône et « + » dans l'image) ;
+- la barre du bas (sur tous les écrans) : bandeau peint à filet doré, icônes peintes grises qui deviennent dorées sur l'onglet actif, cristal d'invocation rond.
+
 ## ✅ Version 1.72.3 — Accueil en pièces séparées (plein écran sur tous les téléphones)
 
 - Le décor de la maquette, **refait par SpriteCook sans aucun bouton**, remplit maintenant tout l'écran quelle que soit sa hauteur (plus de grand ciel vide en haut sur les iPhone allongés).

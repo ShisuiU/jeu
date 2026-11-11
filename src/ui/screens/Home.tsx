@@ -22,7 +22,7 @@ import { unreadMail } from './Mail';
 import { campElapsed } from '../../game/camp';
 import { useGifts } from '../../state/gifts';
 
-// ACCUEIL (v1.72.3, maquette SpriteCook) — en pièces séparées : le décor de la maquette sans aucun bouton (refait par
+// ACCUEIL (v1.72.4, kit SpriteCook) — en pièces séparées générées par SpriteCook : le décor de la maquette sans aucun bouton (refait par
 // SpriteCook) remplit tout l'écran ; les six cadres d'icônes peintes se rangent sous la barre du haut ; le panneau orné
 // de la Campagne se pose au-dessus de la barre du bas. Le jeu écrit les étiquettes, les points rouges et les textes.
 // Tout le reste est accessible par la barre du bas (Héros, Invoquer, Combats, Menu).

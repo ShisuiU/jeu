@@ -1,0 +1,61 @@
+/* ══════════════════════════════════════════════════════════════════════════
+   ACCUEIL v1.72.0 — d'après la maquette SpriteCook : décor du Lien face au Monde Cousu,
+   boutons à icônes peintes dans des cadres dorés, panneau Campagne orné, barre du bas
+   avec le cristal d'invocation au centre.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Décor : l'image est remontée pour que le Lien (de dos, en bas de l'image) tienne au-dessus du panneau Campagne. */
+.home-world2 { position: absolute; inset: 0; background: #07060b; overflow: hidden; }
+.home-world2 img { position: absolute; left: 0; width: 100%; top: -6%; height: calc(100% - var(--nav-h) - var(--sab) + 2%); object-fit: cover; object-position: 50% 82%; transform-origin: 50% 70%; animation: homeDrift 34s ease-in-out infinite alternate; will-change: transform; }
+.home-rift { position: absolute; left: 50%; top: 13%; width: 80vmin; height: 60vmin; transform: translate(-50%, -50%); background: radial-gradient(ellipse, rgba(190,140,255,0.28), rgba(140,90,255,0.1) 45%, transparent 70%); mix-blend-mode: screen; animation: heartPulse 5s ease-in-out infinite; pointer-events: none; }
+@keyframes homeDrift { from { transform: scale(1.03); } to { transform: scale(1.07) translateX(-1%); } }
+.reduced-motion .home-world2 img, .reduced-motion .home-rift { animation: none; }
+@media (prefers-reduced-motion: reduce) { .home-world2 img, .home-rift { animation: none; } }
+.home .home-shade { background: linear-gradient(180deg, rgba(5,4,8,0.7) 0%, rgba(5,4,8,0.15) 16%, transparent 30%, transparent 62%, rgba(5,4,8,0.55) 76%, #07060b 92%); }
+
+/* Boutons : cadre carré doré, icône peinte, étiquette sur une petite plaque en dessous. */
+.home .home-places, .home .home-shortcuts { position: absolute; z-index: 3; top: calc(var(--sat) + 62px); display: flex; flex-direction: column; gap: 8px; }
+.home .home-places { left: 4px; }
+.home .home-shortcuts { right: 4px; }
+.hb-btn { display: flex; flex-direction: column; align-items: center; gap: 0; width: 74px; padding: 0; background: none; border: 0; color: inherit; }
+.hb-frame { position: relative; width: 52px; height: 52px; display: grid; place-items: center; border-radius: 4px;
+  background: radial-gradient(circle at 50% 40%, #1c1824, #0b0a10 75%);
+  border: 1px solid #9c7a3e; box-shadow: inset 0 0 0 2px #0b0a10, inset 0 0 0 3px rgba(233,198,122,0.35), 0 4px 12px rgba(0,0,0,0.6); }
+.hb-frame::before, .hb-frame::after { content: ''; position: absolute; width: 7px; height: 7px; border: 1.5px solid #e9c67a; pointer-events: none; }
+.hb-frame::before { top: -3px; left: -3px; border-right: 0; border-bottom: 0; }
+.hb-frame::after { bottom: -3px; right: -3px; border-left: 0; border-top: 0; }
+.hb-frame img { width: 40px; height: 40px; object-fit: contain; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.8)); }
+.hb-frame .badge-dot { top: -4px; right: -4px; width: 11px; height: 11px; }
+.hb-label { margin-top: -6px; position: relative; z-index: 1; min-width: 58px; max-width: 74px; padding: 2px 5px 3px; font-family: var(--font-title); font-size: 10px; letter-spacing: 0.02em; font-weight: 700; color: #f1e6cc; white-space: nowrap; text-align: center;
+  background: linear-gradient(180deg, #1d1922, #0d0b11); border: 1px solid rgba(156,122,62,0.8); border-radius: 3px; box-shadow: 0 2px 6px rgba(0,0,0,0.6); }
+.hb-btn:active .hb-frame { transform: scale(0.94); }
+@media (hover: hover) { .hb-btn:hover .hb-frame { border-color: #e9c67a; } }
+
+/* Panneau Campagne orné : double filet doré, fond violet sombre, coins en losange, cristal au sommet. */
+.home .home-bottom { bottom: calc(var(--nav-h) + var(--sab) + 14px); padding: 0 14px; }
+.campaign-cta.ornate { position: relative; height: auto; min-height: 92px; padding: 14px 16px 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; overflow: visible; clip-path: none; border-radius: 6px; text-align: center;
+  background: radial-gradient(ellipse at 50% 0%, rgba(150,95,255,0.35), transparent 70%), linear-gradient(180deg, #2a1846, #150c26 60%, #0d0818);
+  border: 1.5px solid #c99d4f; box-shadow: inset 0 0 0 3px #120b1f, inset 0 0 0 4px rgba(233,198,122,0.55), 0 0 0 1px #000, 0 10px 30px rgba(0,0,0,0.7), 0 0 26px rgba(150,95,255,0.25); }
+.campaign-cta.ornate::before { display: none; }
+.campaign-cta.ornate .big { font-family: var(--font-title); font-size: 27px; font-weight: 800; letter-spacing: 0.08em; line-height: 1.05; text-transform: none;
+  background: linear-gradient(180deg, #fff3d0, #e9c67a 55%, #a87b35); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.8)); }
+.campaign-cta.ornate .sub { font-family: var(--font-title); font-size: 13px; color: #e6d7f5; }
+.cc-meta { display: flex; align-items: center; gap: 10px; font-size: 11.5px; color: var(--text-dim); }
+.cc-stars { display: inline-flex; align-items: center; gap: 3px; font-weight: 800; color: var(--gold-hi); }
+.cc-gem { position: absolute; top: -21px; left: 50%; width: 120px; height: 40px; transform: translateX(-50%); filter: drop-shadow(0 0 8px rgba(170,110,255,0.8)); pointer-events: none; }
+.cc-corner { position: absolute; width: 9px; height: 9px; background: #e9c67a; transform: rotate(45deg); box-shadow: 0 0 6px rgba(233,198,122,0.6); }
+.cc-corner.tl { top: -5px; left: -5px; } .cc-corner.tr { top: -5px; right: -5px; } .cc-corner.bl { bottom: -5px; left: -5px; } .cc-corner.br { bottom: -5px; right: -5px; }
+
+/* Barre du bas : icônes peintes, filet doré, cristal d'invocation qui dépasse au centre. */
+.bottom-nav { background: linear-gradient(180deg, #13101b, #08070c) !important; border-top: 1px solid #6e5528 !important; }
+.bottom-nav::before { display: block !important; left: 0 !important; right: 0 !important; top: -1px !important; height: 1px !important; background: linear-gradient(90deg, transparent, #e9c67a 20%, #e9c67a 80%, transparent) !important; }
+.nav-item { gap: 1px; font-family: var(--font-title); font-size: 11.5px; font-weight: 700; color: #b7ab98; }
+.nav-item + .nav-item { border-left: 1px solid rgba(255,255,255,0.04); }
+.nav-ico { width: 30px; height: 30px; object-fit: contain; opacity: 0.8; filter: drop-shadow(0 1px 2px #000); transition: filter 0.2s, opacity 0.2s; }
+.nav-item.active { color: #ffcf73 !important; }
+.nav-item.active .nav-ico { opacity: 1; filter: sepia(1) saturate(3.2) hue-rotate(-12deg) brightness(1.15) drop-shadow(0 0 6px rgba(255,190,90,0.75)); animation: navPop 0.42s cubic-bezier(.2,1.6,.4,1); }
+.nav-item.active::after { content: '' !important; position: absolute; top: auto !important; bottom: 3px; left: 50% !important; width: 46px !important; height: 2px !important; border-radius: 0 !important; transform: translateX(-50%) !important; background: linear-gradient(90deg, transparent, #ffcf73, transparent) !important; box-shadow: 0 0 6px rgba(255,190,90,0.7) !important; z-index: 0 !important; }
+.nav-item.summon .nav-crystal { width: 54px; height: 54px; margin-top: -24px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 1px #000, 0 0 16px rgba(160,100,255,0.55), 0 4px 10px rgba(0,0,0,0.7); transition: box-shadow 0.2s, transform 0.2s; }
+.nav-item.summon.active .nav-crystal { box-shadow: 0 0 0 1px #000, 0 0 22px rgba(255,190,90,0.7), 0 0 34px rgba(160,100,255,0.7); }
+.nav-item.summon.active::after { display: none; }
+.nav-item.summon .badge-dot { top: -18px; right: calc(50% - 30px); }

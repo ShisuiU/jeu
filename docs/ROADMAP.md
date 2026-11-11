@@ -558,6 +558,14 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.72.0 — Nouvel accueil (maquette SpriteCook)
+
+Accueil redessiné d'après une maquette générée avec SpriteCook, à partir du décor du jeu :
+- **Nouveau décor** (Figma) : le Cœur d'Aeon brisé dans un ciel d'orage violet au-dessus du Monde Cousu (château, ziggourat, citadelle de cristal, grand arbre, terres de lave), et **le Lien de dos** au premier plan, la main lumineuse.
+- **Six boutons à icônes peintes** (boussole, tente, échoppe, parchemin, lettre, trophée) découpées dans la maquette, dans des cadres dorés avec leur étiquette sur une petite plaque ; lieux à gauche (Roue, Camp, Marché), suivi à droite (Missions, Courrier, Événements). Les points rouges restent.
+- **Panneau Campagne orné** : double filet doré, fond violet, coins en losange et cristal au sommet ; il affiche le chapitre en cours, le prochain niveau et les étoiles.
+- **Barre du bas** (sur tous les écrans) : icônes peintes, filet doré, onglet actif qui s'illumine en or, et **Invoquer devient un cristal rond** qui dépasse de la barre.
+
 ## ✅ Version 1.71.1 — Écran de victoire : blocs de récompense plus propres
 
 - Les ressources gagnées se partagent toute la largeur (plus de case vide à droite, « Minerai de forge » tient sur une ligne).

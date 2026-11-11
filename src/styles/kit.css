@@ -31,23 +31,47 @@
 .progress { height: 9px; border-radius: 0; background: url('../assets/kit/bar_track.webp') center / 100% 100% no-repeat; box-shadow: none; border: 0; overflow: hidden; }
 .progress > div { height: 100%; border-radius: 0; background: url('../assets/kit/bar_fill.webp') left center / 100% 100% no-repeat !important; box-shadow: 0 0 6px rgba(255,200,100,0.35); }
 
-/* ── Cartes de héros : cadre peint selon la rareté ── */
-.hero-card { aspect-ratio: 300 / 348; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: #07060b; overflow: visible; }
-.hero-card .art { inset: 8% 8% 22% 8%; overflow: hidden; }
-.hero-card .shade { inset: auto 8% 22% 8%; height: 26%; }
+/* ── Cartes de héros (v1.73.2) : cadre peint selon la rareté. Repères en % de l'image du cadre (300 × 348) :
+   médaillon gauche (niveau) et droit (affinité) centrés à 16,7 % / 83,3 % de large et 15 % de haut,
+   plaque du nom de 75 % à 95 % de haut. Tailles de texte en cqw : proportionnelles à la carte. ── */
+.hero-card { container-type: inline-size; aspect-ratio: 300 / 348; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: #07060b; overflow: visible; }
+.hero-card .art { inset: 3% 6% 24% 6%; overflow: hidden; border-radius: 3px; }
+.hero-card .art img { object-position: center 18% !important; }
+.hero-card .shade { inset: auto 6% 24% 6%; height: 30%; background: linear-gradient(180deg, transparent, rgba(5,4,8,0.92)); }
 .hero-card .hc-frame { position: absolute; inset: 0; z-index: 1; pointer-events: none; background: url('../assets/kit/card_common.webp') center / 100% 100% no-repeat; }
 .hero-card.uncommon .hc-frame { background-image: url('../assets/kit/card_uncommon.webp'); }
 .hero-card.rare .hc-frame { background-image: url('../assets/kit/card_rare.webp'); }
 .hero-card.epic .hc-frame { background-image: url('../assets/kit/card_epic.webp'); }
 .hero-card.legendary .hc-frame { background-image: url('../assets/kit/card_legendary.webp'); }
 .hero-card.mythic .hc-frame { background-image: url('../assets/kit/card_mythic.webp'); }
-.hero-card .lvl { z-index: 2; top: 4.5%; left: 4.5%; width: 19%; aspect-ratio: 1; height: auto; padding: 0; display: grid; place-items: center; border: 0; border-radius: 50%; background: radial-gradient(circle, #1a1520, #07060b); font-size: 9.5px; line-height: 1; color: #f4dfa8; }
-.hero-card .hc-id { z-index: 2; top: 4.5%; right: 4.5%; }
-.hero-card .hc-id > :first-child { border-radius: 50%; background: radial-gradient(circle, #1a1520, #07060b); padding: 3px; box-sizing: content-box; }
-.hero-card .meta { z-index: 2; left: 9%; right: 9%; bottom: 5%; }
-.hero-card .hc-line { position: absolute; left: 0; right: 0; bottom: 270%; justify-content: center; }
-.hero-card .name { text-align: center; font-size: 10.5px; color: #f4e6c8; -webkit-line-clamp: 1; }
+/* Niveau : chiffre seul, centré dans le médaillon de gauche. */
+.hero-card .lvl { position: absolute; z-index: 2; left: 16.7% !important; top: 15% !important; right: auto !important; transform: translate(-50%, -50%); width: 17%; height: auto; aspect-ratio: 1; padding: 0 !important; display: grid; place-items: center; border: 0 !important; border-radius: 50% !important; background: none !important;
+  font-family: var(--font-body); font-size: 7.5cqw !important; font-weight: 800; line-height: 1; color: #f4dfa8; text-shadow: 0 1px 2px #000; }
+/* Affinité dans le médaillon de droite, rôle en petite pastille juste dessous. */
+.hero-card .hc-id { position: absolute; z-index: 2; top: 15% !important; right: auto !important; left: 83.3%; transform: translate(-50%, -50%); width: 17%; aspect-ratio: 1; display: grid !important; place-items: center; gap: 0; }
+.hero-card .hc-id > :first-child { width: 78% !important; height: 78% !important; padding: 0 !important; background: none !important; }
+.hero-card .hc-id .hc-role { position: absolute; top: 108%; left: 50%; transform: translateX(-50%); width: 13cqw; height: 13cqw; min-width: 14px; min-height: 14px; background: rgba(8,6,12,0.85); box-shadow: 0 0 0 1px rgba(233,198,122,0.55); }
+.hero-card .hc-id .hc-role svg { width: 62%; height: 62%; }
+/* Étoiles (et emblème de famille) centrées juste au-dessus de la plaque du nom. */
+.hero-card .meta { position: absolute; z-index: 2; inset: auto 8% 5% 8%; height: 20%; display: flex; align-items: center; justify-content: center; }
+.hero-card .hc-line { position: absolute !important; left: 0; right: 0; bottom: 118% !important; display: flex; justify-content: center; align-items: center; gap: 1.5cqw; }
+.hero-card .hc-line .stars { display: inline-flex; gap: 0.4cqw; }
+.hero-card .hc-line .stars svg { width: 6.5cqw; height: 6.5cqw; }
+.hero-card .hc-line > svg:first-child, .hero-card .hc-line > img:first-child { width: 7cqw; height: 7cqw; }
+/* Nom : une ligne, centrée dans la plaque ; les noms longs passent au prénom. */
+.theme-v2 .hero-card .name { display: block !important; width: 100%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; -webkit-line-clamp: unset !important;
+  font-family: 'Cormorant Garamond', Georgia, serif !important; font-weight: 700; font-size: 9cqw !important; line-height: 1.1; letter-spacing: 0.01em; text-transform: none; color: #f4e6c8; text-shadow: 0 1px 2px #000; margin: 0; }
+.hero-card .name .n-short { display: none !important; }
+.hero-card .name .n-full { display: inline !important; }
+.hero-card .name.long .n-full { display: none !important; }
+.hero-card .name.long .n-short { display: inline !important; }
+/* Doublons et verrou : petits badges à gauche, sous le médaillon du niveau. */
+.hero-card .hc-badges { position: absolute; z-index: 2; left: 6%; top: 28%; display: flex; flex-direction: column; gap: 3px; align-items: flex-start; }
+.hero-card .hc-badge { display: inline-grid; place-items: center; min-width: 13cqw; height: 11cqw; min-height: 15px; padding: 0 2.5cqw; border-radius: 99px; background: rgba(8,6,12,0.88); box-shadow: 0 0 0 1px #c99d4f; font-family: var(--font-body); font-size: 7cqw; font-weight: 800; line-height: 1; color: #ffd98a; }
+.hero-card .hc-badge.lock { color: #d9b36a; }
+.feed-slot .hero-card .hc-badges { left: 50% !important; right: auto !important; top: auto !important; bottom: 26% !important; transform: translateX(-50%); }
 .hero-card.selected { outline: 2px solid var(--gold-hi); outline-offset: 1px; }
+.hero-card.unowned::after { z-index: 3; }
 
 /* ── Héros : les quatre lieux en tuiles peintes ── */
 .hp-tile.kit { position: relative; height: auto; aspect-ratio: 1; padding: 0; gap: 0; background: none !important; border: 0 !important; box-shadow: none !important; }
@@ -150,3 +174,9 @@
 .theme-v2 .btn.fight-btn:not(.secondary) { padding-left: 10px; color: #2b1a06; }
 .theme-v2 .btn.secondary.prep-sweep > svg { display: none; }
 .theme-v2 .btn.secondary.prep-sweep { padding-left: 30px; }
+/* Petites cartes (équipe en préparation, formations…) : tailles minimales lisibles. */
+.theme-v2 .hero-card .name { font-size: max(9px, 9cqw) !important; }
+.hero-card .lvl { font-size: max(9px, 7.5cqw) !important; }
+.hero-card .hc-line .stars svg { width: max(6px, 6.5cqw); height: max(6px, 6.5cqw); }
+.prep-lead.on { font-size: 10px; line-height: 14px; }
+.mini-slot .hero-card .lvl { display: grid !important; }

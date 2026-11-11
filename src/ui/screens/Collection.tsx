@@ -51,7 +51,7 @@ export function Collection() {
 
       {owned.length === 0 && <p className="muted" style={{ textAlign: 'center' }}>Aucun héros ne correspond à ces filtres.</p>}
       <div className="hero-grid">
-        {owned.map(({ h }) => <HeroCard key={h.uid} heroId={h.heroId} level={h.level} badge={copiesOf(save, h.heroId) ? `+${copiesOf(save, h.heroId)} doublon${copiesOf(save, h.heroId) > 1 ? 's' : ''}` : h.locked ? '🔒' : undefined} onClick={() => push({ name: 'hero', uid: h.uid, heroId: h.heroId })} />)}
+        {owned.map(({ h }) => <HeroCard key={h.uid} heroId={h.heroId} level={h.level} badge={copiesOf(save, h.heroId) ? `+${copiesOf(save, h.heroId)}` : undefined} locked={h.locked} onClick={() => push({ name: 'hero', uid: h.uid, heroId: h.heroId })} />)}
       </div>
       {missing.length > 0 && (
         <>

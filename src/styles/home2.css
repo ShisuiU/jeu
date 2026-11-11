@@ -95,7 +95,7 @@
 /* Barre du bas : bandeau peint, icônes peintes (dorées quand l'onglet est actif), cristal d'invocation. */
 .bottom-nav { background: #0a090e !important; border-top: 0 !important; }
 .bottom-nav::before { display: none !important; }
-.bottom-nav::after { content: ''; position: absolute; inset: -6px 0 0 0; z-index: -1; pointer-events: none; border-style: solid; border-color: transparent; border-width: 10px 60px 0 60px; border-image: url('../assets/home/nav_strip.webp') 16 110 0 110 fill / 10px 60px 0 60px stretch; }
+.bottom-nav::after { content: ''; position: absolute; top: -6px; left: 0; right: 0; height: calc(var(--nav-h) + 8px); z-index: -1; pointer-events: none; border-style: solid; border-color: transparent; border-width: 10px 60px 0 60px; border-image: url('../assets/home/nav_strip.webp') 16 110 0 110 fill / 10px 60px 0 60px stretch; }
 .nav-ico { width: auto; height: 27px; opacity: 1; filter: drop-shadow(0 1px 2px #000); }
 .nav-item.active .nav-ico { filter: drop-shadow(0 0 4px rgba(255,190,90,0.6)); }
 .nav-item + .nav-item { border-left: 0; }
@@ -116,3 +116,11 @@
 .home .pill.kit small { font-size: 9px; }
 .home .topbar { gap: 2px; }
 .home .avatar-btn > div:last-child { min-width: 70px; }
+
+/* v1.73.2 — barre du bas : le cadre peint ne couvre que la barre (pas la zone du bas de l'iPhone),
+   icônes et noms centrés verticalement dans le cadre ; le cristal d'invocation dépasse au-dessus. */
+.bottom-nav { padding-bottom: var(--sab) !important; }
+.bottom-nav .nav-item { height: var(--nav-h); justify-content: center !important; padding: 2px 0 0 !important; gap: 2px !important; }
+.bottom-nav .nav-ico { height: 25px; }
+.nav-item.summon { justify-content: flex-end !important; padding-bottom: 6px !important; }
+.nav-item.summon .nav-crystal { width: 52px; margin-top: -26px; top: 0 !important; }

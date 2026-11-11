@@ -48,9 +48,7 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
       <HeroShowcase heroId={d.id} h={inst} onPrev={nav(-1)} onNext={nav(1)} below={
       <div className="hero-sheet-head">
           <div className="title-line">{d.title}</div>
-          <h2>{d.name}</h2>
           <IdentityStrip rarity={d.rarity} affinity={d.affinity} role={d.role} faction={d.faction} />
-          <p className="quote">{d.quote.replace(/« /g, '«\u00a0').replace(/ »/g, '\u00a0»')}</p>
         </div>
       } />
 

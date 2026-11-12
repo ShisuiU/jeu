@@ -558,6 +558,11 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.79.2 — Commandes de combat lisibles
+
+- Boutons AUTO et vitesse (×1, ×2, ×3) : le texte est centré dans son cadre peint (il débordait en haut ou en bas).
+- La jauge ronde à côté est nommée « LIEN » au-dessus du pourcentage : c'est le Pouvoir du Lien. La toucher avant 100 % explique comment elle se remplit (+5 % par action d'un héros, +5 % par ennemi vaincu) ; à 100 %, elle propose un pouvoir (soin, frappe ou rempart), 2 fois par combat (le « 2/2 »).
+
 ## ✅ Version 1.79.1 — Listes sans niveau d'ennemis
 
 - Les listes d'étages et de niveaux n'affichent plus le niveau ni la puissance des ennemis : donjons (« Ennemis niv. 38 · puissance +55 % » retiré), Tour des Âges, Donjon des familles et Campagne (« niv. 51 » retiré). Il reste l'énergie, les étoiles d'équipement et la récompense.

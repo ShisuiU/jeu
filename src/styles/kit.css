@@ -220,3 +220,8 @@
 .gcmp-d.up { color: #7bea8f; }
 .gcmp-d.down { color: #ff6b7d; }
 .gd-actions > .btn { flex: 1 1 calc(50% - 4px) !important; min-width: 0; font-size: 12.5px; }
+
+/* ═══ v1.76.1 — boutons « danger » (Exclure, Abandonner, Démanteler…) peints en rouge, même cadre que le bouton doré ═══ */
+.theme-v2 .btn.danger { background: none !important; box-shadow: none !important; border-style: solid; border-color: transparent; border-width: 0 16px; border-image: url('../assets/kit/btn_red.webp') 0 14% 0 14% fill / 0 16px stretch; border-radius: 0; color: #fff1e6; text-shadow: 0 1px 2px rgba(0,0,0,0.75); }
+.theme-v2 .btn.danger.small { border-width: 0 11px; border-image-width: 0 11px; }
+.theme-v2 .btn.danger:disabled { filter: grayscale(0.7) brightness(0.6); }

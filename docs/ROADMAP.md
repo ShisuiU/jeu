@@ -558,6 +558,10 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.76.1 — Boutons rouges peints
+
+- Les boutons d'action risquée (« Exclure » dans le clan, « Abandonner », « Démanteler », « Supprimer »…) ont maintenant la même texture peinte que les boutons dorés, en rouge, au lieu d'un aplat sans relief.
+
 ## ✅ Version 1.76.0 — Démantèlement groupé et comparatif d'équipement
 
 - **Forge, onglet Démanteler** : toucher un objet le coche (pastille rouge) ; « Tout cocher » prend tous les objets affichés (filtres compris). Une barre en bas montre le nombre d'objets et le gain (or et minerai), puis démantèle la sélection après confirmation. Les objets équipés ou verrouillés restent protégés ; les boutons « Tout démanteler : Communs / Peu communs / Rares » restent là.

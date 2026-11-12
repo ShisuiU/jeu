@@ -192,3 +192,7 @@
 /* Combat : bouton pause rond. */
 .pause-btn { width: 42px; height: 42px; flex-shrink: 0; display: grid; place-items: center; border-radius: 50%; border: 1.5px solid rgba(232,190,110,0.75); background: radial-gradient(circle at 50% 35%, #2a2233, #0d0a12); box-shadow: 0 2px 8px rgba(0,0,0,0.6), inset 0 0 0 2px rgba(0,0,0,0.5); color: #f4dfa8; padding: 0; }
 .pause-btn:active { transform: scale(0.94); }
+
+/* ═══ v1.74.0 — symboles d'affinité et blasons de famille peints ═══ */
+.aff-icon, .fac-emblem, img.role-icon { display: inline-block; flex-shrink: 0; object-fit: contain; vertical-align: -3px; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.6)); -webkit-user-drag: none; user-select: none; }
+.aff-icon.disc { background: none; box-shadow: none; padding: 0; }

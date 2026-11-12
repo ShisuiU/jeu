@@ -558,6 +558,12 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.74.0 — Symboles d'affinité, de rôle et blasons de famille peints
+
+- **Affinités** : de nouveaux symboles simples, peints avec SpriteCook (soleil Solaire, montagne Tellurique, croissant Lunaire, étoile du Néant), lisibles même en tout petit. Ils remplacent les anciens logos partout : cartes de héros, fiche, combat, préparation, filtres, liens, expéditions.
+- **Familles** : les blasons de la maquette SpriteCook (lion de Valcrest, cristal du Prisme, crâne de Cendre, arbre de Sylvaran, étoile Astrale, soleil et sabres d'Akkar) remplacent les anciens emblèmes, en un peu plus grand sur les cartes et la fiche.
+- **Rôles** : de nouvelles icônes dorées dans le même style (épée de l'Attaquant, bouclier du Défenseur, bannière du Support, croix du Soigneur, chaîne du Contrôleur, dague de l'Assassin).
+
 ## ✅ Version 1.73.7 — Bouton pause, cartes de combat épurées, campagne alignée
 
 - **Combat** : le bouton en haut à droite devient un vrai bouton **pause** (deux barres). Il fige le combat et propose « Reprendre » ou « Abandonner » (compté comme une défaite).

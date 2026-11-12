@@ -17,9 +17,9 @@ export function HeroCard({ heroId, level, owned = true, selected, onClick, badge
       <div className="shade" />
       {level !== undefined && owned && <span className="lvl">Nv {level}</span>}
       {badge && <span className="lvl" style={{ left: 'auto', right: 4, top: 48 }}>{badge}</span>}
-      <span className="hc-id"><AffinityIcon id={d.affinity} size={18} /><span className="hc-role"><RoleIcon id={d.role} size={12} /></span></span>
+      <span className="hc-id"><AffinityIcon id={d.affinity} size={18} /><span className="hc-role"><RoleIcon id={d.role} size={15} /></span></span>
       <div className="meta">
-        <div className="hc-line"><FactionEmblem id={d.faction} size={13} /><Stars rarity={d.rarity} /></div>
+        <div className="hc-line"><FactionEmblem id={d.faction} size={17} /><Stars rarity={d.rarity} /></div>
         <div className="name"><span className="n-full">{d.name}</span><span className="n-short">{d.name.split(/[ ,]/)[0]}</span></div>
       </div>
     </Tag>

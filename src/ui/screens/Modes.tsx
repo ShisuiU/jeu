@@ -294,7 +294,7 @@ export function Arena() {
           mutate((d) => { r = refreshOpponents(d, seededRand(Date.now())); });
           if (r.ok) { play('tap'); toast(r.cost ? `Nouveaux adversaires (−${r.cost} cristaux).` : 'Nouveaux adversaires (actualisation gratuite du jour).', 'ok'); } else toast(r.reason ?? 'Impossible.', 'error');
         }}>
-          <Icon.loop size={14} /> Actualiser {refreshCost(save) ? <><Icon.crystal size={14} /> {refreshCost(save)}</> : <span className="faint">· gratuit</span>}
+          <Icon.loop size={14} /> Actualiser {refreshCost(save) ? <><Icon.diamond size={14} /> {refreshCost(save)}</> : <span className="faint">· gratuit</span>}
         </button>
       </div>
       {save.arena.opponents.map((o, i) => (
@@ -334,7 +334,7 @@ export function Arena() {
             <div><b>Victoire</b> : +{ratingDelta(true, 0)} (Accessible), +{ratingDelta(true, 1)} (Équilibré), +{ratingDelta(true, 2)} points (Redoutable)</div>
             <div><b>Défaite</b> : {ratingDelta(false, 0)} points</div>
             <div><b>Ta défense</b> : +{DEFENSE_WIN} quand elle gagne, −{DEFENSE_LOSS} quand elle perd</div>
-            <div><b>Tickets</b> : {ARENA.ticketsPerDay} combats par jour · <b>Actualiser</b> : 1 fois gratuit par jour, puis {ARENA.refreshCost} cristaux</div>
+            <div><b>Tickets</b> : {ARENA.ticketsPerDay} combats par jour · <b>Actualiser</b> : 1 fois gratuit par jour, puis {ARENA.refreshCost} diamants</div>
           </div>
           <button className="btn secondary block" style={{ marginTop: 12 }} onClick={() => setLeagueOpen(false)}>Compris</button>
         </Modal>

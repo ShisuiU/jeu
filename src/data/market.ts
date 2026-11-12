@@ -19,7 +19,8 @@ export interface MarketOfferDef {
 
 export const MARKET_SLOTS = 6;
 /** Prix (cristaux) des renouvellements manuels, par jour. */
-export const MARKET_REFRESH_COSTS = [20, 40, 80];
+/** Renouvellements du Marché, payés en diamants (v1.78.1). */
+export const MARKET_REFRESH_COSTS = [5, 10, 20];
 
 export const MARKET_POOL: MarketOfferDef[] = [
   { id: 'dim1', reward: { shardDim: 1 }, price: { resource: 'gold', amount: 12000 }, weight: 6 },

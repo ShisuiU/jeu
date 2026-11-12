@@ -35,14 +35,14 @@ describe('Arène honnête', () => {
     expect(leagueBounds(1200)).toEqual([1150, 1350]);
     expect(leagueBounds(2500)).toEqual([1900, null]);
     const s = createNewSave(T0);
-    s.resources.crystals = 30;
+    s.resources.diamonds = 8;
     expect(refreshCost(s)).toBe(0);
     expect(refreshOpponents(s, seededRand(1)).ok).toBe(true);
-    expect(s.resources.crystals).toBe(30);
+    expect(s.resources.diamonds).toBe(8);
     expect(refreshCost(s)).toBe(ARENA.refreshCost);
     expect(refreshOpponents(s, seededRand(2)).ok).toBe(true);
-    expect(s.resources.crystals).toBe(30 - ARENA.refreshCost);
-    expect(refreshOpponents(s, seededRand(3)).ok).toBe(false); // plus assez de cristaux
+    expect(s.resources.diamonds).toBe(8 - ARENA.refreshCost);
+    expect(refreshOpponents(s, seededRand(3)).ok).toBe(false); // plus assez de diamants
     expect(s.arena.opponents).toHaveLength(3);
   });
   it('ta défense publiée : ton équipe complète, ton nom', () => {

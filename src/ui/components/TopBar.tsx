@@ -54,8 +54,8 @@ export function TopBar() {
           <p className="faint" style={{ textAlign: 'center', marginTop: 0 }}>Ton maximum grandit de {BALANCE.energy.perLevel} à chaque niveau de compte (jusqu’à {BALANCE.energy.maxCap}), et chaque nouveau niveau recharge toute ton énergie.</p>
           <div className="panel" style={{ marginTop: 8 }}>
             <div className="row between"><b>Recharge +{BALANCE.energyRefill.amount}</b><span className="faint">{BALANCE.energyRefill.costs.length - save.shop.energyRefills} / {BALANCE.energyRefill.costs.length} aujourd’hui</span></div>
-            <button className="btn block" style={{ marginTop: 10 }} disabled={cost === null || save.resources.crystals < (cost ?? 0)} onClick={() => { let r = { ok: false } as { ok: boolean; reason?: string }; mutate((d) => { r = refillEnergy(d); }); if (r.ok) { play('claim'); toast(`+${BALANCE.energyRefill.amount} énergie !`, 'ok'); } else toast(r.reason ?? 'Impossible.', 'error'); }}>
-              {cost === null ? 'Plus de recharge aujourd’hui' : <>Recharger · <Icon.crystal size={16} /> {cost}</>}
+            <button className="btn block" style={{ marginTop: 10 }} disabled={cost === null || (save.resources.diamonds ?? 0) < (cost ?? 0)} onClick={() => { let r = { ok: false } as { ok: boolean; reason?: string }; mutate((d) => { r = refillEnergy(d); }); if (r.ok) { play('claim'); toast(`+${BALANCE.energyRefill.amount} énergie !`, 'ok'); } else toast(r.reason ?? 'Impossible.', 'error'); }}>
+              {cost === null ? 'Plus de recharge aujourd’hui' : <>Recharger · <Icon.diamond size={16} /> {cost}</>}
             </button>
           </div>
         </Modal>

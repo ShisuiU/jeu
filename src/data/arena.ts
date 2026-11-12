@@ -2,7 +2,7 @@ import type { Reward } from './resources';
 
 // ARÈNE — combats contre des équipes contrôlées par l'ordinateur. L'architecture (équipes décrites par des
 // données, moteur déterministe) permettra plus tard d'affronter les équipes défensives d'autres joueurs.
-export const ARENA = { seasonKeep: 0.5, ticketsPerDay: 5, startRating: 1000, winBase: 18, lossPenalty: 10, freeRefreshes: 1, refreshCost: 20 };
+export const ARENA = { seasonKeep: 0.5, ticketsPerDay: 5, startRating: 1000, winBase: 18, lossPenalty: 10, freeRefreshes: 1, refreshCost: 5 }; // actualisation payée en diamants (v1.78.1)
 
 export const ARENA_TIERS = [
   // `season` : récompense de fin de saison (une semaine) selon la ligue atteinte. Plus de récompense à chaque victoire (v1.68.15).

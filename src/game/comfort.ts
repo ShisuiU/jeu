@@ -54,8 +54,9 @@ export function refillCost(s: SaveData): number | null {
 export function refillEnergy(s: SaveData): { ok: boolean; reason?: string } {
   const cost = refillCost(s);
   if (cost === null) return { ok: false, reason: 'Plus de recharges aujourd’hui.' };
-  if (s.resources.crystals < cost) return { ok: false, reason: 'Cristaux insuffisants.' };
-  s.resources.crystals -= cost;
+  // Payée en diamants depuis la v1.78.1 (récoltés à la Mine des Bâtiments).
+  if ((s.resources.diamonds ?? 0) < cost) return { ok: false, reason: 'Diamants insuffisants : récolte la Mine (Bâtiments).' };
+  s.resources.diamonds -= cost;
   s.shop.energyRefills += 1;
   s.energy = addEnergy(s.energy, BALANCE.energyRefill.amount);
   return { ok: true };

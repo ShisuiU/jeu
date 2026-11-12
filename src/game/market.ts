@@ -44,8 +44,8 @@ export function refreshMarket(s: SaveData, now: number): { ok: boolean; reason?:
   const m = ensureMarket(s, now);
   const cost = refreshCost(m);
   if (cost == null) return { ok: false, reason: 'Plus de renouvellement aujourd’hui.' };
-  if (s.resources.crystals < cost) return { ok: false, reason: 'Cristaux insuffisants.' };
-  s.resources.crystals -= cost;
+  if ((s.resources.diamonds ?? 0) < cost) return { ok: false, reason: 'Diamants insuffisants : récolte la Mine (Bâtiments).' };
+  s.resources.diamonds -= cost;
   m.refreshes += 1;
   m.offers = rollOffers(s, m.day, m.refreshes, now);
   return { ok: true };

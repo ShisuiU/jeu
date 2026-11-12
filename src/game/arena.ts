@@ -150,8 +150,8 @@ export const refreshCost = (s: SaveData) => ((s.arena.refreshes ?? 0) < ARENA.fr
 /** Nouveaux adversaires (mutation). La vengeance en cours est gardée. */
 export function refreshOpponents(s: SaveData, r: Rand): { ok: boolean; reason?: string; cost: number } {
   const cost = refreshCost(s);
-  if (s.resources.crystals < cost) return { ok: false, reason: 'Cristaux insuffisants.', cost };
-  s.resources.crystals -= cost;
+  if ((s.resources.diamonds ?? 0) < cost) return { ok: false, reason: 'Diamants insuffisants : récolte la Mine (Bâtiments).', cost };
+  s.resources.diamonds -= cost;
   s.arena.refreshes = (s.arena.refreshes ?? 0) + 1;
   s.arena.opponents = [...generateOpponents(s, r), ...s.arena.opponents.filter((o) => o.revenge)];
   return { ok: true, cost };

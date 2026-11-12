@@ -121,3 +121,6 @@ export const useGame = create<GameState>((set, get) => ({
 
   newGame: () => set({ save: createNewSave(Date.now()) }),
 }));
+
+// Outils de vérification (?qa dans l'adresse uniquement).
+if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('qa')) (window as unknown as { __game: typeof useGame }).__game = useGame;

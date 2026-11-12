@@ -558,6 +558,10 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.76.3 — Croix de fermeture sur les fenêtres
+
+- Toutes les fenêtres qui peuvent se fermer (fiche d'un équipement, choix d'un objet, pause, explications « i », pastilles d'identité du héros, confirmations…) ont maintenant une **croix ✕ ronde en haut à droite**. Elle reste visible même quand le contenu défile. Toucher à côté de la fenêtre la ferme toujours aussi.
+
 ## ✅ Version 1.76.2 — Critiques à 0 % de base
 
 - Tous les héros ont maintenant **0 % de taux critique et 0 % de dégâts critiques de base** (l'ascension et l'éveil n'en donnent plus). Ils montent uniquement avec l'**équipement** (gants critiques, secondaires, ensemble Acuité…), les **auras de chef** et, en option, les **maîtrises** (« Œil vif » +5 %, « Coup fatal » +12 %).

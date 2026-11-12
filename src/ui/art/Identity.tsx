@@ -5,6 +5,7 @@ import { FACTIONS } from '../../data/factions';
 import { RARITIES } from '../../data/rarities';
 import type { AffinityId, FactionId, RarityId, RoleId } from '../../data/types';
 import { FactionEmblem } from './FactionEmblem';
+import { ModalX } from '../components/common';
 
 // IDENTITÉ D'UN PERSONNAGE — logos communs à tous ceux qui partagent une affinité ou un rôle,
 // et bandeau « rareté · affinité · rôle · famille » de la fiche (chaque pastille s'explique au toucher).
@@ -56,10 +57,13 @@ export function IdentityStrip({ rarity, affinity, role, faction }: { rarity: Rar
       </div>
       {cur && (
         <div className="modal-backdrop" onClick={() => setOpen(null)}>
-          <div className="modal info-modal" onClick={(e) => e.stopPropagation()}>
-            <h2 style={{ color: cur.color }}>{cur.title}</h2>
-            <div className="info-text">{cur.text}</div>
-            <button className="btn secondary block" onClick={() => setOpen(null)}>Compris</button>
+          <div className="modal-wrap" onClick={(e) => e.stopPropagation()}>
+            <div className="modal info-modal">
+              <h2 style={{ color: cur.color }}>{cur.title}</h2>
+              <div className="info-text">{cur.text}</div>
+              <button className="btn secondary block" onClick={() => setOpen(null)}>Compris</button>
+            </div>
+            <ModalX onClose={() => setOpen(null)} />
           </div>
         </div>
       )}

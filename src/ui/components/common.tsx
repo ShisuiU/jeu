@@ -62,10 +62,13 @@ export function InfoButton({ title, children }: { title: string; children: React
       <button className="info-btn" aria-label={`Aide : ${title}`} onClick={(e) => { e.stopPropagation(); setOpen(true); }}>i</button>
       {open && (
         <div className="modal-backdrop" onClick={() => setOpen(false)}>
-          <div className="modal info-modal" onClick={(e) => e.stopPropagation()}>
-            <h2>{title}</h2>
-            <div className="info-text">{children}</div>
-            <button className="btn secondary block" onClick={() => setOpen(false)}>Compris</button>
+          <div className="modal-wrap" onClick={(e) => e.stopPropagation()}>
+            <div className="modal info-modal">
+              <h2>{title}</h2>
+              <div className="info-text">{children}</div>
+              <button className="btn secondary block" onClick={() => setOpen(false)}>Compris</button>
+            </div>
+            <ModalX onClose={() => setOpen(false)} />
           </div>
         </div>
       )}
@@ -82,11 +85,19 @@ export function Toggle({ on, onChange, label, disabled }: { on: boolean; onChang
   return <button role="switch" aria-checked={on} aria-label={label} disabled={disabled} className={`toggle ${on ? 'on' : ''}`} onClick={() => onChange(!on)} />;
 }
 
+/** Croix de fermeture (v1.76.3), en haut à droite de chaque fenêtre qui peut se fermer. */
+export function ModalX({ onClose }: { onClose: () => void }) {
+  return <button className="modal-x" aria-label="Fermer" onClick={(e) => { e.stopPropagation(); onClose(); }}>✕</button>;
+}
+
 export function Modal({ children, onClose }: { children: ReactNode; onClose?: () => void }) {
   // Rendue directement dans <body> : rien dans l'écran (défilement, effets) ne peut la rogner ou la recouvrir.
   return createPortal(
     <div className="modal-backdrop" onClick={(e) => { if (e.target === e.currentTarget) onClose?.(); }}>
-      <div className="modal">{children}</div>
+      <div className="modal-wrap">
+        <div className="modal">{children}</div>
+        {onClose && <ModalX onClose={onClose} />}
+      </div>
     </div>,
     document.querySelector('.app') ?? document.body,
   );

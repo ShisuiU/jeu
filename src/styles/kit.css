@@ -225,3 +225,11 @@
 .theme-v2 .btn.danger { background: none !important; box-shadow: none !important; border-style: solid; border-color: transparent; border-width: 0 16px; border-image: url('../assets/kit/btn_red.webp') 0 14% 0 14% fill / 0 16px stretch; border-radius: 0; color: #fff1e6; text-shadow: 0 1px 2px rgba(0,0,0,0.75); }
 .theme-v2 .btn.danger.small { border-width: 0 11px; border-image-width: 0 11px; }
 .theme-v2 .btn.danger:disabled { filter: grayscale(0.7) brightness(0.6); }
+
+/* ═══ v1.76.3 — croix de fermeture sur toutes les fenêtres ═══ */
+.modal-wrap { position: relative; width: 100%; max-width: 420px; max-height: 100%; min-height: 0; display: flex; flex-direction: column; }
+.modal-wrap > .modal { flex: 0 1 auto; min-height: 0; max-width: none; }
+.modal-x { position: absolute; top: -10px; right: -8px; z-index: 6; width: 34px; height: 34px; padding: 0; border-radius: 50%; display: grid; place-items: center;
+  background: radial-gradient(circle at 50% 35%, #2a2233, #0d0a12); border: 1.5px solid rgba(232,190,110,0.8); color: #f4dfa8; font-size: 15px; font-weight: 700; line-height: 1;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.7); cursor: pointer; }
+.modal-x:active { transform: scale(0.92); }

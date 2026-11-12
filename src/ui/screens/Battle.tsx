@@ -1,3 +1,4 @@
+import { factionTeam } from '../../game/factionDungeon';
 import { energyMax } from '../../game/energy';
 import { AccountXp } from '../components/AccountXp';
 import { Coach } from '../components/Coach';
@@ -49,7 +50,8 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
   const { popTo, replace, toast } = useUI.getState();
 
   const [initial] = useState(() => {
-    const team = save.teams.find((t) => t.id === teamId) ?? save.teams[0];
+    // Donjon des familles (v1.79.0) : l'équipe est celle de la famille du donjon.
+    const team = spec.mode === 'faction' ? factionTeam(save, spec.faction) : save.teams.find((t) => t.id === teamId) ?? save.teams[0];
     // Renfort d'un ami : son héros prend la première place libre de l'équipe.
     const own = teamSetups(save, team);
     const free = [0, 1, 2, 3, 4].find((i) => !own.some((a) => a.slot === i));
@@ -351,7 +353,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
     replace({ name: 'battle', spec, teamId, seed: Date.now() }); // le renfort d'un ami ne vaut que pour un combat
   };
   const next = result?.won ? nextSpec(useGame.getState().save!, spec) : null;
-  const backTo = (): Route['name'] => ({ campaign: 'campaign', dungeon: 'dungeons', tower: 'tower', worldboss: 'worldboss', arena: 'arena', guildboss: 'guild', challenge: 'events' } as const)[spec.mode];
+  const backTo = (): Route['name'] => ({ campaign: 'campaign', dungeon: 'dungeons', tower: 'tower', worldboss: 'worldboss', arena: 'arena', guildboss: 'guild', challenge: 'events', faction: 'factionDungeon' } as const)[spec.mode];
   const cost = initial.info.cost;
 
   const order = s.outcome === 'running' ? predictOrder(s, 7) : [];
@@ -524,7 +526,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
             {spec.mode !== 'tower' && spec.mode !== 'challenge' && (
               <button className="btn secondary grow" onClick={retry}>{result.won ? 'Rejouer' : 'Réessayer'} {cost.kind === 'energy' && <><Icon.energy size={16} />{cost.amount}</>}{cost.kind === 'key' && ' (1 clé)'}{cost.kind === 'ticket' && ' (1 ticket)'}{cost.kind === 'try' && ' (1 essai)'}</button>
             )}
-            {(spec.mode === 'tower' || (spec.mode === 'challenge' && spec.trial != null)) && !result.won && <button className="btn secondary grow" onClick={retry}>Réessayer</button>}
+            {(spec.mode === 'tower' || spec.mode === 'faction' || (spec.mode === 'challenge' && spec.trial != null)) && !result.won && <button className="btn secondary grow" onClick={retry}>Réessayer</button>}
             {next && <button className="btn grow" onClick={() => replace({ name: 'prep', spec: next })}>Suivant</button>}
           </div>
         </div>

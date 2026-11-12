@@ -27,6 +27,9 @@ import { HeroCard } from '../components/HeroCard';
 import { EnemyArt } from '../art/EnemyArt';
 import { HeroArt } from '../art/HeroArt';
 import { Icon } from '../art/Icons';
+import { factionHeroes, factionTeam, setFactionTeam } from '../../game/factionDungeon';
+import { FACTIONS } from '../../data/factions';
+import { FactionEmblem } from '../art/FactionEmblem';
 
 /** Écran de préparation commun à tous les modes : ennemis, récompenses, équipe, coût. */
 export function Prep({ spec }: { spec: BattleSpec }) {
@@ -46,7 +49,10 @@ export function Prep({ spec }: { spec: BattleSpec }) {
   const [lenders, setLenders] = useState<FriendRow[]>(friendCache ?? []);
   const [guestOf, setGuestOf] = useState<string | null>(null);
   const bgOk = canBackground(save, spec);
-  const team = save.teams.find((t) => t.id === teamId) ?? save.teams[0];
+  // Donjon des familles : équipe à part, seulement avec des héros de la famille du donjon.
+  const fac = spec.mode === 'faction' ? spec.faction : null;
+  const [facPick, setFacPick] = useState<string[] | null>(null);
+  const team = fac ? factionTeam(save, fac) : save.teams.find((t) => t.id === teamId) ?? save.teams[0];
   const members = team.slots.map((u) => save.heroes.find((h) => h.uid === u));
   const power = members.reduce((a, h) => a + (h ? powerOf(heroTotalStats(save, h).total) : 0), 0);
   const count = members.filter(Boolean).length;
@@ -70,7 +76,7 @@ export function Prep({ spec }: { spec: BattleSpec }) {
     let r: { ok: boolean; reason?: string } = { ok: false };
     mutate((d) => { r = payMode(d, spec, now); });
     if (!r.ok) { toast(r.reason ?? 'Impossible.', 'error'); return; }
-    if (team.id !== save.activeTeamId) setActiveTeam(team.id);
+    if (!fac && team.id !== save.activeTeamId) setActiveTeam(team.id);
     const l = guestRow?.profile?.lend;
     const guest: UnitSetup | undefined = l ? { kind: 'hero', refId: l.refId, slot: 0, level: l.level, rank: l.rank, ascension: l.ascension, awaken: l.awaken, skillLevels: l.skillLevels, gear: l.gear } : undefined;
     if (guest && guestRow) mutate((d) => { markBorrowed(d, guestRow.uid, Date.now()); });
@@ -123,7 +129,24 @@ export function Prep({ spec }: { spec: BattleSpec }) {
         {boss && spec.mode !== 'arena' && <p className="faint" style={{ margin: '8px 0 0' }}>Boss : insensible à l’étourdissement et au gel, plus fort sous 50 % de PV.</p>}
       </Panel>
 
-      <Panel>
+      {fac && (
+        <Panel>
+          <div className="row between" style={{ marginBottom: 8 }}>
+            <span className="row" style={{ gap: 6 }}><FactionEmblem id={fac} size={22} /><b>Héros {FACTIONS[fac].short === 'Akkar' ? 'd’Akkar' : `de ${FACTIONS[fac].short}`}</b></span>
+            <span className="muted">Puissance <b style={{ color: 'var(--gold-hi)' }}>{fmt(power)}</b></span>
+          </div>
+          <button className="mini-team prep-team-strip" onClick={() => setFacPick(team.slots.filter((u): u is string => !!u))} aria-label="Choisir les héros de la famille">
+            {members.map((h, i) => (
+              <div key={i} className="prep-slot">
+                <div className="mini-slot">{h ? <HeroCard heroId={h.heroId} level={h.level} /> : <span className="faint">+</span>}</div>
+                <span className={`prep-lead ${h && team.leader === h.uid ? 'on' : ''}`}>{h && team.leader === h.uid ? '♛ Chef' : ''}</span>
+              </div>
+            ))}
+          </button>
+          <p className="faint" style={{ margin: '6px 0 0' }}>{factionHeroes(save, fac).length ? 'Touche l’équipe pour choisir tes héros de cette famille (le premier choisi est le chef).' : 'Tu n’as encore aucun héros de cette famille : invoque-en pour entrer dans ce donjon.'}</p>
+        </Panel>
+      )}
+      {!fac && <Panel>
         <div className="row between" style={{ marginBottom: 8 }}>
           {save.teams.length > 1 ? (
             <select className="prep-team" value={team.id} onChange={(e) => setTeamId(e.target.value)} aria-label="Équipe">
@@ -141,7 +164,26 @@ export function Prep({ spec }: { spec: BattleSpec }) {
             </div>
           ))}
         </button>
-      </Panel>
+      </Panel>}
+
+      {facPick && fac && (
+        <Modal onClose={() => setFacPick(null)}>
+          <h2>Héros {FACTIONS[fac].short === 'Akkar' ? 'd’Akkar' : `de ${FACTIONS[fac].short}`}</h2>
+          <p className="faint" style={{ textAlign: 'center', marginTop: 0 }}>Jusqu’à 5 héros · le premier choisi est le chef · {facPick.length}/5</p>
+          <div className="train-pick">
+            {factionHeroes(save, fac).sort((a, b) => powerOf(heroTotalStats(save, b).total) - powerOf(heroTotalStats(save, a).total)).map((h) => {
+              const i = facPick.indexOf(h.uid);
+              return (
+                <button key={h.uid} className={`tp-hero ${i >= 0 ? 'picked' : ''}`} onClick={() => setFacPick(i >= 0 ? facPick.filter((u) => u !== h.uid) : facPick.length < 5 ? [...facPick, h.uid] : facPick)}>
+                  <span className="ts-art"><HeroArt heroId={h.heroId} /><span className="ts-lv">{h.level}</span>{i >= 0 && <span className="tp-order">{i === 0 ? '♛' : i + 1}</span>}</span>
+                  <span className="tp-name">{HERO_BY_ID[h.heroId].name.split(' ')[0]}</span>
+                </button>
+              );
+            })}
+          </div>
+          <button className="btn block" style={{ marginTop: 12 }} onClick={() => { const pick = facPick; mutate((d) => setFactionTeam(d, fac, pick)); setFacPick(null); }}>Valider l’équipe</button>
+        </Modal>
+      )}
 
       {guestOk && lenders.length > 0 && (
         <Panel title="Renfort d’un ami">

@@ -558,6 +558,13 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.79.0 — Donjon des familles
+
+- **Combats → Donjon des familles** (ouvert avec les Donjons, après le niveau 2-2) : chaque jour, le donjon d'une famille de héros — Bastion du Serment (Valcrest), Spire des Calculs (Prisme), Fosse des Braises (Cendre), Racines Profondes (Sylvaran), Observatoire Éteint (Astral), Arène des Dunes (Akkar).
+- **Seuls les héros de la famille du jour** peuvent y combattre : l'écran de préparation propose une équipe à part (les 5 meilleurs héros de la famille par défaut), à modifier en touchant l'équipe ; le premier choisi est le chef.
+- Le donjon dure 24 h et change au renouvellement quotidien ; les 6 familles reviennent tous les 6 jours. La rotation des 5 prochains jours est affichée, avec l'étage atteint dans chacun. **La progression de chaque famille est gardée** : on reprend où on en était quand son donjon revient.
+- 30 étages par famille, sans énergie, ennemis de la région de la famille (niveau 6 à 64) et un gardien aux étages 10, 20 et 30. Récompense à la première victoire de chaque étage : or et élixirs, grimoires et potions tous les 5 étages, et aux étages 10/20/30 cristaux, essence d'éveil, parchemins de maîtrise et **5 diamants**.
+
 ## ✅ Version 1.78.1 — Les diamants servent à recharger et actualiser
 
 - **Recharge d'énergie** (+60) : payée en diamants, 10 puis 20 puis 40 par jour (au lieu de 50/100/200 cristaux).

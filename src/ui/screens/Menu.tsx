@@ -21,6 +21,10 @@ import { useGame } from '../../state/store';
 import { useUI, type Route } from '../../state/ui';
 import { useEffect, useState } from 'react';
 import { Modal, Screen, fmt } from '../components/common';
+import { RewardView } from '../components/RewardView';
+import { redeemPromo } from '../../game/promo';
+import type { PromoCode } from '../../data/promoCodes';
+import { play } from '../../audio/sfx';
 import { Icon } from '../art/Icons';
 import { HeroArt } from '../art/HeroArt';
 import { HEROES } from '../../data/heroes';
@@ -29,9 +33,10 @@ import { arenaTier } from '../../data/arena';
 import { campProgress } from '../../game/camp';
 import { cleanName, nameError } from '../../game/profile';
 
-type Entry = { label: string; icon: keyof typeof Icon; route: Route; dot?: boolean };
+type Entry = { label: string; icon: keyof typeof Icon; route?: Route; action?: () => void; dot?: boolean };
 
 export function Menu() {
+  const [promo, setPromo] = useState(false);
   const push = useUI((s) => s.push);
   const save = useGame((s) => s.save)!;
   // Le Menu ne contient que ce qui n'a pas de place ailleurs : chaque écran n'a qu'une seule entrée.
@@ -54,6 +59,7 @@ export function Menu() {
     { title: 'Système', items: [
       { label: 'Sauvegarde et compte', icon: 'save', route: { name: 'saves' }, dot: !save.flags.saves_seen && !useAccount.getState().user && !cloudWanted() && save.stats.battlesWon >= 3 },
       { label: 'Paramètres', icon: 'gear', route: { name: 'settings' } },
+      { label: 'Code promo', icon: 'gift', action: () => setPromo(true) },
     ] },
   ];
   return (
@@ -66,7 +72,7 @@ export function Menu() {
             {g.items.map((e) => {
               const I = Icon[e.icon] as (p: { size?: number }) => JSX.Element;
               return (
-                <button key={e.label} className="menu-tile kit" onClick={() => push(e.route)}>
+                <button key={e.label} className="menu-tile kit" onClick={() => (e.action ? e.action() : e.route && push(e.route))}>
                   {TILE_ICON[e.label] ? <img className="mt-ico" src={TILE_ICON[e.label]} alt="" /> : <I size={24} />}
                   <span>{e.label}</span>
                   {e.dot && <span className="badge-dot" style={{ top: 8, right: 10 }} />}
@@ -76,6 +82,7 @@ export function Menu() {
           </div>
         </div>
       ))}
+      {promo && <PromoModal onClose={() => setPromo(false)} />}
       <p className="faint menu-map"><b>Héros</b> : Sanctuaire, Forge, Équipes, Liens · <b>Combats</b> : tous les modes · <b>Accueil</b> : Missions, Courrier, Camp, Marché.</p>
     </Screen>
   );
@@ -128,5 +135,40 @@ function Profile() {
         </Modal>
       )}
     </div>
+  );
+}
+
+/** Code promo (v1.77.0) : un champ, un bouton ; la récompense s'affiche quand le code est accepté. */
+function PromoModal({ onClose }: { onClose: () => void }) {
+  const mutate = useGame((s) => s.mutate);
+  const toast = useUI((s) => s.toast);
+  const [code, setCode] = useState('');
+  const [done, setDone] = useState<PromoCode | null>(null);
+  const submit = () => {
+    let res = { ok: false, reason: '' } as ReturnType<typeof redeemPromo>;
+    mutate((s) => { res = redeemPromo(s, code, Date.now()); });
+    if (!res.ok) { toast(res.reason, 'error'); return; }
+    play('claim'); setDone(res.promo); setCode('');
+  };
+  return (
+    <Modal onClose={onClose}>
+      <h2>Code promo</h2>
+      {done ? (
+        <>
+          <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>{done.label} : récompense ajoutée !</p>
+          <RewardView reward={done.reward} compact />
+          <div className="row" style={{ gap: 8, marginTop: 12 }}>
+            <button className="btn secondary grow" onClick={() => setDone(null)}>Autre code</button>
+            <button className="btn grow" onClick={onClose}>Super</button>
+          </div>
+        </>
+      ) : (
+        <form onSubmit={(e) => { e.preventDefault(); submit(); }}>
+          <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>Entre un code reçu (événement, réseaux, amis) pour obtenir une récompense. Chaque code ne sert qu’une fois.</p>
+          <input className="promo-input" value={code} onChange={(e) => setCode(e.target.value)} placeholder="EX. AEONFALL" autoCapitalize="characters" autoComplete="off" spellCheck={false} maxLength={24} aria-label="Code promo" />
+          <button className="btn block" style={{ marginTop: 10 }} type="submit" disabled={!code.trim()}>Valider</button>
+        </form>
+      )}
+    </Modal>
   );
 }

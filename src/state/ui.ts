@@ -34,6 +34,7 @@ export type Route =
   | { name: 'expeditions' }
   | { name: 'market' }
   | { name: 'camp' }
+  | { name: 'buildings' }
   | { name: 'wheel' }
   | { name: 'profile' }
   | { name: 'guild' }

@@ -43,8 +43,9 @@ export function TopBar() {
       </div>
       <button className="pill kit k-gold" onClick={() => push({ name: 'inventory' })} aria-label="Or"><Counter id="gold" value={save.resources.gold} />
         <span className="pill-plus" role="button" aria-label="Marché" onClick={(ev) => { ev.stopPropagation(); push(isUnlocked(save, 'market') ? { name: 'market' } : { name: 'inventory' }); }} /></button>
-      <button className="pill kit k-crystal" onClick={() => push({ name: 'inventory' })} aria-label="Cristaux"><Counter id="crystals" value={save.resources.crystals} />
-        <span className="pill-plus" role="button" aria-label="Marché" onClick={(ev) => { ev.stopPropagation(); push(isUnlocked(save, 'market') ? { name: 'market' } : { name: 'inventory' }); }} /></button>
+      {/* Diamants (v1.78.0) : la monnaie précieuse, extraite à la Mine des Bâtiments. */}
+      <button className="pill kit k-diamond" onClick={() => push({ name: 'buildings' })} aria-label="Diamants"><Counter id="diamonds" value={save.resources.diamonds ?? 0} />
+        <span className="pill-plus" role="button" aria-label="Bâtiments" onClick={(ev) => { ev.stopPropagation(); push({ name: 'buildings' }); }} /></button>
       {open && (
         <Modal onClose={() => setOpen(false)}>
           <h2>Énergie</h2>

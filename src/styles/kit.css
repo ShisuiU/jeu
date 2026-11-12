@@ -241,3 +241,35 @@
 
 /* ═══ v1.77.2 — fiche d'équipement : statistique principale alignée à gauche comme les secondaires, même taille qu'avant ═══ */
 .gd-main { justify-content: flex-start; }
+
+/* ═══ v1.78.0 — Bâtiments et diamants ═══ */
+.home .pill.k-diamond { height: 29px; margin: -2.5px 0; border-width: 0 27px 0 23px; border-image: url('../assets/home/diamond_slot.webp') 0 77 0 66 fill / 0 27px 0 23px stretch; }
+.diamond-ic { display: inline-block; object-fit: contain; vertical-align: -3px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.6)); }
+.bld-wallet { display: inline-flex; align-items: center; gap: 4px; font-weight: 800; color: #ffc4dc; font-variant-numeric: tabular-nums; }
+.bld-card { margin-bottom: 14px; border-radius: 12px; overflow: hidden; background: rgba(12,9,18,0.88); border: 1px solid rgba(232,190,110,0.35); box-shadow: 0 8px 22px rgba(0,0,0,0.5); }
+.bld-art { position: relative; aspect-ratio: 16 / 7; overflow: hidden; }
+.bld-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.bld-art::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 55%, rgba(12,9,18,0.95)); }
+.bld-lvl { position: absolute; z-index: 1; top: 8px; left: 8px; padding: 2px 9px; border-radius: 99px; background: rgba(0,0,0,0.65); border: 1px solid rgba(232,190,110,0.6); color: #f4dfa8; font-size: 12px; font-weight: 800; }
+.bld-body { padding: 4px 14px 14px; }
+.bld-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+.bld-head b { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 20px; color: #f4dfa8; }
+.bld-head .faint { display: inline-flex; align-items: center; gap: 4px; font-size: 12.5px; }
+.train-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.train-slot { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px; min-height: 132px; border-radius: 10px; background: rgba(0,0,0,0.35); border: 1px solid rgba(232,190,110,0.35); color: #e8dcc4; font-size: 12px; justify-content: center; text-align: center; }
+.train-slot.empty { border-style: dashed; color: #cfc3a8; }
+.train-slot.empty .plus { font-size: 30px; line-height: 1; color: #f4dfa8; }
+.train-slot.locked { opacity: 0.85; color: #ffc4dc; }
+.train-slot.locked:disabled { opacity: 0.45; }
+.train-slot.locked span { display: inline-flex; align-items: center; gap: 4px; font-weight: 800; }
+.ts-art { position: relative; width: 64px; height: 64px; border-radius: 8px; overflow: hidden; border: 2px solid var(--rc, #888); flex-shrink: 0; }
+.ts-art > :first-child { width: 100%; height: 100%; }
+.ts-lv { position: absolute; left: 2px; bottom: 2px; padding: 0 4px; border-radius: 4px; background: rgba(0,0,0,0.75); font-size: 11px; font-weight: 800; color: #fff; }
+.ts-name { font-weight: 800; color: #f4dfa8; font-size: 13px; }
+.ts-xp { font-size: 11px; color: #9fdc8f; line-height: 1.25; }
+.train-pick { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-height: 52vh; overflow-y: auto; padding: 2px; }
+.tp-hero { display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: 0; padding: 2px; color: #e8dcc4; }
+.tp-hero .ts-art { width: 100%; height: auto; aspect-ratio: 1; }
+.tp-hero.maxed { opacity: 0.45; }
+.tp-name { font-size: 11.5px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bld-card .btn { white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; gap: 5px; }

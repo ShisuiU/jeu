@@ -558,6 +558,14 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.78.0 — Bâtiments : Mine de diamants et Terrain d'entraînement
+
+- **Diamants** : nouvelle monnaie précieuse (future monnaie payante), avec son icône peinte par SpriteCook. Sur l'accueil, le compteur en haut à droite affiche désormais les diamants (le « + » mène aux Bâtiments) ; les cristaux restent visibles dans le Sac et les écrans qui les utilisent.
+- **Accueil → Bâtiments** (nouveau bouton peint sous Marché, pastille rouge quand la Mine a 8 h de production en réserve).
+- **Mine de diamants** : extrait 1 diamant par heure, même jeu fermé ; 2 par heure au niveau 2 (120 diamants), 3 par heure au niveau 3 (300 diamants). La réserve s'arrête à 24 h de production : il faut passer récolter.
+- **Terrain d'entraînement** : les héros placés gagnent un peu d'expérience chaque heure (3 % d'un niveau, jusqu'à 24 h sans passer), donnée en entrant dans les Bâtiments ou avec « Donner l'expérience ». 1 place gratuite, 2ᵉ place 100 diamants, 3ᵉ place 250 diamants. Les héros placés peuvent toujours combattre ; ceux au niveau maximum de leur rang n'y gagnent rien.
+- Illustrations de la Mine et du Terrain générées avec SpriteCook dans le style de l'accueil.
+
 ## ✅ Version 1.77.3 — Fiche du héros sans flèches
 
 - Les flèches ‹ › pour passer d'un héros au suivant sur la fiche d'un héros sont retirées : on revient à la liste des héros pour en ouvrir un autre.

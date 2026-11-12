@@ -50,6 +50,7 @@ const Combats = L(() => import('./ui/screens/Combats'), 'Combats');
 const Expeditions = L(() => import('./ui/screens/Expeditions'), 'Expeditions');
 const Market = L(() => import('./ui/screens/Market'), 'Market');
 const Camp = L(() => import('./ui/screens/Camp'), 'Camp');
+const Buildings = L(() => import('./ui/screens/Buildings'), 'Buildings');
 const Wheel = L(() => import('./ui/screens/Wheel'), 'Wheel');
 const ProfileScreen = L(() => import('./ui/screens/Profile'), 'Profile');
 const Guild = L(() => import('./ui/screens/Guild'), 'Guild');
@@ -87,6 +88,7 @@ function renderRoute(r: Route) {
     case 'expeditions': return <Expeditions />;
     case 'market': return <Market />;
     case 'camp': return <Camp />;
+    case 'buildings': return <Buildings />;
     case 'wheel': return <Wheel />;
     case 'profile': return <ProfileScreen />;
     case 'guild': return <Guild />;

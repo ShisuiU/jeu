@@ -1,3 +1,4 @@
+import diamondUrl from '../../assets/kit/diamond.webp';
 // Icônes vectorielles du jeu (aucune dépendance externe, nettes sur écran Retina).
 type P = { size?: number; color?: string };
 
@@ -53,6 +54,7 @@ export const Icon = {
   forge: (p: P) => <S {...p}><path d="M3 10h13l2-3h3v4l-3 2H6z" /><path d="M8 13v3l-3 5h14l-3-5v-3" /></S>,
   star: ({ size = 12, color = '#ffd36b' }: P) => <svg viewBox="0 0 24 24" width={size} height={size}><path d="m12 2 2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 20.9l1.6-7L2 9.2l7.1-.6z" fill={color} stroke="#3a2a0a" strokeWidth="1" /></svg>,
   // ─── Ressources (en couleur) ───
+  diamond: ({ size = 22 }: P) => <img className="diamond-ic" src={diamondUrl} width={size} height={size} alt="" draggable={false} />,
   energy: ({ size = 22 }: P) => <svg viewBox="0 0 24 24" width={size} height={size}><path d="M13 2 4 14h7l-1 8 9-12h-7z" fill="#5fe0ff" stroke="#0b4d63" strokeWidth="1.2" strokeLinejoin="round" /></svg>,
   coin: ({ size = 22 }: P) => <svg viewBox="0 0 24 24" width={size} height={size}><circle cx="12" cy="12" r="9.5" fill="#e8b43e" stroke="#7a5512" strokeWidth="1.2" /><circle cx="12" cy="12" r="6.5" fill="none" stroke="#fff0b8" strokeWidth="1.2" opacity="0.7" /><path d="M12 8v8M9.5 10h5" stroke="#7a5512" strokeWidth="1.6" strokeLinecap="round" /></svg>,
   crystal: ({ size = 22, color = '#7fe7ff' }: P) => <svg viewBox="0 0 24 24" width={size} height={size}><path d="M12 2 19 8l-7 14L5 8z" fill={color} stroke="#0d3f52" strokeWidth="1.2" strokeLinejoin="round" /><path d="M5 8h14M12 2l-3 6 3 14 3-14z" fill="none" stroke="#e8fbff" strokeWidth="0.9" opacity="0.8" /></svg>,

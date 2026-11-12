@@ -6,6 +6,8 @@ import bMarket from '../../assets/home/btn_market.webp';
 import bMissions from '../../assets/home/btn_missions.webp';
 import bMail from '../../assets/home/btn_mail.webp';
 import bEvents from '../../assets/home/btn_events.webp';
+import bBuildings from '../../assets/home/btn_buildings.webp';
+import { buildingsDot } from '../../game/buildings';
 import { wheelReady } from '../../game/wheel';
 import { Coach } from '../components/Coach';
 import { useGame } from '../../state/store';
@@ -37,11 +39,12 @@ export function Home() {
   // (Sanctuaire, Forge, Équipes, Liens : onglet Héros. Modes de combat : onglet Combats. Clan, amis : Menu.)
   const toast = useUI((st) => st.toast);
   // Les six cadres sont peints dans le décor : un lieu pas encore ouvert reste visible, assombri, avec un cadenas.
-  type Spot = { label: string; side: 'l' | 'r'; row: 0 | 1 | 2; img: string; dot?: boolean; go: () => void; feature?: Feature };
+  type Spot = { label: string; side: 'l' | 'r'; row: 0 | 1 | 2 | 3; img: string; dot?: boolean; go: () => void; feature?: Feature };
   const spots: Spot[] = [
     { label: 'Roue', img: bWheel, side: 'l', row: 0, dot: wheelReady(save, now), go: () => push({ name: 'wheel' }) },
     { label: 'Camp', img: bCamp, side: 'l', row: 1, feature: 'camp', dot: campElapsed(save, now) >= 8 * 3600_000, go: () => push({ name: 'camp' }) },
     { label: 'Marché', img: bMarket, side: 'l', row: 2, feature: 'market', go: () => push({ name: 'market' }) },
+    { label: 'Bâtiments', img: bBuildings, side: 'l', row: 3, dot: buildingsDot(save, now), go: () => push({ name: 'buildings' }) },
     { label: 'Missions', img: bMissions, side: 'r', row: 0, dot: claimableCount(save) > 0, go: () => push({ name: 'missions' }) },
     { label: 'Courrier', img: bMail, side: 'r', row: 1, dot: unreadMail(save.flags) || canClaimDaily(save, now) || gifts > 0, go: () => push({ name: 'mail' }) },
     { label: 'Événements', img: bEvents, side: 'r', row: 2, feature: 'events', dot: eventsDot(save, now), go: () => push({ name: 'events' }) },

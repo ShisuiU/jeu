@@ -28,6 +28,15 @@ export interface HeroInstance {
   masteries?: string[];
 }
 
+export interface Buildings {
+  /** Niveau de la Mine (1 à 3) et début de la production non récoltée. */
+  mineLevel: number;
+  mineSince: number;
+  /** Places ouvertes au Terrain d'entraînement (1 gratuite, 2 à acheter) et héros placés. */
+  trainSlots: number;
+  train: ({ uid: string; since: number } | null)[];
+}
+
 export interface GearItem {
   uid: string;
   slot: GearSlot;
@@ -135,6 +144,8 @@ export interface SaveData {
   wheel?: { day: string; last: string };
   /** Série de combats en arrière-plan (v1.68.5) : en cours, ou résumé à fermer. */
   bgRun?: import('../game/background').BgRun | null;
+  /** Bâtiments (v1.78.0) : Mine de diamants et Terrain d'entraînement. */
+  buildings: Buildings;
 }
 
 export interface ArenaOpponent {
@@ -207,6 +218,7 @@ export function createNewSave(now: number = Date.now()): SaveData {
     stats: { battlesWon: 0, battlesLost: 0, summons: 0 },
     settings: { sound: true, volume: 0.6, reducedMotion: false, battleSpeed: 1, autoBattleDefault: false, music: true, musicVolume: 0.35, showInRanks: true },
     flags: {},
+    buildings: { mineLevel: 1, mineSince: now, trainSlots: 1, train: [null, null, null] },
     resets: { day: '', week: '' },
     missions: { daily: { counters: {}, claimed: [], bonus: false }, weekly: { counters: {}, claimed: [], bonus: false } },
     achievements: [],

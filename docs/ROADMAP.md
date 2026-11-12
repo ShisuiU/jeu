@@ -558,6 +558,10 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.77.1 — Fin de l'Appel des Sept Aubes
+
+- L'événement de connexion « L'Appel des Sept Aubes » (Élyra, légendaire exclusive, au 7ᵉ jour) se termine désormais le **17 novembre 2026 à 5 h 59 (heure de Paris)**, soit 5 jours après cette mise à jour, au lieu du 7 décembre. Le compte à rebours de l'écran Événements suit cette nouvelle date.
+
 ## ✅ Version 1.77.0 — Codes promo
 
 - **Menu → Système → Code promo** : un champ pour entrer un code. S'il est valable, la récompense est ajoutée tout de suite et affichée ; chaque code ne sert qu'une fois par partie (« Tu as déjà utilisé ce code »). Majuscules, espaces et tirets sont ignorés.

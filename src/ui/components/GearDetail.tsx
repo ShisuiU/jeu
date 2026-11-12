@@ -109,10 +109,10 @@ export function GearDetail({ gearUid, onClose, equipTo, place = 'hero', onReplac
           <b>{set.name}</b> <span className="faint">· {set.pieces} pièces</span>
           <div className="gd-set-bonus">{set.description}</div>
         </div>
-        {owner && <span className={`gd-set-count ${worn >= set.pieces ? 'on' : ''}`}>{worn}/{set.pieces}</span>}
+        {owner && <span className={`gd-set-count ${worn >= set.pieces ? 'on' : ''}`}>{worn >= set.pieces ? (worn >= set.pieces * 2 ? `×${Math.floor(worn / set.pieces)}` : 'Actif') : `${worn}/${set.pieces}`}</span>}
       </div>
 
-      <div className="gd-main"><span className="muted">Principale</span><b>{statText(g.main, mainValue(g))}</b></div>
+      <div className="gd-main"><b>{statText(g.main, mainValue(g))}</b></div>
       {g.subs.map((sb, i) => (
         <div key={i} className="gd-sub">
           <span>{statText(sb.stat, sb.value)}</span>

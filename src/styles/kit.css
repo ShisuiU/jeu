@@ -238,3 +238,6 @@
 .promo-input { width: 100%; height: 48px; padding: 0 14px; border-radius: 10px; border: 1px solid rgba(232,190,110,0.55); background: rgba(0,0,0,0.45); color: #f4dfa8; font-size: 20px; font-weight: 700; letter-spacing: 0.14em; text-align: center; text-transform: uppercase; font-family: inherit; box-sizing: border-box; }
 .promo-input::placeholder { color: rgba(244,223,168,0.3); letter-spacing: 0.08em; font-weight: 600; font-size: 15px; }
 .promo-input:focus { outline: none; border-color: #ffd98a; box-shadow: 0 0 0 3px rgba(255,210,120,0.18); }
+
+/* ═══ v1.77.2 — fiche d'équipement : statistique principale alignée à gauche comme les secondaires, même taille qu'avant ═══ */
+.gd-main { justify-content: flex-start; }

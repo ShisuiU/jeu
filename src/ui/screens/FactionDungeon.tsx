@@ -1,6 +1,6 @@
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
-import { FACTION_DUNGEONS, FACTION_FLOORS, factionLevel, factionReward } from '../../data/factionDungeon';
+import { FACTION_DUNGEONS, FACTION_FLOORS, factionReward } from '../../data/factionDungeon';
 import { FACTIONS } from '../../data/factions';
 import { factionBest, factionHeroes, factionOfDay, nextRotation } from '../../game/factionDungeon';
 import { formatDuration } from '../../core/time';
@@ -60,7 +60,7 @@ export function FactionDungeon() {
               <span className="sn-idx">{fl}</span>
               <div className="grow" style={{ textAlign: 'left', minWidth: 0 }}>
                 <div className="sn-name">{fl % 10 === 0 ? 'Gardien du donjon' : `Étage ${fl}`}</div>
-                <div className="faint">{done ? 'Conquis' : <>Ennemis niv. {factionLevel(fl)} · sans énergie</>}</div>
+                <div className="faint">{done ? 'Conquis' : 'Sans énergie'}</div>
               </div>
               {!done && <span className="row" style={{ gap: 4 }}>{rewardMainIcon(factionReward(fl), 18)}</span>}
               {!open && <Icon.lock size={16} />}

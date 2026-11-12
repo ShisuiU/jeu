@@ -102,21 +102,20 @@ export function Campaign() {
         {c.stages.map((stage) => {
           const unlocked = isStageUnlocked(save, diff, stage);
           const p = stageProgress(save, diff, stage.id);
-          const lv = Math.max(...stage.waves.flat().map((w) => w.level)) + DIFFICULTIES[diff].levelAdd;
           return (
             <button key={stage.id} className={`stage-node ${unlocked ? '' : 'locked'} ${p.clears ? 'cleared' : ''} ${stage.boss ? 'boss' : ''}`}
               onClick={() => unlocked ? push({ name: 'prep', spec: { mode: 'campaign', stageId: stage.id, difficulty: diff } }) : toast('Termine d’abord le niveau précédent.')}>
               <span className="sn-idx">{stage.boss ? <Icon.skull size={20} /> : stage.index}</span>
               <div className="grow" style={{ textAlign: 'left', minWidth: 0 }}>
                 <div className="sn-name">{stage.name}</div>
-                <div className="faint">{stage.id} · niv. {Math.min(70, lv)} · <Icon.energy size={11} /> {stageEnergy(stage, diff)}{stage.before && !p.clears && diff === 'normal' ? ' · Dialogue' : ''}</div>
+                <div className="faint">{stage.id} · <Icon.energy size={11} /> {stageEnergy(stage, diff)}{stage.before && !p.clears && diff === 'normal' ? ' · Dialogue' : ''}</div>
               </div>
               {unlocked ? <span className="sn-stars">{[1, 2, 3].map((n) => <Icon.star key={n} size={14} color={n <= p.stars ? '#ffd36b' : '#3a3442'} />)}</span> : <Icon.lock size={18} />}
             </button>
           );
         })}
       </div>
-      <div className="row" style={{ justifyContent: 'center', gap: 6, marginTop: 6 }}><span className="faint">Difficultés</span><InfoButton title="Difficultés">Difficile, Expert et Cauchemar : ennemis de niveau +15 / +30 / +45 (max. 70), plus puissants. Récompenses ×1,6 / ×2,4 / ×3,5.</InfoButton></div>
+      <div className="row" style={{ justifyContent: 'center', gap: 6, marginTop: 6 }}><span className="faint">Difficultés</span><InfoButton title="Difficultés">Difficile, Expert et Cauchemar : ennemis bien plus puissants. Récompenses ×1,6 / ×2,4 / ×3,5.</InfoButton></div>
     </Screen>
   );
 }

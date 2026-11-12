@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
-import { DUNGEONS, DUNGEON_BY_ID, DUNGEON_DIFF_OPEN, DUNGEON_FLOORS, dungeonEnergy, dungeonLevel, dungeonPower, dungeonReward, forgeStarRange } from '../../data/dungeons';
+import { DUNGEONS, DUNGEON_BY_ID, DUNGEON_DIFF_OPEN, DUNGEON_FLOORS, dungeonEnergy, dungeonReward, forgeStarRange } from '../../data/dungeons';
 import { DIFFICULTIES, DIFFICULTY_ORDER, type DifficultyId } from '../../data/campaign';
 import { dungeonBest, dungeonDiffOpen, dungeonTopDiff } from '../../game/dungeons';
 import { usePersisted } from '../components/ListControls';
-import { TOWER_FLOORS, towerLevel, towerReward, towerStatMult } from '../../data/tower';
+import { TOWER_FLOORS, towerReward } from '../../data/tower';
 import { sweepTower, towerSweepMax } from '../../game/towerSweep';
 import type { Reward } from '../../data/resources';
 import { BOSS_TIERS, DAMAGE_CHESTS, WORLD_BOSS } from '../../data/worldBoss';
@@ -110,7 +110,7 @@ export function Dungeon({ dungeonId }: { dungeonId: string }) {
               <span className="sn-idx">{f}</span>
               <div className="grow" style={{ textAlign: 'left' }}>
                 <div className="sn-name">Étage {f}</div>
-                <div className="faint">Ennemis niv. {dungeonLevel(f, diff)}{dungeonPower(f, diff) > 1 ? ` · puissance +${Math.round((dungeonPower(f, diff) - 1) * 100)} %` : ''} · <Icon.energy size={11} /> {dungeonEnergy(f, diff)}{d.gear && (() => { const [lo, hi] = forgeStarRange(f, diff); return <> · <span className="forge-stars">★ {lo === hi ? lo : `${lo} à ${hi}`}</span></>; })()}</div>
+                <div className="faint"><Icon.energy size={11} /> {dungeonEnergy(f, diff)}{d.gear && (() => { const [lo, hi] = forgeStarRange(f, diff); return <> · <span className="forge-stars">★ {lo === hi ? lo : `${lo} à ${hi}`}</span></>; })()}</div>
               </div>
               <span className="row" style={{ gap: 4 }}>{rewardMainIcon(dungeonReward(d, f, diff), 18)}</span>
               {!open && <Icon.lock size={16} />}
@@ -142,7 +142,7 @@ export function Tower() {
         {floors.map((f) => (
           <div key={f} className={`tower-floor ${f <= cur ? 'done' : f === next && !done ? 'next' : 'future'} ${f % 10 === 0 ? 'boss' : ''}`}>
             <span className="tf-n">{f}</span>
-            <span className="grow">{f % 10 === 0 ? (f > 50 ? 'Boss des Sommets' : 'Sentinelle') : `Ennemis niv. ${towerLevel(f)}${f > 50 ? ` · puissance +${Math.round((towerStatMult(f) - 1) * 100)} %` : ''}`}</span>
+            <span className="grow">{f % 10 === 0 ? (f > 50 ? 'Boss des Sommets' : 'Sentinelle') : `Étage ${f}`}</span>
             <span className="row" style={{ gap: 4 }}>{rewardMainIcon(towerReward(f), 18)}</span>
             {f <= cur && <span className="chip active">✓</span>}
           </div>

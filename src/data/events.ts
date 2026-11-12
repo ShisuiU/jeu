@@ -69,7 +69,7 @@ export const BUNDLED_EVENTS: GameEvent[] = [
   {
     id: 'ev_dawn_2026', name: 'L’Appel des Sept Aubes', short: 'Sept Aubes', color: '#ffcf5a',
     description: 'Connecte-toi 7 jours pendant l’événement : un cadeau chaque jour, et Élyra, héroïne exclusive, au septième.',
-    start: '2026-11-06T00:00:00Z', end: '2026-12-07T04:59:59Z',
+    start: '2026-11-06T00:00:00Z', end: '2026-11-17T04:59:59Z',
     login: { days: [
       { reward: { gold: 10000 } },
       { reward: { shardDim: 5 } },

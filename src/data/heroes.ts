@@ -1,4 +1,5 @@
 import type { HeroDef } from './types';
+import { balanceHero } from './heroBalance';
 import { CHAPTER_HEROES } from './heroesChapters';
 import { EXTRA_HEROES } from './heroesExtra';
 import { LOW_HEROES } from './heroesLow';
@@ -89,8 +90,8 @@ const BASE_HEROES: HeroDef[] = [
         effects: [{ kind: 'damage', target: 'enemy', mult: 3.6 }, { kind: 'status', target: 'enemy', status: 'burn', chance: 0.3, turns: 2 }], upgrades: up('+5 % dégâts', '+10 % chance', '+10 % dégâts') },
       { id: 'idris_2', name: 'Surcharge du Prisme', slot: 'special', cooldown: 3, description: 'Augmente son ATQ de 50 % pendant 2 tours et remplit sa jauge de tour de 30 %.',
         effects: [{ kind: 'status', target: 'self', status: 'atkUp', chance: 1, turns: 2, value: 0.5 }, { kind: 'turnMeter', target: 'self', delta: 0.3 }], upgrades: up('Recharge -1') },
-      { id: 'idris_3', name: 'Lance Réfractée', slot: 'ultimate', cooldown: 5, description: 'Un faisceau traverse tous les ennemis et réduit leur DÉF de 50 % pendant 2 tours.',
-        effects: [{ kind: 'status', target: 'allEnemies', status: 'defDown', chance: 0.75, turns: 2, value: 0.5 }, { kind: 'damage', target: 'allEnemies', mult: 3.4 }], upgrades: up('+10 % dégâts', '+10 % chance', 'Recharge -1') },
+      { id: 'idris_3', name: 'Lance Réfractée', slot: 'ultimate', cooldown: 5, description: 'Un faisceau traverse tous les ennemis et réduit leur DÉF de 30 % pendant 2 tours.',
+        effects: [{ kind: 'status', target: 'allEnemies', status: 'defDown', chance: 0.6, turns: 2, value: 0.3 }, { kind: 'damage', target: 'allEnemies', mult: 3.4 }], upgrades: up('+10 % dégâts', '+10 % chance', 'Recharge -1') },
     ],
     leaderSkill: { description: '+25 % ATQ pour les héros Solaires', stat: 'atk', pct: 0.25, scope: 'solar' },
     lore: "Dans son époque d'origine, Idris a perdu une guerre contre les machines. Arraché au temps par la Fracture, il s'est juré de ne plus jamais battre en retraite. Son exo-armure garde la trace de six cents batailles.",
@@ -235,8 +236,8 @@ const BASE_HEROES: HeroDef[] = [
     skills: [
       { id: 'kaedra_1', name: 'Khopesh jumeaux', slot: 'basic', cooldown: 0, description: 'Frappe un ennemi deux fois.',
         effects: [{ kind: 'damage', target: 'enemy', mult: 1.9, hits: 2 }], upgrades: up('+5 % dégâts', '+10 % dégâts') },
-      { id: 'kaedra_2', name: 'Vent de sable', slot: 'special', cooldown: 3, description: 'Réduit la DÉF de la cible de 50 % pendant 2 tours puis la frappe.',
-        effects: [{ kind: 'status', target: 'enemy', status: 'defDown', chance: 0.8, turns: 2, value: 0.5 }, { kind: 'damage', target: 'enemy', mult: 3.6 }], upgrades: up('+10 % chance', 'Recharge -1') },
+      { id: 'kaedra_2', name: 'Vent de sable', slot: 'special', cooldown: 3, description: 'Réduit la DÉF de la cible de 40 % pendant 2 tours puis la frappe.',
+        effects: [{ kind: 'status', target: 'enemy', status: 'defDown', chance: 0.8, turns: 2, value: 0.4 }, { kind: 'damage', target: 'enemy', mult: 3.6 }], upgrades: up('+10 % chance', 'Recharge -1') },
       { id: 'kaedra_3', name: 'Exécution du Simoun', slot: 'ultimate', cooldown: 4, description: 'Frappe une cible en ignorant 50 % de sa DÉF. Si elle meurt, Kaedra rejoue immédiatement.',
         effects: [{ kind: 'damage', target: 'enemy', mult: 5.6, ignoreDefPct: 0.5 }], upgrades: up('+10 % dégâts', 'Recharge -1') },
     ],
@@ -267,7 +268,8 @@ const BASE_HEROES: HeroDef[] = [
   },
 ];
 
-export const HEROES: HeroDef[] = [...BASE_HEROES, ...CHAPTER_HEROES, ...EXTRA_HEROES, ...LOW_HEROES, ...WAVE_A_HEROES, ...WAVE_B_HEROES, ...WAVE_C_HEROES];
+// Rééquilibrage (v1.75.0) : compétences et vitesse ramenées dans l'enveloppe de leur rôle et de leur rareté.
+export const HEROES: HeroDef[] = [...BASE_HEROES, ...CHAPTER_HEROES, ...EXTRA_HEROES, ...LOW_HEROES, ...WAVE_A_HEROES, ...WAVE_B_HEROES, ...WAVE_C_HEROES].map(balanceHero);
 
 export const HERO_BY_ID: Record<string, HeroDef> = Object.fromEntries(HEROES.map((h) => [h.id, h]));
 

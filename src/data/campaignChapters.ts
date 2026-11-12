@@ -9,9 +9,9 @@ interface ChapterCfg {
 }
 
 /** Puissance des ennemis par chapitre (calibrée par simulation, voir tests/balance.chapters.test.ts). */
-const POWER: Record<number, number> = { 2: 1.6, 3: 1.85, 4: 2.55, 5: 2.6, 6: 2.8, 7: 2.8, 8: 3.9, 9: 3.6 };
+const POWER: Record<number, number> = { 2: 1.6, 3: 1.85, 4: 2.55, 5: 2.6, 6: 2.8, 7: 2.7, 8: 3.9, 9: 3.6 };
 /** Ajustement du boss (certains kits sont plus redoutables que d'autres). */
-const BOSS_ADJ: Record<number, number> = { 2: 1, 3: 0.85, 4: 0.62, 5: 1.05, 6: 1, 7: 0.9, 8: 0.66, 9: 0.78 };
+const BOSS_ADJ: Record<number, number> = { 2: 1, 3: 0.85, 4: 0.62, 5: 1.05, 6: 1, 7: 0.88, 8: 0.66, 9: 0.78 };
 export const CHAPTER_POWER = (n: number, i: number) => Math.round(POWER[n] * (1 + (i - 1) * 0.01) * (i === 10 ? BOSS_ADJ[n] : 1) * 100) / 100;
 
 const L = (speaker: string, text: string): DialogueLine => ({ speaker, text });

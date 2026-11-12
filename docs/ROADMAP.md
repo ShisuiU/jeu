@@ -558,6 +558,12 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.77.0 — Codes promo
+
+- **Menu → Système → Code promo** : un champ pour entrer un code. S'il est valable, la récompense est ajoutée tout de suite et affichée ; chaque code ne sert qu'une fois par partie (« Tu as déjà utilisé ce code »). Majuscules, espaces et tirets sont ignorés.
+- Codes de départ : **AEONFALL** (300 cristaux, 50 000 or, 2 éclats d'Aeon) et **FRACTURE** (10 éclats ternes, 10 élixirs d'expérience, 60 énergie).
+- Les codes ne sont pas écrits en clair dans le jeu (seule leur empreinte l'est) ; on peut en ajouter, avec une date de fin si besoin, dans `src/data/promoCodes.ts`.
+
 ## ✅ Version 1.76.3 — Croix de fermeture sur les fenêtres
 
 - Toutes les fenêtres qui peuvent se fermer (fiche d'un équipement, choix d'un objet, pause, explications « i », pastilles d'identité du héros, confirmations…) ont maintenant une **croix ✕ ronde en haut à droite**. Elle reste visible même quand le contenu défile. Toucher à côté de la fenêtre la ferme toujours aussi.

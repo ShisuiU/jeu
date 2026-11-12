@@ -44,8 +44,9 @@ export function computeStats(def: HeroDef, p: HeroProgress): Stats {
     atk: Math.round(role.atk * bias('atk') * scaling),
     def: Math.round(role.def * bias('def') * scaling),
     spd: Math.round(def.baseSpd + p.ascension * 2 + p.awaken * 2),
-    critRate: role.critRate + p.ascension,
-    critDmg: role.critDmg + p.awaken * 5,
+    // Critiques (v1.76.2) : 0 % de base pour tous les héros ; seuls l'équipement et les auras de chef les montent.
+    critRate: role.critRate,
+    critDmg: role.critDmg,
     acc: Math.round(role.acc * bias('acc') + p.ascension * 3),
     res: Math.round(role.res * bias('res') + p.ascension * 3),
   };

@@ -77,7 +77,12 @@ export function createBattle(allies: UnitSetup[], waves: UnitSetup[][], opts: Ba
   const ls = leader ? HERO_BY_ID[leader.refId].leaderSkill : undefined;
   if (ls) {
     for (const u of heroes) {
-      if (ls.scope === 'all' || ls.scope === u.faction || ls.scope === u.affinity) u.base[ls.stat] = Math.round(u.base[ls.stat] * (1 + ls.pct));
+      if (ls.scope === 'all' || ls.scope === u.faction || ls.scope === u.affinity) {
+        // Les critiques partent de 0 % : l'aura les augmente en points (+11 % = +11 points), les autres statistiques en pourcentage.
+        if (ls.stat === 'critRate') u.base.critRate = Math.min(100, u.base.critRate + Math.round(ls.pct * 100));
+        else if (ls.stat === 'critDmg') u.base.critDmg += Math.round(ls.pct * 100);
+        else u.base[ls.stat] = Math.round(u.base[ls.stat] * (1 + ls.pct));
+      }
     }
   }
   // Synergies de faction (statiques)

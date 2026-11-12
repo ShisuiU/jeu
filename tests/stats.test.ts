@@ -50,7 +50,14 @@ describe('statistiques', () => {
     expect(computeStats(d, p(20, r)).hp).toBeGreaterThan(base.hp);
     expect(computeStats(d, p(1, r + 1)).atk).toBeGreaterThan(base.atk);
     expect(computeStats(d, p(1, r, 2)).def).toBeGreaterThan(base.def);
-    expect(computeStats(d, p(1, r, 0, 1)).critDmg).toBeGreaterThan(base.critDmg);
+    expect(computeStats(d, p(1, r, 0, 1)).spd).toBeGreaterThan(base.spd);
+  });
+  it('critiques à 0 % de base (v1.76.2) : seuls l’équipement, les auras et les maîtrises les montent', () => {
+    for (const id of ['aldric', 'kaedra', 'nerissa']) {
+      const st = computeStats(HERO_BY_ID[id], p(60, 6, 6, 6));
+      expect(st.critRate).toBe(0);
+      expect(st.critDmg).toBe(0);
+    }
   });
   it('la rareté pèse sur la puissance à progression égale', () => {
     const lv = (id: string) => powerOf(computeStats(HERO_BY_ID[id], p(30, 6)));

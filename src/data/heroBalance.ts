@@ -69,7 +69,7 @@ export function speedRange(h: HeroDef): [number, number] {
 // (la vitesse vaut deux fois plus cher, la précision ou la résistance moins) et une aura limitée à une
 // famille ou une affinité peut monter plus haut, puisqu'elle touche moins de héros.
 export const AURA_BUDGET: Record<RarityId, number> = { common: 6, uncommon: 8, rare: 10, epic: 12, legendary: 14, mythic: 16 };
-export const AURA_WEIGHT: Record<StatId, number> = { hp: 1, def: 1, atk: 1.2, spd: 2, critRate: 0.6, critDmg: 0.5, acc: 0.6, res: 0.6 };
+export const AURA_WEIGHT: Record<StatId, number> = { hp: 1, def: 1, atk: 1.2, spd: 2, critRate: 1.2, critDmg: 0.5, acc: 0.6, res: 0.6 };
 export const AURA_SCOPED = 0.6;
 
 /** Plafond (en fraction, 0,12 = 12 %) de l'aura de chef d'un héros. */

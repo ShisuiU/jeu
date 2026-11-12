@@ -189,6 +189,12 @@ export const ENEMIES: Record<string, EnemyDef> = {
 import { REGION_ENEMIES } from './enemiesRegions';
 Object.assign(ENEMIES, REGION_ENEMIES);
 
+/** Critiques des ennemis selon leur rôle (les héros, eux, partent de 0 % depuis la v1.76.2). */
+const ENEMY_CRIT: Record<RoleId, { critRate: number; critDmg: number }> = {
+  attacker: { critRate: 15, critDmg: 60 }, defender: { critRate: 5, critDmg: 50 }, support: { critRate: 10, critDmg: 50 },
+  healer: { critRate: 8, critDmg: 50 }, controller: { critRate: 10, critDmg: 50 }, assassin: { critRate: 25, critDmg: 75 },
+};
+
 /** Statistiques d'un ennemi à un niveau donné (même formule de croissance que les héros). */
 export function enemyStats(def: EnemyDef, level: number, statMult = 1, hpMult = 1): Stats {
   const t = ROLES[def.role].template;
@@ -199,8 +205,8 @@ export function enemyStats(def: EnemyDef, level: number, statMult = 1, hpMult = 
     atk: Math.round(t.atk * b('atk') * g),
     def: Math.round(t.def * b('def') * g),
     spd: def.baseSpd,
-    critRate: t.critRate,
-    critDmg: t.critDmg,
+    critRate: ENEMY_CRIT[def.role].critRate,
+    critDmg: ENEMY_CRIT[def.role].critDmg,
     acc: t.acc + level * 2,
     res: t.res + level * 2,
   };

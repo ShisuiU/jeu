@@ -285,3 +285,14 @@
 .fd-next small { color: #a89e8a; font-size: 10.5px; }
 .tp-hero.picked .ts-art { box-shadow: 0 0 0 3px #ffd98a; }
 .tp-order { position: absolute; top: 2px; right: 2px; min-width: 18px; height: 18px; padding: 0 3px; border-radius: 9px; background: #ffd98a; color: #2b1a06; font-size: 11px; font-weight: 800; display: grid; place-items: center; }
+
+/* ═══ v1.79.2 — boutons AUTO et vitesse : texte centré dans leur cadre ; jauge du Lien nommée ═══ */
+.theme-v2 .ctrl-col { gap: 6px; }
+.theme-v2 .ctrl-col .ctrl { height: 30px !important; padding: 0 !important; display: grid; place-items: center; line-height: 1; font-size: 14px; font-weight: 700;
+  border-width: 0 9px !important; border-image-slice: 0 14% fill !important; border-image-width: 0 9px !important; }
+.theme-v2 .ctrl-col .ctrl.on { border-image-slice: 0 12% fill !important; }
+.lien-btn .lien-core { display: flex !important; flex-direction: column; align-items: center; justify-content: center; line-height: 1.05; }
+.lien-btn .lien-core small { font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.75; font-weight: 700; }
+.lien-btn:not(.full) { cursor: help; }
+.theme-v2 .ctrl-col .ctrl:first-child { font-size: 13px; letter-spacing: 0.04em; }
+.theme-v2 .ctrl-col .ctrl:last-child { font-family: Inter, system-ui, sans-serif; font-size: 13px; font-weight: 800; }

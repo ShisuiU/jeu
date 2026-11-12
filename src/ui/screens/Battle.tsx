@@ -461,9 +461,9 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
             <button className="ctrl" onClick={cycleSpeed} aria-label={`Vitesse ×${speed}`}>×{speed}</button>
           </div>
           {s.lien >= 0 && (
-            <button className={`lien-btn ${lienFull ? 'full' : ''}`} disabled={!lienFull} onClick={() => { play('tap'); setLienOpen((v) => !v); }}
+            <button className={`lien-btn ${lienFull ? 'full' : ''}`} onClick={() => { play('tap'); if (lienFull) setLienOpen((v) => !v); else toast(s.lienUsed >= LIEN_USES ? 'Pouvoir du Lien : déjà utilisé 2 fois dans ce combat.' : 'Pouvoir du Lien : la jauge monte à chaque action de tes héros (+5 %) et à chaque ennemi vaincu (+5 %). À 100 %, touche-la pour choisir un pouvoir (soin, frappe ou rempart), 2 fois par combat.'); }}
               aria-label={`Pouvoir du Lien : ${Math.round((s.lien / LIEN_MAX) * 100)} %`} style={{ ['--lp' as string]: `${(s.lien / LIEN_MAX) * 360}deg` }}>
-              <span className="lien-core">{s.lienUsed >= LIEN_USES ? '—' : lienFull ? 'LIEN' : `${Math.round((s.lien / LIEN_MAX) * 100)}%`}</span>
+              <span className="lien-core">{s.lienUsed >= LIEN_USES ? '—' : lienFull ? 'LIEN' : <><small>Lien</small>{Math.round((s.lien / LIEN_MAX) * 100)}%</>}</span>
               <span className="lien-uses">{LIEN_USES - s.lienUsed}/{LIEN_USES}</span>
             </button>
           )}

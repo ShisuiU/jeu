@@ -17,12 +17,16 @@ const PATHS: Record<FactionId, JSX.Element> = {
   akkar: (<g><circle cx="32" cy="30" r="15" /><circle cx="32" cy="30" r="8" fill="var(--e2)" /><path d="M8 58 L28 34 M56 58 L36 34 M32 6 V14 M14 14 L19 19 M50 14 L45 19" stroke="var(--e1)" strokeWidth="4" strokeLinecap="round" /></g>),
 };
 
+// Blasons peints des familles (SpriteCook, v1.74.0). Le tracé vectoriel ne sert plus qu'au filigrane monochrome des portraits.
+const FAC_IMG = import.meta.glob('../../assets/identity/fac_*.webp', { eager: true, import: 'default' }) as Record<string, string>;
+
 export function FactionEmblem({ id, size = 24, mono }: { id: FactionId; size?: number; mono?: string }) {
   const f = FACTIONS[id];
+  if (!mono) return <img className="fac-emblem" src={FAC_IMG[`../../assets/identity/fac_${id}.webp`]} width={size} height={size} alt={f.name} title={f.name} draggable={false} />;
   return (
     <svg viewBox="0 0 64 64" width={size} height={size} aria-label={f.name}
-      style={{ ['--e1' as string]: mono ?? f.colors.secondary, ['--e2' as string]: mono ? 'rgba(0,0,0,0.35)' : f.colors.primary }}
-      fill={mono ?? f.colors.secondary}>
+      style={{ ['--e1' as string]: mono, ['--e2' as string]: 'rgba(0,0,0,0.35)' }}
+      fill={mono}>
       {PATHS[id]}
     </svg>
   );

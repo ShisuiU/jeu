@@ -12,8 +12,6 @@ import { heroXpToNext } from '../../game/progression';
 import { heroTotalStats } from '../../game/heroStats';
 import { CopiesCard } from '../components/Copies';
 import { HeroShowcase } from '../components/HeroShowcase';
-import { usePersisted, type Filters } from '../components/ListControls';
-import { sortHeroes } from '../components/heroFilters';
 import { canImprove } from '../../game/upgrade';
 
 const SLOT_LABEL = { basic: 'Attaque de base', special: 'Compétence spéciale', ultimate: 'Ultime', passive: 'Passif' } as const;
@@ -24,12 +22,6 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
   const toggleLock = useGame((s) => s.toggleHeroLock);
   const toast = useUI((s) => s.toast);
   const push = useUI((s) => s.push);
-  const replace = useUI((s) => s.replace);
-  // Héros précédent / suivant, dans l'ordre (tri + filtres) de l'écran Héros.
-  const [prefs] = usePersisted<{ sort: string; filters: Filters }>('heroes', { sort: 'power', filters: {} });
-  const order = uid ? sortHeroes(save, save.heroes, prefs.filters, prefs.sort).map((x) => x.h) : [];
-  const idx = order.findIndex((x) => x.uid === uid);
-  const nav = (dir: 1 | -1) => (order.length > 1 && idx >= 0 ? () => { const n = order[(idx + dir + order.length) % order.length]; replace({ name: 'hero', uid: n.uid, heroId: n.heroId }); } : undefined);
   const d = HERO_BY_ID[heroId];
   const inst = uid ? save.heroes.find((h) => h.uid === uid) : undefined;
   const rar = RARITIES[d.rarity];
@@ -45,7 +37,7 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
         {inst.locked ? <Icon.lock /> : <Icon.unlock />}
       </button>
     )}>
-      <HeroShowcase heroId={d.id} h={inst} onPrev={nav(-1)} onNext={nav(1)} below={
+      <HeroShowcase heroId={d.id} h={inst} below={
       <div className="hero-sheet-head">
           <div className="title-line">{d.title}</div>
           <IdentityStrip rarity={d.rarity} affinity={d.affinity} role={d.role} faction={d.faction} />

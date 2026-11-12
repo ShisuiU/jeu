@@ -558,6 +558,10 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.77.3 — Fiche du héros sans flèches
+
+- Les flèches ‹ › pour passer d'un héros au suivant sur la fiche d'un héros sont retirées : on revient à la liste des héros pour en ouvrir un autre.
+
 ## ✅ Version 1.77.2 — Fiche d'équipement plus nette
 
 - La statistique principale n'est plus précédée de « Principale » : elle est alignée à gauche comme les secondaires, en gardant sa grande taille dorée.

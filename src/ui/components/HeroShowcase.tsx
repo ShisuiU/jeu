@@ -23,7 +23,7 @@ const LEFT: GearSlot[] = ['weapon', 'helmet', 'armor'];
 const RIGHT: GearSlot[] = ['gloves', 'boots', 'accessory'];
 const BOTTOM: GearSlot[] = ['artifact'];
 
-export function HeroShowcase({ heroId, h, onPrev, onNext, below }: { heroId: string; h?: HeroInstance; onPrev?: () => void; onNext?: () => void; below?: ReactNode }) {
+export function HeroShowcase({ heroId, h, below }: { heroId: string; h?: HeroInstance; below?: ReactNode }) {
   const save = useGame((s) => s.save)!;
   const mutate = useGame((s) => s.mutate);
   const toast = useUI((s) => s.toast);
@@ -63,8 +63,6 @@ export function HeroShowcase({ heroId, h, onPrev, onNext, below }: { heroId: str
         <div className="sc-art"><div className="sc-breathe"><HeroArt heroId={heroId} kind="full" position="center 12%" /></div></div>
         <div className={`sc-motes ${def.affinity}`} aria-hidden>{Array.from({ length: 12 }, (_, i) => <i key={i} style={{ ['--i' as string]: i }} />)}</div>
         <div className="sc-shade" />
-        {onPrev && <button className="sc-nav prev" aria-label="Héros précédent" onClick={onPrev}>‹</button>}
-        {onNext && <button className="sc-nav next" aria-label="Héros suivant" onClick={onNext}>›</button>}
         {h && (
           <>
             <div className="sc-col left">{LEFT.map(slot)}</div>

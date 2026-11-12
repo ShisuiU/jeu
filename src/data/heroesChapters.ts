@@ -67,7 +67,7 @@ export const CHAPTER_HEROES: HeroDef[] = [
       { id: 'nerissa_3', name: 'Contrat rompu', slot: 'ultimate', cooldown: 4, description: 'Énormes dégâts sur une cible, +50 % contre les cibles brûlées (comme la Matriarche).',
         effects: [{ kind: 'damage', target: 'enemy', mult: 6.0 }], upgrades: up('+10 % dégâts', 'Recharge -1') },
     ],
-    leaderSkill: { description: '+60 % de taux critique de base pour l’équipe', stat: 'critRate', pct: 0.6, scope: 'all' },
+    leaderSkill: { description: '+60 % de taux critique pour l’équipe', stat: 'critRate', pct: 0.6, scope: 'all' },
     lore: "Nerissa a vendu son nom à Morvath pour sauver sa sœur. Le Seigneur de Cendre a tenu parole, à sa manière. Elle a passé un siècle à attendre l'occasion de le trahir. Les Héritiers la lui ont offerte.",
     quote: '« J’ai signé avec du sang. Je résilie avec le sien. »',
     look: "Jeune femme mince à la peau grise cendrée, yeux orange incandescents, cheveux noirs courts aux pointes rougeoyantes, petites cornes brisées. Armure de cuir noir ajustée, parchemin de contrat calciné enroulé autour du bras, deux dagues dont les lames sont des braises solidifiées.",

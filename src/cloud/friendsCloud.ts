@@ -75,6 +75,16 @@ export async function addByCode(raw: string, current: FriendRow[]): Promise<stri
   return p.exists() ? (p.data() as FriendProfile).name : 'ce joueur';
 }
 
+/** Envoie une demande d'ami directement à un joueur (touché dans un classement, v1.75.1). */
+export async function addByUid(other: string, current: FriendRow[]): Promise<void> {
+  const { db, uid } = ctx();
+  if (other === uid) throw new Error('C’est toi !');
+  if (current.some((r) => r.uid === other)) throw new Error('Vous êtes déjà amis (ou une demande attend).');
+  if (current.filter((r) => r.f.status === 'ok').length >= FRIENDS_MAX) throw new Error(`Tu as déjà ${FRIENDS_MAX} amis.`);
+  const users = [uid, other].sort() as [string, string];
+  await setDoc(doc(db, 'friendships', pairId(uid, other)), { users, from: uid, status: 'pending', gifts: {}, claims: {}, createdAt: Date.now() });
+}
+
 export const accept = (id: string) => updateDoc(doc(ctx().db, 'friendships', id), { status: 'ok' });
 export const removeFriend = (id: string) => deleteDoc(doc(ctx().db, 'friendships', id));
 /** Envoie son cadeau d'énergie du jour. */

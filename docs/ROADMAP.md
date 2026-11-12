@@ -558,6 +558,12 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.76.0 — Démantèlement groupé et comparatif d'équipement
+
+- **Forge, onglet Démanteler** : toucher un objet le coche (pastille rouge) ; « Tout cocher » prend tous les objets affichés (filtres compris). Une barre en bas montre le nombre d'objets et le gain (or et minerai), puis démantèle la sélection après confirmation. Les objets équipés ou verrouillés restent protégés ; les boutons « Tout démanteler : Communs / Peu communs / Rares » restent là.
+- **Comparatif** : depuis la fiche d'un héros, la fiche d'un objet qu'on peut équiper montre l'objet porté actuellement et les statistiques du héros avant → après (ensembles compris), en vert ce qui monte, en rouge ce qui baisse, plus la puissance.
+- Fiche d'objet : boutons sur deux colonnes, « Verrouiller » n'est plus coupé.
+
 ## ✅ Version 1.75.1 — Auras de chef plafonnées, demande d'ami depuis un profil
 
 - **Auras de chef** : chaque aura a désormais un plafond selon la rareté du héros, la statistique (la vitesse coûte deux fois plus cher, la précision et la résistance moins) et sa portée (toute l'équipe, ou seulement une famille ou une affinité, qui peut monter plus haut). Principales baisses : Nerissa (taux critique de l'équipe +60 % → +23 %), Vael'Shira (VIT de l'équipe → +7 %), Liran (VIT +12 % → +6 %), Mère Sulfura (PRÉ +30 % → +23 %), Azhar-Kesh (ATQ +20 % → +13 %), Idris (ATQ Solaires +25 % → +19 %), Aldric (DÉF +20 % → +10 %), Caelum et Tamsin (ATQ +20 % → +16 %), Solenne (PV +20 % → +16 %). Un test vérifie toutes les auras.

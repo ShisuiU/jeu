@@ -56,11 +56,18 @@ export function Gear({ gearUid }: { gearUid?: string }) {
   const [prefs, setPrefs] = usePersisted<{ sort: string; filters: Filters }>('gear', { sort: 'rarity', filters: {} });
   const [open, setOpen] = useState<string | null>(gearUid ?? null);
   const [bulk, setBulk] = useState<GearRarity | null>(null);
+  // Démantèlement groupé (v1.76.0) : dans l'onglet Démanteler, toucher un objet le coche ; une barre en bas démantèle la sélection.
+  const [picked, setPicked] = useState<Set<string>>(new Set());
+  const [confirmPick, setConfirmPick] = useState(false);
+  const togglePick = (uid: string) => setPicked((p) => { const n = new Set(p); if (n.has(uid)) n.delete(uid); else n.add(uid); return n; });
 
   const pool = save.equipment.filter((g) => !g.heroUid && (tab === 'upgrade' || !g.locked));
   const free = useMemo(() => pool.filter((g) => gearMatches(prefs.filters, g)).sort(GEAR_SORT_FN[prefs.sort] ?? GEAR_SORT_FN.rarity), [save.equipment, prefs, tab]);
   const items = who === BAG ? [] : heroGear(save, who);
   const bulkTargets = bulk ? save.equipment.filter((g) => g.rarity === bulk && !g.locked && !g.heroUid) : [];
+  const pickedItems = tab === 'dismantle' ? save.equipment.filter((g) => picked.has(g.uid) && !g.locked && !g.heroUid) : [];
+  const pickGain = pickedItems.reduce((a, g) => { const v = gearDismantleValue(g.rarity, g.level); return { gold: a.gold + v.gold, ore: a.ore + v.forgeOre }; }, { gold: 0, ore: 0 });
+  const allPicked = free.length > 0 && free.every((g) => picked.has(g.uid));
   const showBag = tab === 'dismantle' || who === BAG;
 
   return (
@@ -71,7 +78,7 @@ export function Gear({ gearUid }: { gearUid?: string }) {
       </span>
     }>
       <div className="seg" style={{ marginBottom: 10 }}>
-        <button className={tab === 'upgrade' ? 'on' : ''} onClick={() => setTab('upgrade')}>Renforcer</button>
+        <button className={tab === 'upgrade' ? 'on' : ''} onClick={() => { setTab('upgrade'); setPicked(new Set()); }}>Renforcer</button>
         <button className={tab === 'dismantle' ? 'on' : ''} onClick={() => setTab('dismantle')}>Démanteler</button>
       </div>
 
@@ -111,15 +118,43 @@ export function Gear({ gearUid }: { gearUid?: string }) {
               ))}
             </div>
           )}
+          {tab === 'dismantle' && free.length > 0 && (
+            <div className="pick-row">
+              <span className="faint">Touche les objets à démanteler.</span>
+              <button className="chip" onClick={() => setPicked(allPicked ? new Set() : new Set(free.map((g) => g.uid)))}>{allPicked ? 'Tout décocher' : `Tout cocher (${free.length})`}</button>
+            </div>
+          )}
           <ListControls sortOptions={GEAR_SORTS} sort={prefs.sort} onSort={(x) => setPrefs({ ...prefs, sort: x })}
             groups={GEAR_GROUPS} filters={prefs.filters} onFilters={(f) => setPrefs({ ...prefs, filters: f })}
             count={(f) => pool.filter((g) => gearMatches(f, g)).length} />
           {free.length === 0 && <p className="muted" style={{ textAlign: 'center' }}>{save.equipment.length === 0 ? 'Aucun équipement pour l’instant : gagne des combats pour en obtenir.' : pool.length ? 'Aucun objet ne correspond à ces filtres.' : 'Aucun objet libre ici.'}</p>}
-          <GearBySet items={free} render={(g) => <GearCard key={g.uid} g={g} onClick={() => setOpen(g.uid)} />} />
+          <GearBySet items={free} render={(g) => tab === 'dismantle'
+            ? <span key={g.uid} className={`pick-wrap ${picked.has(g.uid) ? 'on' : ''}`}><GearCard g={g} selected={picked.has(g.uid)} onClick={() => togglePick(g.uid)} />{picked.has(g.uid) && <span className="pick-check" aria-hidden>✓</span>}</span>
+            : <GearCard key={g.uid} g={g} onClick={() => setOpen(g.uid)} />} />
+          {tab === 'dismantle' && pickedItems.length > 0 && (
+            <div className="pick-bar">
+              <div className="grow">
+                <b>{pickedItems.length} objet{pickedItems.length > 1 ? 's' : ''}</b>
+                <div className="faint">+{fmt(pickGain.gold)} or · +{fmt(pickGain.ore)} minerai</div>
+              </div>
+              <button className="btn secondary small" onClick={() => setPicked(new Set())}>Annuler</button>
+              <button className="btn danger small" onClick={() => setConfirmPick(true)}>Démanteler</button>
+            </div>
+          )}
         </>
       )}
 
       {open && <GearDetail gearUid={open} place="forge" onClose={() => setOpen(null)} />}
+      {confirmPick && (
+        <Modal onClose={() => setConfirmPick(false)}>
+          <h2>Démanteler {pickedItems.length} objet{pickedItems.length > 1 ? 's' : ''} ?</h2>
+          <p className="muted" style={{ textAlign: 'center' }}>Gain : {fmt(pickGain.gold)} or et {fmt(pickGain.ore)} minerai. C’est définitif.</p>
+          <div className="row" style={{ gap: 8 }}>
+            <button className="btn secondary grow" onClick={() => setConfirmPick(false)}>Annuler</button>
+            <button className="btn danger grow" onClick={() => { const n = pickedItems.length; mutate((s) => { for (const g of pickedItems) dismantleGear(s, g.uid); }); toast(`${n} objet(s) démantelé(s) : +${fmt(pickGain.gold)} or, +${fmt(pickGain.ore)} minerai.`, 'ok'); setPicked(new Set()); setConfirmPick(false); }}>Démanteler</button>
+          </div>
+        </Modal>
+      )}
       {bulk && (
         <Modal onClose={() => setBulk(null)}>
           <h2>Démanteler {bulkTargets.length} objet(s) {GEAR_RARITIES[bulk].name.toLowerCase()}(s) ?</h2>

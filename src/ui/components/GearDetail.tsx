@@ -5,9 +5,61 @@ import { GearStars, SetEmblem } from '../art/SetEmblem';
 import { HERO_BY_ID } from '../../data/heroes';
 import { defaultStars, dismantleGear, mainValue, upgradeGear, unequipGear, equipGear } from '../../game/gear';
 import { play } from '../../audio/sfx';
-import { Modal } from './common';
+import { Modal, fmt } from './common';
 import { CostView } from './Cost';
 import { GearCard, statText } from './GearCard';
+import { heroTotalStats } from '../../game/heroStats';
+import { STAT_LABELS, STAT_ORDER, powerOf } from '../../game/stats';
+import type { GearItem, SaveData } from '../../save/schema';
+
+/** Comparatif (v1.76.0) : statistiques complètes du héros avant / après avoir équipé l'objet (ensembles compris). */
+function GearCompare({ save, g, heroUid }: { save: SaveData; g: GearItem; heroUid: string }) {
+  const hero = save.heroes.find((h) => h.uid === heroUid);
+  if (!hero) return null;
+  const cur = save.equipment.find((x) => x.heroUid === heroUid && x.slot === g.slot && x.uid !== g.uid);
+  const swapped: SaveData = { ...save, equipment: save.equipment.map((x) => (x.uid === g.uid ? { ...x, heroUid } : x.uid === cur?.uid ? { ...x, heroUid: null } : x)) };
+  const before = heroTotalStats(save, hero).total;
+  const after = heroTotalStats(swapped, hero).total;
+  const rows = STAT_ORDER.map((k) => ({ k, a: before[k], b: after[k], d: Math.round((after[k] - before[k]) * 10) / 10 })).filter((r) => r.d !== 0);
+  const pa = powerOf(before), pb = powerOf(after);
+  const name = HERO_BY_ID[hero.heroId].name;
+  return (
+    <div className="gcmp">
+      <div className="gcmp-head">
+        <b>Comparatif pour {name}</b>
+        {!cur && <span className="faint">emplacement vide</span>}
+      </div>
+      {cur && (
+        <div className="gcmp-cur">
+          <div className="gcmp-mini"><GearCard g={cur} hideMain /></div>
+          <div className="grow">
+            <div className="faint">Porté actuellement · {GEAR_RARITIES[cur.rarity].name} +{cur.level}</div>
+            <div><b>{statText(cur.main, mainValue(cur))}</b>{cur.subs.length ? <span className="faint"> · {cur.subs.map((sb) => statText(sb.stat, sb.value)).join(' · ')}</span> : null}</div>
+          </div>
+        </div>
+      )}
+      <div className="gcmp-rows">
+        {rows.length === 0 && <div className="faint">Aucun changement de statistiques.</div>}
+        {rows.map((r) => (
+          <div key={r.k} className="gcmp-row">
+            <span className="gcmp-k">{STAT_LABELS[r.k].short}</span>
+            <span className="gcmp-v">{fmt(r.a)}{STAT_LABELS[r.k].pct ? '%' : ''}</span>
+            <span className="gcmp-ar">→</span>
+            <b className="gcmp-v">{fmt(r.b)}{STAT_LABELS[r.k].pct ? '%' : ''}</b>
+            <span className={`gcmp-d ${r.d > 0 ? 'up' : 'down'}`}>{r.d > 0 ? '▲ +' : '▼ '}{fmt(r.d)}</span>
+          </div>
+        ))}
+        <div className="gcmp-row pw">
+          <span className="gcmp-k">Puissance</span>
+          <span className="gcmp-v">{fmt(pa)}</span>
+          <span className="gcmp-ar">→</span>
+          <b className="gcmp-v">{fmt(pb)}</b>
+          <span className={`gcmp-d ${pb > pa ? 'up' : pb < pa ? 'down' : ''}`}>{pb === pa ? '=' : `${pb > pa ? '▲ +' : '▼ '}${fmt(pb - pa)}`}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 /** Fiche d'un équipement. À la Forge : renforcer, verrouiller, démanteler. Depuis un héros : équiper/retirer, et lien vers la Forge. */
 export function GearDetail({ gearUid, onClose, equipTo, place = 'hero', onReplace }: { gearUid: string; onClose: () => void; equipTo?: string; place?: 'forge' | 'hero'; onReplace?: () => void }) {
@@ -71,6 +123,8 @@ export function GearDetail({ gearUid, onClose, equipTo, place = 'hero', onReplac
       {nextMilestone && <p className="faint" style={{ margin: '8px 0 0' }}>Au +{nextMilestone} : {g.subs.length < 4 ? 'nouvelle statistique secondaire' : 'une secondaire renforcée'}.</p>}
       <p className="faint" style={{ margin: '4px 0 0' }}>{owner ? `Équipé sur ${HERO_BY_ID[owner.heroId].name}` : 'Non équipé'}</p>
 
+      {equipTo && g.heroUid !== equipTo && <GearCompare save={save} g={g} heroUid={equipTo} />}
+
       {place === 'forge' && g.level < GEAR_MAX_LEVEL && (
         <div className="upg-row">
           <div className="grow"><b>Améliorer</b> → +{g.level + 1}<div><CostView cost={up} save={save} /></div></div>
@@ -80,7 +134,7 @@ export function GearDetail({ gearUid, onClose, equipTo, place = 'hero', onReplac
       {place === 'hero' && g.level < GEAR_MAX_LEVEL && (
         <button className="btn block" style={{ marginTop: 12 }} onClick={() => { onClose(); push({ name: 'gear', gearUid: g.uid }); }}>Renforcer à la Forge</button>
       )}
-      <div className="row wrap" style={{ gap: 8, marginTop: 12 }}>
+      <div className="row wrap gd-actions" style={{ gap: 8, marginTop: 12 }}>
         {equipTo && g.heroUid !== equipTo && (
           <button className="btn grow" onClick={() => { mutate((s) => { equipGear(s, g.uid, equipTo); }); play('claim'); onClose(); }}>Équiper</button>
         )}

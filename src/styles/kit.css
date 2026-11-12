@@ -273,3 +273,15 @@
 .tp-hero.maxed { opacity: 0.45; }
 .tp-name { font-size: 11.5px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .bld-card .btn { white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; gap: 5px; }
+
+/* ═══ v1.79.0 — Donjon des familles ═══ */
+.fd-banner { display: flex; align-items: center; gap: 14px; padding: 14px; margin-bottom: 10px; border-radius: 12px; background: radial-gradient(120% 140% at 0% 50%, color-mix(in srgb, var(--fp) 55%, transparent), rgba(12,9,18,0.92) 70%); border: 1px solid color-mix(in srgb, var(--fc) 50%, transparent); box-shadow: 0 8px 22px rgba(0,0,0,0.5); }
+.fd-banner .fac-emblem { filter: drop-shadow(0 0 12px color-mix(in srgb, var(--fc) 60%, transparent)); }
+.fd-today { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; }
+.fd-name { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 23px; font-weight: 700; color: #f4dfa8; line-height: 1.1; margin: 2px 0 4px; }
+.fd-sub { font-size: 12.5px; color: #d9cdb4; }
+.fd-rotation { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 8px; }
+.fd-next { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 2px; border-radius: 10px; background: rgba(0,0,0,0.35); border: 1px solid rgba(232,190,110,0.25); font-size: 11.5px; color: #e8dcc4; }
+.fd-next small { color: #a89e8a; font-size: 10.5px; }
+.tp-hero.picked .ts-art { box-shadow: 0 0 0 3px #ffd98a; }
+.tp-order { position: absolute; top: 2px; right: 2px; min-width: 18px; height: 18px; padding: 0 3px; border-radius: 9px; background: #ffd98a; color: #2b1a06; font-size: 11px; font-weight: 800; display: grid; place-items: center; }

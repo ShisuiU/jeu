@@ -1,3 +1,6 @@
+import { FACTIONS } from '../data/factions';
+import { FACTION_DUNGEONS, factionReward, factionWaves } from '../data/factionDungeon';
+import { canEnterFaction } from './factionDungeon';
 import { CHAPTERS, DIFFICULTIES, STAGE_BY_ID, type DialogueLine, type DifficultyId, type WaveEnemy } from '../data/campaign';
 import { GUILD_BOSS, GUILD_TIERS } from '../data/guild';
 import { addPending, triesLeft, useTry } from './guild';
@@ -26,6 +29,7 @@ export type BattleSpec =
   | { mode: 'campaign'; stageId: string; difficulty: DifficultyId }
   | { mode: 'dungeon'; dungeonId: string; floor: number; difficulty?: DifficultyId }
   | { mode: 'tower'; floor: number }
+  | { mode: 'faction'; faction: import('../data/types').FactionId; floor: number }
   | { mode: 'worldboss'; tier: string }
   | { mode: 'arena'; opponentId: string }
   | { mode: 'guildboss' }
@@ -123,6 +127,14 @@ export function resolveMode(s: SaveData, spec: BattleSpec): ModeInfo {
         title: `Tour des Âges · Étage ${spec.floor}`, subtitle: spec.floor % 10 === 0 ? (spec.floor > 50 ? 'Étage gardé par un boss de chapitre' : 'Étage gardé par une Sentinelle') : spec.floor > 50 ? 'Les Sommets' : 'Ascension', region: 'heart', waves: toSetups(towerWaves(spec.floor)),
         cost: { kind: 'free', amount: 0 }, rewardPreview: towerReward(spec.floor), rewardLabel: 'Récompense de l’étage', notes: ['Sans énergie'], firstTime: true,
       };
+    case 'faction': {
+      const d = FACTION_DUNGEONS[spec.faction];
+      return {
+        title: d.name, subtitle: `Étage ${spec.floor} · seulement les héros ${FACTIONS[spec.faction].short === 'Akkar' ? 'd’Akkar' : `de ${FACTIONS[spec.faction].short}`}`, region: d.region,
+        waves: toSetups(factionWaves(spec.faction, spec.floor)), cost: { kind: 'free', amount: 0 }, rewardPreview: factionReward(spec.floor), rewardLabel: 'Récompense de l’étage',
+        notes: ['Sans énergie', `Réservé aux héros de la famille ${FACTIONS[spec.faction].name}`], firstTime: true,
+      };
+    }
     case 'worldboss': {
       const t = BOSS_TIERS.find((x) => x.id === spec.tier)!;
       return {
@@ -177,6 +189,7 @@ export function canStart(s: SaveData, spec: BattleSpec): { ok: boolean; reason?:
     case 'campaign': return isStageUnlocked(s, spec.difficulty, STAGE_BY_ID[spec.stageId]) ? { ok: true } : { ok: false, reason: 'Niveau verrouillé.' };
     case 'dungeon': return dungeonFloorCheck(s, spec.dungeonId, spec.difficulty ?? 'normal', spec.floor);
     case 'tower': return spec.floor === s.progress.tower.floor + 1 && spec.floor <= TOWER_FLOORS ? { ok: true } : { ok: false, reason: 'Étage indisponible.' };
+    case 'faction': return canEnterFaction(s, spec.faction, spec.floor, s.time.highWater);
     case 'worldboss': return s.worldBoss.keysUsed < WORLD_BOSS.keysPerDay ? { ok: true } : { ok: false, reason: 'Plus de clés aujourd’hui.' };
     case 'guildboss': return !s.guild.id ? { ok: false, reason: 'Rejoins d’abord un clan.' } : triesLeft(s, s.time.highWater) > 0 ? { ok: true } : { ok: false, reason: 'Plus d’essais aujourd’hui.' };
     case 'arena': return s.arena.ticketsUsed >= ARENA.ticketsPerDay ? { ok: false, reason: 'Plus de tickets aujourd’hui.' } : s.arena.opponents.some((o) => o.id === spec.opponentId) ? { ok: true } : { ok: false, reason: 'Adversaire introuvable.' };
@@ -260,6 +273,18 @@ export function applyMode(s: SaveData, spec: BattleSpec, o: Outcome, now: number
       return res;
     }
 
+    case 'faction': {
+      const res = empty(o.won);
+      if (!o.won) { s.stats.battlesLost++; return res; }
+      s.stats.battlesWon++; track(s, 'battleWin');
+      s.factionDungeon.best[spec.faction] = Math.max(s.factionDungeon.best[spec.faction] ?? 0, spec.floor);
+      res.firstClear = true;
+      res.reward = factionReward(spec.floor);
+      applyReward(s, res.reward);
+      res.lines.push(`${FACTION_DUNGEONS[spec.faction].name} : étage ${spec.floor} conquis !`);
+      return res;
+    }
+
     case 'guildboss': {
       const res = empty(true);
       const dealt = Math.round(o.bossDamage?.dealt ?? 0);
@@ -340,6 +365,7 @@ export function nextSpec(s: SaveData, spec: BattleSpec): BattleSpec | null {
   }
   if (spec.mode === 'dungeon') return spec.floor < DUNGEON_FLOORS ? { ...spec, floor: spec.floor + 1 } : null;
   if (spec.mode === 'tower') return s.progress.tower.floor < TOWER_FLOORS ? { mode: 'tower', floor: s.progress.tower.floor + 1 } : null;
+  if (spec.mode === 'faction') { const n: BattleSpec = { mode: 'faction', faction: spec.faction, floor: (s.factionDungeon.best[spec.faction] ?? 0) + 1 }; return canStart(s, n).ok ? n : null; }
   if (spec.mode === 'challenge' && spec.trial != null && spec.trial < 2) { const n = { ...spec, trial: spec.trial + 1 }; return canStart(s, n).ok ? n : null; }
   return null;
 }

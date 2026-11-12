@@ -558,6 +558,12 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.75.1 — Auras de chef plafonnées, demande d'ami depuis un profil
+
+- **Auras de chef** : chaque aura a désormais un plafond selon la rareté du héros, la statistique (la vitesse coûte deux fois plus cher, la précision et la résistance moins) et sa portée (toute l'équipe, ou seulement une famille ou une affinité, qui peut monter plus haut). Principales baisses : Nerissa (taux critique de l'équipe +60 % → +23 %), Vael'Shira (VIT de l'équipe → +7 %), Liran (VIT +12 % → +6 %), Mère Sulfura (PRÉ +30 % → +23 %), Azhar-Kesh (ATQ +20 % → +13 %), Idris (ATQ Solaires +25 % → +19 %), Aldric (DÉF +20 % → +10 %), Caelum et Tamsin (ATQ +20 % → +16 %), Solenne (PV +20 % → +16 %). Un test vérifie toutes les auras.
+- Épreuve de la semaine : premier combat très légèrement adouci pour rester une entrée en matière.
+- **Classements** : en touchant un joueur, un bouton « Demander en ami » envoie directement la demande (il affiche « Demande d'ami envoyée » ou « Déjà dans tes amis » selon le cas). Sur sa propre ligne, ni demande ni signalement.
+
 ## ✅ Version 1.75.0 — Rééquilibrage des héros
 
 - **Enveloppe de puissance** : chaque compétence offensive est comparée à la norme de son rôle (Attaquant, Assassin, Contrôleur…), de son type (base, spéciale, ultime), de sa recharge et de sa rareté (+4 % par cran à partir de Rare). Trop forte, elle est ramenée au plafond ; trop faible, elle remonte au plancher ; dans la norme, rien ne change. Un test vérifie désormais les 88 héros à chaque mise à jour.

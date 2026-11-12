@@ -90,7 +90,8 @@ export function trialSetup(s: SaveData, eventId: string, i: number): { waves: Wa
     [[W(a, lv, 0), W(b, lv, 1), W(a, lv, 2), W(d, lv, 3)], [W(t.guardian, lv + 1, 1, 4 + chapter * 0.1), W(d, lv, 3), W(b, lv, 4)]],
   ][i];
   // Dernier combat : un peu adouci (gardien renforcé) ; au chapitre 8, les héros plafonnent au niveau 60.
-  return { waves, statMult: (ref.statMult ?? 1) * TRIAL_ADJ[t.id] * (i === 2 ? (chapter >= 8 ? 0.68 : 0.8) : 1), chapter, heroXp: ref.heroXp };
+  // Premier combat : légèrement adouci (v1.75.1, auras de chef plafonnées) pour rester une entrée en matière.
+  return { waves, statMult: (ref.statMult ?? 1) * TRIAL_ADJ[t.id] * (i === 2 ? (chapter >= 8 ? 0.68 : 0.8) : i === 0 ? 0.94 : 1), chapter, heroXp: ref.heroXp };
 }
 
 export function resolveMode(s: SaveData, spec: BattleSpec): ModeInfo {

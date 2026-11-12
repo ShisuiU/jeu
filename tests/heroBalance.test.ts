@@ -23,3 +23,13 @@ describe('Rééquilibrage des héros (v1.75.0)', () => {
     expect(best('common', 'attacker', 'special')).toBeLessThanOrEqual(BAND.high + 0.03);
   });
 });
+
+describe('Auras de chef (v1.75.1)', () => {
+  it('aucune aura ne dépasse le plafond de sa rareté, de sa statistique et de sa portée', async () => {
+    const { auraCap } = await import('../src/data/heroBalance');
+    for (const h of HEROES) if (h.leaderSkill) {
+      expect(h.leaderSkill.pct, h.id).toBeLessThanOrEqual(auraCap(h) + 1e-9);
+      expect(h.leaderSkill.description, h.id).toContain(`+${Math.round(h.leaderSkill.pct * 100)} %`);
+    }
+  });
+});

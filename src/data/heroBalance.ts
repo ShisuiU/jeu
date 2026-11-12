@@ -1,4 +1,4 @@
-import type { HeroDef, RarityId, RoleId, SkillDef, SkillEffect } from './types';
+import type { HeroDef, RarityId, RoleId, SkillDef, SkillEffect, StatId } from './types';
 import { ROLES } from './roles';
 
 // RÉÉQUILIBRAGE DES HÉROS (v1.75.0)
@@ -63,7 +63,33 @@ export function speedRange(h: HeroDef): [number, number] {
   return [tpl - 8, tpl + 2 + RARITY_ORDER[h.rarity]];
 }
 
+// ─── Auras de chef (v1.75.1) ───
+// Une aura s'applique aux statistiques complètes (équipement compris) : elle doit rester modeste.
+// Budget selon la rareté, exprimé en « % de PV pour toute l'équipe » ; chaque statistique a un poids
+// (la vitesse vaut deux fois plus cher, la précision ou la résistance moins) et une aura limitée à une
+// famille ou une affinité peut monter plus haut, puisqu'elle touche moins de héros.
+export const AURA_BUDGET: Record<RarityId, number> = { common: 6, uncommon: 8, rare: 10, epic: 12, legendary: 14, mythic: 16 };
+export const AURA_WEIGHT: Record<StatId, number> = { hp: 1, def: 1, atk: 1.2, spd: 2, critRate: 0.6, critDmg: 0.5, acc: 0.6, res: 0.6 };
+export const AURA_SCOPED = 0.6;
+
+/** Plafond (en fraction, 0,12 = 12 %) de l'aura de chef d'un héros. */
+export function auraCap(h: HeroDef): number {
+  const ls = h.leaderSkill;
+  if (!ls) return 0;
+  return Math.floor(AURA_BUDGET[h.rarity] / (AURA_WEIGHT[ls.stat] * (ls.scope === 'all' ? 1 : AURA_SCOPED))) / 100;
+}
+
+function balanceLeader(h: HeroDef): HeroDef['leaderSkill'] {
+  const ls = h.leaderSkill;
+  if (!ls) return ls;
+  const cap = auraCap(h);
+  if (ls.pct <= cap + 1e-9) return ls;
+  const n = Math.round(cap * 100);
+  const description = /^\+\d+\s?%?\s?/.test(ls.description) ? ls.description.replace(/^\+\d+\s?%?\s?/, `+${n} % `) : `+${n} % ${ls.description}`;
+  return { ...ls, pct: cap, description };
+}
+
 export function balanceHero(h: HeroDef): HeroDef {
   const [lo, hi] = speedRange(h);
-  return { ...h, baseSpd: Math.min(hi, Math.max(lo, h.baseSpd)), skills: h.skills.map((sk) => balanceSkill(h, sk)) };
+  return { ...h, baseSpd: Math.min(hi, Math.max(lo, h.baseSpd)), skills: h.skills.map((sk) => balanceSkill(h, sk)), leaderSkill: balanceLeader(h) };
 }

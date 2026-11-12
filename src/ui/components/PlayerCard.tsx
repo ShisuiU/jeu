@@ -8,11 +8,33 @@ import type { RankEntry } from '../../game/ranks';
 import type { ArenaDefense } from '../../game/arena';
 import { maskProfanity } from '../../game/moderation';
 import { HeroArt } from '../art/HeroArt';
+import { useUI } from '../../state/ui';
 import { Modal, fmt } from './common';
 
 // APERÇU D'UN JOUEUR (v1.70.1) — touché dans un classement : avatar, nom, niveau, scores, et son équipe de défense
 // d'Arène quand elle est en ligne. Signaler ou bloquer reste possible, en bas.
-export function PlayerCard({ uid, entry, ghost, signedIn, canReport, onReport, onClose }: { uid: string; entry: RankEntry; ghost?: boolean; signedIn?: boolean; canReport?: boolean; onReport?: () => void; onClose: () => void }) {
+export function PlayerCard({ uid, entry, ghost, signedIn, self, canReport, onReport, onClose }: { uid: string; entry: RankEntry; ghost?: boolean; signedIn?: boolean; self?: boolean; canReport?: boolean; onReport?: () => void; onClose: () => void }) {
+  const toast = useUI((s) => s.toast);
+  // Demande d'ami (v1.75.1) : selon les amitiés déjà en place, bouton « Demander en ami », « Demande envoyée » ou « Déjà ami ».
+  const [fr, setFr] = useState<'loading' | 'none' | 'pending' | 'ok' | 'off' | 'sending'>(ghost || !signedIn || self ? 'off' : 'loading');
+  useEffect(() => {
+    if (ghost || !signedIn || self) return;
+    let alive = true;
+    import('../../cloud/friendsCloud').then((m) => m.listFriends()).then((rows) => {
+      if (!alive) return;
+      const r = rows.find((x) => x.uid === uid);
+      setFr(!r ? 'none' : r.f.status === 'ok' ? 'ok' : 'pending');
+    }).catch(() => { if (alive) setFr('off'); });
+    return () => { alive = false; };
+  }, [uid, ghost, signedIn, self]);
+  const askFriend = async () => {
+    setFr('sending');
+    try {
+      const m = await import('../../cloud/friendsCloud');
+      await m.addByUid(uid, await m.listFriends());
+      setFr('pending'); toast(`Demande d’ami envoyée à ${maskProfanity(entry.name)}.`, 'ok');
+    } catch (e) { setFr('none'); toast(e instanceof Error && e.message ? e.message : 'Serveur injoignable pour le moment.'); }
+  };
   const [team, setTeam] = useState<ArenaDefense | null | 'loading'>(ghost || !signedIn ? null : 'loading');
   useEffect(() => {
     if (ghost || !signedIn) return;
@@ -53,7 +75,12 @@ export function PlayerCard({ uid, entry, ghost, signedIn, canReport, onReport, o
             ) : <p className="faint" style={{ margin: '4px 0' }}>{signedIn ? 'Pas d’équipe de défense en ligne.' : 'Crée un compte pour voir son équipe.'}</p>}
         </>
       )}
-      <div className="row" style={{ gap: 8, marginTop: 14 }}>
+      {fr !== 'off' && (
+        <button className="btn block" style={{ marginTop: 14 }} disabled={fr !== 'none'} onClick={() => void askFriend()}>
+          {fr === 'loading' ? '…' : fr === 'sending' ? 'Envoi…' : fr === 'pending' ? 'Demande d’ami envoyée' : fr === 'ok' ? 'Déjà dans tes amis' : 'Demander en ami'}
+        </button>
+      )}
+      <div className="row" style={{ gap: 8, marginTop: 10 }}>
         <button className="btn secondary grow" onClick={onClose}>Fermer</button>
         {canReport && onReport && <button className="btn danger grow" onClick={onReport}>Signaler ou bloquer</button>}
       </div>

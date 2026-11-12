@@ -79,7 +79,7 @@ export function Ranks({ tab: initial }: { tab?: RankField }) {
           ))}
         </ol>
       )}
-      {view && <PlayerCard uid={view.uid} entry={view} ghost={isGhost(view)} signedIn={!!user} canReport={!!user && !isGhost(view)}
+      {view && <PlayerCard uid={view.uid} entry={view} ghost={isGhost(view)} signedIn={!!user} self={view.uid === uid} canReport={!!user && !isGhost(view) && view.uid !== uid}
         onReport={() => { setReport({ uid: view.uid, name: view.name, kind: 'name', where: `Classement ${def.label}` }); setView(null); }} onClose={() => setView(null)} />}
       {report && <ReportSheet target={report} onClose={() => setReport(null)} />}
       {rows && rows.length > 0 && <p className="faint" style={{ fontSize: 12, textAlign: 'center' }}>Touche un joueur pour voir son profil.</p>}

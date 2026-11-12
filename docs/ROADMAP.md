@@ -558,6 +558,11 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.79.1 — Listes sans niveau d'ennemis
+
+- Les listes d'étages et de niveaux n'affichent plus le niveau ni la puissance des ennemis : donjons (« Ennemis niv. 38 · puissance +55 % » retiré), Tour des Âges, Donjon des familles et Campagne (« niv. 51 » retiré). Il reste l'énergie, les étoiles d'équipement et la récompense.
+- L'explication des difficultés de la Campagne ne donne plus de niveaux : « ennemis bien plus puissants ».
+
 ## ✅ Version 1.79.0 — Donjon des familles
 
 - **Combats → Donjon des familles** (ouvert avec les Donjons, après le niveau 2-2) : chaque jour, le donjon d'une famille de héros — Bastion du Serment (Valcrest), Spire des Calculs (Prisme), Fosse des Braises (Cendre), Racines Profondes (Sylvaran), Observatoire Éteint (Astral), Arène des Dunes (Akkar).

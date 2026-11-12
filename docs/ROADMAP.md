@@ -558,6 +558,15 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.75.0 — Rééquilibrage des héros
+
+- **Enveloppe de puissance** : chaque compétence offensive est comparée à la norme de son rôle (Attaquant, Assassin, Contrôleur…), de son type (base, spéciale, ultime), de sa recharge et de sa rareté (+4 % par cran à partir de Rare). Trop forte, elle est ramenée au plafond ; trop faible, elle remonte au plancher ; dans la norme, rien ne change. Un test vérifie désormais les 88 héros à chaque mise à jour.
+- **Baisses principales** : Azhar-Kesh (ultime −43 %, spéciale −23 %), Caelum (ultime −33 %, spéciale −19 %), Mère Sulfura (ultime −29 %), Idris (ultime −18 %, et sa baisse de DÉF passe de 50 % à 30 %), Maëlis (−17 %), Nyra (−21 %), Rook, Nim, Sefa.
+- **Hausses** : Ilse (+43 % sur Glas glacé), Brévine (+21 %), Kaedra (+18 %, baisse de DÉF 50 % → 40 %), Ysmaë, Nerissa, Brakka, Kiro, Oriane.
+- **Vitesse** : chaque héros reste dans la fourchette de son rôle et de sa rareté (Lyssandre 112 → 106, Zéphine 110 → 104, Élyra 118 → 115, Naerys 109 → 105, Sorcha 108 → 105).
+- Ysolde : baisse de DÉF de son ultime 40 % → 30 %.
+- Chapitre 7 légèrement allégé pour garder la même difficulté sans Caelum surpuissant.
+
 ## ✅ Version 1.74.0 — Symboles d'affinité, de rôle et blasons de famille peints
 
 - **Affinités** : de nouveaux symboles simples, peints avec SpriteCook (soleil Solaire, montagne Tellurique, croissant Lunaire, étoile du Néant), lisibles même en tout petit. Ils remplacent les anciens logos partout : cartes de héros, fiche, combat, préparation, filtres, liens, expéditions.

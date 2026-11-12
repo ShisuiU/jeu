@@ -53,9 +53,10 @@ describe('Marché', () => {
   it('renouvellements : 3 par jour, prix croissant, remis à zéro chaque jour', () => {
     const s = rich();
     ensureMarket(s, T0);
-    const c0 = s.resources.crystals;
+    s.resources.diamonds = 100;
+    const c0 = s.resources.diamonds;
     for (const c of MARKET_REFRESH_COSTS) expect(refreshMarket(s, T0).ok).toBe(true), void c;
-    expect(s.resources.crystals).toBe(c0 - MARKET_REFRESH_COSTS.reduce((a, b) => a + b, 0));
+    expect(s.resources.diamonds).toBe(c0 - MARKET_REFRESH_COSTS.reduce((a, b) => a + b, 0));
     expect(refreshMarket(s, T0).ok).toBe(false);
     applyResets(s, T0 + DAY);
     expect(ensureMarket(s, T0 + DAY).refreshes).toBe(0);

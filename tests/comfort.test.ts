@@ -45,17 +45,17 @@ describe('balayage', () => {
 describe('recharge d’énergie', () => {
   it('prix croissant, 3 par jour, renouvelé chaque jour', () => {
     const s = fresh();
-    s.resources.crystals = 1000;
-    expect(refillCost(s)).toBe(50);
+    s.resources.diamonds = 1000;
+    expect(refillCost(s)).toBe(10);
     const e = s.energy.current;
     expect(refillEnergy(s).ok).toBe(true);
     expect(s.energy.current).toBe(e + 60);
-    expect(refillCost(s)).toBe(100);
+    expect(refillCost(s)).toBe(20);
     refillEnergy(s); refillEnergy(s);
     expect(refillEnergy(s).ok).toBe(false);
-    expect(s.resources.crystals).toBe(1000 - 350);
+    expect(s.resources.diamonds).toBe(1000 - 70);
     applyResets(s, NOW + 86_400_000);
-    expect(refillCost(s)).toBe(50);
+    expect(refillCost(s)).toBe(10);
   });
 });
 

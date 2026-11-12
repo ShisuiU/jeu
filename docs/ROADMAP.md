@@ -558,6 +558,13 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.78.1 — Les diamants servent à recharger et actualiser
+
+- **Recharge d'énergie** (+60) : payée en diamants, 10 puis 20 puis 40 par jour (au lieu de 50/100/200 cristaux).
+- **Marché** : renouveler les offres coûte 5 puis 10 puis 20 diamants (au lieu de 20/40/80 cristaux) ; le porte-monnaie du Marché montre aussi les diamants.
+- **Arène** : toujours une actualisation gratuite par jour, puis 5 diamants (au lieu de 20 cristaux).
+- Code promo : le champ est vide, sans exemple de code.
+
 ## ✅ Version 1.78.0 — Bâtiments : Mine de diamants et Terrain d'entraînement
 
 - **Diamants** : nouvelle monnaie précieuse (future monnaie payante), avec son icône peinte par SpriteCook. Sur l'accueil, le compteur en haut à droite affiche désormais les diamants (le « + » mène aux Bâtiments) ; les cristaux restent visibles dans le Sac et les écrans qui les utilisent.

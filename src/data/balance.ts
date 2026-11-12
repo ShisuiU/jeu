@@ -57,7 +57,7 @@ export const BALANCE = {
     gearDropChance: 0.65,
   },
   /** Recharge d'énergie contre cristaux : prix croissant, limitée par jour. */
-  energyRefill: { amount: 60, costs: [50, 100, 200] },
+  energyRefill: { amount: 60, costs: [10, 20, 40] }, // en diamants (v1.78.1)
   starter: {
     gold: 20000,
     crystals: 300,

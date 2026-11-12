@@ -54,7 +54,7 @@ export function Market() {
 
   return (
     <Screen title="Marché">
-      <Wallet ids={['gold', 'crystals']} cols={2} />
+      <Wallet ids={['gold', 'crystals', 'diamonds']} cols={3} />
       <div className="mk-grid">
         {m.offers.map((x, i) => {
           const res = x.reward ? Object.entries(x.reward)[0] : null;
@@ -74,7 +74,7 @@ export function Market() {
       <div className="mk-foot">
         <span className="faint">Nouvelles offres dans {formatDuration(msUntilReset(now))}</span>
         <button className="btn secondary small" disabled={cost == null} onClick={refresh}>
-          {cost == null ? 'Plus de renouvellement' : <>Renouveler · <ResourceIcon icon={RESOURCES.crystals.icon} color={RESOURCES.crystals.color} size={13} /> {cost}</>}
+          {cost == null ? 'Plus de renouvellement' : <>Renouveler · <Icon.diamond size={14} /> {cost}</>}
         </button>
       </div>
 

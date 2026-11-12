@@ -165,7 +165,7 @@ function PromoModal({ onClose }: { onClose: () => void }) {
       ) : (
         <form onSubmit={(e) => { e.preventDefault(); submit(); }}>
           <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>Entre un code reçu (événement, réseaux, amis) pour obtenir une récompense. Chaque code ne sert qu’une fois.</p>
-          <input className="promo-input" value={code} onChange={(e) => setCode(e.target.value)} placeholder="EX. AEONFALL" autoCapitalize="characters" autoComplete="off" spellCheck={false} maxLength={24} aria-label="Code promo" />
+          <input className="promo-input" value={code} onChange={(e) => setCode(e.target.value)} autoCapitalize="characters" autoComplete="off" spellCheck={false} maxLength={24} aria-label="Code promo" />
           <button className="btn block" style={{ marginTop: 10 }} type="submit" disabled={!code.trim()}>Valider</button>
         </form>
       )}

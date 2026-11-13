@@ -210,3 +210,25 @@ export function playCardOut(order: number) {
   whoosh(800, 2400, 0.12, 0.18);
   if (order >= 4) osc('sine', order >= 5 ? 1046 : 880, null, { at: 0.05, dur: 0.3, gain: 0.08 });
 }
+
+/** v1.85.0 : silence tendu avant un Légendaire ou un Mythique — grondement qui monte puis se coupe net. */
+export function playHush(order: number) {
+  if (!out()) return;
+  osc('sine', 40, order >= 6 ? 90 : 70, { dur: 0.55, gain: 0.32, attack: 0.45 });
+  noise('lowpass', 120, 900, { dur: 0.55, gain: 0.22, attack: 0.5 });
+  osc('triangle', 880, 1760, { dur: 0.5, gain: 0.03, attack: 0.45 });
+}
+/** Éclair de lumière juste avant la révélation. */
+export function playRevealFlash(order: number) {
+  if (!out()) return;
+  noise('highpass', 2000, 9000, { dur: 0.35, gain: 0.3 });
+  osc('sine', order >= 5 ? 1568 : 1175, null, { dur: 0.9, gain: 0.07, attack: 0.01 });
+  if (order >= 5) gong(0, 0.3);
+}
+/** Une carte se retourne (invocation ×10) ; plus la rareté est haute, plus la note brille. */
+export function playFlip(order: number) {
+  if (!out()) return;
+  noise('bandpass', 1800, 4000, { dur: 0.09, gain: 0.18 }, 2);
+  if (order >= 4) chimes(order >= 5 ? [1175, 1568, 2093] : [988, 1319], 0.05, 0.5, 0.07);
+  if (order >= 5) gong(0.05, 0.18);
+}

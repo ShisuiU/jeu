@@ -30,15 +30,15 @@ export const BANNERS: BannerDef[] = [
   {
     id: 'aeon', name: 'Invocation rare', subtitle: 'Éclats d’Aeon : Rare garanti, Épique une fois sur six.',
     cost: { resource: 'shardAeon', amount: 1 },
-    rates: { rare: 82, epic: 16, legendary: 1.8, mythic: 0.2 },
+    rates: { rare: 82, epic: 16, legendary: 2 }, // v1.84.0 : plus de Mythique (seulement aux Failles)
     pity: { rarity: 'legendary', every: 50 },
     multiGuarantee: 'epic',
     color: '#3d8bff', glow: '#8ab8ff',
   },
   {
-    id: 'epic', name: 'Invocation épique', subtitle: 'Cristaux d’Aeon : Rare garanti, Épique une fois sur deux.',
-    cost: { resource: 'crystals', amount: 300 },
-    rates: { rare: 52, epic: 44, legendary: 3.6, mythic: 0.4 },
+    id: 'epic', name: 'Invocation épique', subtitle: 'Éclats épiques : Rare garanti, Épique presque une fois sur deux.',
+    cost: { resource: 'shardEpic', amount: 1 },
+    rates: { rare: 52, epic: 44, legendary: 4 },
     pity: { rarity: 'legendary', every: 40 },
     multiGuarantee: 'epic',
     color: '#a64dff', glow: '#cf9dff',
@@ -52,6 +52,10 @@ export const BANNERS: BannerDef[] = [
     color: '#ff3d6e', glow: '#ff9bb5',
   },
 ];
+
+/** v1.84.0 : l'invocation épique se paie en éclats épiques (1 par appel, comme les autres) ; un éclat épique
+ *  s'échange à l'Autel contre le prix qu'avait un appel en cristaux : l'économie ne change pas. */
+export const EPIC_SHARD_PRICE = 300;
 
 export const BANNER_BY_ID: Record<string, BannerDef> = Object.fromEntries(BANNERS.map((b) => [b.id, b]));
 

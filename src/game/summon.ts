@@ -1,4 +1,4 @@
-import { BANNER_BY_ID, type BannerDef } from '../data/summons';
+import { BANNER_BY_ID, EPIC_SHARD_PRICE, type BannerDef } from '../data/summons';
 import { HEROES, HERO_BY_ID } from '../data/heroes';
 import { RARITIES } from '../data/rarities';
 import type { RarityId } from '../data/types';
@@ -27,6 +27,16 @@ export function pickHero(r: Rand, rarity: RarityId, b: BannerDef): string {
   // Les héros exclusifs (événements) ne sortent jamais à l'invocation.
   const pool = HEROES.filter((h) => h.rarity === rarity && !h.exclusive);
   return pool[Math.floor(r() * pool.length)].id;
+}
+
+/** Échange des cristaux d'Aeon contre des éclats épiques (mutation). */
+export function buyEpicShards(s: SaveData, n: number): { ok: boolean; reason?: string } {
+  const cost = EPIC_SHARD_PRICE * n;
+  if (n < 1) return { ok: false, reason: 'Quantité invalide.' };
+  if (s.resources.crystals < cost) return { ok: false, reason: `Il faut ${cost} cristaux d’Aeon.` };
+  s.resources.crystals -= cost;
+  s.resources.shardEpic = (s.resources.shardEpic ?? 0) + n;
+  return { ok: true };
 }
 
 export function canAfford(s: SaveData, bannerId: string, count: number): boolean {

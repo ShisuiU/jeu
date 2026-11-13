@@ -8,12 +8,12 @@ import { Coach } from '../components/Coach';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
-import { BANNERS, BANNER_BY_ID, EVENT_WELCOME_GIFT } from '../../data/summons';
+import { BANNERS, BANNER_BY_ID, EPIC_SHARD_PRICE, EVENT_WELCOME_GIFT } from '../../data/summons';
 import { HEROES, HERO_BY_ID } from '../../data/heroes';
 import { RARITIES } from '../../data/rarities';
 import { RESOURCES } from '../../data/resources';
 import type { RarityId } from '../../data/types';
-import { canAfford, summon, type SummonResult } from '../../game/summon';
+import { buyEpicShards, canAfford, summon, type SummonResult } from '../../game/summon';
 import { applyReward } from '../../game/rewards';
 import { bannerAvailable } from '../../game/events';
 import { play } from '../../audio/sfx';
@@ -106,6 +106,19 @@ export function Summon() {
           Appeler ×10<small><ResourceIcon icon={res.icon} color={res.color} size={14} /> {fmt(b.cost.amount * 10)}</small>
         </button>
       </div>
+      {b.cost.resource === 'shardEpic' && (
+        <div className="epic-exchange">
+          <span className="faint">Échanger <ResourceIcon icon={RESOURCES.crystals.icon} color={RESOURCES.crystals.color} size={12} /> {EPIC_SHARD_PRICE} → 1 éclat épique · tu as <ResourceIcon icon={RESOURCES.crystals.icon} color={RESOURCES.crystals.color} size={12} /> {fmt(save.resources.crystals)}</span>
+          <div className="row" style={{ gap: 8 }}>
+            {[1, 10].map((n) => (
+              <button key={n} className="btn secondary small grow" disabled={save.resources.crystals < EPIC_SHARD_PRICE * n}
+                onClick={() => { let r = { ok: false } as ReturnType<typeof buyEpicShards>; mutate((s) => { r = buyEpicShards(s, n); }); if (r.ok) { play('claim'); toast(`+${n} éclat${n > 1 ? 's' : ''} épique${n > 1 ? 's' : ''}.`, 'ok'); } else toast(r.reason ?? 'Impossible.', 'error'); }}>
+                +{n} <small>({fmt(EPIC_SHARD_PRICE * n)})</small>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       <div className="altar-links">
         <button onClick={() => setSheet('rates')}>Taux et garanties</button>
         <span aria-hidden>·</span>

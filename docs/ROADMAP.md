@@ -558,6 +558,13 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.84.0 — Mythiques réservés aux Failles, éclats épiques
+
+- Les héros Mythiques ne sortent plus que des invocations de Faille : le taux Mythique des invocations rare et épique est reporté sur le Légendaire (rare : 2 %, épique : 4 %).
+- Nouvelle monnaie, l'Éclat épique : l'invocation épique coûte 1 éclat par appel (10 pour ×10), comme les autres. Un éclat épique s'échange à l'Autel contre 300 cristaux d'Aeon (l'ancien prix d'un appel) : le rythme des invocations épiques ne change pas.
+- Quelques récompenses donnent désormais des éclats épiques à la place de la même valeur en cristaux (paliers d'étoiles des familles 100, 200 et 320).
+- Les éclats épiques partent de 0 pour tous les comptes.
+
 ## ✅ Version 1.83.4 — Code promo utilisable 2 fois
 
 - Un code promo peut maintenant avoir plusieurs utilisations par partie. Le code à 30 éclats de faille s'utilise 2 fois (si tu l'as déjà utilisé une fois, il te reste une utilisation). L'écran de réussite indique les utilisations restantes.

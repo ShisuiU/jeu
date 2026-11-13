@@ -558,6 +558,11 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.83.1 — On peut de nouveau écrire dans le chat du clan
+
+- Correctif iPhone : à l'ouverture du clavier, iOS fait défiler la page pour montrer le champ ; un correctif d'affichage (prévu pour la rotation de l'écran) remettait alors la page en place et retirait le curseur, ce qui refermait le clavier. Il ne se déclenche plus pendant la saisie : on peut écrire dans le chat du clan (et dans tout champ placé bas dans l'écran).
+- L'onglet « Discussion » du clan s'appelle maintenant « Chat ».
+
 ## ✅ Version 1.83.0 — Donjon des familles plus dur, étoiles et paliers
 
 - Donjon des familles bien plus difficile : niveau des ennemis de 12 à 70, et leur puissance grimpe à chaque étage (×2,8 à l'étage 10, ×4,8 au 20, ×6,8 au 30). Gardiens plus résistants. L'étage 30 demande une famille au sommet, bien équipée.

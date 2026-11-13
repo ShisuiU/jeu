@@ -43,5 +43,9 @@ export function fixViewport() {
   };
   window.addEventListener('orientationchange', () => { setTimeout(settle, 350); setTimeout(settle, 900); });
   screen.orientation?.addEventListener?.('change', () => setTimeout(settle, 350));
-  window.visualViewport?.addEventListener('resize', () => { if (window.scrollY || document.documentElement.scrollTop) settle(); });
+  // v1.83.1 : l'ouverture du clavier redimensionne aussi la zone visible et iOS fait défiler la page pour montrer
+  // le champ ; il ne faut alors surtout rien remettre en place (cela retirait le curseur et fermait le clavier :
+  // impossible d'écrire dans le chat du clan).
+  const typing = () => { const el = document.activeElement as HTMLElement | null; return !!el && (/INPUT|TEXTAREA|SELECT/.test(el.tagName) || el.isContentEditable); };
+  window.visualViewport?.addEventListener('resize', () => { if (!typing() && (window.scrollY || document.documentElement.scrollTop)) settle(); });
 }

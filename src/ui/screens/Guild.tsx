@@ -153,7 +153,7 @@ function MyGuild({ gid, uid }: { gid: string; uid: string }) {
       </div>
       <div className="seg" style={{ marginBottom: 10 }}>
         <button className={tab === 'boss' ? 'on' : ''} onClick={() => setTab('boss')}>Boss{claim.length > 0 && <span className="seg-dot" />}</button>
-        <button className={tab === 'chat' ? 'on' : ''} onClick={() => setTab('chat')}>Discussion</button>
+        <button className={tab === 'chat' ? 'on' : ''} onClick={() => setTab('chat')}>Chat</button>
         <button className={tab === 'members' ? 'on' : ''} onClick={() => setTab('members')}>Membres · {g.count}</button>
       </div>
 
@@ -206,7 +206,7 @@ function MyGuild({ gid, uid }: { gid: string; uid: string }) {
   );
 }
 
-/** Discussion : les 50 derniers messages, actualisés toutes les 8 s tant que l'onglet est ouvert. */
+/** Chat : les 50 derniers messages, actualisés toutes les 8 s tant que l'onglet est ouvert. */
 function Chat({ gid, uid, leader }: { gid: string; uid: string; leader: boolean }) {
   const toast = useUI((s) => s.toast);
   const [msgs, setMsgs] = useState<ChatMessage[] | null>(null);
@@ -231,7 +231,7 @@ function Chat({ gid, uid, leader }: { gid: string; uid: string; leader: boolean 
         {msgs?.filter((m) => !isBlockedUid(blocked, m.uid)).map((m) => (
           <div key={m.id} className={`cl-msg ${m.uid === uid ? 'me' : ''}`}>
             <div className="cl-msg-h"><b>{maskProfanity(m.name)}</b> <span className="faint">{new Date(m.at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
-              {m.uid !== uid && <button className="cl-del" aria-label={`Signaler le message de ${m.name}`} onClick={() => setReport({ uid: m.uid, name: m.name, kind: 'chat', text: m.text, where: 'Discussion de clan' })}>⚑</button>}
+              {m.uid !== uid && <button className="cl-del" aria-label={`Signaler le message de ${m.name}`} onClick={() => setReport({ uid: m.uid, name: m.name, kind: 'chat', text: m.text, where: 'Chat de clan' })}>⚑</button>}
               {(m.uid === uid || leader) && <button className="cl-del" aria-label="Effacer le message" onClick={() => void (async () => { try { await (await gapi()).deleteChat(gid, m.id); await load(); } catch (e) { toast(errMsg(e), 'error'); } })()}>×</button>}
             </div>
             <div className="cl-msg-t">{maskProfanity(m.text)}</div>

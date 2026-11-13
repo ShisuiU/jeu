@@ -170,3 +170,8 @@ Géant massif au corps de roche noire craquelée, des fissures de lave orange lu
 Femme d'une quarantaine d'années, peau brun foncé, visage serein, yeux clairs couleur de lune, tatouages argentés sur le menton. Longue robe indigo et voile de lin blanc, bijoux de bronze et de lapis-lazuli. Elle porte une jarre de bronze d'où s'élève une eau lumineuse argentée qui flotte en spirale autour d'elle.
 
 *Palette : #1f2a5a, #cfe3ff, #b0773a · Faction : Hordes d'Akkar*
+
+### Nyxa Point-Zéro (`nyxa`)
+Femme d'une trentaine d'années, visage pâle et marqué de fines cicatrices, cheveux noirs courts avec une mèche argentée, yeux violets luisants sous une capuche sombre. Exo-armure de plaques de céramique blanche fissurées d'où s'échappe une lumière violette du Néant, lignes cyan, longue cape violet sombre, dague de cristal réfracté, éclats de prisme autour de sa main. *(Portrait peint avec SpriteCook, v1.80.0.)*
+
+*Palette : #e9f3f7, #7fe7ff, #9a6bff · Faction : Ordre du Prisme*

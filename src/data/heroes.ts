@@ -6,6 +6,7 @@ import { LOW_HEROES } from './heroesLow';
 import { WAVE_A_HEROES } from './heroesWaveA';
 import { WAVE_B_HEROES } from './heroesWaveB';
 import { WAVE_C_HEROES } from './heroesWaveC';
+import { MYTHIC_HEROES } from './heroesMythic';
 
 // Première collection : 15 héros. Pour en ajouter, il suffit d'ajouter une entrée ici
 // (ses illustrations sont dans src/assets/heroes/<id>/).
@@ -269,7 +270,7 @@ const BASE_HEROES: HeroDef[] = [
 ];
 
 // Rééquilibrage (v1.75.0) : compétences et vitesse ramenées dans l'enveloppe de leur rôle et de leur rareté.
-export const HEROES: HeroDef[] = [...BASE_HEROES, ...CHAPTER_HEROES, ...EXTRA_HEROES, ...LOW_HEROES, ...WAVE_A_HEROES, ...WAVE_B_HEROES, ...WAVE_C_HEROES].map(balanceHero);
+export const HEROES: HeroDef[] = [...BASE_HEROES, ...CHAPTER_HEROES, ...EXTRA_HEROES, ...LOW_HEROES, ...WAVE_A_HEROES, ...WAVE_B_HEROES, ...WAVE_C_HEROES, ...MYTHIC_HEROES].map(balanceHero);
 
 export const HERO_BY_ID: Record<string, HeroDef> = Object.fromEntries(HEROES.map((h) => [h.id, h]));
 

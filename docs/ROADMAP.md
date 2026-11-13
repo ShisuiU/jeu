@@ -558,6 +558,11 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.82.3 — Terrain d'entraînement automatique
+
+- L'expérience du Terrain d'entraînement est désormais donnée automatiquement aux héros placés, en continu, sans passer par l'écran des Bâtiments. Le temps passé jeu fermé est compté au retour.
+- Plus de plafond de 24 h, et la fraction d'heure entamée n'est plus perdue.
+
 ## ✅ Version 1.82.2 — Caméra sans va-et-vient gauche-droite
 
 - La caméra de combat ne se déplace presque plus vers la gauche ou la droite (15 % de son mouvement d'avant). Elle avance surtout en profondeur, avec un léger zoom.

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import mineArt from '../../assets/buildings/mine.webp';
 import trainArt from '../../assets/buildings/training.webp';
 import { useGame } from '../../state/store';
@@ -6,7 +6,7 @@ import { useUI } from '../../state/ui';
 import { MINE, TRAINING } from '../../data/buildings';
 import { HERO_BY_ID } from '../../data/heroes';
 import { RARITIES } from '../../data/rarities';
-import { collectMine, collectTraining, mineCap, mineRate, mineReady, mineUpgradeCost, placeTrainee, trainPending, trainXpPerHour, unlockTrainSlot, upgradeMine } from '../../game/buildings';
+import { collectMine, mineCap, mineRate, mineReady, mineUpgradeCost, placeTrainee, trainXpPerHour, unlockTrainSlot, upgradeMine } from '../../game/buildings';
 import { maxLevelForRank, powerOf, computeStats } from '../../game/stats';
 import { formatDuration } from '../../core/time';
 import { play } from '../../audio/sfx';
@@ -24,13 +24,6 @@ export function Buildings() {
   const mutate = useGame((s) => s.mutate);
   const toast = useUI((s) => s.toast);
   const [pick, setPick] = useState<number | null>(null);
-  // En entrant, l'expérience accumulée au Terrain est donnée aux héros.
-  useEffect(() => {
-    let got: ReturnType<typeof collectTraining> = [];
-    mutate((s) => { got = collectTraining(s, Date.now()); });
-    const ups = got.filter((g) => g.levels > 0);
-    if (ups.length) toast(`Entraînement : ${ups.map((g) => `${HERO_BY_ID[save.heroes.find((h) => h.uid === g.uid)!.heroId].name} +${g.levels} niv.`).join(', ')}`, 'ok');
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const b = save.buildings;
   const ready = mineReady(save, now);
@@ -39,7 +32,6 @@ export function Buildings() {
   const upCost = mineUpgradeCost(save);
   const toNext = ready >= cap ? 0 : Math.max(0, b.mineSince + ((ready + 1) * 3600_000) / rate - now);
   const diamonds = save.resources.diamonds ?? 0;
-  const pendingTotal = b.train.reduce((a, _t, i) => a + trainPending(save, i, now), 0);
 
   const act = (fn: (s: typeof save) => { ok: boolean; reason?: string }, ok: string) => {
     let r = { ok: false } as { ok: boolean; reason?: string };
@@ -77,7 +69,7 @@ export function Buildings() {
         <div className="bld-art"><img src={trainArt} alt="" draggable={false} /></div>
         <div className="bld-body">
           <div className="bld-head"><b>Terrain d’entraînement</b></div>
-          <p className="faint" style={{ margin: '0 0 8px', fontSize: 12.5 }}>Les héros placés ici gagnent un peu d’expérience chaque heure ({Math.round(TRAINING.xpPctPerHour * 100)} % d’un niveau), jusqu’à {TRAINING.capHours} h sans passer. Ils peuvent toujours combattre.</p>
+          <p className="faint" style={{ margin: '0 0 8px', fontSize: 12.5 }}>Les héros placés ici gagnent un peu d’expérience chaque heure ({Math.round(TRAINING.xpPctPerHour * 100)} % d’un niveau). Elle leur est donnée automatiquement, même quand tu n’es pas ici ou que le jeu est fermé. Ils peuvent toujours combattre.</p>
           <div className="train-slots">
             {Array.from({ length: TRAINING.slots }, (_, i) => {
               const open = i < b.trainSlots;
@@ -98,16 +90,11 @@ export function Buildings() {
                 <button key={i} className="train-slot" onClick={() => setPick(i)} style={{ ['--rc' as string]: RARITIES[HERO_BY_ID[h.heroId].rarity].color }}>
                   <span className="ts-art"><HeroArt heroId={h.heroId} /><span className="ts-lv">{h.level}</span></span>
                   <span className="ts-name">{HERO_BY_ID[h.heroId].name.split(' ')[0]}</span>
-                  <span className="ts-xp">{maxed ? 'Niveau max du rang' : `+${fmt(trainXpPerHour(h.level))} XP/h · ${fmt(trainPending(save, i, now))} prêts`}</span>
+                  <span className="ts-xp">{maxed ? 'Niveau max du rang' : `+${fmt(trainXpPerHour(h.level))} XP/h`}</span>
                 </button>
               );
             })}
           </div>
-          {pendingTotal > 0 && (
-            <button className="btn block" style={{ marginTop: 10 }} onClick={() => { let got: ReturnType<typeof collectTraining> = []; mutate((s) => { got = collectTraining(s, Date.now()); }); play('claim'); const lv = got.reduce((a, g) => a + g.levels, 0); toast(`+${fmt(got.reduce((a, g) => a + g.xp, 0))} XP${lv ? ` · +${lv} niveau${lv > 1 ? 'x' : ''}` : ''}`, 'ok'); }}>
-              Donner l’expérience · {fmt(pendingTotal)} XP
-            </button>
-          )}
         </div>
       </section>
 

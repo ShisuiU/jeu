@@ -32,25 +32,38 @@ export function upgradeMine(s: SaveData, now: number): { ok: boolean; reason?: s
 }
 
 // ─── Terrain d'entraînement ───
-/** Expérience en attente pour la place i. */
+// v1.82.3 : l'expérience est donnée automatiquement aux héros placés, en continu (horloge du jeu) et au retour
+// dans le jeu pour le temps passé dehors : plus besoin de passer au Terrain pour la récupérer, et plus de plafond.
+/** Expérience accumulée et pas encore donnée pour la place i. */
 export function trainPending(s: SaveData, i: number, now: number): number {
   const t = s.buildings.train[i];
   const h = t && s.heroes.find((x) => x.uid === t.uid);
   if (!t || !h || h.level >= maxLevelForRank(h.rank)) return 0;
-  const hours = Math.min(TRAINING.capHours, Math.max(0, now - t.since) / HOUR);
+  const hours = Math.max(0, now - t.since) / HOUR;
   return Math.floor(hours * TRAINING.xpPctPerHour * heroXpToNext(h.level));
 }
 export const trainXpPerHour = (lv: number) => Math.max(1, Math.round(TRAINING.xpPctPerHour * heroXpToNext(lv)));
-/** Donne l'expérience accumulée à chaque héros placé (mutation). Les héros retirés de la partie libèrent leur place. */
+/** Au moins une minute entre deux versements, pour ne pas réécrire la sauvegarde à chaque seconde. */
+const TRAIN_STEP = 60_000;
+/** Vrai si l'un des héros placés a de l'expérience à recevoir. */
+export function trainDue(s: SaveData, now: number): boolean {
+  return s.buildings.train.some((t, i) => !!t && (!s.heroes.some((h) => h.uid === t.uid) || (now - t.since >= TRAIN_STEP && trainPending(s, i, now) > 0)));
+}
+/** Donne l'expérience accumulée à chaque héros placé (mutation). La fraction pas encore gagnée est gardée
+ *  (le compteur n'avance que du temps « payé »). Les héros retirés de la partie libèrent leur place. */
 export function collectTraining(s: SaveData, now: number): { uid: string; xp: number; levels: number }[] {
   const out: { uid: string; xp: number; levels: number }[] = [];
   s.buildings.train = s.buildings.train.map((t) => (t && s.heroes.some((h) => h.uid === t.uid) ? t : null));
   s.buildings.train.forEach((t, i) => {
     if (!t) return;
-    const xp = trainPending(s, i, now);
     const h = s.heroes.find((x) => x.uid === t.uid)!;
-    if (xp > 0) { const r = addHeroXp(h, xp); out.push({ uid: h.uid, xp, levels: r.gained }); }
-    t.since = now;
+    if (h.level >= maxLevelForRank(h.rank)) { t.since = now; return; }
+    const xp = trainPending(s, i, now);
+    if (xp <= 0) return;
+    const perHour = TRAINING.xpPctPerHour * heroXpToNext(h.level);
+    t.since = Math.min(now, t.since + (xp / perHour) * HOUR);
+    const r = addHeroXp(h, xp);
+    out.push({ uid: h.uid, xp, levels: r.gained });
   });
   return out;
 }

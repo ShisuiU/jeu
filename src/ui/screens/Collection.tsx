@@ -14,6 +14,7 @@ import { HERO_GROUPS, HERO_SORTS, heroMatches, sortHeroes } from '../components/
 import { BondsSheet } from '../components/Copies';
 import { copiesOf, markCopiesSeen } from '../../game/copies';
 import { canImprove } from '../../game/upgrade';
+import { resonanceLevel } from '../../game/resonance';
 import { COLLECTION_PCT, claimCollection, collectionClaimable, collectionPct, collectionReward, nextCollectionStep, ownedCount } from '../../game/collection';
 import { RewardInline } from '../components/RewardView';
 import { play } from '../../audio/sfx';
@@ -79,12 +80,14 @@ function CollectionBar() {
   const next = nextCollectionStep(save);
   const bonus = collectionPct(save);
   const target = ready[0] ?? next;
+  const reso = resonanceLevel(save);
   return (
     <div className="col-bar">
       <div className="row between">
         <b>Collection {owned}/{HEROES.length}</b>
         <span className="faint">{bonus ? `Bonus : +${bonus} % PV, ATQ, DÉF à tous` : 'Aucun palier encore'}</span>
       </div>
+      <div className="faint" style={{ fontSize: 12, marginTop: 2 }}>{reso ? `Résonance : tous tes héros montent au niveau ${reso} (niveau de ton 5ᵉ meilleur, dans la limite de leur rang).` : 'Résonance : à 5 héros, les autres prendront le niveau du 5ᵉ meilleur.'}</div>
       {target ? (
         <>
           <div className="progress" style={{ margin: '6px 0' }}><div style={{ width: `${Math.min(100, (owned / target) * 100)}%` }} /></div>

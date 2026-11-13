@@ -29,6 +29,10 @@ const statusValue = (u: Unit, st: StatusId) => u.statuses.filter((x) => x.status
 const hasSkill = (u: Unit, id: string) => u.skills.some((s) => s.id === id);
 
 /** Statistique effective (base + effets en cours + bonus dynamiques). */
+/** Fureur du temps : à partir de son 31ᵉ tour, un boss gagne +10 % d'ATQ par tour. */
+const BOSS_FURY_TURN = 30;
+const BOSS_FURY_STEP = 0.1;
+
 export function eff(s: BattleState, u: Unit, stat: StatId): number {
   let v = u.base[stat];
   if (stat === 'atk') {
@@ -36,6 +40,8 @@ export function eff(s: BattleState, u: Unit, stat: StatId): number {
     if (u.flags.fury) v *= 1 + 0.05 * u.flags.fury;
     if (u.flags.crown) v *= 1 + (0.1 + (u.flags.crownBonus ?? 0)) * u.flags.crown;
     if (u.isBoss && u.flags.enraged) v *= 1.3;
+    // Fureur du temps (v1.87.0) : un boss qui dure devient de plus en plus dangereux (casse les équipes de soin infini).
+    if (u.isBoss && u.side === 'enemy' && (u.flags.bossActs ?? 0) > BOSS_FURY_TURN) v *= 1 + BOSS_FURY_STEP * ((u.flags.bossActs ?? 0) - BOSS_FURY_TURN);
   } else if (stat === 'def') {
     v *= 1 + statusValue(u, 'defUp') - statusValue(u, 'defDown');
   } else if (stat === 'spd') {
@@ -220,6 +226,9 @@ function dealDamage(s: BattleState, source: Unit, target: Unit, effect: Extract<
   let combo = false;
   if (effect.bonusVs?.some((st) => hasStatus(target, st))) { dmg *= 1 + (effect.bonusPct ?? 0.5); combo = true; }
   if (effect.executeBelow && hpPct(target) < effect.executeBelow) { dmg *= 1.5; combo = true; }
+  // Rôles (v1.87.0, audit E-2) : les assassins achèvent (+25 % sous 50 % de PV), les attaquants frappent plus fort de base.
+  if (source.role === 'assassin' && hpPct(target) < 0.5) dmg *= 1.25;
+  if (source.role === 'attacker' && skill.slot === 'basic') dmg *= 1.1;
   // Carapace : dégâts réduits, une charge en moins par coup.
   let broke = false;
   if (target.flags.carapace > 0) {
@@ -360,6 +369,10 @@ export function beginTurn(s: BattleState): Unit | null {
       } else if (st.status === 'regen') {
         heal(s, u, u.base.hp * st.value);
       }
+    }
+    if (u.alive && u.isBoss && u.side === 'enemy') {
+      u.flags.bossActs = (u.flags.bossActs ?? 0) + 1;
+      if (u.flags.bossActs === BOSS_FURY_TURN + 1) s.events.push({ kind: 'rage', target: u.id });
     }
     // Boss : la Carapace brisée se reforme.
     if (u.alive && s.mechanics && u.isBoss && u.side === 'enemy') {

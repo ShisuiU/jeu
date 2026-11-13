@@ -25,7 +25,7 @@ export const BALANCE = {
     levelsPerRank: 10,
     maxRank: 6,
     /** Bonus multiplicatif par rang au-dessus du rang de départ de la rareté. */
-    rankBonus: 0.06,
+    rankBonus: 0.045, // v1.87.0 : 0,06 → 0,045 (les communs rattrapaient presque les légendaires)
     /** Bonus par palier d'ascension (0 à 6). */
     ascensionBonus: 0.04,
     maxAscension: 6,

@@ -558,6 +558,14 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.87.0 — Progression et équilibrage (audit, phase 2)
+
+- Résonance : tous les héros prennent automatiquement le niveau de ton 5ᵉ meilleur héros (dans la limite de leur rang). Un héros invoqué est jouable tout de suite ; l'or et les élixirs servent à pousser tes 5 meilleurs. Rangs, ascension, éveil et compétences restent propres à chaque héros.
+- Rareté qui se ressent : le bonus de rang passe de 6 % à 4,5 % (les communs rattrapaient presque les légendaires) et les multiplicateurs Épique, Légendaire et Mythique montent (1,14, 1,32, 1,45). Au maximum, un légendaire vaut maintenant environ 1,37 commun (contre 1,19).
+- Courbe de la campagne réglée par simulation : plus de mur au chapitre 5 ni aux chapitres 8 et 9. Niveau requis aux boss (5 Rares sans équipement) régulièrement croissant ; le chapitre 9 demande un peu d'équipement. Difficile : +10 niveaux et ×1,30 (au lieu de +15 et ×1,25).
+- Rôles : les assassins achèvent (+25 % de dégâts sur une cible sous 50 % de PV), les attaquants frappent 10 % plus fort avec leur compétence de base, et les boss qui durent entrent en Fureur du temps (à partir de leur 31ᵉ tour, +10 % d'ATQ par tour), ce qui casse les équipes de soin infini. Simulation : médiane identique pour les six rôles.
+- Le test d'équilibrage des chapitres vérifie désormais la courbe : croissante, sans saut de plus de 16 niveaux, sous le niveau des ennemis jusqu'au chapitre 8.
+
 ## ✅ Version 1.86.0 — Fondations visuelles (audit, phase 1)
 
 - Trois niveaux de surface : le décor peint, des panneaux sobres (verre fumé, filet fin) pour l'information, et l'or réservé aux actions principales, titres, cartes de mode et lignes de campagne. Avant, chaque panneau portait le même cadre doré.

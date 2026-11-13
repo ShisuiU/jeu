@@ -459,10 +459,9 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
 
   const order = s.outcome === 'running' ? predictOrder(s, 7) : [];
   const side = (sd: 'ally' | 'enemy') => s.units.filter((u) => u.side === sd);
-  const row = (sd: 'ally' | 'enemy', back: boolean) => side(sd).filter((u) => (back ? u.slot >= 3 : u.slot < 3)).sort((a, b) => a.slot - b.slot);
 
-  const renderUnit = (u: Unit) => (
-    <UnitView key={u.id} u={u} vfx={vfx[u.id]} focus={focusId === u.id && u.alive} active={s.activeId === u.id} acting={acting === u.id} hit={hits.has(u.id)} heavy={heavyHits.has(u.id)}
+  const renderUnit = (u: Unit, place?: Place, i = 0) => (
+    <UnitView key={u.id} u={u} place={place} order={i} vfx={vfx[u.id]} focus={focusId === u.id && u.alive} active={s.activeId === u.id} acting={acting === u.id} hit={hits.has(u.id)} heavy={heavyHits.has(u.id)}
       targetable={targetable.has(u.id)} popups={popups[u.id] ?? []} onClick={() => onUnit(u)} onInfo={() => setInfoId(u.id)}
       edge={awaiting && active && targetable.has(u.id) && u.side !== active.side ? affinityEdge(active.affinity, u.affinity) : undefined} />
   );
@@ -500,23 +499,26 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
       </div>
 
       {(() => {
-        // Taille des cartes selon le nombre réel de rangées (2 à 4) : jamais de chevauchement.
-        const eb = row('enemy', true), ef = row('enemy', false), af = row('ally', false), ab = row('ally', true);
-        const eRows = (eb.length ? 1 : 0) + (ef.length ? 1 : 0) || 1;
-        const aRows = (ab.length ? 1 : 0) + (af.length ? 1 : 0) || 1;
-        const bossBonus = side('enemy').some((u) => u.isBoss) ? 0.25 : 0;
+        // Scène 2,5D (v1.82.0) : chaque unité a sa place au sol, en profondeur — héros devant en arc,
+        // ennemis au loin (plus petits), boss plus grand ; plus la carte est proche, plus elle passe devant.
+        const allies = side('ally').slice().sort((a, b) => a.slot - b.slot);
+        const foes = side('enemy').slice().sort((a, b) => a.slot - b.slot);
+        const placed = new Map<string, Place>();
+        allies.forEach((u, i) => placed.set(u.id, stagePlace('ally', allies.length, i, false)));
+        foes.forEach((u, i) => placed.set(u.id, stagePlace('enemy', foes.length, i, u.isBoss)));
+        const act = s.activeId ? placed.get(s.activeId) : undefined;
+        const actU = s.activeId ? s.units.find((u) => u.id === s.activeId) : undefined;
         return (
           <div className="cam25" ref={camRef}>
-          <div className="fields" style={{ ['--rows' as string]: eRows + aRows + bossBonus }}>
-            <div key={`wave-${s.wave}`} className={`field enemy-field ${s.wave > 1 ? 'wave-in' : ''}`} style={{ flexGrow: eRows + bossBonus }}>
-              {eb.length > 0 && <div className="frow back">{eb.map(renderUnit)}</div>}
-              {ef.length > 0 && <div className="frow">{ef.map(renderUnit)}</div>}
+            <div className="stage25">
+              <div className="rune25 foe" aria-hidden />
+              <div className="rune25 ally" aria-hidden />
+              {act && actU?.alive && phase === 'fight' && <div className={`turn-ring25 ${actU.side}`} style={{ left: `${act.x}%`, top: `${act.y}%`, ['--s' as string]: act.s }} aria-hidden />}
+              <div key={`wave-${s.wave}`} className="stage-foes wave-in">
+                {foes.map((u, i) => renderUnit(u, placed.get(u.id)!, i))}
+              </div>
+              {allies.map((u, i) => renderUnit(u, placed.get(u.id)!, i))}
             </div>
-            <div className="field ally-field" style={{ flexGrow: aRows }}>
-              {af.length > 0 && <div className="frow">{af.map(renderUnit)}</div>}
-              {ab.length > 0 && <div className="frow back">{ab.map(renderUnit)}</div>}
-            </div>
-          </div>
           </div>
         );
       })()}
@@ -753,7 +755,31 @@ function SkillInfoBody({ unit, sk, onLaunch }: { unit: Unit; sk: SkillDef; onLau
 
 const shortName = (n: string) => n.replace(/^(Le|La|Les|L’|L')\s*/i, '').split(' ')[0];
 
-function UnitView({ u, vfx, focus, active, acting, hit, heavy, targetable, popups, onClick, onInfo, edge }: { u: Unit; vfx?: { id: number; cls: string; color: string }; focus?: boolean; active: boolean; acting: boolean; hit: boolean; heavy?: boolean; targetable: boolean; popups: Popup[]; onClick: () => void; onInfo: () => void; edge?: -1 | 0 | 1 }) {
+/** Place d'une unité sur la scène 2,5D : x et y (pieds) en % de la scène, s = échelle (profondeur). */
+type Place = { x: number; y: number; s: number };
+const ALLY_PLACES: Place[][] = [
+  [],
+  [{ x: 50, y: 92, s: 1 }],
+  [{ x: 36, y: 92, s: 1 }, { x: 64, y: 92, s: 1 }],
+  [{ x: 50, y: 93, s: 1 }, { x: 24, y: 86, s: 0.92 }, { x: 76, y: 86, s: 0.92 }],
+  [{ x: 37, y: 93, s: 1 }, { x: 63, y: 93, s: 1 }, { x: 16, y: 83, s: 0.86 }, { x: 84, y: 83, s: 0.86 }],
+  [{ x: 50, y: 94, s: 1 }, { x: 29, y: 89, s: 0.93 }, { x: 71, y: 89, s: 0.93 }, { x: 13, y: 81, s: 0.82 }, { x: 87, y: 81, s: 0.82 }],
+];
+const FOE_PLACES: Place[][] = [
+  [],
+  [{ x: 50, y: 58, s: 0.86 }],
+  [{ x: 34, y: 57, s: 0.82 }, { x: 66, y: 57, s: 0.82 }],
+  [{ x: 50, y: 59, s: 0.84 }, { x: 25, y: 53, s: 0.76 }, { x: 75, y: 53, s: 0.76 }],
+  [{ x: 37, y: 59, s: 0.82 }, { x: 63, y: 59, s: 0.82 }, { x: 16, y: 52, s: 0.72 }, { x: 84, y: 52, s: 0.72 }],
+  [{ x: 50, y: 60, s: 0.8 }, { x: 29, y: 56, s: 0.76 }, { x: 71, y: 56, s: 0.76 }, { x: 13, y: 51, s: 0.68 }, { x: 87, y: 51, s: 0.68 }],
+];
+function stagePlace(sd: 'ally' | 'enemy', n: number, i: number, boss: boolean): Place {
+  const set = (sd === 'ally' ? ALLY_PLACES : FOE_PLACES)[Math.max(1, Math.min(5, n))];
+  const p = set[Math.min(i, set.length - 1)];
+  return boss ? { ...p, s: Math.min(1.08, p.s * 1.28), y: p.y + 2 } : p;
+}
+
+function UnitView({ u, place, order = 0, vfx, focus, active, acting, hit, heavy, targetable, popups, onClick, onInfo, edge }: { u: Unit; place?: Place; order?: number; vfx?: { id: number; cls: string; color: string }; focus?: boolean; active: boolean; acting: boolean; hit: boolean; heavy?: boolean; targetable: boolean; popups: Popup[]; onClick: () => void; onInfo: () => void; edge?: -1 | 0 | 1 }) {
   const sh = Math.min(1, shieldOf(u) / u.base.hp);
   // Appui long (0,45 s) : fiche de l'unité ; le toucher simple garde son rôle (cibler).
   const timer = useRef<number | undefined>(undefined);
@@ -765,6 +791,7 @@ function UnitView({ u, vfx, focus, active, acting, hit, heavy, targetable, popup
   const stCls = [has('freeze') && 'st-freeze', has('burn') && 'st-burn', has('poison') && 'st-poison', has('stun') && 'st-stun', has('taunt') && 'st-taunt', u.alive && sh > 0 && 'st-shield'].filter(Boolean).join(' ');
   return (
     <button className={`unit ${u.side} ${u.alive ? '' : 'dead'} ${active ? 'active' : ''} ${acting ? 'acting' : ''} ${hit ? 'hit' : ''} ${targetable ? 'targetable' : ''} ${u.isBoss ? 'boss' : ''} ${heavy ? 'heavy' : ''} ${focus ? 'focus' : ''} ${stCls}`} data-uid={u.id}
+      style={place ? { left: `${place.x}%`, top: `${place.y}%`, zIndex: Math.round(place.y * 10), ['--s' as string]: place.s, ['--i' as string]: order } : undefined}
       onClick={() => { if (longDone.current) { longDone.current = false; return; } onClick(); }}
       onPointerDown={startPress} onPointerUp={endPress} onPointerLeave={endPress} onPointerCancel={endPress}
       onContextMenu={(e) => { e.preventDefault(); if (e.nativeEvent instanceof MouseEvent && (e.nativeEvent as PointerEvent).pointerType !== 'touch') { window.clearTimeout(timer.current); onInfo(); } }}>

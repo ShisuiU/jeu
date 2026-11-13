@@ -1,0 +1,48 @@
+/* FONDATIONS (v1.86.0) — premières corrections de l'audit, chargées en dernier.
+   1. Trois niveaux de surface : le décor peint ; des panneaux sobres (verre fumé, filet fin) pour l'information ;
+      l'ornement doré réservé à l'action principale et aux éléments héroïques (boutons, cartouches de titre,
+      cartes de mode, lignes de campagne). Avant, chaque panneau portait le même cadre doré : plus rien ne ressortait.
+   2. Lisibilité : plus aucun texte informatif sous 11 px, gris secondaires un peu plus clairs.
+   3. Zones tactiles : les petits boutons gardent leur dessin mais leur zone de toucher est agrandie (≥ 40 px).
+   4. Secousse des coups : seule la scène tremble, jamais l'interface. */
+
+:root { --text-faint: #a39b8b; --text-dim: #b3ab9d; --surface-line: rgba(196, 168, 236, 0.16); }
+
+/* 1 — Panneaux sobres */
+.theme-v2 .panel {
+  border-image: none; border: 1px solid var(--surface-line); border-radius: 8px; padding: 13px 15px;
+  background: linear-gradient(180deg, rgba(30, 24, 42, 0.84), rgba(14, 11, 20, 0.88));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045), 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+.theme-v2 .panel .panel { background: rgba(255, 255, 255, 0.03); box-shadow: none; }
+.theme-v2 .panel-title { color: #d9c08a; }
+
+/* 2 — Lisibilité */
+.hs-label { font-size: 23cqw; }
+.hs-label.long { font-size: 19cqw; }
+.home .pill.kit small { font-size: 10.5px; color: #c9bea9; }
+.ms-text, .m-lock, .foe-name, .hl-t { font-size: 11.5px; }
+.pc-stats > div span { font-size: 11px !important; }
+.daily-cell .d { font-size: 10.5px; }
+.hist-item { font-size: 10.5px; }
+.lien-choice span { font-size: 11.5px; }
+.altar-featured span { font-size: 10.5px; }
+.leader-crown, .prep-lead, .prep-lead.on { font-size: 11px; }
+
+/* 3 — Zones tactiles agrandies sans changer le dessin */
+.info-btn, .toggle, .m-go, .camp-chaps .chip, .altar-links button, .home .pill.kit { position: relative; }
+.info-btn::before, .m-go::before, .camp-chaps .chip::before, .altar-links button::before, .home .pill.kit::before {
+  content: ''; position: absolute; inset: -10px -6px;
+}
+.info-btn::before { inset: -12px; }
+.toggle::before { content: ''; position: absolute; inset: -8px -4px; }
+.m-go { padding: 7px 11px; }
+.camp-chaps .chip { min-height: 32px; }
+
+/* 4 — La secousse touche la scène (unités et décor), pas le bandeau ni les commandes */
+.battle.shake.soft .stage25 { animation: shakeSoft 0.26s ease-out; }
+.battle.shake.hard .stage25 { animation: shakeHard 0.42s ease-out; }
+.reduced-motion .battle.shake .stage25 { animation: none; }
+
+/* Pastilles : une seule rouge sur l'accueil, les autres en point discret */
+.badge-dot.soft { width: 7px; height: 7px; background: #d9c08a; box-shadow: 0 0 5px rgba(217, 192, 138, 0.6); animation: none; }

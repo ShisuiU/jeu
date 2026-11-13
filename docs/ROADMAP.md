@@ -558,6 +558,14 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.86.0 — Fondations visuelles (audit, phase 1)
+
+- Trois niveaux de surface : le décor peint, des panneaux sobres (verre fumé, filet fin) pour l'information, et l'or réservé aux actions principales, titres, cartes de mode et lignes de campagne. Avant, chaque panneau portait le même cadre doré.
+- Lisibilité : plus de texte informatif sous 11 px (libellés de l'accueil, monnaies, missions, statistiques du profil, ennemis), gris secondaires éclaircis.
+- Zones tactiles agrandies sans changer le dessin : boutons d'aide « i », « Y aller », onglets de chapitre, interrupteurs, liens de l'Autel, monnaies du haut.
+- Accueil : une seule pastille rouge à la fois (la plus importante : Courrier, puis Missions, Camp, Événements, Bâtiments, Roue), les autres deviennent un point discret ; aucune avant la première victoire.
+- Combat : la secousse des coups remarche (elle ne touchait plus rien depuis la scène 2,5D) et ne déplace que la scène, jamais l'interface.
+
 ## ✅ Version 1.85.0 — Animation d'invocation façon grands jeux
 
 - L'éclat aspire des lueurs en tourbillon ; à mi-chemin, elles prennent la couleur de la meilleure rareté obtenue (bleu, violet, or, rouge) : un indice qui fait monter l'attente.

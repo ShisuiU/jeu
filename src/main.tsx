@@ -20,6 +20,7 @@ import './styles/desktop.css';
 import './styles/home2.css';
 import './styles/kit.css';
 import './styles/stage25.css';
+import './styles/foundations.css';
 import App from './App';
 import { setupPWA } from './pwa';
 import { fixViewport } from './viewport';

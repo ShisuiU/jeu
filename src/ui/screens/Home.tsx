@@ -49,6 +49,12 @@ export function Home() {
     { label: 'Courrier', img: bMail, side: 'r', row: 1, dot: unreadMail(save.flags) || canClaimDaily(save, now) || gifts > 0, go: () => push({ name: 'mail' }) },
     { label: 'Événements', img: bEvents, side: 'r', row: 2, feature: 'events', dot: eventsDot(save, now), go: () => push({ name: 'events' }) },
   ];
+  // Une seule pastille rouge à la fois (v1.86.0, audit) : la plus importante ; les autres deviennent un point discret.
+  // Rien avant la première victoire de campagne : le joueur suit d'abord le guide.
+  const firstWin = Object.values(save.progress.campaign).some((p) => p.clears > 0);
+  const PRIORITY = ['Courrier', 'Missions', 'Camp', 'Événements', 'Bâtiments', 'Roue'];
+  const isOpen = (sp: Spot) => !sp.feature || isUnlocked(save, sp.feature);
+  const primary = firstWin ? PRIORITY.find((l) => spots.some((sp) => sp.label === l && sp.dot && isOpen(sp))) : undefined;
   const chapter = CHAPTERS.find((c) => c.n === (nextStage?.chapter ?? CHAPTERS.length));
 
   return (
@@ -70,7 +76,7 @@ export function Home() {
                 onClick={() => (locked ? toast(`${sp.label} : ${unlockText(sp.feature!).toLowerCase()} de la campagne.`) : sp.go())}>
                 <img src={sp.img} alt="" draggable={false} />
                 {locked && <span className="hs-lock"><Icon.lock size={18} /></span>}
-                {!locked && sp.dot && <span className="badge-dot" />}
+                {!locked && sp.dot && firstWin && <span className={`badge-dot ${sp.label === primary ? '' : 'soft'}`} />}
                 <span className={`hs-label ${sp.label.length > 8 ? 'long' : ''}`}>{sp.label}</span>
               </button>
             );

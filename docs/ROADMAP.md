@@ -558,6 +558,14 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.82.0 — Scène de combat façon prototype
+
+- Le combat n'est plus une grille : chaque unité est posée librement sur un sol en perspective. Les héros forment un arc au premier plan, les ennemis se tiennent plus loin et paraissent plus petits.
+- Deux cercles runiques au sol (violet côté ennemis, doré côté héros) et un anneau lumineux sous l'unité dont c'est le tour.
+- À chaque vague, les ennemis arrivent par le haut, l'un après l'autre.
+- Le bandeau du haut (titre, ordre des tours, Effets, Pause) est transparent et posé sur la scène, qui gagne ainsi toute la hauteur de l'écran au-dessus des commandes.
+- Les cartes sont un peu plus petites et les héros des bords sont ramenés vers l'intérieur pour ne jamais être coupés.
+
 ## ✅ Version 1.81.0 — Combats en 2,5D
 
 - **Profondeur** : un sol en perspective sous les deux camps, les ennemis plus loin (plus petits), les cartes inclinées vers le sol avec une ombre portée, et les illustrations qui respirent doucement.

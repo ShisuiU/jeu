@@ -558,6 +558,10 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.83.4 — Code promo utilisable 2 fois
+
+- Un code promo peut maintenant avoir plusieurs utilisations par partie. Le code à 30 éclats de faille s'utilise 2 fois (si tu l'as déjà utilisé une fois, il te reste une utilisation). L'écran de réussite indique les utilisations restantes.
+
 ## ✅ Version 1.83.3 — Nouveau code promo
 
 - Nouveau code promo : 30 éclats de faille (une fois par partie).

@@ -21,7 +21,7 @@ import { playMusic } from '../../audio/music';
 import { loadCloud } from '../../cloud/account';
 import { playerTeamPower } from '../../game/arena';
 import { ENEMIES } from '../../data/enemies';
-import { playCast, playDeath, playDot, playHeal, playImpact, playRevive, playShield, playStatus } from '../../audio/battleSfx';
+import { playCast, playDeath, playDot, playFlip, playHeal, playImpact, playRevive, playShield, playStatus } from '../../audio/battleSfx';
 import { skillFx, type SkillFx } from '../fx/skillFx';
 import { Stage25, type Pt } from '../fx/stage25';
 import { AffinityIcon, affinityEdge } from '../art/Identity';
@@ -78,7 +78,8 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
   const [waveCard, setWaveCard] = useState<{ n: number; total: number; boss: boolean } | null>(null);
   const [slowmo, setSlowmo] = useState(false);
   const doShake = (k: 'soft' | 'hard') => { if (save.settings.reducedMotion) return; setShake(k); setTimeout(() => setShake(''), k === 'hard' ? 420 : 260); };
-  const [ult, setUlt] = useState<string | null>(null);
+  const [ult, setUlt] = useState<{ side: string; kind: 'hero' | 'enemy'; refId: string; skill: string; color: string } | null>(null);
+  const [skipFx, setSkipFx] = useState(false);
   const [wave, setWave] = useState<{ side: 'ally' | 'enemy'; color: string; id: number } | null>(null);
   const [result, setResult] = useState<ModeResult | null>(null);
   const [quit, setQuit] = useState(false);
@@ -313,7 +314,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
     setBanner({ text: sk.name, side: actor.side });
     setActing(actor.id);
     const reduced = useGame.getState().save?.settings.reducedMotion;
-    if (sk.slot === 'ultimate' && !reduced) { setUlt(actor.side); play('rare'); }
+    if (sk.slot === 'ultimate' && !reduced) { setUlt({ side: actor.side, kind: actor.kind, refId: actor.refId, skill: sk.name, color: fx.color }); play('rare'); }
     force();
     await wait((sk.slot === 'ultimate' && !reduced ? 850 : 300) / speedRef.current);
     setUlt(null);
@@ -357,6 +358,13 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
     setActing(null);
     setBanner(null);
   };
+
+  // Écran de victoire (v1.89.0) : chaque étoile gagnée sonne en se posant, de plus en plus haut.
+  useEffect(() => {
+    if (phase !== 'result' || !result?.won || !(spec.mode === 'campaign' || spec.mode === 'faction')) return;
+    const ids = Array.from({ length: result.stars }, (_, i) => window.setTimeout(() => playFlip(3 + i), (0.45 + (i + 1) * 0.2) * 1000));
+    return () => ids.forEach(clearTimeout);
+  }, [phase]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const finish = useCallback(() => {
     if (finished.current) return;
@@ -528,9 +536,16 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
         );
       })()}
 
-      {ult && <div className={`ult-overlay ${ult}`} />}
+      {ult && <div className={`ult-overlay ${ult.side}`} />}
+      {/* Coupe cinématique de l'ultime (v1.89.0) : bande diagonale, illustration en parallaxe, nom de la compétence. Pas en ×3. */}
+      {ult && speed < 3 && (
+        <div className={`ult-cut ${ult.side}`} style={{ ['--uc' as string]: ult.color }} aria-hidden>
+          <div className="uc-band"><div className="uc-art">{ult.kind === 'hero' ? <HeroArt heroId={ult.refId} kind="full" /> : <EnemyArt enemyId={ult.refId} />}</div></div>
+          <div className="uc-name">{ult.skill}</div>
+        </div>
+      )}
       {wave && <div key={wave.id} className={`field-wave ${wave.side}`} style={{ ['--vc' as string]: wave.color }} onAnimationEnd={() => setWave(null)} />}
-      {banner && <div className={`skill-banner ${banner.side} ${ult ? 'ult' : ''}`} key={banner.text + banner.side}>{banner.text}</div>}
+      {banner && !(ult && speed < 3) && <div className={`skill-banner ${banner.side} ${ult ? 'ult' : ''}`} key={banner.text + banner.side}>{banner.text}</div>}
 
       {waveCard && (
         <div className={`wave-card ${waveCard.boss ? 'boss' : ''}`} key={waveCard.n}>
@@ -597,12 +612,12 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
       {phase === 'outro' && <Dialogue lines={initial.info.after!} onDone={() => setPhase('result')} />}
 
       {phase === 'result' && result && (
-        <div className="result-overlay">
+        <div className={`result-overlay ${result.won ? 'won' : 'lost'} ${skipFx ? 'skip' : ''}`} onClick={() => setSkipFx(true)}>
           <div className={`result-title ${result.won ? 'win' : 'lose'}`}>{spec.mode === 'worldboss' || spec.mode === 'guildboss' ? 'COMBAT TERMINÉ' : result.won ? 'VICTOIRE' : 'DÉFAITE'}</div>
           {result.lines.map((l, i) => <div key={i} className="chip active" style={{ margin: '6px auto', display: 'flex', width: 'fit-content', textAlign: 'center' }}>{l}</div>)}
           {result.won && (spec.mode === 'campaign' || spec.mode === 'faction') && (
             <div className="result-stars">
-              {[1, 2, 3].map((n) => <span key={n} className={n <= result.stars ? 'on' : ''} style={{ animationDelay: `${0.3 + n * 0.2}s` }}><Icon.star size={46} color={n <= result.stars ? '#ffd36b' : '#3a3442'} /></span>)}
+              {[1, 2, 3].map((n) => <span key={n} className={n <= result.stars ? 'on' : 'off'} style={{ animationDelay: `${0.3 + n * 0.2}s` }}><Icon.star size={46} color={n <= result.stars ? '#ffd36b' : '#3a3442'} /></span>)}
             </div>
           )}
           {result.won && (spec.mode === 'campaign' || spec.mode === 'faction') && result.stars < 3 && (

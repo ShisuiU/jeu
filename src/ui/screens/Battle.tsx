@@ -1,3 +1,4 @@
+import { SIGNATURES } from '../../data/signatures';
 import { factionTeam } from '../../game/factionDungeon';
 import { defeatTips } from '../../game/tips';
 import { energyMax } from '../../game/energy';
@@ -675,6 +676,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
           <div className="unit-info-backdrop" onClick={() => setInfoId(null)}>
             <div className={`unit-info ${u.side}`} role="dialog" aria-label={u.name}>
               <div className="ui-head"><b>{u.name}</b><span className="faint">Niv. {u.level}</span></div>
+              {u.kind === 'hero' && SIGNATURES[u.refId] && <div className="ui-sig"><b>★ {SIGNATURES[u.refId].name}</b> : {SIGNATURES[u.refId].text}</div>}
               <div className="ui-aff"><AffinityIcon id={u.affinity} size={16} /> {AFFINITIES[u.affinity].name}{AFFINITIES[u.affinity].strongAgainst ? ` · fort contre ${AFFINITIES[AFFINITIES[u.affinity].strongAgainst!].name}` : ' · neutre'}</div>
               <div className="ui-hp"><span>PV</span><b>{Math.max(0, Math.round(u.hp))} / {Math.round(u.base.hp)}</b></div>
               <div className="ui-stats"><span>ATQ <b>{Math.round(u.base.atk)}</b></span><span>DÉF <b>{Math.round(u.base.def)}</b></span><span>VIT <b>{Math.round(u.base.spd)}</b></span></div>
@@ -823,7 +825,7 @@ function UnitView({ u, place, order = 0, vfx, focus, active, acting, hit, heavy,
   const stCls = [has('freeze') && 'st-freeze', has('burn') && 'st-burn', has('poison') && 'st-poison', has('stun') && 'st-stun', has('taunt') && 'st-taunt', u.alive && sh > 0 && 'st-shield'].filter(Boolean).join(' ');
   return (
     <button className={`unit ${u.side} ${u.alive ? '' : 'dead'} ${active ? 'active' : ''} ${acting ? 'acting' : ''} ${hit ? 'hit' : ''} ${targetable ? 'targetable' : ''} ${u.isBoss ? 'boss' : ''} ${heavy ? 'heavy' : ''} ${focus ? 'focus' : ''} ${stCls}`} data-uid={u.id}
-      style={place ? { left: `${place.x}%`, top: `${place.y}%`, zIndex: Math.round(place.y * 10), ['--s' as string]: place.s, ['--i' as string]: order } : undefined}
+      style={place ? { left: `${place.x}%`, top: `${place.y}%`, zIndex: Math.round(place.y * 10), ['--s' as string]: place.s, ['--i' as string]: order, ['--affc' as string]: AFFINITIES[u.affinity].color } : undefined}
       onClick={() => { if (longDone.current) { longDone.current = false; return; } onClick(); }}
       onPointerDown={startPress} onPointerUp={endPress} onPointerLeave={endPress} onPointerCancel={endPress}
       onContextMenu={(e) => { e.preventDefault(); if (e.nativeEvent instanceof MouseEvent && (e.nativeEvent as PointerEvent).pointerType !== 'touch') { window.clearTimeout(timer.current); onInfo(); } }}>

@@ -558,6 +558,16 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.91.0 — Personnages détourés et passifs signatures (audit)
+
+- Combat : plus de cadre rectangulaire autour des unités. L'illustration se fond dans la scène (fondu ovale), posée sur un socle lumineux à la couleur de son affinité, avec une ombre au sol ; l'unité active ou ciblable s'illumine.
+- Passifs signatures : chaque Légendaire et chaque Mythique a désormais une mécanique propre (Azhar avait déjà la sienne) :
+  Idris +25 % contre les boss ; Mère Sulfura +20 % contre une cible affaiblie ; Vael'Shira donne 30 % de jauge de tour à l'équipe au début ;
+  Nerissa survit une fois à un coup mortel et s'embrase ; Solenne relève le premier allié tombé ; Ondine +25 % contre une cible sous 50 % ;
+  Sire Corentin réduit de 10 % les dégâts subis par ses alliés ; Thalor donne un bouclier de 15 % des PV à l'équipe ; Élyra soigne 15 % à chaque vague ;
+  Nyxa rejoue aussitôt après chaque ennemi vaincu.
+- La signature apparaît en tête des compétences sur la fiche du héros et dans la fiche de combat (appui long).
+
 ## ✅ Version 1.90.0 — Combat tactique et préparation (audit)
 
 - Fracture des boss : une jauge sous chaque boss. Chaque coup l'use, beaucoup plus avec l'affinité avantagée (▲). À zéro, le boss est brisé : il perd son tour et subit +40 % de dégâts pendant 2 de ses tours, puis la jauge se reforme. Gros effet à l'écran quand elle cède ; explication dans la fiche du boss (appui long).

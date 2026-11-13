@@ -4,7 +4,7 @@ RPG mobile de collection de héros au tour par tour, univers original mêlant fa
 science-fiction et civilisations antiques. Conçu pour iPhone, jouable **hors ligne**, **gratuit**,
 sans App Store ni serveur : c'est une application web progressive (PWA) qu'on installe depuis Safari.
 
-> État : **version 1.90.0** (scène de combat en perspective) — histoire en 9 chapitres (90 niveaux, 4 difficultés), 88 héros, invocations, améliorations, maîtrises, équipement, marché, 7 donjons dont 4 d’équipement (15 étages), tour (100 étages), camp (butin d’absence), boss mondial, arène, missions, expéditions, un événement différent chaque semaine, comptes et classements en ligne.
+> État : **version 1.91.0** (scène de combat en perspective) — histoire en 9 chapitres (90 niveaux, 4 difficultés), 88 héros, invocations, améliorations, maîtrises, équipement, marché, 7 donjons dont 4 d’équipement (15 étages), tour (100 étages), camp (butin d’absence), boss mondial, arène, missions, expéditions, un événement différent chaque semaine, comptes et classements en ligne.
 
 **Jouer : https://jeu-aeonfall.vercel.app/** (adresse principale, hébergée par Vercel). Secours : https://shisuiu.github.io/jeu/ (GitHub Pages). Voir [docs/ROADMAP.md](docs/ROADMAP.md).
 

@@ -32,3 +32,18 @@ describe('Combat tactique (v1.90.0)', () => {
     expect(tips.length).toBeLessThanOrEqual(3);
   });
 });
+
+describe('Passifs signatures (v1.91.0)', () => {
+  it('Égide du Prisme et Trame des étoiles au début du combat', () => {
+    const team = ['thalor', 'vaelshira', 'brann'].map((id, i) => unit(id, i));
+    const b = createBattle(team, waves(1), { seed: 1, leaderUid: 'thalor' });
+    const allies = b.units.filter((u) => u.side === 'ally');
+    expect(allies.every((u) => u.statuses.some((st) => st.status === 'shield'))).toBe(true);
+    expect(allies.every((u) => u.tm >= 300)).toBe(true);
+  });
+  it('tous les légendaires sans passif propre ont une signature', async () => {
+    const { SIGNATURES } = await import('../src/data/signatures');
+    const { HEROES } = await import('../src/data/heroes');
+    for (const h of HEROES.filter((x) => (x.rarity === 'legendary' || x.rarity === 'mythic') && !x.skills.some((s) => s.slot === 'passive'))) expect(SIGNATURES[h.id], h.id).toBeTruthy();
+  });
+});

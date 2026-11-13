@@ -178,3 +178,7 @@
 /* Passifs signatures (v1.91.0) */
 .sig-skill { border: 1px solid rgba(255, 211, 107, 0.45); border-radius: 8px; padding: 8px; background: linear-gradient(90deg, rgba(255, 190, 80, 0.12), transparent); }
 .ui-sig { margin: 4px 0 6px; font-size: 12.5px; color: #ffe2a8; }
+/* Boss en seconde phase (v1.92.0) : aura rouge qui pulse sous le boss. */
+.stage25 .unit.phase2::after { background: radial-gradient(52% 13% at 50% 96%, rgba(255, 50, 80, 0.85), transparent 72%), radial-gradient(34% 7% at 50% 97%, rgba(255, 220, 220, 0.7), transparent 80%); animation: phase2Pulse 1.2s ease-in-out infinite; }
+.stage25 .unit.phase2 .u-art .art-img { filter: drop-shadow(0 0 10px rgba(255, 60, 90, 0.85)) saturate(1.2); }
+@keyframes phase2Pulse { 50% { filter: brightness(1.6); } }

@@ -301,7 +301,17 @@ function dealDamage(s: BattleState, source: Unit, target: Unit, effect: Extract<
     if (target.flags.fracture === 0) { target.flags.fractured = FRACTURE_TURNS; target.flags.fractureStun = 1; s.events.push({ kind: 'fracture', target: target.id }); }
   }
   // Boss sous la moitié de ses PV : il enrage (+30 % ATQ), et le joueur le voit.
-  if (target.isBoss && !target.flags.enraged && hpPct(target) < 0.5 && target.hp > 0) { target.flags.enraged = 1; s.events.push({ kind: 'rage', target: target.id }); }
+  if (target.isBoss && !target.flags.enraged && hpPct(target) < 0.5 && target.hp > 0) {
+    target.flags.enraged = 1; s.events.push({ kind: 'rage', target: target.id });
+    // Seconde phase (v1.92.0, audit G-3) : le boss se purifie, se protège et recharge son ultime.
+    if (target.side === 'enemy') {
+      target.statuses = target.statuses.filter((st) => !DEBUFFS.includes(st.status));
+      addStatus(s, target, 'shield', 3, target.base.hp * 0.12, target);
+      for (const sk of target.skills) if (sk.slot === 'ultimate') target.cooldowns[sk.id] = 0;
+      target.flags.phase2 = 1;
+      s.events.push({ kind: 'phase', target: target.id });
+    }
+  }
   if (target.hp <= 0) kill(s, target, source);
   const ls = (effect.lifestealPct ?? 0) + mods.lifesteal + (source.flags.leech ?? 0) / 100;
   if (ls > 0 && source.alive) heal(s, source, hpDmg * ls);

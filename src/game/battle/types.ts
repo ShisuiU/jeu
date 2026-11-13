@@ -57,6 +57,7 @@ export type BattleEvent =
   | { kind: 'wave'; wave: number }
   | { kind: 'rage'; target: string }
   | { kind: 'fracture'; target: string }
+  | { kind: 'phase'; target: string }
   | { kind: 'carapace'; target: string; charges: number; broken?: boolean; reformed?: boolean }
   | { kind: 'lien'; power: LienPower };
 

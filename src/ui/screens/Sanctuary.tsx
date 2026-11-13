@@ -181,7 +181,7 @@ function CelebrationView({ kind, title, from, to, heroId, onDone }: { kind: Cele
   return (
     <div className={`cele cele-${kind}`} onClick={onDone} role="status" aria-label={`${CELE_LABEL[kind]} : ${title}`}>
       {kind === 'awaken' && <div className="cele-threads" aria-hidden>{Array.from({ length: 12 }, (_, i) => <i key={i} style={{ ['--a' as string]: `${i * 30}deg`, ['--d' as string]: `${0.15 + (i % 4) * 0.08}s` }} />)}</div>}
-      <div className="cele-card"><HeroArt heroId={heroId} kind="portrait" />{kind === 'rank' && <span className="cele-star">★</span>}<span className="cele-ring" /></div>
+      <div className="cele-card"><HeroArt heroId={heroId} kind="full" />{kind === 'rank' && <span className="cele-star">★</span>}<span className="cele-ring" /></div>
       <div className="cele-kicker">{CELE_LABEL[kind]}</div>
       <div className="cele-title">{title}</div>
       <div className="cele-power">Puissance <b>{fmt(shown)}</b>{to > from && <span> +{fmt(to - from)}</span>}</div>

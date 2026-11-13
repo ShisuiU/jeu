@@ -11,16 +11,19 @@ import { FactionEmblem } from './FactionEmblem';
 // Tant qu'une illustration manque, un portrait vectoriel provisoire (silhouette + emblème) est affiché.
 const files = import.meta.glob('/src/assets/heroes/*/*.{webp,png,jpg,jpeg}', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
 type Kind = 'portrait' | 'full' | 'battle';
-const ART: Record<string, Partial<Record<Kind, string>>> = {};
+type FileKind = Kind | 'thumb';
+const ART: Record<string, Partial<Record<FileKind, string>>> = {};
 for (const [path, url] of Object.entries(files)) {
-  const m = path.match(/heroes\/([^/]+)\/(portrait|full|battle)\./);
-  if (m) (ART[m[1]] ??= {})[m[2] as Kind] = url;
+  const m = path.match(/heroes\/([^/]+)\/(portrait|full|battle|thumb)\./);
+  if (m) (ART[m[1]] ??= {})[m[2] as FileKind] = url;
 }
 
 export function heroArtUrl(id: string, kind: Kind): string | undefined {
   const a = ART[id];
   if (!a) return undefined;
-  return a[kind] ?? (kind === 'portrait' ? a.full : a.portrait) ?? a.battle;
+  // v1.89.1 : les cartes utilisent une miniature légère (300 × 400, ~22 Ko, embarquée dans le jeu) au lieu du portrait (~85 Ko).
+  if (kind === 'portrait') return a.thumb ?? a.portrait ?? a.full ?? a.battle;
+  return a[kind] ?? a.portrait ?? a.battle;
 }
 
 // ─── Portrait vectoriel provisoire ───

@@ -6,6 +6,10 @@ import { ENEMIES, type EnemyDef } from '../../data/enemies';
 const files = import.meta.glob('/src/assets/enemies/*/portrait.{webp,png,jpg,jpeg}', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
 const ART: Record<string, string> = {};
 for (const [p, url] of Object.entries(files)) { const m = p.match(/enemies\/([^/]+)\/portrait\./); if (m) ART[m[1]] = url; }
+// v1.89.1 : miniatures légères (300 × 400) pour les cartes ; le portrait complet reste pour les grands décors.
+const thumbs = import.meta.glob('/src/assets/enemies/*/thumb.webp', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
+const THUMB: Record<string, string> = {};
+for (const [p, url] of Object.entries(thumbs)) { const m = p.match(/enemies\/([^/]+)\/thumb\./); if (m) THUMB[m[1]] = url; }
 
 const SHAPES: Record<EnemyDef['shape'], (c: string) => JSX.Element> = {
   soldier: (c) => (<g><path d="M150 70 C180 70 196 96 194 128 L190 170 H110 L106 128 C104 96 120 70 150 70 Z" fill="#2c2a31" stroke={c} strokeWidth="2" /><path d="M118 128 H182" stroke={c} strokeWidth="3" opacity="0.7" /><path d="M236 120 L250 126 L170 330 L156 324 Z" fill="#3a3a42" stroke={c} strokeWidth="1.5" /></g>),
@@ -54,6 +58,6 @@ export function enemyArtUrl(id: string): string | undefined { return ART[id]; }
 export const EnemyArt = memo(function EnemyArt({ enemyId }: { enemyId: string }) {
   const def = ENEMIES[enemyId];
   if (!def) return null;
-  if (ART[enemyId]) return <img className="art-img" src={ART[enemyId]} alt={def.name} draggable={false} onLoad={(e) => e.currentTarget.classList.add('ok')} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', ['--ph' as string]: '#3a1420' }} />;
+  if (ART[enemyId]) return <img className="art-img" src={THUMB[enemyId] ?? ART[enemyId]} decoding="async" alt={def.name} draggable={false} onLoad={(e) => e.currentTarget.classList.add('ok')} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', ['--ph' as string]: '#3a1420' }} />;
   return <Procedural def={def} />;
 });

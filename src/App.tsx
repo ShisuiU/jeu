@@ -4,6 +4,7 @@ import { Guide } from './ui/components/Guide';
 import { NamePrompt } from './ui/components/NamePrompt';
 import { needsName } from './game/profile';
 import { useGame } from './state/store';
+import { heroArtUrl } from './ui/art/HeroArt';
 import { useUI, type Route } from './state/ui';
 import { initSaveSystem } from './save/saveManager';
 import { loadEvents } from './game/events';
@@ -200,6 +201,18 @@ export default function App() {
   const lastDepth = useRef(depth);
   const navDir = depth > lastDepth.current ? 'nav-in' : depth < lastDepth.current ? 'nav-back' : 'nav-tab';
   useEffect(() => { lastDepth.current = depth; }, [depth]);
+
+  // Préchargement (v1.89.1) : une fois le jeu lancé, au repos, on charge les grandes illustrations des héros
+  // de tes équipes (fiche, invocation, coupe des ultimes) pour qu'elles s'affichent sans attente.
+  useEffect(() => {
+    if (!started) return;
+    const s = useGame.getState().save; if (!s) return;
+    const ids = [...new Set(s.teams.flatMap((t) => t.slots).map((u) => s.heroes.find((h) => h.uid === u)?.heroId).filter((x): x is string => !!x))];
+    const run = () => ids.forEach((id) => { const u = heroArtUrl(id, 'full'); if (u) { const im = new Image(); im.decoding = 'async'; im.src = u; } });
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number };
+    const t = w.requestIdleCallback ? w.requestIdleCallback(run, { timeout: 4000 }) : window.setTimeout(run, 2500);
+    return () => { if (!w.requestIdleCallback) clearTimeout(t); };
+  }, [started]);
 
   // Retour par glissement depuis le bord gauche (comme les apps iPhone), sauf en combat.
   const swipe = useRef<{ x: number; y: number } | null>(null);

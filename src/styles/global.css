@@ -44,7 +44,9 @@ body {
   touch-action: manipulation;
 }
 button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
-input, textarea { font: inherit; color: var(--text); -webkit-user-select: text; user-select: text; }
+input, textarea { font: inherit; color: var(--text); -webkit-user-select: text; user-select: text; -webkit-touch-callout: default; }
+/* 16 px au moins : en dessous, l'iPhone zoome sur le champ à chaque toucher (v1.83.2). */
+input, textarea, select { font-size: max(16px, 1em); }
 h1, h2, h3, .title { font-family: var(--font-title); letter-spacing: 0.04em; margin: 0; font-weight: 700; }
 
 .app { position: fixed; inset: 0; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); }

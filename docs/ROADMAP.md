@@ -558,6 +558,11 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.83.2 — Clavier de l'iPhone stable
+
+- Le clavier de l'iPhone s'ouvrait puis se refermait sans arrêt (chat du clan, code promo). Le correctif d'affichage prévu pour les rotations de l'écran ne retire plus jamais le curseur d'un champ, ne fait plus rien pendant une saisie et ne se déclenche plus que sur une vraie rotation de l'appareil. La détection de la « réserve » du bas de l'écran ne réagit plus au clavier.
+- Les champs de saisie font au moins 16 px : l'iPhone ne zoome plus dessus à chaque toucher.
+
 ## ✅ Version 1.83.1 — On peut de nouveau écrire dans le chat du clan
 
 - Correctif iPhone : à l'ouverture du clavier, iOS fait défiler la page pour montrer le champ ; un correctif d'affichage (prévu pour la rotation de l'écran) remettait alors la page en place et retirait le curseur, ce qui refermait le clavier. Il ne se déclenche plus pendant la saisie : on peut écrire dans le chat du clan (et dans tout champ placé bas dans l'écran).

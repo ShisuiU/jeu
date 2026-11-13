@@ -15,8 +15,17 @@ function measureInset(side: 'top' | 'bottom'): number {
   return v;
 }
 
+/** Un champ de saisie est actif (clavier ouvert) : rien ne doit alors bouger la page ni retirer le curseur. */
+function typing(): boolean {
+  const el = document.activeElement as HTMLElement | null;
+  return !!el && (/INPUT|TEXTAREA|SELECT/.test(el.tagName) || el.isContentEditable);
+}
+/** Orientation réelle de l'appareil (le clavier peut changer la taille de la zone, pas l'orientation). */
+const orientation = () => screen.orientation?.type ?? String((window as unknown as { orientation?: number }).orientation ?? '');
+
 export function fixViewport() {
   const apply = () => {
+    if (typing()) return; // le clavier change la hauteur de la zone : ce n'est pas une réserve d'iOS
     const portrait = window.innerHeight >= window.innerWidth;
     const screenH = Math.max(screen.height, screen.width);
     // Cas observé sur iPhone (app installée, barre d'état transparente) : la page passe sous la barre
@@ -31,21 +40,24 @@ export function fixViewport() {
   apply();
   window.addEventListener('resize', apply);
   window.addEventListener('orientationchange', () => setTimeout(apply, 300));
-  // Après une rotation, iOS peut laisser la page légèrement défilée ou garder d'anciennes zones de toucher :
+  // Après une vraie rotation, iOS peut laisser la page légèrement défilée ou garder d'anciennes zones de toucher :
   // on remet la page en place et on force un nouveau calcul de la mise en page (v1.68.20).
+  // v1.83.2 : jamais pendant une saisie, et sans plus jamais retirer le curseur d'un champ (sur iPhone, le clavier
+  // s'ouvrait puis se refermait sans arrêt : impossible d'écrire dans le chat ou un code promo).
+  let lastOrientation = orientation();
   const settle = () => {
+    if (typing()) return;
     window.scrollTo(0, 0);
     document.documentElement.scrollTop = 0; document.body.scrollTop = 0;
-    const el = document.activeElement as HTMLElement | null;
-    if (el && el !== document.body && /INPUT|TEXTAREA|SELECT/.test(el.tagName)) el.blur();
     const app = document.querySelector<HTMLElement>('.app');
     if (app) { app.style.transform = 'translateZ(0)'; void app.offsetHeight; requestAnimationFrame(() => { app.style.transform = ''; }); }
   };
-  window.addEventListener('orientationchange', () => { setTimeout(settle, 350); setTimeout(settle, 900); });
-  screen.orientation?.addEventListener?.('change', () => setTimeout(settle, 350));
-  // v1.83.1 : l'ouverture du clavier redimensionne aussi la zone visible et iOS fait défiler la page pour montrer
-  // le champ ; il ne faut alors surtout rien remettre en place (cela retirait le curseur et fermait le clavier :
-  // impossible d'écrire dans le chat du clan).
-  const typing = () => { const el = document.activeElement as HTMLElement | null; return !!el && (/INPUT|TEXTAREA|SELECT/.test(el.tagName) || el.isContentEditable); };
-  window.visualViewport?.addEventListener('resize', () => { if (!typing() && (window.scrollY || document.documentElement.scrollTop)) settle(); });
+  const onRotate = () => {
+    const o = orientation();
+    if (o && o === lastOrientation) return; // pas de vraie rotation (ex. clavier)
+    lastOrientation = o;
+    setTimeout(settle, 350); setTimeout(settle, 900);
+  };
+  window.addEventListener('orientationchange', onRotate);
+  screen.orientation?.addEventListener?.('change', onRotate);
 }

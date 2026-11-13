@@ -558,6 +558,13 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.94.0 — Coutures d'époque (idée signature, audit)
+
+- Le Monde Cousu mêle les époques : deux héros de familles différentes dans la même équipe peuvent déclencher, une fois par combat (au 3ᵉ tour de l'équipe), une attaque cousue qui frappe tous les ennemis et ajoute un effet propre à leur paire.
+- 10 coutures : Acier quantique (Valcrest + Prisme, DÉF réduite), Racines de braise (Cendre + Sylvan, brûlure), Sable d'étoiles (Astral + Akkar, étourdit sauf les boss), Serment ardent (Valcrest + Cendre, +ATQ), Calcul céleste (Prisme + Astral, frappe plus forte), Oasis (Sylvan + Akkar, soin), Bosquet-rempart (Valcrest + Sylvan, bouclier), Forge-plasma (Prisme + Cendre, brûle et ralentit), Dunes d'éclipse (Akkar + Cendre, brûlure), Rempart astral (Valcrest + Astral, bouclier).
+- La préparation annonce la couture possible (« ??? » tant qu'elle n'est pas découverte) ; au combat, bandeau, gerbe d'étincelles et secousse ; chaque couture découverte s'inscrit au Codex (onglet Règles).
+- Épreuve hebdomadaire « Forge » légèrement durcie (×1,10) pour rester exigeante avec ces nouveaux atouts.
+
 ## ✅ Version 1.93.0 — Les Failles (mode signature, audit)
 
 - Nouveau mode dans Combats : une traversée hebdomadaire de 10 salles dans une faille, une seule tentative par semaine (la même faille pour tous toute la semaine).

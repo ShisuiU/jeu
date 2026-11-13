@@ -1,3 +1,6 @@
+import { COUTURES } from '../../data/coutures';
+import { FACTIONS } from '../../data/factions';
+import { useGame } from '../../state/store';
 import { useState } from 'react';
 import { LORE } from '../../data/lore';
 import { CHAPTERS } from '../../data/campaign';
@@ -12,6 +15,7 @@ import { FactionEmblem } from '../art/FactionEmblem';
 type Tab = 'story' | 'factions' | 'rules';
 
 export function Codex() {
+  const flags = useGame((st) => st.save?.flags ?? {});
   const [tab, setTab] = useState<Tab>('story');
   return (
     <Screen title="Codex">
@@ -44,6 +48,12 @@ export function Codex() {
       ))}
       {tab === 'rules' && (
         <>
+          <Panel title="Coutures d’époque">
+            <div className="lore"><p>Deux héros de familles différentes dans la même équipe peuvent déclencher, une fois par combat (au 3ᵉ tour de l’équipe), une attaque cousue qui frappe tous les ennemis. Chaque couture découverte s’inscrit ici.</p></div>
+            {COUTURES.map((c) => { const known = !!flags[`couture_${c.id}`]; return (
+              <div key={c.id} className={`codex-couture ${known ? '' : 'unknown'}`}><b>✦ {known ? c.name : '???'}</b><span className="faint">{FACTIONS[c.factions[0]].name} + {FACTIONS[c.factions[1]].name}{known ? ` · ${c.text}` : ''}</span></div>
+            ); })}
+          </Panel>
           <Panel title="Affinités">
             <div className="lore"><p>Solaire ▸ Tellurique ▸ Lunaire ▸ Solaire. Une affinité avantagée inflige +30 % de dégâts ; désavantagée, −20 %. Le Néant est neutre.</p></div>
             {Object.values(AFFINITIES).map((a) => <div key={a.id} className="stat-row"><b style={{ color: a.color }}>{a.name}</b><span className="faint">{a.description}</span></div>)}

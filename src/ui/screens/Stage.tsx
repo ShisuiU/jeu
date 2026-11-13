@@ -3,6 +3,7 @@ import { AffinityIcon } from '../art/Identity';
 import type { AffinityId } from '../../data/types';
 import { useEffect, useMemo, useState } from 'react';
 import { simulateOdds } from '../../game/odds';
+import { COUTURES } from '../../data/coutures';
 import { useAccount } from '../../cloud/account';
 import { canBorrow, markBorrowed } from '../../game/friends';
 import type { UnitSetup } from '../../game/battle/types';
@@ -115,6 +116,7 @@ export function Prep({ spec }: { spec: BattleSpec }) {
       <Coach id="prep_fight" target=".fight-btn" text="Voici les ennemis et la récompense. Lance le combat !" />
       <Coach id="battle_target" target=".aff-advice" when={Object.values(save.progress.campaign).some((p) => p.clears > 0)} text="Les affinités comptent : Solaire bat Tellurique, qui bat Lunaire, qui bat Solaire. Un héros avantagé (▲) frappe 30 % plus fort. Regarde ici combien ton équipe en a." />
       <div className="prep-sub"><span className="muted">{info.subtitle}</span></div>
+      {(() => { const fs = new Set(members.filter(Boolean).map((h) => HERO_BY_ID[h!.heroId].faction)); const c = COUTURES.find((x) => fs.has(x.factions[0]) && fs.has(x.factions[1])); return c ? <div className="prep-couture">✦ Couture d’époque possible : <b>{save.flags[`couture_${c.id}`] ? c.name : '???'}</b> <span className="faint">({FACTIONS[c.factions[0]].short} + {FACTIONS[c.factions[1]].short}, au 3ᵉ tour de l’équipe)</span></div> : null; })()}
       {odds && (
         <div className={`prep-odds ${odds.tone}`} role="status">
           <b>{odds.label}</b>

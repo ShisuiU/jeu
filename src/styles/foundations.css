@@ -208,3 +208,7 @@
 .relic-pick { display: grid; gap: 8px; }
 .relic { display: flex; flex-direction: column; gap: 3px; padding: 12px; border-radius: 8px; text-align: left; color: inherit; border: 1px solid rgba(255, 211, 107, 0.45); background: linear-gradient(90deg, rgba(255, 190, 80, 0.12), transparent); }
 .relic span { font-size: 12.5px; color: var(--text-dim); }
+/* Coutures d'époque (v1.94.0) */
+.prep-couture { margin: -4px 0 10px; padding: 6px 10px; border-radius: 8px; font-size: 12.5px; color: #e9dbff; border: 1px solid rgba(207, 157, 255, 0.45); background: linear-gradient(90deg, rgba(120, 70, 200, 0.22), transparent); }
+.codex-couture { display: flex; flex-direction: column; gap: 2px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--surface-line); margin-bottom: 6px; font-size: 12.5px; }
+.codex-couture.unknown { opacity: 0.55; }

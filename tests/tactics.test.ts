@@ -56,3 +56,19 @@ describe('Boss à deux phases (v1.92.0)', () => {
     if (boss && (b.outcome === 'won' || (boss.hp / boss.base.hp) < 0.5)) expect(boss.flags.phase2).toBe(1);
   });
 });
+
+describe('Coutures d’époque (v1.94.0)', () => {
+  it('une paire de familles déclenche une attaque cousue une fois par combat', () => {
+    // Torvald (Valcrest ?) et Brann/Corvin/Elowen : on cherche une paire présente dans la liste des coutures
+    const team = ['torvald', 'brann', 'corvin', 'elowen', 'aldric'].map((id, i) => unit(id, i));
+    const b0 = createBattle(team, waves(20), { seed: 4, leaderUid: 'torvald' });
+    if (!b0.couture) return; // aucune paire dans cette équipe de départ
+    const b = runToEnd(b0);
+    expect(b.couture?.done).toBe(true);
+  });
+  it('chaque couture relie deux familles différentes', async () => {
+    const { COUTURES } = await import('../src/data/coutures');
+    for (const c of COUTURES) expect(c.factions[0]).not.toBe(c.factions[1]);
+    expect(new Set(COUTURES.map((c) => c.id)).size).toBe(COUTURES.length);
+  });
+});

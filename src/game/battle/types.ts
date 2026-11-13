@@ -58,6 +58,7 @@ export type BattleEvent =
   | { kind: 'rage'; target: string }
   | { kind: 'fracture'; target: string }
   | { kind: 'phase'; target: string }
+  | { kind: 'couture'; id: string; a: string; b: string }
   | { kind: 'carapace'; target: string; charges: number; broken?: boolean; reformed?: boolean }
   | { kind: 'lien'; power: LienPower };
 
@@ -88,6 +89,8 @@ export interface UnitSetup {
 
 export interface BattleState {
   rng: number;
+  /** Couture d'époque (v1.94.0) : paire de héros d'époques différentes, déclenchée une fois au 3ᵉ tour de l'équipe. */
+  couture?: { id: string; a: string; b: string; acts: number; done: boolean };
   units: Unit[];
   pendingWaves: UnitSetup[][];
   wave: number;

@@ -1,5 +1,7 @@
 import { FACTIONS } from '../data/factions';
 import { FACTION_DUNGEONS, factionReward, factionWaves } from '../data/factionDungeon';
+import { RIFT_NODE, RIFT_ROOMS, riftReward } from '../data/rift';
+import { applyRiftBattle, riftWaves } from './rift';
 import { canEnterFaction, claimableMilestones, floorStars, recordFloorStars } from './factionDungeon';
 import { CHAPTERS, DIFFICULTIES, STAGE_BY_ID, type DialogueLine, type DifficultyId, type WaveEnemy } from '../data/campaign';
 import { GUILD_BOSS, GUILD_TIERS } from '../data/guild';
@@ -30,6 +32,7 @@ export type BattleSpec =
   | { mode: 'dungeon'; dungeonId: string; floor: number; difficulty?: DifficultyId }
   | { mode: 'tower'; floor: number }
   | { mode: 'faction'; faction: import('../data/types').FactionId; floor: number }
+  | { mode: 'rift'; room: number }
   | { mode: 'worldboss'; tier: string }
   | { mode: 'arena'; opponentId: string }
   | { mode: 'guildboss' }
@@ -127,6 +130,14 @@ export function resolveMode(s: SaveData, spec: BattleSpec): ModeInfo {
         title: `Tour des Âges · Étage ${spec.floor}`, subtitle: spec.floor % 10 === 0 ? (spec.floor > 50 ? 'Étage gardé par un boss de chapitre' : 'Étage gardé par une Sentinelle') : spec.floor > 50 ? 'Les Sommets' : 'Ascension', region: 'heart', waves: toSetups(towerWaves(spec.floor)),
         cost: { kind: 'free', amount: 0 }, rewardPreview: towerReward(spec.floor), rewardLabel: 'Récompense de l’étage', notes: ['Sans énergie'], firstTime: true,
       };
+    case 'rift': {
+      const kind = s.rift.current ?? 'fight';
+      return {
+        title: `Faille · Salle ${spec.room}/${RIFT_ROOMS}`, subtitle: `${RIFT_NODE[kind].name} · les PV de ton équipe sont conservés`, region: 'astral',
+        waves: riftWaves(s), cost: { kind: 'free', amount: 0 }, rewardPreview: riftReward(kind, spec.room), rewardLabel: 'Récompense de la salle',
+        notes: ['Sans énergie', 'Un héros tombé reste à terre jusqu’à une halte'], firstTime: true,
+      };
+    }
     case 'faction': {
       const d = FACTION_DUNGEONS[spec.faction];
       return {
@@ -189,6 +200,7 @@ export function canStart(s: SaveData, spec: BattleSpec): { ok: boolean; reason?:
     case 'campaign': return isStageUnlocked(s, spec.difficulty, STAGE_BY_ID[spec.stageId]) ? { ok: true } : { ok: false, reason: 'Niveau verrouillé.' };
     case 'dungeon': return dungeonFloorCheck(s, spec.dungeonId, spec.difficulty ?? 'normal', spec.floor);
     case 'tower': return spec.floor === s.progress.tower.floor + 1 && spec.floor <= TOWER_FLOORS ? { ok: true } : { ok: false, reason: 'Étage indisponible.' };
+    case 'rift': return s.rift.status === 'run' && s.rift.room === spec.room && (s.rift.current === 'fight' || s.rift.current === 'elite' || s.rift.current === 'boss') ? { ok: true } : { ok: false, reason: 'Choisis d’abord ta route dans la Faille.' };
     case 'faction': return canEnterFaction(s, spec.faction, spec.floor, s.time.highWater);
     case 'worldboss': return s.worldBoss.keysUsed < WORLD_BOSS.keysPerDay ? { ok: true } : { ok: false, reason: 'Plus de clés aujourd’hui.' };
     case 'guildboss': return !s.guild.id ? { ok: false, reason: 'Rejoins d’abord un clan.' } : triesLeft(s, s.time.highWater) > 0 ? { ok: true } : { ok: false, reason: 'Plus d’essais aujourd’hui.' };
@@ -218,7 +230,7 @@ export function payMode(s: SaveData, spec: BattleSpec, now: number): { ok: boole
   return { ok: true };
 }
 
-export interface Outcome { won: boolean; alliesDead: number; participants: string[]; bossDamage?: { dealt: number; max: number } }
+export interface Outcome { won: boolean; alliesDead: number; participants: string[]; bossDamage?: { dealt: number; max: number }; /** PV restants (fraction) par héros, pour les Failles. */ allyHp?: Record<string, number> }
 
 function heroXpFor(s: SaveData, uids: string[], xp: number) {
   return uids.map((uid) => {
@@ -273,6 +285,13 @@ export function applyMode(s: SaveData, spec: BattleSpec, o: Outcome, now: number
       return res;
     }
 
+    case 'rift': {
+      const res = empty(o.won);
+      const out = applyRiftBattle(s, o.won, o.allyHp ?? {});
+      if (o.won) { s.stats.battlesWon++; track(s, 'battleWin'); res.firstClear = true; } else s.stats.battlesLost++;
+      res.reward = out.reward; res.lines.push(...out.lines);
+      return res;
+    }
     case 'faction': {
       const res = empty(o.won);
       if (!o.won) { s.stats.battlesLost++; return res; }

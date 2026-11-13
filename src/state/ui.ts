@@ -36,6 +36,7 @@ export type Route =
   | { name: 'camp' }
   | { name: 'buildings' }
   | { name: 'factionDungeon' }
+  | { name: 'rifts' }
   | { name: 'wheel' }
   | { name: 'profile' }
   | { name: 'guild' }

@@ -1,6 +1,7 @@
 import { SIGNATURES } from '../../data/signatures';
 import { factionTeam } from '../../game/factionDungeon';
 import { defeatTips } from '../../game/tips';
+import { riftSetups } from '../../game/rift';
 import { energyMax } from '../../game/energy';
 import { AccountXp } from '../components/AccountXp';
 import { Coach } from '../components/Coach';
@@ -54,11 +55,13 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
 
   const [initial] = useState(() => {
     // Donjon des familles (v1.79.0) : l'équipe est celle de la famille du donjon.
-    const team = spec.mode === 'faction' ? factionTeam(save, spec.faction) : save.teams.find((t) => t.id === teamId) ?? save.teams[0];
+    const team = spec.mode === 'faction' ? factionTeam(save, spec.faction) : spec.mode === 'rift' ? { id: 'rift', name: 'Équipe de la Faille', slots: save.rift.team.slice(0, 5).concat(Array(5).fill(null)).slice(0, 5), leader: save.rift.team[0] ?? null } : save.teams.find((t) => t.id === teamId) ?? save.teams[0];
     // Renfort d'un ami : son héros prend la première place libre de l'équipe.
     const own = teamSetups(save, team);
     const free = [0, 1, 2, 3, 4].find((i) => !own.some((a) => a.slot === i));
-    const allies = guest && free != null ? [...own, { ...guest, slot: free }] : own;
+    const allies0 = guest && free != null ? [...own, { ...guest, slot: free }] : own;
+    // Failles : reliques et PV conservés ; les héros tombés restent au repos.
+    const allies = spec.mode === 'rift' ? riftSetups(save, allies0) : allies0;
     const info = resolveMode(save, spec);
     return { team, allies, info, battle: createBattle(allies, info.waves, { seed, leaderUid: team.leader, turnLimit: info.turnLimit }) };
   });
@@ -383,7 +386,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
     if (foe?.real && foe.uid) { const me = useGame.getState().save!; void loadCloud().then((c) => c.postArenaLog(foe.uid!, me, won, playerTeamPower(me))).catch(() => {}); }
     let res: ModeResult | null = null;
     mutate((d) => {
-      res = applyMode(d, spec, { won, alliesDead: dead, participants: initial.allies.map((a) => a.heroUid).filter((u): u is string => !!u), bossDamage: boss ? { dealt: boss.base.hp - Math.max(0, boss.hp), max: boss.base.hp } : undefined }, Date.now());
+      res = applyMode(d, spec, { won, alliesDead: dead, participants: initial.allies.map((a) => a.heroUid).filter((u): u is string => !!u), allyHp: Object.fromEntries(s.units.filter((u) => u.side === 'ally' && u.heroUid).map((u) => [u.heroUid!, u.alive ? Math.max(0, u.hp) / u.base.hp : 0])), bossDamage: boss ? { dealt: boss.base.hp - Math.max(0, boss.hp), max: boss.base.hp } : undefined }, Date.now());
     });
     setResult(res);
     const ok = (res as ModeResult | null)?.won;
@@ -471,7 +474,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
     replace({ name: 'battle', spec, teamId, seed: Date.now() }); // le renfort d'un ami ne vaut que pour un combat
   };
   const next = result?.won ? nextSpec(useGame.getState().save!, spec) : null;
-  const backTo = (): Route['name'] => ({ campaign: 'campaign', dungeon: 'dungeons', tower: 'tower', worldboss: 'worldboss', arena: 'arena', guildboss: 'guild', challenge: 'events', faction: 'factionDungeon' } as const)[spec.mode];
+  const backTo = (): Route['name'] => ({ campaign: 'campaign', dungeon: 'dungeons', tower: 'tower', worldboss: 'worldboss', arena: 'arena', guildboss: 'guild', challenge: 'events', faction: 'factionDungeon', rift: 'rifts' } as const)[spec.mode];
   const cost = initial.info.cost;
 
   const order = s.outcome === 'running' ? predictOrder(s, 7) : [];
@@ -660,7 +663,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
           </div>
           <div className="result-actions">
             <button className="btn secondary grow" onClick={() => popTo(backTo())}>Retour</button>
-            {spec.mode !== 'tower' && spec.mode !== 'challenge' && (
+            {spec.mode !== 'tower' && spec.mode !== 'challenge' && spec.mode !== 'rift' && (
               <button className="btn secondary grow" onClick={retry}>{result.won ? 'Rejouer' : 'Réessayer'} {cost.kind === 'energy' && <><Icon.energy size={16} />{cost.amount}</>}{cost.kind === 'key' && ' (1 clé)'}{cost.kind === 'ticket' && ' (1 ticket)'}{cost.kind === 'try' && ' (1 essai)'}</button>
             )}
             {(spec.mode === 'tower' || spec.mode === 'faction' || (spec.mode === 'challenge' && spec.trial != null)) && !result.won && <button className="btn secondary grow" onClick={retry}>Réessayer</button>}

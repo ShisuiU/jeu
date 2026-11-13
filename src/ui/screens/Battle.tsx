@@ -167,7 +167,8 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
     if (!p) { el.style.transform = ''; camScale.current = 1; bgs.forEach((b) => { b.style.transition = tr; b.style.transform = ''; }); return; }
     const c = { x: el.offsetLeft + el.offsetWidth / 2, y: el.offsetTop + el.offsetHeight / 2 };
     const k = 0.6; // la cible fait un peu plus de la moitié du chemin vers le centre
-    const tx = amp * (k - z) * (p.x - c.x), ty = amp * (k - z) * (p.y - c.y) * 0.6;
+    // Presque aucun panoramique gauche-droite (15 %) : la caméra avance surtout en profondeur.
+    const tx = amp * (k - z) * (p.x - c.x) * 0.15, ty = amp * (k - z) * (p.y - c.y) * 0.6;
     el.style.transform = `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px) scale(${z})`;
     camScale.current = z;
     bgs.forEach((b) => { b.style.transition = tr; b.style.transform = `translate(${(tx * 0.22).toFixed(1)}px, ${(ty * 0.22).toFixed(1)}px) scale(${1 + (z - 1) * 0.35})`; });

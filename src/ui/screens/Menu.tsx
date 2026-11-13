@@ -143,20 +143,20 @@ function PromoModal({ onClose }: { onClose: () => void }) {
   const mutate = useGame((s) => s.mutate);
   const toast = useUI((s) => s.toast);
   const [code, setCode] = useState('');
-  const [done, setDone] = useState<PromoCode | null>(null);
+  const [done, setDone] = useState<{ promo: PromoCode; left: number } | null>(null);
   const submit = () => {
     let res = { ok: false, reason: '' } as ReturnType<typeof redeemPromo>;
     mutate((s) => { res = redeemPromo(s, code, Date.now()); });
     if (!res.ok) { toast(res.reason, 'error'); return; }
-    play('claim'); setDone(res.promo); setCode('');
+    play('claim'); setDone({ promo: res.promo, left: res.left }); setCode('');
   };
   return (
     <Modal onClose={onClose}>
       <h2>Code promo</h2>
       {done ? (
         <>
-          <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>{done.label} : récompense ajoutée !</p>
-          <RewardView reward={done.reward} compact />
+          <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>{done.promo.label} : récompense ajoutée !{done.left > 0 ? ` Encore ${done.left} utilisation${done.left > 1 ? 's' : ''} possible${done.left > 1 ? 's' : ''}.` : ''}</p>
+          <RewardView reward={done.promo.reward} compact />
           <div className="row" style={{ gap: 8, marginTop: 12 }}>
             <button className="btn secondary grow" onClick={() => setDone(null)}>Autre code</button>
             <button className="btn grow" onClick={onClose}>Super</button>
@@ -164,7 +164,7 @@ function PromoModal({ onClose }: { onClose: () => void }) {
         </>
       ) : (
         <form onSubmit={(e) => { e.preventDefault(); submit(); }}>
-          <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>Entre un code reçu (événement, réseaux, amis) pour obtenir une récompense. Chaque code ne sert qu’une fois.</p>
+          <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>Entre un code reçu (événement, réseaux, amis) pour obtenir une récompense. Chaque code a un nombre d’utilisations limité.</p>
           <input className="promo-input" value={code} onChange={(e) => setCode(e.target.value)} autoCapitalize="characters" autoComplete="off" spellCheck={false} maxLength={24} aria-label="Code promo" />
           <button className="btn block" style={{ marginTop: 10 }} type="submit" disabled={!code.trim()}>Valider</button>
         </form>

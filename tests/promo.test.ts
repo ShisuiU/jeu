@@ -19,4 +19,15 @@ describe('codes promo', () => {
     expect(redeemPromo(s, 'AEONFALL', Date.now()).ok).toBe(false);
     expect(redeemPromo(s, 'INCONNU', Date.now()).ok).toBe(false);
   });
+  it('le code à 30 éclats de faille s’utilise 2 fois par partie', () => {
+    const s = createNewSave(Date.now());
+    const b = s.resources.shardEvent ?? 0;
+    const r1 = redeemPromo(s, 'failles30', Date.now());
+    expect(r1.ok && r1.left).toBe(1);
+    const r2 = redeemPromo(s, 'FAILLES30', Date.now());
+    expect(r2.ok && r2.left).toBe(0);
+    expect(s.resources.shardEvent).toBe(b + 60);
+    expect(redeemPromo(s, 'FAILLES30', Date.now()).ok).toBe(false);
+    expect(s.resources.shardEvent).toBe(b + 60);
+  });
 });

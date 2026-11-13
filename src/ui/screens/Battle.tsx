@@ -1,4 +1,5 @@
 import { factionTeam } from '../../game/factionDungeon';
+import { defeatTips } from '../../game/tips';
 import { energyMax } from '../../game/energy';
 import { AccountXp } from '../components/AccountXp';
 import { Coach } from '../components/Coach';
@@ -280,6 +281,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
         case 'cleanse': break;
         case 'dispel': addPopup(e.target, 'Bonus retirés', 'debuff'); addVfx(e.target, 'cursefx', '#c7b6ff'); break;
         case 'rage': addPopup(e.target, 'Enragé ! +30 % ATQ', 'debuff'); pause = true; break;
+        case 'fracture': addPopup(e.target, 'Fracture ! Étourdi, +40 % de dégâts subis', 'buff'); addVfx(e.target, 'cursefx', '#ffffff'); doShake('hard'); { const c = center(e.target); if (c) stage.current?.burst(c, '#ffffff', 40, 0.5); } play('rare'); pause = true; break;
         case 'carapace':
           if (e.broken) { addPopup(e.target, 'Carapace brisée !', 'buff'); addVfx(e.target, 'cursefx', '#ffd36b'); pause = true; }
           else if (e.reformed) { addPopup(e.target, 'Carapace reformée', 'shieldp'); addVfx(e.target, 'shieldfx', '#c9b27a'); }
@@ -640,7 +642,14 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
               <div className="hint">
                 {spec.mode === 'arena' ? 'L’équipe adverse l’emporte cette fois. Choisis un adversaire plus accessible ou renforce tes héros (niveau, équipement, rang).'
                   : spec.mode === 'worldboss' ? 'Aucun palier de dégâts atteint. Renforce tes héros pour infliger plus de dégâts avant la fin du temps imparti.'
-                  : 'Les ennemis l’emportent cette fois. Pistes : rejoue des combats plus simples pour gagner de l’expérience, utilise les élixirs et l’équipement, place un défenseur en première ligne et un soigneur en seconde ligne.'}
+                  : 'Les ennemis l’emportent cette fois. Voici ce qui aiderait le plus :'}
+                {spec.mode !== 'arena' && spec.mode !== 'worldboss' && (
+                  <div className="defeat-tips">
+                    {defeatTips(useGame.getState().save!, initial.team, initial.info.waves).map((t, i) => (
+                      <div key={i} className="dt-row"><span>{t.text}</span><button className="btn small secondary" onClick={(e) => { e.stopPropagation(); replace(t.route); }}>{t.label}</button></div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
             {!result.won && <DamageRecap units={s.units} />}
@@ -669,6 +678,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
               <div className="ui-aff"><AffinityIcon id={u.affinity} size={16} /> {AFFINITIES[u.affinity].name}{AFFINITIES[u.affinity].strongAgainst ? ` · fort contre ${AFFINITIES[AFFINITIES[u.affinity].strongAgainst!].name}` : ' · neutre'}</div>
               <div className="ui-hp"><span>PV</span><b>{Math.max(0, Math.round(u.hp))} / {Math.round(u.base.hp)}</b></div>
               <div className="ui-stats"><span>ATQ <b>{Math.round(u.base.atk)}</b></span><span>DÉF <b>{Math.round(u.base.def)}</b></span><span>VIT <b>{Math.round(u.base.spd)}</b></span></div>
+              {u.isBoss && u.side === 'enemy' && u.flags.fractureMax > 0 && <div className="ui-boss"><div><b>Fracture</b> {u.flags.fractured ? '· brisée' : `· ${u.flags.fracture}/${u.flags.fractureMax}`} : chaque coup use la jauge (beaucoup plus avec l’affinité avantagée ▲). À zéro, le boss perd un tour et subit +40 % de dégâts pendant 2 de ses tours.</div></div>}
               {u.isBoss && (u.flags.carapaceMax > 0 || s.mechanics) && (
                 <div className="ui-boss">
                   {u.flags.carapaceMax > 0 && <div><b>Carapace</b> {u.flags.carapace > 0 ? `· ${u.flags.carapace} charge${u.flags.carapace > 1 ? 's' : ''}` : '· brisée'} : −30 % de dégâts, chaque coup retire une charge. Brisée, le boss perd 30 % de DÉF pendant 2 tours ; elle se reforme 8 tours plus tard. Les attaques à plusieurs coups la brisent vite.</div>}
@@ -817,12 +827,15 @@ function UnitView({ u, place, order = 0, vfx, focus, active, acting, hit, heavy,
       onClick={() => { if (longDone.current) { longDone.current = false; return; } onClick(); }}
       onPointerDown={startPress} onPointerUp={endPress} onPointerLeave={endPress} onPointerCancel={endPress}
       onContextMenu={(e) => { e.preventDefault(); if (e.nativeEvent instanceof MouseEvent && (e.nativeEvent as PointerEvent).pointerType !== 'touch') { window.clearTimeout(timer.current); onInfo(); } }}>
+      {/* Intention du boss (v1.90.0) : son ultime part au prochain tour, le joueur peut s'y préparer. */}
+      {u.isBoss && u.side === 'enemy' && u.alive && (() => { const ul = u.skills.find((k) => k.slot === 'ultimate'); return ul && (u.cooldowns[ul.id] ?? 0) <= 1 ? <span className="u-intent" title={`Au prochain tour : ${ul.name}`}>⚠ {ul.name}</span> : null; })()}
       <div className="u-art">{u.kind === 'hero' ? <HeroArt heroId={u.refId} /> : <EnemyArt enemyId={u.refId} />}<span className="u-lvl">{u.level}</span><span className="u-aff"><AffinityIcon id={u.affinity} size={15} /></span><span className="u-name">{shortName(u.name)}</span>
         {stCls && <span className="u-stfx" aria-hidden><i /><i /><i /></span>}
 
       </div>
       <div className="u-bars">
         <div className="u-hp"><div style={{ width: `${hpPct(u) * 100}%` }} />{sh > 0 && <div className="u-sh" style={{ width: `${sh * 100}%` }} />}</div>
+        {u.flags.fractureMax > 0 && <div className={`u-frac ${u.flags.fractured ? 'broken' : ''}`} title="Fracture"><div style={{ width: `${u.flags.fractured ? 100 : (u.flags.fracture / u.flags.fractureMax) * 100}%` }} /></div>}
         <div className="u-tm"><div style={{ width: `${Math.min(100, u.tm / 10)}%` }} /></div>
       </div>
       <EffectChips u={u} />

@@ -1,7 +1,8 @@
 import { Coach } from '../components/Coach';
 import { AffinityIcon } from '../art/Identity';
 import type { AffinityId } from '../../data/types';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { simulateOdds } from '../../game/odds';
 import { useAccount } from '../../cloud/account';
 import { canBorrow, markBorrowed } from '../../game/friends';
 import type { UnitSetup } from '../../game/battle/types';
@@ -60,6 +61,9 @@ export function Prep({ spec }: { spec: BattleSpec }) {
   const newHeroes = spec.mode === 'campaign' && info.firstTime ? STAGE_BY_ID[spec.stageId].firstClear.heroes : undefined;
   const boss = info.waves.flat().some((w) => w.kind === 'enemy' && ENEMIES[w.refId]?.boss);
 
+  // Pronostic : 6 combats simulés avec l'équipe choisie (pas pour les boss à paliers de dégâts).
+  const odds = useMemo(() => (spec.mode === 'worldboss' || spec.mode === 'guildboss' || !count ? null : simulateOdds(save, team, info.waves, info.turnLimit)),
+    [team.id, team.slots.join(','), JSON.stringify(spec), save.revision]); // eslint-disable-line react-hooks/exhaustive-deps
   const guestOk = (spec.mode === 'campaign' || spec.mode === 'dungeon') && !!user && count < 5;
   useEffect(() => {
     if (!guestOk || friendCache) return;
@@ -111,6 +115,12 @@ export function Prep({ spec }: { spec: BattleSpec }) {
       <Coach id="prep_fight" target=".fight-btn" text="Voici les ennemis et la récompense. Lance le combat !" />
       <Coach id="battle_target" target=".aff-advice" when={Object.values(save.progress.campaign).some((p) => p.clears > 0)} text="Les affinités comptent : Solaire bat Tellurique, qui bat Lunaire, qui bat Solaire. Un héros avantagé (▲) frappe 30 % plus fort. Regarde ici combien ton équipe en a." />
       <div className="prep-sub"><span className="muted">{info.subtitle}</span></div>
+      {odds && (
+        <div className={`prep-odds ${odds.tone}`} role="status">
+          <b>{odds.label}</b>
+          <span>{odds.wins}/{odds.runs} victoires sur des combats simulés avec cette équipe{odds.tone === 'bad' ? ' : renforce-la ou change de héros' : ''}</span>
+        </div>
+      )}
       {spec.mode === 'campaign' && <StarRules best={stageProgress(save, spec.difficulty, spec.stageId).stars} />}
       <AffinityAdvice waves={info.waves} team={members.filter(Boolean).map((h) => h!.heroId)} />
 

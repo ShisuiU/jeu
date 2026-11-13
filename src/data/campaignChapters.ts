@@ -30,7 +30,7 @@ function buildStages(c: ChapterCfg): StageDef[] {
     else waves = [[W(a, lv, 0), W(b, lv, 1), W(a, lv, 2), W(d, lv, 3)], [W(c.elite, lv + 1, 0), W(b, lv, 1), W(c.elite, lv + 1, 2), W(d, lv, 4)]];
     const firstClear: Reward & { heroes?: string[] } = { gold: 4000 + c.n * 1000 + i * 300, crystals: boss ? 200 : 40 };
     if (i % 3 === 0) firstClear.shardDim = 2;
-    if (i === 5) firstClear.potionGreater = 3;
+    if (i === 5) firstClear.potionMinor = 9;
     if (i === 5 && c.midHero) firstClear.heroes = [c.midHero];
     if (i === 8) firstClear.skillTome = 2;
     if (boss) Object.assign(firstClear, { shardAeon: 1, awakenEssence: 2 }, c.heroReward ? { heroes: [c.heroReward] } : { shardEvent: 3 }, c.n >= 7 ? { crystals: (firstClear.crystals ?? 0) + 300 } : {});

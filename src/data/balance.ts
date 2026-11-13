@@ -43,10 +43,10 @@ export const BALANCE = {
     ascension: [
       { potion: 'potionMinor', amount: 4, gold: 8000, minLevel: 10 },
       { potion: 'potionMinor', amount: 10, gold: 16000, minLevel: 20 },
-      { potion: 'potionGreater', amount: 6, gold: 30000, minLevel: 30 },
-      { potion: 'potionGreater', amount: 14, gold: 50000, minLevel: 40 },
-      { potion: 'potionSupreme', amount: 8, gold: 80000, minLevel: 50 },
-      { potion: 'potionSupreme', amount: 18, gold: 120000, minLevel: 60 },
+      { potion: 'potionMinor', amount: 18, gold: 30000, minLevel: 30 },
+      { potion: 'potionMinor', amount: 42, gold: 50000, minLevel: 40 },
+      { potion: 'potionMinor', amount: 48, gold: 80000, minLevel: 50 },
+      { potion: 'potionMinor', amount: 108, gold: 120000, minLevel: 60 },
     ],
     /** Éveil e → e+1 : 1 doublon du héros + essence d'éveil + or ; sans doublon, 6 essences de plus à la place.
      *  Demande l'ascension e (le 1er éveil est libre). */

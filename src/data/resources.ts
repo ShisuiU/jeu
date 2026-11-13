@@ -2,7 +2,7 @@ export type ResourceId =
   | 'gold' | 'crystals'
   | 'shardDim' | 'shardAeon' | 'shardEpic' | 'shardPrimal' | 'shardEvent'
   | 'xpElixir' | 'skillTome' | 'rankSigil'
-  | 'potionMinor' | 'potionGreater' | 'potionSupreme'
+  | 'potionMinor'
   | 'forgeOre' | 'awakenEssence' | 'masteryScroll'
   | 'diamonds';
 
@@ -25,9 +25,7 @@ export const RESOURCES: Record<ResourceId, ResourceDef> = {
   xpElixir: { id: 'xpElixir', name: 'Élixir d’expérience', description: 'Donne de l’expérience à un héros.', icon: 'flask', color: '#9bdc6a' },
   skillTome: { id: 'skillTome', name: 'Grimoire de compétence', description: 'Améliore une compétence d’un héros.', icon: 'book', color: '#c7a0ff' },
   rankSigil: { id: 'rankSigil', name: 'Sceau de rang', description: 'Augmente le rang d’un héros (et son niveau maximum).', icon: 'sigil', color: '#ffd48a' },
-  potionMinor: { id: 'potionMinor', name: 'Potion d’ascension mineure', description: 'Ascension des premiers paliers.', icon: 'potion', color: '#7fbf4d' },
-  potionGreater: { id: 'potionGreater', name: 'Potion d’ascension majeure', description: 'Ascension des paliers intermédiaires.', icon: 'potion', color: '#6fa8ff' },
-  potionSupreme: { id: 'potionSupreme', name: 'Potion d’ascension suprême', description: 'Ascension des derniers paliers.', icon: 'potion', color: '#ff6a9a' },
+  potionMinor: { id: 'potionMinor', name: 'Potion d’ascension', description: 'Fait monter un héros d’un palier d’ascension (Sanctuaire). Une seule potion pour tous les paliers depuis la v1.88.0.', icon: 'potion', color: '#7fbf4d' },
   forgeOre: { id: 'forgeOre', name: 'Minerai de forge', description: 'Améliore les équipements.', icon: 'ore', color: '#c08a5a' },
   masteryScroll: { id: 'masteryScroll', name: 'Parchemin de maîtrise', description: 'Apprend les maîtrises d’un héros (Sanctuaire, à partir du niveau 20).', icon: 'mscroll', color: '#c78bff' },
   diamonds: { id: 'diamonds', name: 'Diamants', description: 'Monnaie précieuse, extraite lentement à la Mine (Bâtiments). Sert à améliorer la Mine et à ouvrir des places au Terrain d’entraînement.', icon: 'diamond', color: '#ff8fb8' },

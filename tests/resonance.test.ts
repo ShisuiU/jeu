@@ -36,3 +36,16 @@ describe('Écart de rareté (v1.87.0)', () => {
     expect(RARITIES.mythic.statMult).toBeGreaterThan(RARITIES.legendary.statMult);
   });
 });
+
+describe('Potion d’ascension unique (v1.88.0)', () => {
+  it('les anciennes potions sont converties (majeure = 3, suprême = 6)', async () => {
+    const { migrateSave } = await import('../src/save/migrations');
+    const old = JSON.parse(JSON.stringify(createNewSave(Date.now())));
+    old.resources.potionMinor = 5; old.resources.potionGreater = 2; old.resources.potionSupreme = 1;
+    const m = migrateSave(old) as unknown as { resources: Record<string, number> };
+    expect(m.resources.potionMinor).toBe(5 + 6 + 6);
+    expect(m.resources.potionGreater).toBeUndefined();
+    expect(m.resources.potionSupreme).toBeUndefined();
+    expect(BALANCE.upgrades.ascension.every((a) => a.potion === 'potionMinor')).toBe(true);
+  });
+});

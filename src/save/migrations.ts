@@ -83,6 +83,10 @@ export function migrateSave(raw: unknown): SaveData {
     leader: t.leader && uids.has(t.leader) ? t.leader : null,
   }));
   if (!merged.teams.some((t) => t.id === merged.activeTeamId)) merged.activeTeamId = merged.teams[0]?.id ?? defaults.activeTeamId;
+  // v1.88.0 : une seule potion d'ascension. Majeure = 3 potions, suprême = 6 (mêmes proportions que les coûts).
+  { const r = merged.resources as Record<string, number>; const g = r.potionGreater ?? 0, sp = r.potionSupreme ?? 0;
+    if (g || sp) r.potionMinor = (r.potionMinor ?? 0) + 3 * g + 6 * sp;
+    delete r.potionGreater; delete r.potionSupreme; }
   // v1.84.0 : les éclats épiques (nouvelle monnaie de l'invocation épique) partent de 0 pour tous les comptes, une fois.
   // (les parties créées depuis portent déjà la marque : on regarde la sauvegarde d'origine, avant les valeurs par défaut)
   if (!s.flags?.epic_shards_v184) { merged.resources.shardEpic = 0; merged.flags.epic_shards_v184 = true; }

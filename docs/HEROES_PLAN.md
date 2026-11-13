@@ -61,7 +61,10 @@ Format : `id` · Nom · titre · rareté · faction · rôle · affinité · id�
 - `malo` · Malo Ancre-Grise · Docker de la Citadelle · R · prism · defender · lunar · ancre mécanique, bouclier
 - `sahar` · Sahar aux Mille Puits · Reine des Sables · E · akkar · support · solar · reine nomade, ATQ+ / VIT+
 
-## Vague D — v1.71.0
+## Vague D — en attente des portraits
+
+Données prêtes dans `src/data/heroesWaveD.ts` (fiches, compétences, auras, histoires, apparences, `WAVE_D_LINES`), **pas encore activées** dans `HEROES` : les crédits d'illustration Figma sont épuisés jusqu'au 1er décembre 2026. Il reste à générer les 12 portraits, ajouter `WAVE_D_HEROES` à `HEROES`, fusionner `WAVE_D_LINES` dans `heroLines.ts` et passer le test des stats à 100 héros.
+
 - `jehan` · Jehan Porte-Bannière · Enseigne de Valcrest · C · valcrest · support · solar · étendard, DÉF+
 - `pip` · Pip Tourne-Clé · Apprenti Horloger · C · prism · controller · telluric · ressorts, étourdissement
 - `agnes` · Agnès Fourche · Fermière des Lisières · C · sylvaran · defender · telluric · fourche, provocation

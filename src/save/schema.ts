@@ -147,7 +147,7 @@ export interface SaveData {
   /** Bâtiments (v1.78.0) : Mine de diamants et Terrain d'entraînement. */
   buildings: Buildings;
   /** Donjon des familles (v1.79.0) : meilleur étage par famille et équipe choisie pour chaque famille. */
-  factionDungeon: { best: Record<string, number>; teams: Record<string, string[]> };
+  factionDungeon: { best: Record<string, number>; teams: Record<string, string[]>; stars: Record<string, number[]>; claimed: number[] };
 }
 
 export interface ArenaOpponent {
@@ -221,7 +221,7 @@ export function createNewSave(now: number = Date.now()): SaveData {
     settings: { sound: true, volume: 0.6, reducedMotion: false, battleSpeed: 1, autoBattleDefault: false, music: true, musicVolume: 0.35, showInRanks: true },
     flags: {},
     buildings: { mineLevel: 1, mineSince: now, trainSlots: 1, train: [null, null, null] },
-    factionDungeon: { best: {}, teams: {} },
+    factionDungeon: { best: {}, teams: {}, stars: {}, claimed: [] },
     resets: { day: '', week: '' },
     missions: { daily: { counters: {}, claimed: [], bonus: false }, weekly: { counters: {}, claimed: [], bonus: false } },
     achievements: [],

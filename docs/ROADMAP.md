@@ -558,6 +558,13 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.83.0 — Donjon des familles plus dur, étoiles et paliers
+
+- Donjon des familles bien plus difficile : niveau des ennemis de 12 à 70, et leur puissance grimpe à chaque étage (×2,8 à l'étage 10, ×4,8 au 20, ×6,8 au 30). Gardiens plus résistants. L'étage 30 demande une famille au sommet, bien équipée.
+- Étoiles : chaque étage gagné rapporte 1 à 3 étoiles (3 si aucun héros n'est KO, 2 avec un KO, 1 sinon). Un étage conquis peut être rejoué pour améliorer ses étoiles (la récompense de l'étage n'est donnée qu'une fois). Les étages conquis avant cette version comptent 1 étoile.
+- Étoiles des familles : le total des étoiles des 6 familles (540 au maximum) débloque 11 paliers de récompenses (or, cristaux, diamants, grimoires, parchemins de maîtrise, essences d'éveil, éclats d'Aeon).
+- Nouveau code promo : 20 éclats de faille.
+
 ## ✅ Version 1.82.3 — Terrain d'entraînement automatique
 
 - L'expérience du Terrain d'entraînement est désormais donnée automatiquement aux héros placés, en continu, sans passer par l'écran des Bâtiments. Le temps passé jeu fermé est compté au retour.

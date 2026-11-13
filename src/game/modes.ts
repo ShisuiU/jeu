@@ -1,6 +1,6 @@
 import { FACTIONS } from '../data/factions';
 import { FACTION_DUNGEONS, factionReward, factionWaves } from '../data/factionDungeon';
-import { canEnterFaction } from './factionDungeon';
+import { canEnterFaction, claimableMilestones, floorStars, recordFloorStars } from './factionDungeon';
 import { CHAPTERS, DIFFICULTIES, STAGE_BY_ID, type DialogueLine, type DifficultyId, type WaveEnemy } from '../data/campaign';
 import { GUILD_BOSS, GUILD_TIERS } from '../data/guild';
 import { addPending, triesLeft, useTry } from './guild';
@@ -13,7 +13,7 @@ import type { Reward } from '../data/resources';
 import { GEAR_INVENTORY_CAP } from '../data/equipment';
 import type { GearItem, SaveData } from '../save/schema';
 import type { UnitSetup } from './battle/types';
-import { applyStageResult, payEnergy, stageEnergy, stageProgress, stageWaves, isStageUnlocked, type BattleResult } from './campaign';
+import { applyStageResult, starsFor, payEnergy, stageEnergy, stageProgress, stageWaves, isStageUnlocked, type BattleResult } from './campaign';
 import { applyReward } from './rewards';
 import { addAccountXp, addHeroXp } from './progression';
 import { generateGear, pickWeighted, seededRand } from './gear';
@@ -277,11 +277,18 @@ export function applyMode(s: SaveData, spec: BattleSpec, o: Outcome, now: number
       const res = empty(o.won);
       if (!o.won) { s.stats.battlesLost++; return res; }
       s.stats.battlesWon++; track(s, 'battleWin');
+      const first = spec.floor > (s.factionDungeon.best[spec.faction] ?? 0);
+      res.stars = starsFor(o.alliesDead);
+      const better = recordFloorStars(s, spec.faction, spec.floor, res.stars);
       s.factionDungeon.best[spec.faction] = Math.max(s.factionDungeon.best[spec.faction] ?? 0, spec.floor);
-      res.firstClear = true;
-      res.reward = factionReward(spec.floor);
-      applyReward(s, res.reward);
-      res.lines.push(`${FACTION_DUNGEONS[spec.faction].name} : étage ${spec.floor} conquis !`);
+      if (first) {
+        res.firstClear = true;
+        res.reward = factionReward(spec.floor);
+        applyReward(s, res.reward);
+        res.lines.push(`${FACTION_DUNGEONS[spec.faction].name} : étage ${spec.floor} conquis !`);
+      } else res.lines.push(better ? `Étage ${spec.floor} : étoiles améliorées !` : `Étage ${spec.floor} : déjà ${floorStars(s, spec.faction, spec.floor)} étoile${floorStars(s, spec.faction, spec.floor) > 1 ? 's' : ''}.`);
+      const ready = claimableMilestones(s).length;
+      if (ready) res.lines.push(`Palier d’étoiles atteint : récompense à réclamer au donjon.`);
       return res;
     }
 

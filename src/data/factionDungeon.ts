@@ -17,18 +17,21 @@ export const FACTION_DUNGEONS: Record<FactionId, { name: string; region: string;
   akkar: { name: 'Arène des Dunes', region: 'akkar', pool: ['sand_reaver', 'bronze_hoplite', 'dune_seer'], boss: 'scorpion_king' },
 };
 
-/** Niveau des ennemis : de 6 (étage 1) à 64 (étage 30). Un peu moins puissants qu'ailleurs : l'équipe est limitée à une famille. */
-export const factionLevel = (floor: number) => Math.min(70, 4 + floor * 2);
-export const FACTION_STAT_MULT = 0.9;
+/** Niveau des ennemis : de 12 (étage 1) à 70 (étage 29 et plus). */
+export const factionLevel = (floor: number) => Math.min(70, 10 + floor * 2);
+/** v1.83.0 : le donjon était bien trop facile. La puissance des ennemis grimpe de FACTION_STEP par étage
+ *  (étage 10 : ×2,8, étage 20 : ×4,8, étage 30 : ×6,8) ; l'étage 30 demande une famille au sommet, bien équipée. */
+export const FACTION_STEP = 0.2;
+export const factionStatMult = (floor: number) => 1 + (floor - 1) * FACTION_STEP;
 
 export function factionWaves(f: FactionId, floor: number): WaveEnemy[][] {
   const d = FACTION_DUNGEONS[f];
   const lv = factionLevel(floor);
-  const m = FACTION_STAT_MULT;
+  const m = factionStatMult(floor);
   const pick = (i: number) => d.pool[(floor + i) % 3];
   const size = 3 + Math.min(2, Math.floor(floor / 8));
   const wave = (off: number): WaveEnemy[] => Array.from({ length: size }, (_, i) => ({ enemy: pick(i + off), level: lv, slot: i, statMult: m }));
-  if (floor % 10 === 0) return [wave(0), [{ enemy: d.boss, level: lv + 1, slot: 1, hpMult: 2 + floor / 15, statMult: m }, { enemy: pick(1), level: lv, slot: 3, statMult: m }, { enemy: pick(2), level: lv, slot: 4, statMult: m }]];
+  if (floor % 10 === 0) return [wave(0), [{ enemy: d.boss, level: Math.min(70, lv + 1), slot: 1, hpMult: 2.5 + floor / 10, statMult: m }, { enemy: pick(1), level: lv, slot: 3, statMult: m }, { enemy: pick(2), level: lv, slot: 4, statMult: m }]];
   return floor >= 3 ? [wave(0), wave(1)] : [wave(0)];
 }
 
@@ -38,3 +41,21 @@ export function factionReward(floor: number): Reward {
   if (floor % 5 === 0) return { crystals: 50, skillTome: 2, potionMinor: 2 };
   return { gold: 2000 + floor * 300, xpElixir: 2 };
 }
+
+// ─── Étoiles des familles (v1.83.0) ───
+// Chaque étage gagné donne 1 à 3 étoiles (3 : aucun héros KO, 2 : un KO, 1 : plus). Un étage conquis peut être
+// rejoué pour améliorer ses étoiles. Le total des étoiles des 6 familles débloque des paliers de récompenses.
+export const FACTION_MAX_STARS = FACTION_ORDER.length * FACTION_FLOORS * 3; // 540
+export const FACTION_STAR_MILESTONES: { stars: number; reward: Reward }[] = [
+  { stars: 30, reward: { gold: 20000, crystals: 100 } },
+  { stars: 60, reward: { diamonds: 10, skillTome: 3 } },
+  { stars: 100, reward: { crystals: 300, masteryScroll: 3 } },
+  { stars: 150, reward: { diamonds: 20, awakenEssence: 1 } },
+  { stars: 200, reward: { shardAeon: 1, crystals: 300 } },
+  { stars: 260, reward: { diamonds: 30, masteryScroll: 5 } },
+  { stars: 320, reward: { awakenEssence: 2, crystals: 500 } },
+  { stars: 380, reward: { shardAeon: 2, diamonds: 40 } },
+  { stars: 440, reward: { diamonds: 50, masteryScroll: 8 } },
+  { stars: 500, reward: { shardAeon: 3, awakenEssence: 2 } },
+  { stars: 540, reward: { diamonds: 100, shardAeon: 5 } },
+];

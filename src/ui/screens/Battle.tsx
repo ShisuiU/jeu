@@ -600,12 +600,12 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
         <div className="result-overlay">
           <div className={`result-title ${result.won ? 'win' : 'lose'}`}>{spec.mode === 'worldboss' || spec.mode === 'guildboss' ? 'COMBAT TERMINÉ' : result.won ? 'VICTOIRE' : 'DÉFAITE'}</div>
           {result.lines.map((l, i) => <div key={i} className="chip active" style={{ margin: '6px auto', display: 'flex', width: 'fit-content', textAlign: 'center' }}>{l}</div>)}
-          {result.won && spec.mode === 'campaign' && (
+          {result.won && (spec.mode === 'campaign' || spec.mode === 'faction') && (
             <div className="result-stars">
               {[1, 2, 3].map((n) => <span key={n} className={n <= result.stars ? 'on' : ''} style={{ animationDelay: `${0.3 + n * 0.2}s` }}><Icon.star size={46} color={n <= result.stars ? '#ffd36b' : '#3a3442'} /></span>)}
             </div>
           )}
-          {result.won && spec.mode === 'campaign' && result.stars < 3 && (
+          {result.won && (spec.mode === 'campaign' || spec.mode === 'faction') && result.stars < 3 && (
             <p className="faint result-why">{result.stars === 2 ? '1 héros KO : 2 étoiles. Aucun héros KO pour la 3ᵉ.' : 'Plusieurs héros KO : 1 étoile. Garde ton équipe en vie pour en gagner plus.'}</p>
           )}
           <div className="result-body">

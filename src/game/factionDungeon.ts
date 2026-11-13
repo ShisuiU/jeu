@@ -1,5 +1,6 @@
 import { BALANCE } from '../data/balance';
-import { FACTION_FLOORS, FACTION_ORDER } from '../data/factionDungeon';
+import { FACTION_FLOORS, FACTION_ORDER, FACTION_STAR_MILESTONES } from '../data/factionDungeon';
+import { applyReward } from './rewards';
 import { HERO_BY_ID } from '../data/heroes';
 import type { FactionId } from '../data/types';
 import type { SaveData, TeamPreset } from '../save/schema';
@@ -42,7 +43,36 @@ export function setFactionTeam(s: SaveData, f: FactionId, uids: string[]) {
 
 export function canEnterFaction(s: SaveData, f: FactionId, floor: number, now: number): { ok: boolean; reason?: string } {
   if (f !== factionOfDay(now)) return { ok: false, reason: 'Ce donjon est fermé aujourd’hui : il reviendra dans la rotation.' };
-  if (floor !== factionBest(s, f) + 1 || floor > FACTION_FLOORS) return { ok: false, reason: 'Étage indisponible.' };
+  if (floor < 1 || floor > factionBest(s, f) + 1 || floor > FACTION_FLOORS) return { ok: false, reason: 'Étage indisponible.' };
   if (!factionTeam(s, f).slots.some(Boolean)) return { ok: false, reason: 'Aucun héros de cette famille dans ton équipe.' };
+  return { ok: true };
+}
+
+// ─── Étoiles (v1.83.0) ───
+/** Étoiles d'un étage (les étages conquis avant les étoiles en comptent 1, à améliorer en les rejouant). */
+export function floorStars(s: SaveData, f: FactionId, floor: number): number {
+  const v = s.factionDungeon.stars?.[f]?.[floor - 1];
+  return v ?? (floor <= factionBest(s, f) ? 1 : 0);
+}
+export const familyStars = (s: SaveData, f: FactionId) => Array.from({ length: FACTION_FLOORS }, (_, i) => floorStars(s, f, i + 1)).reduce((a, b) => a + b, 0);
+export const totalFactionStars = (s: SaveData) => FACTION_ORDER.reduce((a, f) => a + familyStars(s, f), 0);
+/** Note les étoiles d'un étage (garde la meilleure). Renvoie vrai si elles ont progressé. */
+export function recordFloorStars(s: SaveData, f: FactionId, floor: number, stars: number): boolean {
+  const prev = floorStars(s, f, floor);
+  const arr = (s.factionDungeon.stars[f] ??= []);
+  while (arr.length < floor) arr.push(arr.length < factionBest(s, f) ? 1 : 0);
+  arr[floor - 1] = Math.max(prev, stars);
+  return stars > prev;
+}
+export const milestoneClaimed = (s: SaveData, i: number) => s.factionDungeon.claimed.includes(FACTION_STAR_MILESTONES[i].stars);
+/** Paliers atteints et pas encore réclamés. */
+export const claimableMilestones = (s: SaveData) => { const t = totalFactionStars(s); return FACTION_STAR_MILESTONES.map((_m, i) => i).filter((i) => FACTION_STAR_MILESTONES[i].stars <= t && !milestoneClaimed(s, i)); };
+export function claimFactionMilestone(s: SaveData, i: number): { ok: boolean; reason?: string } {
+  const m = FACTION_STAR_MILESTONES[i];
+  if (!m) return { ok: false, reason: 'Palier inconnu.' };
+  if (milestoneClaimed(s, i)) return { ok: false, reason: 'Déjà réclamé.' };
+  if (totalFactionStars(s) < m.stars) return { ok: false, reason: `Il faut ${m.stars} étoiles.` };
+  applyReward(s, m.reward);
+  s.factionDungeon.claimed.push(m.stars);
   return { ok: true };
 }

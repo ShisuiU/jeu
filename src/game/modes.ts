@@ -76,7 +76,7 @@ export function currentChapter(s: SaveData): number {
 }
 
 /** Ajustement par thème (certains gardiens sont plus redoutables), calibré par simulation. */
-const TRIAL_ADJ: Record<string, number> = { tide: 0.9, tourney: 1.15, forge: 1.05, hunt: 1.05, pilgrim: 0.95, seams: 0.85 };
+const TRIAL_ADJ: Record<string, number> = { tide: 0.9, tourney: 1.15, forge: 1.1, hunt: 1.05, pilgrim: 0.95, seams: 0.85 };
 
 /** Combat d'épreuve d'un événement de la semaine : ennemis du thème, calés sur les niveaux 3, 6 et 9
  *  du chapitre de référence (fixé au premier combat d'épreuve, pour ne pas changer en cours de semaine). */

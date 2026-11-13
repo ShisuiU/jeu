@@ -2,6 +2,7 @@ import { SIGNATURES } from '../../data/signatures';
 import { factionTeam } from '../../game/factionDungeon';
 import { defeatTips } from '../../game/tips';
 import { riftSetups } from '../../game/rift';
+import { COUTURE_BY_ID } from '../../data/coutures';
 import { energyMax } from '../../game/energy';
 import { AccountXp } from '../components/AccountXp';
 import { Coach } from '../components/Coach';
@@ -285,6 +286,15 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
         case 'cleanse': break;
         case 'dispel': addPopup(e.target, 'Bonus retirés', 'debuff'); addVfx(e.target, 'cursefx', '#c7b6ff'); break;
         case 'rage': addPopup(e.target, 'Enragé ! +30 % ATQ', 'debuff'); pause = true; break;
+        case 'couture': {
+          const def = COUTURE_BY_ID[e.id];
+          setBanner({ text: `Couture d’époque · ${def?.name ?? ''}`, side: 'ally' });
+          for (const t of s.units.filter((x) => x.side === 'enemy' && x.alive)) addVfx(t.id, 'cursefx', '#cf9dff');
+          for (const id of [e.a, e.b]) { const c = center(id); if (c) stage.current?.burst(c, '#cf9dff', 30, 0.45); }
+          doShake('hard'); play('rare'); pause = true;
+          if (!useGame.getState().save?.flags[`couture_${e.id}`]) { mutate((d) => { d.flags[`couture_${e.id}`] = true; }); useUI.getState().toast(`Nouvelle couture découverte : ${def?.name} (Codex)`, 'ok'); }
+          break;
+        }
         case 'phase': { const bu = s.units.find((x) => x.id === e.target); setBanner({ text: `Seconde phase · ${bu?.name ?? 'Le boss'} se déchaîne`, side: 'enemy' }); addVfx(e.target, 'cursefx', '#ff3d6e'); doShake('hard'); play('rare'); pause = true; break; }
         case 'fracture': addPopup(e.target, 'Fracture ! Étourdi, +40 % de dégâts subis', 'buff'); addVfx(e.target, 'cursefx', '#ffffff'); doShake('hard'); { const c = center(e.target); if (c) stage.current?.burst(c, '#ffffff', 40, 0.5); } play('rare'); pause = true; break;
         case 'carapace':

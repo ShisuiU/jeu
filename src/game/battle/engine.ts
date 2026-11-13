@@ -1,4 +1,5 @@
 import { SIGNATURES, type SignatureKind } from '../../data/signatures';
+import { COUTURES, COUTURE_BY_ID } from '../../data/coutures';
 import { affinityModifier } from '../../data/affinities';
 import { HERO_BY_ID } from '../../data/heroes';
 import { nextRandom } from '../../core/rng';
@@ -127,6 +128,9 @@ export function createBattle(allies: UnitSetup[], waves: UnitSetup[][], opts: Ba
   spawnWave(s, waves[0]);
   // Petite dispersion initiale des jauges pour éviter les égalités parfaites.
   for (const u of s.units) u.tm = rand(s) * 150 + ((u.flags.setStartTm ?? 0) / 100) * TM_FULL; // ensemble Élan
+  // Couture d'époque (v1.94.0) : la première paire de familles présente dans l'équipe.
+  { const heroes = s.units.filter((u) => u.side === 'ally' && u.kind === 'hero' && u.faction);
+    for (const c of COUTURES) { const a = heroes.find((u) => u.faction === c.factions[0]); const b = heroes.find((u) => u.faction === c.factions[1]); if (a && b) { s.couture = { id: c.id, a: a.id, b: b.id, acts: 0, done: false }; break; } } }
   // Signatures de début de combat (v1.91.0).
   for (const side of ['ally', 'enemy'] as const) {
     const team = s.units.filter((u) => u.side === side);
@@ -391,8 +395,34 @@ function pickNextActor(s: BattleState): Unit {
   return best;
 }
 
+/** Couture d'époque : au 3ᵉ tour de l'équipe, si les deux héros sont debout, attaque cousue sur tous les ennemis. */
+function triggerCouture(s: BattleState): boolean {
+  const c = s.couture; if (!c || c.done || c.acts < 3) return false;
+  const a = s.units.find((u) => u.id === c.a), b = s.units.find((u) => u.id === c.b);
+  if (!a?.alive || !b?.alive) { if (!a?.alive || !b?.alive) c.done = true; return false; }
+  c.done = true;
+  const def = COUTURE_BY_ID[c.id];
+  s.events.push({ kind: 'couture', id: c.id, a: a.id, b: b.id });
+  const mult = def.bonus === 'big' ? 1.25 : 0.85;
+  for (const src of [a, b]) for (const t of s.units.filter((u) => u.side === 'enemy' && u.alive)) {
+    const sk = src.skills.find((k) => k.slot === 'basic') ?? src.skills[0];
+    dealDamage(s, src, t, { kind: 'damage', target: 'allEnemies', mult }, skillMods(sk, 1), sk, false);
+  }
+  const foes = s.units.filter((u) => u.side === 'enemy' && u.alive), team = s.units.filter((u) => u.side === 'ally' && u.alive);
+  if (def.bonus === 'defDown') foes.forEach((t) => addStatus(s, t, 'defDown', 2, 0.3, a));
+  if (def.bonus === 'burn') foes.forEach((t) => addStatus(s, t, 'burn', 2, 0, a));
+  if (def.bonus === 'stun') foes.filter((t) => !t.isBoss).forEach((t) => addStatus(s, t, 'stun', 1, 0, a));
+  if (def.bonus === 'spdDown') foes.forEach((t) => { addStatus(s, t, 'burn', 2, 0, a); addStatus(s, t, 'spdDown', 2, 0.25, a); });
+  if (def.bonus === 'atkUp') team.forEach((t) => addStatus(s, t, 'atkUp', 2, 0.25, a));
+  if (def.bonus === 'heal') team.forEach((t) => heal(s, t, t.base.hp * 0.15));
+  if (def.bonus === 'shield') team.forEach((t) => addStatus(s, t, 'shield', 2, t.base.hp * 0.12, a));
+  endCheck(s);
+  return true;
+}
+
 /** Décompte des effets à la fin du tour d'une unité. */
 function endTurn(s: BattleState, u: Unit) {
+  if (u.side === 'ally' && s.couture && !s.couture.done) s.couture.acts += 1;
   for (const st of u.statuses) if (st.appliedAt !== s.actionCount || st.status === 'stun' || st.status === 'freeze') st.turns -= 1;
   u.statuses = u.statuses.filter((x) => x.turns > 0);
   s.actionCount += 1;
@@ -456,6 +486,7 @@ export function beginTurn(s: BattleState): Unit | null {
       endTurn(s, u);
       continue;
     }
+    if (u.side === 'ally' && triggerCouture(s) && s.outcome !== 'running') return null;
     s.activeId = u.id;
     return u;
   }

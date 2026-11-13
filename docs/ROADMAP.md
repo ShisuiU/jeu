@@ -558,6 +558,10 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.83.3 — Nouveau code promo
+
+- Nouveau code promo : 30 éclats de faille (une fois par partie).
+
 ## ✅ Version 1.83.2 — Clavier de l'iPhone stable
 
 - Le clavier de l'iPhone s'ouvrait puis se refermait sans arrêt (chat du clan, code promo). Le correctif d'affichage prévu pour les rotations de l'écran ne retire plus jamais le curseur d'un champ, ne fait plus rien pendant une saisie et ne se déclenche plus que sur une vraie rotation de l'appareil. La détection de la « réserve » du bas de l'écran ne réagit plus au clavier.

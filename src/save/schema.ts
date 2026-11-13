@@ -219,7 +219,7 @@ export function createNewSave(now: number = Date.now()): SaveData {
     progress: { campaign: {}, dungeons: {}, tower: { floor: 0 } },
     stats: { battlesWon: 0, battlesLost: 0, summons: 0 },
     settings: { sound: true, volume: 0.6, reducedMotion: false, battleSpeed: 1, autoBattleDefault: false, music: true, musicVolume: 0.35, showInRanks: true },
-    flags: {},
+    flags: { epic_shards_v184: true },
     buildings: { mineLevel: 1, mineSince: now, trainSlots: 1, train: [null, null, null] },
     factionDungeon: { best: {}, teams: {}, stars: {}, claimed: [] },
     resets: { day: '', week: '' },

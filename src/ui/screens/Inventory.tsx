@@ -8,7 +8,7 @@ import { Icon, ResourceIcon } from '../art/Icons';
 
 const GROUPS: { title: string; ids: string[] }[] = [
   { title: 'Monnaies', ids: ['gold', 'crystals'] },
-  { title: 'Invocation', ids: ['shardDim', 'shardAeon', 'shardEvent'] },
+  { title: 'Invocation', ids: ['shardDim', 'shardAeon', 'shardEpic', 'shardEvent'] },
   { title: 'Progression des héros', ids: ['xpElixir', 'skillTome', 'rankSigil', 'potionMinor', 'potionGreater', 'potionSupreme', 'awakenEssence', 'masteryScroll'] },
   { title: 'Forge', ids: ['forgeOre'] },
 ];

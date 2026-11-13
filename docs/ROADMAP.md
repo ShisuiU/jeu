@@ -558,6 +558,10 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.82.2 — Caméra sans va-et-vient gauche-droite
+
+- La caméra de combat ne se déplace presque plus vers la gauche ou la droite (15 % de son mouvement d'avant). Elle avance surtout en profondeur, avec un léger zoom.
+
 ## ✅ Version 1.82.1 — Caméra plus douce en accéléré
 
 - En ×2 et ×3, la caméra bouge beaucoup moins : son zoom et son décalage sont réduits (environ la moitié en ×2, un tiers en ×3).

@@ -1,3 +1,4 @@
+import { SIGNATURES } from '../../data/signatures';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
 import { HERO_BY_ID } from '../../data/heroes';
@@ -78,7 +79,13 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
         })}
       </section>
 
-      <Disclosure title="Compétences" summary={`${d.skills.length} compétences${d.leaderSkill ? ' · aura de chef' : ''}`}>
+      <Disclosure title="Compétences" summary={`${d.skills.length} compétences${SIGNATURES[d.id] ? ' · signature' : ''}${d.leaderSkill ? ' · aura de chef' : ''}`}>
+        {SIGNATURES[d.id] && (
+          <div className="skill sig-skill">
+            <div className="skill-icon" style={{ ['--sc' as string]: rar.color }}>★</div>
+            <div className="grow"><div className="skill-tag">Signature</div><b>{SIGNATURES[d.id].name}</b><div className="muted">{SIGNATURES[d.id].text}</div></div>
+          </div>
+        )}
         {d.skills.map((s, i) => (
           <div key={s.id} className="skill">
             <div className="skill-icon" style={{ ['--sc' as string]: s.slot === 'ultimate' ? rar.color : s.slot === 'passive' ? '#3b3350' : f.colors.primary }}>{s.slot === 'passive' ? 'P' : i + 1}</div>

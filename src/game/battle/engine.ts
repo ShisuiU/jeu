@@ -1,3 +1,4 @@
+import { SIGNATURES, type SignatureKind } from '../../data/signatures';
 import { affinityModifier } from '../../data/affinities';
 import { HERO_BY_ID } from '../../data/heroes';
 import { nextRandom } from '../../core/rng';
@@ -11,6 +12,8 @@ import { BUFFS, DEBUFFS, LIEN_MAX, LIEN_USES, type Action, type BattleState, typ
 // Le moteur est pur TypeScript (aucune dépendance à l'interface) et déterministe (graine aléatoire).
 
 const TM_FULL = 1000;
+/** Passif signature d'une unité (héros légendaires et mythiques). */
+const sig = (u: Unit, k: SignatureKind) => u.kind === 'hero' && SIGNATURES[u.refId]?.kind === k;
 const DEF_K = 600;
 const MAX_ACTIONS = 1500;
 
@@ -124,11 +127,19 @@ export function createBattle(allies: UnitSetup[], waves: UnitSetup[][], opts: Ba
   spawnWave(s, waves[0]);
   // Petite dispersion initiale des jauges pour éviter les égalités parfaites.
   for (const u of s.units) u.tm = rand(s) * 150 + ((u.flags.setStartTm ?? 0) / 100) * TM_FULL; // ensemble Élan
+  // Signatures de début de combat (v1.91.0).
+  for (const side of ['ally', 'enemy'] as const) {
+    const team = s.units.filter((u) => u.side === side);
+    if (team.some((u) => sig(u, 'firstStrike'))) for (const u of team) u.tm += 0.3 * TM_FULL;
+    const th = team.find((u) => sig(u, 'prismAegis'));
+    if (th) for (const u of team) addStatus(s, u, 'shield', 3, u.base.hp * 0.15, th);
+  }
   return s;
 }
 
 function spawnWave(s: BattleState, wave: UnitSetup[]) {
   s.units = s.units.filter((u) => u.side === 'ally');
+  if (s.wave > 0 && s.units.some((u) => u.alive && sig(u, 'seventhDawn'))) for (const u of s.units) if (u.alive) heal(s, u, u.base.hp * 0.15);
   wave.forEach((w, i) => {
     const u = buildUnit(w, 'enemy', s.wave * 10 + i);
     u.tm = rand(s) * 100;
@@ -198,11 +209,23 @@ function kill(s: BattleState, target: Unit, killer: Unit | null) {
     addStatus(s, target, 'shield', 2, target.base.hp * (0.25 + skillMods(target.skills.find((x) => x.id === 'varkhaal_3')!, target.skillLevels.varkhaal_3 ?? 1).shield), target);
     return;
   }
+  // Signature de Nerissa : survit une fois et s'embrase.
+  if (sig(target, 'lastStand') && !target.flags.lastStandUsed) {
+    target.flags.lastStandUsed = 1; target.hp = 1;
+    s.events.push({ kind: 'undying', target: target.id });
+    addStatus(s, target, 'atkUp', 2, 0.3, target);
+    return;
+  }
   target.alive = false;
   target.hp = 0;
   target.statuses = [];
   target.tm = 0;
   s.events.push({ kind: 'death', target: target.id });
+  // Signature de Solenne : le premier allié tombé se relève (une fois par combat).
+  const sol = s.units.find((u) => u.alive && u.side === target.side && sig(u, 'dawnRevive') && !u.flags.dawnUsed);
+  if (sol) { sol.flags.dawnUsed = 1; target.alive = true; target.hp = Math.round(target.base.hp * 0.2); s.events.push({ kind: 'revive', target: target.id }); return; }
+  // Signature de Nyxa : chaque victime lui rend un tour.
+  if (killer && sig(killer, 'zeroPoint') && killer.alive) killer.tm = TM_FULL;
   if (!killer) return;
   if (killer.side === 'ally' && target.side === 'enemy' && s.lien >= 0 && s.lienUsed < LIEN_USES) s.lien = Math.min(LIEN_MAX, s.lien + LIEN_PER_KILL);
   // Synergie d'Akkar : chaque ennemi vaincu augmente l'attaque des héros d'Akkar.
@@ -237,6 +260,11 @@ function dealDamage(s: BattleState, source: Unit, target: Unit, effect: Extract<
   // Rôles (v1.87.0, audit E-2) : les assassins achèvent (+25 % sous 50 % de PV), les attaquants frappent plus fort de base.
   if (source.role === 'assassin' && hpPct(target) < 0.5) dmg *= 1.25;
   if (source.role === 'attacker' && skill.slot === 'basic') dmg *= 1.1;
+  // Signatures offensives et défensives (v1.91.0).
+  if (sig(source, 'bossHunter') && target.isBoss) dmg *= 1.25;
+  if (sig(source, 'debuffFeast') && target.statuses.some((st) => DEBUFFS.includes(st.status))) dmg *= 1.2;
+  if (sig(source, 'silverThread') && hpPct(target) < 0.5) dmg *= 1.25;
+  if (alliesOf(s, target).some((a) => a.alive && a.id !== target.id && sig(a, 'drownedOath')) || sig(target, 'drownedOath')) dmg *= 0.9;
   // Fracture : un boss brisé encaisse +40 %.
   if (target.flags.fractured > 0) dmg *= 1 + FRACTURE_DMG;
   // Carapace : dégâts réduits, une charge en moins par coup.

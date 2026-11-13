@@ -558,6 +558,14 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.93.0 — Les Failles (mode signature, audit)
+
+- Nouveau mode dans Combats : une traversée hebdomadaire de 10 salles dans une faille, une seule tentative par semaine (la même faille pour tous toute la semaine).
+- À chaque salle, choisis ta route : Combat, Élite (plus dur, une relique en récompense), Autel d'époque (une relique parmi trois) ou Halte (+35 % de PV, les héros tombés se relèvent à 20 %). La 10ᵉ salle abrite le Gardien de la faille.
+- Les PV de l'équipe sont conservés d'un combat à l'autre ; un héros tombé reste à terre jusqu'à une halte.
+- 16 reliques qui s'additionnent : ATQ, PV, DÉF, VIT, vol de vie, régénération, jauge de départ, et reliques de famille ou d'affinité (+25 à 30 % pour les héros concernés).
+- Difficulté calée sur ta progression dans la Tour. Récompenses à chaque salle (or, cristaux) et, contre le Gardien, un éclat épique, une essence d'éveil et 200 cristaux.
+
 ## ✅ Version 1.92.0 — Boss à deux phases (audit)
 
 - Sous la moitié de leurs PV, les boss entrent en seconde phase : en plus de leur rage (+30 % d'ATQ), ils se purifient de leurs effets négatifs, se protègent d'un bouclier (12 % de leurs PV) et rechargent leur ultime. Bandeau « Seconde phase · … se déchaîne », secousse et aura rouge qui pulse sous le boss jusqu'à la fin du combat.

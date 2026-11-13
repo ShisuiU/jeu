@@ -82,6 +82,8 @@ export interface UnitSetup {
   statMult?: number;
   /** Bonus d'équipement (héros). */
   gear?: import('../gear').GearBonus;
+  /** PV de départ (fraction), pour les Failles où les PV sont conservés d'un combat à l'autre. */
+  hpPct?: number;
 }
 
 export interface BattleState {

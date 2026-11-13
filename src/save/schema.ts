@@ -148,6 +148,8 @@ export interface SaveData {
   buildings: Buildings;
   /** Donjon des familles (v1.79.0) : meilleur étage par famille et équipe choisie pour chaque famille. */
   factionDungeon: { best: Record<string, number>; teams: Record<string, string[]>; stars: Record<string, number[]>; claimed: number[] };
+  /** Les Failles (v1.93.0) : expédition hebdomadaire. */
+  rift: import('../game/rift').RiftState;
 }
 
 export interface ArenaOpponent {
@@ -222,6 +224,7 @@ export function createNewSave(now: number = Date.now()): SaveData {
     flags: { epic_shards_v184: true },
     buildings: { mineLevel: 1, mineSince: now, trainSlots: 1, train: [null, null, null] },
     factionDungeon: { best: {}, teams: {}, stars: {}, claimed: [] },
+    rift: { week: '', status: 'idle', room: 0, nodes: [], current: null, team: [], hp: {}, relics: [], altar: null, base: 5, best: 0 },
     resets: { day: '', week: '' },
     missions: { daily: { counters: {}, claimed: [], bonus: false }, weekly: { counters: {}, claimed: [], bonus: false } },
     achievements: [],

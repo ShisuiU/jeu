@@ -182,3 +182,29 @@
 .stage25 .unit.phase2::after { background: radial-gradient(52% 13% at 50% 96%, rgba(255, 50, 80, 0.85), transparent 72%), radial-gradient(34% 7% at 50% 97%, rgba(255, 220, 220, 0.7), transparent 80%); animation: phase2Pulse 1.2s ease-in-out infinite; }
 .stage25 .unit.phase2 .u-art .art-img { filter: drop-shadow(0 0 10px rgba(255, 60, 90, 0.85)) saturate(1.2); }
 @keyframes phase2Pulse { 50% { filter: brightness(1.6); } }
+
+/* ─── Les Failles (v1.93.0) ─── */
+.rift-head { padding: 12px 14px; border-radius: 8px; border: 1px solid rgba(255, 61, 110, 0.35); background: radial-gradient(120% 140% at 0% 0%, rgba(120, 20, 50, 0.45), rgba(14, 10, 20, 0.9) 70%); }
+.rift-team { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin: 10px 0 6px; }
+.rt-hero { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; color: var(--text-dim); }
+.rt-art { width: 100%; aspect-ratio: 3 / 4; border-radius: 6px; overflow: hidden; border: 1px solid var(--surface-line); }
+.rt-hp { width: 100%; height: 5px; border-radius: 3px; background: rgba(255, 255, 255, 0.1); overflow: hidden; }
+.rt-hp > div { height: 100%; background: linear-gradient(90deg, #4fd27a, #9ff0a8); }
+.rt-hero.down { opacity: 0.4; filter: grayscale(1); }
+.rift-relics { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 8px; }
+.rift-path { display: grid; gap: 6px; margin-top: 8px; }
+.rp-room { display: flex; align-items: stretch; gap: 8px; opacity: 0.55; }
+.rp-room.here { opacity: 1; }
+.rp-room.past { opacity: 0.35; }
+.rp-n { width: 28px; flex-shrink: 0; display: grid; place-items: center; font-family: var(--font-title); font-weight: 800; color: #ffb3c2; }
+.rp-opts { display: flex; gap: 6px; flex: 1; min-width: 0; }
+.rp-node { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; padding: 8px; border-radius: 8px; text-align: left; color: inherit; border: 1px solid var(--surface-line); background: rgba(255, 255, 255, 0.04); font-size: 12.5px; }
+.rp-node small { color: var(--text-dim); font-size: 11.5px; }
+.rp-node .reward-inline span { font-size: 12px; }
+.rp-room.here .rp-node:not(:disabled) { border-color: rgba(255, 120, 150, 0.6); box-shadow: 0 0 12px rgba(255, 61, 110, 0.25); }
+.rp-node.k-boss { border-color: rgba(255, 211, 107, 0.5); }
+.rift-end { text-align: center; margin-top: 14px; color: var(--text-dim); }
+.rift-end.win { color: #ffe2a8; }
+.relic-pick { display: grid; gap: 8px; }
+.relic { display: flex; flex-direction: column; gap: 3px; padding: 12px; border-radius: 8px; text-align: left; color: inherit; border: 1px solid rgba(255, 211, 107, 0.45); background: linear-gradient(90deg, rgba(255, 190, 80, 0.12), transparent); }
+.relic span { font-size: 12.5px; color: var(--text-dim); }

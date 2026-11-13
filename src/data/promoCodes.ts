@@ -18,4 +18,5 @@ export const PROMO_CODES: PromoCode[] = [
   { hash: '9lindf', label: 'Bienvenue dans Aeonfall', reward: { crystals: 300, gold: 50000, shardAeon: 2 } },
   { hash: '1rjzjf', label: 'Cadeau de la Fracture', reward: { shardDim: 10, xpElixir: 10, energy: 60 } },
   { hash: '11uvh6r', label: 'Les Failles s’ouvrent', reward: { shardEvent: 20 } },
+  { hash: 'w4pti8', label: 'La Faille s’élargit', reward: { shardEvent: 30 } },
 ];

@@ -5,7 +5,8 @@ import { createNewSave } from '../src/save/schema';
 
 describe('codes promo', () => {
   it('les empreintes correspondent aux codes prévus', () => {
-    expect(PROMO_CODES.map((p) => p.hash)).toEqual([promoHash('AEONFALL'), promoHash('FRACTURE'), promoHash('FAILLES')]);
+    expect(PROMO_CODES.map((p) => p.hash)).toEqual([promoHash('AEONFALL'), promoHash('FRACTURE'), promoHash('FAILLES'), promoHash('FAILLES30')]);
+    expect(PROMO_CODES[3].reward).toEqual({ shardEvent: 30 });
     expect(PROMO_CODES[2].reward).toEqual({ shardEvent: 20 });
     expect(promoHash(' aeon-fall ')).toBe(promoHash('AEONFALL'));
   });

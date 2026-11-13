@@ -282,6 +282,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
         case 'cleanse': break;
         case 'dispel': addPopup(e.target, 'Bonus retirés', 'debuff'); addVfx(e.target, 'cursefx', '#c7b6ff'); break;
         case 'rage': addPopup(e.target, 'Enragé ! +30 % ATQ', 'debuff'); pause = true; break;
+        case 'phase': { const bu = s.units.find((x) => x.id === e.target); setBanner({ text: `Seconde phase · ${bu?.name ?? 'Le boss'} se déchaîne`, side: 'enemy' }); addVfx(e.target, 'cursefx', '#ff3d6e'); doShake('hard'); play('rare'); pause = true; break; }
         case 'fracture': addPopup(e.target, 'Fracture ! Étourdi, +40 % de dégâts subis', 'buff'); addVfx(e.target, 'cursefx', '#ffffff'); doShake('hard'); { const c = center(e.target); if (c) stage.current?.burst(c, '#ffffff', 40, 0.5); } play('rare'); pause = true; break;
         case 'carapace':
           if (e.broken) { addPopup(e.target, 'Carapace brisée !', 'buff'); addVfx(e.target, 'cursefx', '#ffd36b'); pause = true; }
@@ -684,7 +685,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
               {u.isBoss && (u.flags.carapaceMax > 0 || s.mechanics) && (
                 <div className="ui-boss">
                   {u.flags.carapaceMax > 0 && <div><b>Carapace</b> {u.flags.carapace > 0 ? `· ${u.flags.carapace} charge${u.flags.carapace > 1 ? 's' : ''}` : '· brisée'} : −30 % de dégâts, chaque coup retire une charge. Brisée, le boss perd 30 % de DÉF pendant 2 tours ; elle se reforme 8 tours plus tard. Les attaques à plusieurs coups la brisent vite.</div>}
-                  <div><b>{u.flags.enraged ? 'Enragé' : 'Rage'}</b> : sous la moitié de ses PV, le boss gagne +30 % d’ATQ.</div>
+                  <div><b>{u.flags.enraged ? 'Seconde phase' : 'Seconde phase à 50 %'}</b> : sous la moitié de ses PV, le boss gagne +30 % d’ATQ, se purifie de ses effets négatifs, se protège d’un bouclier et recharge son ultime.</div>
                 </div>
               )}
               {list.length === 0 ? <p className="faint" style={{ margin: '8px 0 0' }}>Aucun effet en cours.</p> : (
@@ -824,7 +825,7 @@ function UnitView({ u, place, order = 0, vfx, focus, active, acting, hit, heavy,
   const has = (id: string) => u.alive && u.statuses.some((x) => x.status === id);
   const stCls = [has('freeze') && 'st-freeze', has('burn') && 'st-burn', has('poison') && 'st-poison', has('stun') && 'st-stun', has('taunt') && 'st-taunt', u.alive && sh > 0 && 'st-shield'].filter(Boolean).join(' ');
   return (
-    <button className={`unit ${u.side} ${u.alive ? '' : 'dead'} ${active ? 'active' : ''} ${acting ? 'acting' : ''} ${hit ? 'hit' : ''} ${targetable ? 'targetable' : ''} ${u.isBoss ? 'boss' : ''} ${heavy ? 'heavy' : ''} ${focus ? 'focus' : ''} ${stCls}`} data-uid={u.id}
+    <button className={`unit ${u.side} ${u.flags.phase2 ? 'phase2' : ''} ${u.alive ? '' : 'dead'} ${active ? 'active' : ''} ${acting ? 'acting' : ''} ${hit ? 'hit' : ''} ${targetable ? 'targetable' : ''} ${u.isBoss ? 'boss' : ''} ${heavy ? 'heavy' : ''} ${focus ? 'focus' : ''} ${stCls}`} data-uid={u.id}
       style={place ? { left: `${place.x}%`, top: `${place.y}%`, zIndex: Math.round(place.y * 10), ['--s' as string]: place.s, ['--i' as string]: order, ['--affc' as string]: AFFINITIES[u.affinity].color } : undefined}
       onClick={() => { if (longDone.current) { longDone.current = false; return; } onClick(); }}
       onPointerDown={startPress} onPointerUp={endPress} onPointerLeave={endPress} onPointerCancel={endPress}

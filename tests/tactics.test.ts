@@ -47,3 +47,12 @@ describe('Passifs signatures (v1.91.0)', () => {
     for (const h of HEROES.filter((x) => (x.rarity === 'legendary' || x.rarity === 'mythic') && !x.skills.some((s) => s.slot === 'passive'))) expect(SIGNATURES[h.id], h.id).toBeTruthy();
   });
 });
+
+describe('Boss à deux phases (v1.92.0)', () => {
+  it('sous 50 % de PV, le boss entre en seconde phase', () => {
+    const team = ['torvald', 'brann', 'corvin', 'elowen', 'aldric'].map((id, i) => unit(id, i));
+    const b = runToEnd(createBattle(team, waves(40), { seed: 2, leaderUid: 'torvald' }));
+    const boss = b.units.find((u) => u.isBoss);
+    if (boss && (b.outcome === 'won' || (boss.hp / boss.base.hp) < 0.5)) expect(boss.flags.phase2).toBe(1);
+  });
+});

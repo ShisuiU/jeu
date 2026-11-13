@@ -558,6 +558,10 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.92.0 — Boss à deux phases (audit)
+
+- Sous la moitié de leurs PV, les boss entrent en seconde phase : en plus de leur rage (+30 % d'ATQ), ils se purifient de leurs effets négatifs, se protègent d'un bouclier (12 % de leurs PV) et rechargent leur ultime. Bandeau « Seconde phase · … se déchaîne », secousse et aura rouge qui pulse sous le boss jusqu'à la fin du combat.
+
 ## ✅ Version 1.91.0 — Personnages détourés et passifs signatures (audit)
 
 - Combat : plus de cadre rectangulaire autour des unités. L'illustration se fond dans la scène (fondu ovale), posée sur un socle lumineux à la couleur de son affinité, avec une ombre au sol ; l'unité active ou ciblable s'illumine.

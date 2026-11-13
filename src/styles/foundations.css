@@ -58,3 +58,83 @@
 .bld-link .bl-chev { font-size: 22px; color: var(--gold-hi); }
 .bld-link .badge-dot { position: static; }
 .bld-link.locked { opacity: 0.6; }
+
+/* ─── Coupe cinématique des ultimes (v1.89.0) ─── */
+.ult-cut { position: absolute !important; inset: 0; z-index: 8 !important; pointer-events: none; overflow: hidden; }
+.ult-cut .uc-band { position: absolute; left: -20%; right: -20%; top: 28%; height: 32%; overflow: hidden; opacity: 0;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--uc) 70%, #fff) 0 2px, color-mix(in srgb, var(--uc) 45%, #120c1c) 2px, #120c1c 50%, color-mix(in srgb, var(--uc) 45%, #120c1c) calc(100% - 2px), color-mix(in srgb, var(--uc) 70%, #fff) calc(100% - 2px));
+  box-shadow: 0 0 40px color-mix(in srgb, var(--uc) 70%, transparent); animation: ucBand 0.85s cubic-bezier(.2,.9,.2,1) forwards; }
+.ult-cut.enemy .uc-band { animation-name: ucBandR; }
+.ult-cut .uc-art { position: absolute; top: -40%; width: 46%; aspect-ratio: 2 / 3; left: 34%; animation: ucArt 0.85s cubic-bezier(.2,.9,.2,1) forwards; }
+.ult-cut.enemy .uc-art { left: 20%; animation-name: ucArtR; }
+.ult-cut .uc-art img, .ult-cut .uc-art > * { width: 100%; height: 100%; object-fit: cover; }
+.ult-cut .uc-art { -webkit-mask-image: linear-gradient(90deg, transparent, #000 22%, #000 78%, transparent); mask-image: linear-gradient(90deg, transparent, #000 22%, #000 78%, transparent); }
+.ult-cut .uc-name { position: absolute; left: 0; right: 0; top: 63%; text-align: center; font-family: var(--font-title); font-weight: 900; font-size: 30px; letter-spacing: 0.08em; color: #fff; opacity: 0;
+  text-shadow: 0 0 14px var(--uc), 0 0 34px var(--uc), 0 3px 8px #000; animation: ucName 0.85s ease-out forwards; }
+@keyframes ucBand { 0% { opacity: 0; transform: rotate(-9deg) translateX(-100%); } 25% { opacity: 1; transform: rotate(-9deg) translateX(0); } 82% { opacity: 1; transform: rotate(-9deg) translateX(2%); } 100% { opacity: 0; transform: rotate(-9deg) translateX(2%); } }
+@keyframes ucBandR { 0% { opacity: 0; transform: rotate(9deg) translateX(100%); } 25% { opacity: 1; transform: rotate(9deg) translateX(0); } 82% { opacity: 1; transform: rotate(9deg) translateX(-2%); } 100% { opacity: 0; transform: rotate(9deg) translateX(-2%); } }
+@keyframes ucArt { 0% { transform: translateX(40%); } 30% { transform: translateX(0); } 100% { transform: translateX(-8%); } }
+@keyframes ucArtR { 0% { transform: translateX(-40%); } 30% { transform: translateX(0); } 100% { transform: translateX(8%); } }
+@keyframes ucName { 0%, 18% { opacity: 0; transform: scale(1.3); letter-spacing: 0.3em; } 38% { opacity: 1; transform: none; letter-spacing: 0.08em; } 84% { opacity: 1; } 100% { opacity: 0; } }
+
+/* ─── Écran de victoire mis en scène (v1.89.0) ─── */
+.result-overlay.won .result-title.win { background-size: 100% 100%, 250% 100%; background-image: linear-gradient(180deg, #fff6dd, #e2b866 55%, #8a6a33), linear-gradient(100deg, transparent 40%, rgba(255,255,255,0.95) 50%, transparent 60%);
+  background-blend-mode: screen; animation: rtIn 0.6s cubic-bezier(.2,1.3,.4,1) backwards, rtShine 1.1s ease-in-out 0.55s backwards; }
+@keyframes rtIn { from { opacity: 0; transform: scale(1.6); letter-spacing: 0.4em; filter: blur(6px); } }
+@keyframes rtShine { from { background-position: 0 0, 130% 0; } to { background-position: 0 0, -40% 0; } }
+.result-stars span.on { animation: starLand 0.5s cubic-bezier(.2,1.6,.4,1) backwards; filter: drop-shadow(0 0 10px rgba(255,211,107,0.7)); }
+.result-stars span.off { animation: starFall 0.6s ease-in backwards; opacity: 0.55; }
+@keyframes starLand { 0% { opacity: 0; transform: scale(2.4) rotate(-40deg); } 70% { transform: scale(0.9) rotate(4deg); } 100% { opacity: 1; transform: none; } }
+@keyframes starFall { 0% { opacity: 0; transform: translateY(-30px) rotate(-20deg); } 100% { opacity: 0.55; transform: none; } }
+.result-overlay.won .result-body { animation: rbIn 0.5s ease-out 1.15s backwards; }
+@keyframes rbIn { from { opacity: 0; transform: translateY(14px); } }
+.result-overlay.won .reward-compact > * { animation: lootIn 0.45s cubic-bezier(.2,1.4,.4,1) backwards; }
+.result-overlay.won .reward-compact > *:nth-child(1) { animation-delay: 1.3s; } .result-overlay.won .reward-compact > *:nth-child(2) { animation-delay: 1.38s; }
+.result-overlay.won .reward-compact > *:nth-child(3) { animation-delay: 1.46s; } .result-overlay.won .reward-compact > *:nth-child(4) { animation-delay: 1.54s; }
+.result-overlay.won .reward-compact > *:nth-child(5) { animation-delay: 1.62s; } .result-overlay.won .reward-compact > *:nth-child(6) { animation-delay: 1.7s; }
+.result-overlay.won .reward-compact > *:nth-child(n+7) { animation-delay: 1.78s; }
+@keyframes lootIn { from { opacity: 0; transform: translateY(-16px) scale(0.8); filter: brightness(2.2); } }
+.dr-xp .lvlup { color: #ffd36b; font-weight: 800; text-shadow: 0 0 8px rgba(255,211,107,0.8); animation: lvlPulse 1.2s ease-in-out 1.6s 2 backwards; display: inline-block; }
+@keyframes lvlPulse { 0%, 100% { transform: none; } 40% { transform: scale(1.25); filter: brightness(1.6); } }
+.result-overlay.skip * { animation-delay: 0s !important; animation-duration: 0.01s !important; }
+.reduced-motion .ult-cut { display: none; }
+
+/* ─── Transitions entre écrans (v1.89.0) ─── */
+.route-layer.nav-in { animation: navIn 0.24s cubic-bezier(.2,.8,.2,1); }
+.route-layer.nav-back { animation: navBack 0.22s cubic-bezier(.2,.8,.2,1); }
+.route-layer.nav-tab { animation: navTab 0.2s ease-out; }
+@keyframes navIn { from { opacity: 0; transform: translateX(26px); } }
+@keyframes navBack { from { opacity: 0; transform: translateX(-26px); } }
+@keyframes navTab { from { opacity: 0; } }
+.reduced-motion .route-layer { animation: none; }
+.modal { animation: modalIn 0.22s cubic-bezier(.2,1.2,.4,1); }
+@keyframes modalIn { from { opacity: 0; transform: scale(0.94) translateY(6px); } }
+
+/* ─── Progression mise en scène dans le Sanctuaire (v1.89.0) ─── */
+.cele { position: fixed; inset: 0; z-index: 80; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 24px; text-align: center;
+  background: radial-gradient(circle at 50% 42%, rgba(60,40,10,0.55), rgba(4,3,8,0.94) 62%); animation: fadeIn 0.25s; cursor: pointer; }
+.cele-card { position: relative; width: min(46vw, 190px); aspect-ratio: 3 / 4; border-radius: 6px; overflow: visible; }
+.cele-card > :first-child { width: 100%; height: 100%; border-radius: 6px; overflow: hidden; display: block; border: 2px solid #e2b866; box-shadow: 0 0 30px rgba(226,184,102,0.55); animation: celeCard 0.7s cubic-bezier(.2,1.3,.4,1) backwards; }
+@keyframes celeCard { from { transform: scale(0.7); opacity: 0; filter: brightness(2); } }
+.cele-ring { position: absolute; inset: -8px; border-radius: 10px; pointer-events: none; border: 3px solid transparent;
+  background: conic-gradient(from 0deg, #ffe7a8, #e2b866 30%, transparent 30%) border-box; -webkit-mask: linear-gradient(#000 0 0) padding-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: celeRing 0.9s ease-in-out 0.3s backwards; opacity: 0; }
+.cele-level .cele-ring { opacity: 1; background: linear-gradient(0deg, #ffe7a8, #e2b866) border-box; animation: celeRise 0.9s ease-out 0.25s backwards; }
+@keyframes celeRise { from { clip-path: inset(100% 0 0 0); } to { clip-path: inset(0 0 0 0); } }
+.cele-star { position: absolute; left: 50%; top: -18px; transform: translateX(-50%); font-size: 40px; color: #ffd36b; text-shadow: 0 0 14px #ffd36b, 0 0 30px #ffae2b; animation: celeStar 0.8s cubic-bezier(.2,1.4,.4,1) 0.35s backwards; }
+@keyframes celeStar { from { transform: translate(-50%, -120px) scale(2.2) rotate(-90deg); opacity: 0; } }
+.cele-ascend .cele-card > :first-child { animation: celeCard 0.7s cubic-bezier(.2,1.3,.4,1) backwards, celeCrack 1.2s ease-out 0.5s backwards; }
+@keyframes celeCrack { 0% { border-color: #8a6a33; box-shadow: none; } 40% { border-color: #fff; box-shadow: 0 0 0 4px #fff, 0 0 60px #ffd36b; } 100% { border-color: #e2b866; } }
+.cele-awaken { background: radial-gradient(circle at 50% 42%, rgba(120,60,200,0.35), rgba(2,1,5,0.97) 60%); }
+.cele-awaken .cele-card > :first-child { animation: celeSilhouette 2s ease-out backwards; }
+@keyframes celeSilhouette { 0%, 55% { filter: brightness(0) drop-shadow(0 0 0 #fff); } 70% { filter: brightness(3); } 100% { filter: none; } }
+.cele-threads { position: absolute; left: 50%; top: 42%; width: 0; height: 0; }
+.cele-threads i { position: absolute; left: 0; top: 0; width: 46vmax; height: 2px; transform-origin: 0 50%; transform: rotate(var(--a)) scaleX(1);
+  background: linear-gradient(90deg, rgba(255,255,255,0.95), rgba(207,157,255,0.8) 30%, transparent); box-shadow: 0 0 8px #cf9dff; animation: celeThread 1.4s cubic-bezier(.6,0,.3,1) var(--d) forwards; }
+@keyframes celeThread { 0% { transform: rotate(var(--a)) scaleX(1); opacity: 0.2; } 30% { opacity: 1; } 100% { transform: rotate(calc(var(--a) + 90deg)) scaleX(0); opacity: 0; } }
+.cele-kicker { margin-top: 14px; font-size: 12px; letter-spacing: 0.22em; text-transform: uppercase; color: #d9c08a; animation: fadeIn 0.4s 0.4s backwards; }
+.cele-title { font-family: var(--font-title); font-weight: 900; font-size: 34px; color: #fff3d6; text-shadow: 0 0 18px rgba(255,200,100,0.7); animation: celeTitle 0.6s cubic-bezier(.2,1.3,.4,1) 0.45s backwards; }
+.cele-awaken .cele-kicker { animation-delay: 1.6s; } .cele-awaken .cele-title { animation-delay: 1.7s; color: #f1e4ff; text-shadow: 0 0 18px #b98cff; }
+@keyframes celeTitle { from { opacity: 0; transform: scale(1.5); letter-spacing: 0.3em; } }
+.cele-power { font-size: 14px; color: var(--text-dim); font-variant-numeric: tabular-nums; animation: fadeIn 0.4s 0.6s backwards; }
+.cele-power b { color: #fff; } .cele-power span { color: #7bea8f; font-weight: 700; margin-left: 4px; }
+.reduced-motion .cele * { animation-duration: 0.01s !important; animation-delay: 0s !important; }

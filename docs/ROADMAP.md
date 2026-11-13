@@ -558,6 +558,13 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.89.0 — Moments forts mis en scène (audit, animations)
+
+- Ultimes : coupe cinématique (bande diagonale à la couleur de la compétence, illustration du héros ou du boss en parallaxe, nom de la compétence qui s'imprime). Pas en vitesse ×3 ni avec « Animations réduites ».
+- Victoire : « VICTOIRE » se grave avec un éclat qui traverse les lettres, les étoiles se posent une à une avec une note de plus en plus haute (les étoiles manquées tombent en gris), puis le butin tombe case par case ; les héros qui montent de niveau brillent. Toucher l'écran affiche tout d'un coup.
+- Sanctuaire : chaque progression a son animation — montée de niveau (anneau doré qui monte le long de la carte), nouveau rang (étoile qui se sertit), ascension (le cadre se fissure de lumière) et éveil (silhouette, fils de lumière qui recousent le héros, puis révélation). La puissance défile jusqu'à sa nouvelle valeur.
+- Transitions : on entre dans un écran par la droite, on en revient par la gauche, les onglets se fondent ; les fenêtres apparaissent avec un léger zoom.
+
 ## ✅ Version 1.88.0 — Une seule potion, Camp et Expéditions dans les Bâtiments
 
 - Une seule Potion d'ascension remplace les potions mineure, majeure et suprême. Les stocks sont convertis (majeure = 3 potions, suprême = 6) et toutes les récompenses, prix et coûts d'ascension suivent les mêmes proportions (4, 10, 18, 42, 48, 108 potions par palier).

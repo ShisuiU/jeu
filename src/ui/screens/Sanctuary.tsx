@@ -1,5 +1,5 @@
 import { Coach } from '../components/Coach';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
 import { HERO_BY_ID } from '../../data/heroes';
@@ -39,15 +39,20 @@ export function Sanctuary({ uid }: { uid?: string }) {
   const one = elixirPreview(save, h, 1);
   const all = elixirPreview(save, h, toCap);
 
-  const run = (fn: (s: typeof save) => Check, okMsg: string) => {
+  // Moments de progression mis en scène (v1.89.0) : niveau, rang, ascension et éveil ont chacun leur animation.
+  const [cele, setCele] = useState<{ kind: Celebration; title: string; from: number; to: number; key: number } | null>(null);
+  const powerNow = () => powerOf(heroTotalStats(useGame.getState().save!, useGame.getState().save!.heroes.find((x) => x.uid === h.uid)!).total);
+  const run = (fn: (s: typeof save) => Check, okMsg: string, kind: Celebration) => {
+    const before = powerNow();
     let c: Check = { ok: false, cost: {} };
     mutate((s) => { c = fn(s); });
-    if (c.ok) { play('rare'); toast(okMsg, 'ok'); } else toast(c.reason ?? 'Impossible.', 'error');
+    if (c.ok) { play('rare'); setCele({ kind, title: okMsg, from: before, to: powerNow(), key: Date.now() }); } else toast(c.reason ?? 'Impossible.', 'error');
   };
   const elixir = (n: number) => {
+    const before = powerNow();
     let r: ReturnType<typeof applyElixirs> = { used: 0, levels: 0 };
     mutate((s) => { r = applyElixirs(s, h.uid, n); });
-    if (r.used) { play('claim'); toast(r.levels ? `+${r.levels} niveau(x)` : `+${r.used} élixir(s)`, 'ok'); } else toast(r.reason ?? 'Impossible.', 'error');
+    if (r.used) { play('claim'); if (r.levels) setCele({ kind: 'level', title: `Niveau ${useGame.getState().save!.heroes.find((x) => x.uid === h.uid)!.level}`, from: before, to: powerNow(), key: Date.now() }); else toast(`+${r.used} élixir(s)`, 'ok'); } else toast(r.reason ?? 'Impossible.', 'error');
   };
   const skillMax = d.skills.reduce((a, s) => a + s.upgrades.length + 1, 0);
   const skillNow = d.skills.reduce((a, s) => a + (h.skillLevels[s.id] ?? 1), 0);
@@ -122,7 +127,7 @@ export function Sanctuary({ uid }: { uid?: string }) {
           <Wallet ids={['rankSigil', 'gold']} cols={2} />
           <div className="upg-list">
             <CheckRow icon={<ResourceIcon icon="sigil" color="#ffd48a" size={20} />} label="Rang" value={`${h.rank}/${BALANCE.hero.maxRank}`} check={rankUpCheck(save, h)} max={h.rank >= BALANCE.hero.maxRank}
-              heroId={h.heroId} onGo={() => run((s) => rankUp(s, h.uid), `Rang ${h.rank + 1} !`)} />
+              heroId={h.heroId} onGo={() => run((s) => rankUp(s, h.uid), `Rang ${h.rank + 1}`, 'rank')} />
           </div>
           <p className="faint">Chaque rang relève le niveau maximum de {BALANCE.hero.levelsPerRank} niveaux et renforce le héros.</p>
         </>
@@ -132,9 +137,9 @@ export function Sanctuary({ uid }: { uid?: string }) {
           <Wallet ids={['potionMinor', 'awakenEssence', 'gold']} cols={3} />
           <div className="upg-list">
             <CheckRow icon={<ResourceIcon icon="potion" color="#6fa8ff" size={20} />} label="Ascension" value={`${h.ascension}/${BALANCE.hero.maxAscension}`} check={ascendCheck(save, h)} max={h.ascension >= BALANCE.hero.maxAscension}
-              heroId={h.heroId} onGo={() => run((s) => ascend(s, h.uid), `Ascension ${h.ascension + 1} !`)} />
+              heroId={h.heroId} onGo={() => run((s) => ascend(s, h.uid), `Ascension ${h.ascension + 1}`, 'ascend')} />
             <CheckRow icon={<ResourceIcon icon="essence" color="#ff9bb5" size={20} />} label="Éveil" value={`${h.awaken}/${BALANCE.hero.maxAwaken}`} check={awakenCheck(save, h)} max={h.awaken >= BALANCE.hero.maxAwaken}
-              heroId={h.heroId} onGo={() => run((s) => awaken(s, h.uid), `Éveil ${h.awaken + 1} !`)} />
+              heroId={h.heroId} onGo={() => run((s) => awaken(s, h.uid), `Éveil ${h.awaken + 1}`, 'awaken')} />
           </div>
           <p className="faint">L’éveil demande un doublon du héros (obtenu en l’invoquant à nouveau).</p>
         </>
@@ -153,7 +158,34 @@ export function Sanctuary({ uid }: { uid?: string }) {
           <HeroUpgrade h={h} section="skills" />
         </>
       )}
+      {cele && <CelebrationView key={cele.key} kind={cele.kind} title={cele.title} from={cele.from} to={cele.to} heroId={h.heroId} onDone={() => setCele(null)} />}
     </Screen>
+  );
+}
+
+type Celebration = 'level' | 'rank' | 'ascend' | 'awaken';
+const CELE_LABEL: Record<Celebration, string> = { level: 'Montée de niveau', rank: 'Nouveau rang', ascend: 'Ascension', awaken: 'Éveil' };
+/** Animation de progression : anneau doré (niveau), étoile sertie (rang), cadre qui se fissure de lumière (ascension),
+ *  fils de lumière qui recousent le héros (éveil, le plus rare). Toucher pour fermer ; elle se ferme seule. */
+function CelebrationView({ kind, title, from, to, heroId, onDone }: { kind: Celebration; title: string; from: number; to: number; heroId: string; onDone: () => void }) {
+  const reduced = useGame.getState().save?.settings.reducedMotion;
+  const [shown, setShown] = useState(from);
+  useEffect(() => {
+    const total = kind === 'awaken' ? 3600 : 2400;
+    const t0 = performance.now(); let raf = 0;
+    const tick = (now: number) => { const k = Math.min(1, Math.max(0, (now - t0 - (kind === 'awaken' ? 1500 : 600)) / 700)); setShown(Math.round(from + (to - from) * k)); if (k < 1) raf = requestAnimationFrame(tick); };
+    raf = requestAnimationFrame(tick);
+    const end = window.setTimeout(onDone, reduced ? 1200 : total);
+    return () => { cancelAnimationFrame(raf); clearTimeout(end); };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  return (
+    <div className={`cele cele-${kind}`} onClick={onDone} role="status" aria-label={`${CELE_LABEL[kind]} : ${title}`}>
+      {kind === 'awaken' && <div className="cele-threads" aria-hidden>{Array.from({ length: 12 }, (_, i) => <i key={i} style={{ ['--a' as string]: `${i * 30}deg`, ['--d' as string]: `${0.15 + (i % 4) * 0.08}s` }} />)}</div>}
+      <div className="cele-card"><HeroArt heroId={heroId} kind="portrait" />{kind === 'rank' && <span className="cele-star">★</span>}<span className="cele-ring" /></div>
+      <div className="cele-kicker">{CELE_LABEL[kind]}</div>
+      <div className="cele-title">{title}</div>
+      <div className="cele-power">Puissance <b>{fmt(shown)}</b>{to > from && <span> +{fmt(to - from)}</span>}</div>
+    </div>
   );
 }
 

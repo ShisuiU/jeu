@@ -196,6 +196,11 @@ export default function App() {
     if (cloudWanted() || googleBack) void loadCloud().then((m) => { m.startCloud(); if (googleBack) void m.finishGoogleRedirect(); }).catch(() => {});
   }, [started]);
 
+  // Transitions d'écran (v1.89.0) : on entre par la droite, on revient par la gauche ; un onglet du bas fond l'écran.
+  const lastDepth = useRef(depth);
+  const navDir = depth > lastDepth.current ? 'nav-in' : depth < lastDepth.current ? 'nav-back' : 'nav-tab';
+  useEffect(() => { lastDepth.current = depth; }, [depth]);
+
   // Retour par glissement depuis le bord gauche (comme les apps iPhone), sauf en combat.
   const swipe = useRef<{ x: number; y: number } | null>(null);
   const onTouchStart = (e: React.TouchEvent) => {
@@ -224,7 +229,7 @@ export default function App() {
         <Title ready={ready && !!save} onStart={start} error={error} />
       ) : (
         <>
-          <div key={`${depth}-${route.name}`} style={{ position: 'absolute', inset: 0 }}>
+          <div key={`${depth}-${route.name}`} className={`route-layer ${navDir}`} style={{ position: 'absolute', inset: 0 }}>
             <ErrorBoundary resetKey={`${depth}-${route.name}`}>
               <Suspense fallback={<div className="screen"><div className="bg-ambient" /></div>}>{renderRoute(route)}</Suspense>
             </ErrorBoundary>

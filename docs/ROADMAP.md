@@ -558,6 +558,13 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.90.0 — Combat tactique et préparation (audit)
+
+- Fracture des boss : une jauge sous chaque boss. Chaque coup l'use, beaucoup plus avec l'affinité avantagée (▲). À zéro, le boss est brisé : il perd son tour et subit +40 % de dégâts pendant 2 de ses tours, puis la jauge se reforme. Gros effet à l'écran quand elle cède ; explication dans la fiche du boss (appui long).
+- Intention des boss : quand l'ultime d'un boss part au prochain tour, son nom s'affiche au-dessus de lui (⚠) pour que tu puisses t'y préparer.
+- Préparation : un pronostic en haut de l'écran (Facile, Équilibré, Risqué), calculé en simulant 6 combats avec ton équipe et le vrai moteur.
+- Défaite : jusqu'à 3 conseils précis avec un bouton qui y mène (affinité qui manque contre ces ennemis, rang à monter, héros le plus faible, emplacements d'équipement vides).
+
 ## ✅ Version 1.89.1 — Illustrations instantanées
 
 - Miniatures légères (300 × 400, ~22 Ko au lieu de ~85 Ko) pour les 89 héros et les 49 ennemis, utilisées sur toutes les cartes. Elles sont embarquées dans le jeu (disponibles hors ligne dès l'installation) au lieu d'être téléchargées au moment où elles s'affichent.

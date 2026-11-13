@@ -29,6 +29,12 @@ const statusValue = (u: Unit, st: StatusId) => u.statuses.filter((x) => x.status
 const hasSkill = (u: Unit, id: string) => u.skills.some((s) => s.id === id);
 
 /** Statistique effective (base + effets en cours + bonus dynamiques). */
+/** Fracture des boss : jauge de 100, −14 par coup avantagé, −5 sinon ; brisé : un tour perdu, +40 % de dégâts subis pendant 2 de ses tours. */
+const FRACTURE_MAX = 100;
+const FRACTURE_STRONG = 14;
+const FRACTURE_HIT = 5;
+const FRACTURE_TURNS = 2;
+const FRACTURE_DMG = 0.4;
 /** Fureur du temps : à partir de son 31ᵉ tour, un boss gagne +10 % d'ATQ par tour. */
 const BOSS_FURY_TURN = 30;
 const BOSS_FURY_STEP = 0.1;
@@ -127,6 +133,8 @@ function spawnWave(s: BattleState, wave: UnitSetup[]) {
     const u = buildUnit(w, 'enemy', s.wave * 10 + i);
     u.tm = rand(s) * 100;
     if (s.mechanics && u.isBoss) { const c = carapaceCharges(u.level); if (c) { u.flags.carapace = c; u.flags.carapaceMax = c; } }
+    // Fracture (v1.90.0, audit G-2) : jauge des boss, brisée surtout par l'affinité avantagée.
+    if (u.isBoss && u.side === 'enemy') { u.flags.fracture = FRACTURE_MAX; u.flags.fractureMax = FRACTURE_MAX; }
     s.units.push(u);
   });
 }
@@ -229,6 +237,8 @@ function dealDamage(s: BattleState, source: Unit, target: Unit, effect: Extract<
   // Rôles (v1.87.0, audit E-2) : les assassins achèvent (+25 % sous 50 % de PV), les attaquants frappent plus fort de base.
   if (source.role === 'assassin' && hpPct(target) < 0.5) dmg *= 1.25;
   if (source.role === 'attacker' && skill.slot === 'basic') dmg *= 1.1;
+  // Fracture : un boss brisé encaisse +40 %.
+  if (target.flags.fractured > 0) dmg *= 1 + FRACTURE_DMG;
   // Carapace : dégâts réduits, une charge en moins par coup.
   let broke = false;
   if (target.flags.carapace > 0) {
@@ -256,6 +266,11 @@ function dealDamage(s: BattleState, source: Unit, target: Unit, effect: Extract<
   if (broke && target.alive && target.hp > 0) {
     s.events.push({ kind: 'carapace', target: target.id, charges: 0, broken: true });
     addStatus(s, target, 'defDown', 2, 0.3, source);
+  }
+  // Fracture : chaque coup use la jauge du boss (beaucoup plus avec l'affinité avantagée) ; à zéro, il est brisé.
+  if (target.flags.fractureMax && !target.flags.fractured && target.hp > 0) {
+    target.flags.fracture = Math.max(0, target.flags.fracture - (aff > 1 ? FRACTURE_STRONG : FRACTURE_HIT));
+    if (target.flags.fracture === 0) { target.flags.fractured = FRACTURE_TURNS; target.flags.fractureStun = 1; s.events.push({ kind: 'fracture', target: target.id }); }
   }
   // Boss sous la moitié de ses PV : il enrage (+30 % ATQ), et le joueur le voit.
   if (target.isBoss && !target.flags.enraged && hpPct(target) < 0.5 && target.hp > 0) { target.flags.enraged = 1; s.events.push({ kind: 'rage', target: target.id }); }
@@ -372,6 +387,7 @@ export function beginTurn(s: BattleState): Unit | null {
     }
     if (u.alive && u.isBoss && u.side === 'enemy') {
       u.flags.bossActs = (u.flags.bossActs ?? 0) + 1;
+      if (u.flags.fractured > 0) { u.flags.fractured -= 1; if (!u.flags.fractured) u.flags.fracture = u.flags.fractureMax; }
       if (u.flags.bossActs === BOSS_FURY_TURN + 1) s.events.push({ kind: 'rage', target: u.id });
     }
     // Boss : la Carapace brisée se reforme.
@@ -395,6 +411,7 @@ export function beginTurn(s: BattleState): Unit | null {
     endCheck(s);
     if (s.outcome !== 'running') return null;
     if (!u.alive) { s.actionCount += 1; continue; }
+    if (u.flags.fractureStun) { u.flags.fractureStun = 0; s.events.push({ kind: 'skip', target: u.id, status: 'stun' }); endTurn(s, u); continue; }
     const cc = u.statuses.find((x) => x.status === 'stun' || x.status === 'freeze');
     if (cc) {
       s.events.push({ kind: 'skip', target: u.id, status: cc.status });

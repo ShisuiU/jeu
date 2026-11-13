@@ -558,6 +558,13 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.80.0 — Nyxa Point-Zéro, nouvelle Mythique
+
+- **Nyxa Point-Zéro, Lame de la Réfraction** : 3ᵉ héros Mythique du jeu — Assassin, affinité Néant, famille du Prisme. Prototype zéro de l'Ordre, perdue dans la Fracture et revenue avec le Néant dans son armure.
+- Compétences : *Lame réfractée* (2 frappes qui ignorent 20 % de la DÉF), *Pas de phase* (avance sa jauge de 30 %, frappe en ignorant 30 % de la DÉF et peut réduire la DÉF de 30 %), *Point zéro* (retire les bonus de la cible puis une frappe énorme : combo si DÉF réduite, achèvement sous 35 % de PV).
+- Aura de chef : +13 % de taux critique pour toute l'équipe.
+- Elle rejoint les invocations comme les autres Mythiques. Portrait peint avec SpriteCook (le portrait choisi par le joueur parmi quatre propositions).
+
 ## ✅ Version 1.79.2 — Commandes de combat lisibles
 
 - Boutons AUTO et vitesse (×1, ×2, ×3) : le texte est centré dans son cadre peint (il débordait en haut ou en bas).

@@ -442,6 +442,11 @@ export const HERO_LINES: Record<string, string[]> = {
     'Mes tribus ne plient pas.',
     'Le soleil se lève pour sa reine.',
   ],
+  nyxa: [
+    'Le Néant m’a appris où frapper.',
+    'Je ne sers plus personne. Mais je reste.',
+    'Plie la lumière. Disparais.',
+  ],
 };
 
 /** Réplique suivante d'un héros (la citation de sa fiche, puis ses trois répliques). */

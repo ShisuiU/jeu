@@ -23,6 +23,7 @@ import { playerTeamPower } from '../../game/arena';
 import { ENEMIES } from '../../data/enemies';
 import { playCast, playDeath, playDot, playHeal, playImpact, playRevive, playShield, playStatus } from '../../audio/battleSfx';
 import { skillFx, type SkillFx } from '../fx/skillFx';
+import { Stage25, type Pt } from '../fx/stage25';
 import { AffinityIcon, affinityEdge } from '../art/Identity';
 import { AFFINITIES } from '../../data/affinities';
 import { HeroArt } from '../art/HeroArt';
@@ -137,6 +138,86 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
     setFxItems((l) => [...l, { ...item, id }]);
     setTimeout(() => setFxItems((l) => l.filter((x) => x.id !== id)), item.dur + 60);
   };
+  // ─── Mise en scène 2,5D (v1.81.0) : caméra, assauts au corps à corps, impacts, dissolution ───
+  const camRef = useRef<HTMLDivElement>(null);
+  const stageCanvas = useRef<HTMLCanvasElement>(null);
+  const stage = useRef<Stage25 | null>(null);
+  const camScale = useRef(1);
+  const motionOn = () => !useGame.getState().save?.settings.reducedMotion;
+  useEffect(() => {
+    const cv = stageCanvas.current;
+    if (!cv || !motionOn()) return;
+    const st = new Stage25(cv, () => speedRef.current, ['#b98cff', '#f2c46b', '#b98cff']);
+    st.start(); stage.current = st;
+    return () => { st.stop(); stage.current = null; };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const center = (id: string): Pt | null => { const p = posOf(id); return p ? { x: p.x, y: p.y } : null; };
+  /** Caméra : zoom léger vers l'action, le décor bouge moins vite (profondeur). */
+  const camTo = (p: Pt | null, z = 1, ms = 420) => {
+    const el = camRef.current, host = battleRef.current;
+    if (!el || !host || !motionOn()) return;
+    const spd = speedRef.current;
+    const bgs = host.querySelectorAll<HTMLElement>('.painted-bg img, .battle-bg');
+    const tr = `transform ${Math.round(ms / spd)}ms cubic-bezier(.2,.8,.2,1)`;
+    el.style.transition = tr;
+    if (!p) { el.style.transform = ''; camScale.current = 1; bgs.forEach((b) => { b.style.transition = tr; b.style.transform = ''; }); return; }
+    const c = { x: el.offsetLeft + el.offsetWidth / 2, y: el.offsetTop + el.offsetHeight / 2 };
+    const k = 0.6; // la cible fait un peu plus de la moitié du chemin vers le centre
+    const tx = (k - z) * (p.x - c.x), ty = (k - z) * (p.y - c.y) * 0.6;
+    el.style.transform = `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px) scale(${z})`;
+    camScale.current = z;
+    bgs.forEach((b) => { b.style.transition = tr; b.style.transform = `translate(${(tx * 0.22).toFixed(1)}px, ${(ty * 0.22).toFixed(1)}px) scale(${1 + (z - 1) * 0.35})`; });
+  };
+  /** Assaut : la carte s'élance vers sa cible (petit recul, ruée), puis revient à sa place. */
+  const lungeTo = async (actor: Unit, from: { x: number; y: number; w: number }, to: { x: number; y: number; w: number }) => {
+    const el = battleRef.current?.querySelector<HTMLElement>(`[data-uid="${actor.id}"]`);
+    if (!el) return null;
+    const sc = camScale.current || 1;
+    const dir = actor.side === 'ally' ? 1 : -1; // l'allié monte vers l'ennemi et s'arrête juste devant lui
+    const dx = (to.x - from.x) / sc, dy = (to.y - from.y + dir * to.w * 0.62) / sc;
+    const depth = actor.side === 'ally' ? 0.9 : 1.1; // plus loin = plus petit
+    const field = el.closest<HTMLElement>('.field');
+    if (field) { field.style.position = 'relative'; field.style.zIndex = '6'; }
+    el.style.zIndex = '6';
+    const cur = getComputedStyle(el).transform;
+    const b = cur && cur !== 'none' ? ` ${cur}` : '';
+    const spd = speedRef.current;
+    const away = `translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px)${b} scale(${depth})`;
+    const go = el.animate([
+      { transform: `translate(0px, 0px)${b}` },
+      { transform: `translate(${(-dx * 0.04).toFixed(1)}px, ${dir * 12}px)${b}`, offset: 0.3 },
+      { transform: away },
+    ], { duration: 330 / spd, easing: 'cubic-bezier(.45,0,.85,.45)', fill: 'forwards' });
+    await go.finished.catch(() => undefined);
+    return async () => {
+      const back = el.animate([{ transform: away }, { transform: `translate(0px, 0px)${b}` }], { duration: 300 / speedRef.current, easing: 'cubic-bezier(.3,.7,.4,1)', fill: 'forwards' });
+      go.cancel();
+      await back.finished.catch(() => undefined);
+      back.cancel();
+      el.style.zIndex = '';
+      if (field) { field.style.zIndex = ''; field.style.position = ''; }
+    };
+  };
+  /** Réaction au coup : éclair blanc et recul dans le sens du coup. */
+  const knock = (targetId: string, sourceId: string, color: string, heavy: boolean) => {
+    if (!motionOn()) return;
+    const tp = center(targetId); if (!tp) return;
+    const sp = center(sourceId);
+    let kx = 0, ky = 0;
+    if (sp && (sp.x !== tp.x || sp.y !== tp.y)) { const l = Math.hypot(tp.x - sp.x, tp.y - sp.y); kx = (tp.x - sp.x) / l; ky = (tp.y - sp.y) / l; }
+    const st = stage.current;
+    if (st) {
+      st.burst(tp, color, heavy ? 30 : 18, heavy ? 0.44 : 0.32); st.burst(tp, '#ffffff', 7, 0.24);
+      st.slash(tp, color, Math.atan2(ky, kx) + Math.PI / 2 + (Math.random() - 0.5) * 0.6, 40);
+    }
+    const art = battleRef.current?.querySelector<HTMLElement>(`[data-uid="${targetId}"] .u-art`);
+    const m = heavy ? 13 : 8;
+    art?.animate([
+      { transform: 'translate(0px, 0px)', filter: 'brightness(1)' },
+      { transform: `translate(${(kx * m).toFixed(1)}px, ${(ky * m).toFixed(1)}px) rotate(${(kx * 4).toFixed(1)}deg)`, filter: 'brightness(2.3) saturate(0.3)', offset: 0.18 },
+      { transform: 'translate(0px, 0px)', filter: 'brightness(1)' },
+    ], { duration: 360 / speedRef.current, easing: 'ease-out' });
+  };
   const fxFor = (unitId: string): SkillFx => { const u = unitById(s, unitId); const sk = u.skills.find((x) => x.slot === 'basic') ?? u.skills[0]; return skillFx(sk, u.affinity); };
 
   const playEvents = async (fx?: SkillFx, actorId?: string) => {
@@ -154,14 +235,15 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
         case 'damage': {
           const f = fx && e.source === actorId ? fx : fxFor(e.source);
           addVfx(e.target, `impact w-${f.weapon} e-${f.element}${e.crit ? ' crit' : ''}`, f.color);
+          { const t = s.units.find((u) => u.id === e.target); knock(e.target, e.source, f.color, e.crit || (!!t && e.amount > t.base.hp * 0.25)); }
           { const t = s.units.find((u) => u.id === e.target); const big = !!t && e.amount > t.base.hp * 0.25; if (e.crit || big) doShake(e.crit && big ? 'hard' : 'soft'); }
           if (!soundOnce.has('hit:' + e.source)) { soundOnce.add('hit:' + e.source); playImpact(f, { crit: ev.some((x) => x.kind === 'damage' && x.source === e.source && x.crit), many: ev.filter((x) => x.kind === 'damage' && x.source === e.source).length > 1 }); }
           if (f.weapon === 'blunt' || e.crit) heavy.add(e.target);
           hit.add(e.target); if (e.combo) addPopup(e.target, 'Combo !', 'buff'); addPopup(e.target, `${e.crit ? 'CRIT ' : ''}-${e.amount}${e.strong ? ' ▲' : e.weak ? ' ▼' : ''}`, `dmg ${e.crit ? 'crit' : ''} ${e.strong ? 'strong' : ''} ${e.weak ? 'weak' : ''}`); pause = true; break;
         }
         case 'dot': hit.add(e.target); addPopup(e.target, `-${e.amount}`, e.status === 'poison' ? 'poison' : 'burn'); addVfx(e.target, `impact w-none e-${e.status === 'poison' ? 'poison' : 'fire'} small`, e.status === 'poison' ? '#8be04e' : '#ff8a3a'); if (!soundOnce.has('dot' + e.status)) { soundOnce.add('dot' + e.status); playDot(e.status); } pause = true; break;
-        case 'heal': if (e.amount > 0) { addPopup(e.target, `+${e.amount}`, 'heal'); addVfx(e.target, 'healfx', '#7bea8f'); if (!soundOnce.has('heal')) { soundOnce.add('heal'); playHeal(); } } pause = true; break;
-        case 'shield': addPopup(e.target, `+${e.amount}`, 'shieldp'); addVfx(e.target, 'shieldfx', '#aad7ff'); if (!soundOnce.has('shield')) { soundOnce.add('shield'); playShield(); } break;
+        case 'heal': if (e.amount > 0) { addPopup(e.target, `+${e.amount}`, 'heal'); { const p = center(e.target); if (p) stage.current?.motes(p, '#7bea8f', 16, 26, 0.06); } addVfx(e.target, 'healfx', '#7bea8f'); if (!soundOnce.has('heal')) { soundOnce.add('heal'); playHeal(); } } pause = true; break;
+        case 'shield': addPopup(e.target, `+${e.amount}`, 'shieldp'); { const p = center(e.target); if (p) stage.current?.motes(p, '#aad7ff', 10, 26, 0.04); } addVfx(e.target, 'shieldfx', '#aad7ff'); if (!soundOnce.has('shield')) { soundOnce.add('shield'); playShield(); } break;
         // Effets : seuls les malus importants s'affichent en texte ; les bonus n'ont qu'un halo (les pastilles suffisent).
         case 'status': if (['stun', 'freeze', 'taunt'].includes(e.status)) addPopup(e.target, STATUS_INFO[e.status].name, 'debuff'); if (!vfxBusy(e.target)) addVfx(e.target, STATUS_INFO[e.status].debuff ? 'cursefx' : 'bufffx', STATUS_INFO[e.status].color); if (!soundOnce.has('st:' + e.status)) { soundOnce.add('st:' + e.status); playStatus(e.status, STATUS_INFO[e.status].debuff); } break;
         case 'resist': if (e.immune) addPopup(e.target, 'Immunisé', 'resist'); break;
@@ -169,6 +251,16 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
         case 'death': {
           addPopup(e.target, 'K.O.', 'death'); playDeath(); pause = true;
           const dead = s.units.find((u) => u.id === e.target);
+          // Dissolution : la carte blanchit puis s'éteint en poussière (violette pour les ennemis).
+          if (motionOn()) {
+            const p = center(e.target);
+            if (p && stage.current) { stage.current.motes(p, dead?.side === 'enemy' ? '#b48cff' : '#cfc3a8', 40, 30, 0.08); stage.current.motes(p, '#ffffff', 8, 24, 0.05); }
+            battleRef.current?.querySelector<HTMLElement>(`[data-uid="${e.target}"] .u-art`)?.animate([
+              { filter: 'brightness(1)', transform: 'translateY(0px)', opacity: 1 },
+              { filter: 'brightness(2.2) grayscale(0.6)', transform: 'translateY(-4px)', opacity: 1, offset: 0.2 },
+              { filter: 'brightness(0.5) grayscale(1) blur(2px)', transform: 'translateY(-12px) scale(0.97)', opacity: 0.5 },
+            ], { duration: 900 / speedRef.current, easing: 'ease-in' });
+          }
           // Coup fatal : le dernier ennemi de la dernière vague tombe (surtout un boss) : ralenti et tremblement.
           if (dead && dead.side === 'enemy' && s.outcome === 'won' && !s.pendingWaves.length && !s.units.some((u) => u.side === 'enemy' && u.alive)) {
             doShake('hard');
@@ -176,7 +268,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
           }
           break;
         }
-        case 'revive': addVfx(e.target, 'revivefx', '#ffd36b'); addPopup(e.target, 'Ressuscité !', 'heal'); playRevive(); pause = true; break;
+        case 'revive': addVfx(e.target, 'revivefx', '#ffd36b'); { const p = center(e.target); if (p) stage.current?.motes(p, '#ffd36b', 30, 30, 0.07); } addPopup(e.target, 'Ressuscité !', 'heal'); playRevive(); pause = true; break;
         case 'undying': addPopup(e.target, 'Ce qui ne meurt pas', 'buff'); break;
         case 'extraTurn': addPopup(e.target, 'Tour bonus !', 'buff'); break;
         case 'cleanse': break;
@@ -223,10 +315,16 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
     // Lancement : son + trajet jusqu'aux cibles (projectile, pluie, vague, rayon de soutien).
     playCast(fx);
     let travel = fx.motion === 'melee' ? 120 : 0;
+    let comeBack: (() => Promise<void>) | null = null;
     if (!reduced) {
       const from = posOf(actor.id);
       const targets = previewTargets(s, actor, sk, a.targetId);
       const spd = speedRef.current;
+      // Caméra : vers le milieu entre le lanceur et sa (première) cible ; plus près pour une ultime.
+      const aim = targets.find((t) => t.id !== actor.id);
+      const aimP = aim ? posOf(aim.id) : null;
+      if (from) camTo(aimP ? { x: (from.x + aimP.x) / 2, y: (from.y + aimP.y) / 2 } : from, sk.slot === 'ultimate' ? 1.12 : 1.06);
+      if (fx.motion === 'melee' && from && aim && aim.side !== actor.side && aimP) { comeBack = await lungeTo(actor, from, aimP); travel = 0; }
       if (fx.motion === 'projectile' && from) {
         for (const t of targets) { const to = posOf(t.id); if (to) spawn({ kind: 'proj', fx, x0: from.x, y0: from.y, x1: to.x, y1: to.y, dur: 320 / spd }); }
         travel = 320;
@@ -247,7 +345,10 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
     }
     await wait(travel / speedRef.current);
     performAction(s, a);
-    await playEvents(fx, actor.id);
+    const shown = playEvents(fx, actor.id);
+    if (comeBack) { await wait(170 / speedRef.current); await comeBack(); }
+    await shown;
+    camTo(null, 1, 520);
     setActing(null);
     setBanner(null);
   };
@@ -405,6 +506,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
         const aRows = (ab.length ? 1 : 0) + (af.length ? 1 : 0) || 1;
         const bossBonus = side('enemy').some((u) => u.isBoss) ? 0.25 : 0;
         return (
+          <div className="cam25" ref={camRef}>
           <div className="fields" style={{ ['--rows' as string]: eRows + aRows + bossBonus }}>
             <div key={`wave-${s.wave}`} className={`field enemy-field ${s.wave > 1 ? 'wave-in' : ''}`} style={{ flexGrow: eRows + bossBonus }}>
               {eb.length > 0 && <div className="frow back">{eb.map(renderUnit)}</div>}
@@ -414,6 +516,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
               {af.length > 0 && <div className="frow">{af.map(renderUnit)}</div>}
               {ab.length > 0 && <div className="frow back">{ab.map(renderUnit)}</div>}
             </div>
+          </div>
           </div>
         );
       })()}
@@ -430,6 +533,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
         </div>
       )}
       <FxLayer items={fxItems} />
+      <canvas ref={stageCanvas} className="stage25-fx" aria-hidden />
       {/* Tutoriel du combat : une seule bulle au premier combat ; AUTO au combat suivant (les affinités sont expliquées à la préparation). Bulles en haut : l'équipe reste visible. */}
       <Coach id="battle_skill" place="top" target=".battle-controls .skills" when={awaiting && !auto && phase === 'fight'} text="C’est ton tour : choisis une compétence en bas, puis touche un ennemi." />
       <Coach id="battle_auto" place="top" target=".ctrl-col" when={secondFight && awaiting && !auto && phase === 'fight'} text="AUTO fait jouer l’équipe toute seule (touche un ennemi pour qu’elle le vise en priorité) ; ×1 / ×2 / ×3 accélère le combat." />

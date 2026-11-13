@@ -19,7 +19,7 @@ export const CAMPAIGN_LOOT: { resource: keyof Reward; amount: number; weight: nu
   { resource: 'forgeOre', amount: 12, weight: 25 },
   { resource: 'potionMinor', amount: 2, weight: 20 },
   { resource: 'skillTome', amount: 1, weight: 9 },
-  { resource: 'potionGreater', amount: 1, weight: 7 },
+  { resource: 'potionMinor', amount: 3, weight: 7 },
   { resource: 'rankSigil', amount: 1, weight: 6 },
   { resource: 'awakenEssence', amount: 1, weight: 3 },
 ];
@@ -130,7 +130,7 @@ export function applyStageResult(s: SaveData, stageId: string, diff: DifficultyI
   // Butin aléatoire : matériaux d'amélioration. L'équipement ne vient que des donjons d'équipement (v1.68.11, 4 donjons depuis la v1.71.0).
   const r = seededRand(now ^ (prog.clears * 7919) ^ stage.index);
   // Chapitre 1 : seulement ce qui sert tout de suite (les potions d'ascension ne servent qu'au niveau 10).
-  const table = stage.chapter === 1 ? CAMPAIGN_LOOT.filter((l) => !['potionMinor', 'potionGreater', 'rankSigil', 'awakenEssence'].includes(l.resource)) : CAMPAIGN_LOOT;
+  const table = stage.chapter === 1 ? CAMPAIGN_LOOT.filter((l) => !['potionMinor', 'rankSigil', 'awakenEssence'].includes(l.resource)) : CAMPAIGN_LOOT;
   const [lootKey, lootAmount] = pickWeighted(r, table.map((l) => [[l.resource, l.amount] as [keyof Reward, number], l.weight]));
   result.loot = { [lootKey]: Math.round(lootAmount * mult) };
   applyReward(s, result.loot);

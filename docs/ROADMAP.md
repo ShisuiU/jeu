@@ -558,6 +558,11 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.88.0 — Une seule potion, Camp et Expéditions dans les Bâtiments
+
+- Une seule Potion d'ascension remplace les potions mineure, majeure et suprême. Les stocks sont convertis (majeure = 3 potions, suprême = 6) et toutes les récompenses, prix et coûts d'ascension suivent les mêmes proportions (4, 10, 18, 42, 48, 108 potions par palier).
+- Le Camp des Héritiers et les Expéditions rejoignent les Bâtiments : deux entrées en tête de l'écran, avec leur état (plein, butin de retour…). Ils quittent l'accueil et l'onglet Combats ; la pastille des Bâtiments les prend en compte.
+
 ## ✅ Version 1.87.0 — Progression et équilibrage (audit, phase 2)
 
 - Résonance : tous les héros prennent automatiquement le niveau de ton 5ᵉ meilleur héros (dans la limite de leur rang). Un héros invoqué est jouable tout de suite ; l'or et les élixirs servent à pousser tes 5 meilleurs. Rangs, ascension, éveil et compétences restent propres à chaque héros.

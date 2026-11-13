@@ -13,6 +13,11 @@ import { play } from '../../audio/sfx';
 import { Modal, Screen, fmt } from '../components/common';
 import { HeroArt } from '../art/HeroArt';
 import { Icon } from '../art/Icons';
+import { EnemyArt } from '../art/EnemyArt';
+import campArt from '../../assets/home/btn_camp.webp';
+import { campElapsed, campMsToFull } from '../../game/camp';
+import { EXPEDITION_SLOTS, finishedExpeditions } from '../../game/expeditions';
+import { isUnlocked, unlockText } from '../../game/unlocks';
 
 const D = ({ size = 18 }: { size?: number }) => <Icon.diamond size={size} />;
 
@@ -23,6 +28,7 @@ export function Buildings() {
   const now = useGame((s) => s.now);
   const mutate = useGame((s) => s.mutate);
   const toast = useUI((s) => s.toast);
+  const push = useUI((s) => s.push);
   const [pick, setPick] = useState<number | null>(null);
 
   const b = save.buildings;
@@ -41,6 +47,25 @@ export function Buildings() {
 
   return (
     <Screen title="Bâtiments" right={<span className="bld-wallet"><D /> {fmt(diamonds)}</span>}>
+      {/* v1.88.0 : le Camp et les Expéditions rejoignent les Bâtiments (tout ce qui travaille pour toi, même jeu fermé). */}
+      <div className="bld-links">
+        {([
+          { id: 'camp', title: 'Camp des Héritiers', feature: 'camp' as const, art: <img src={campArt} alt="" draggable={false} />,
+            sub: campElapsed(save, now) >= 12 * 3600_000 ? 'Plein : récupère le butin !' : `Butin d’absence · plein dans ${formatDuration(campMsToFull(save, now))}`, dot: campElapsed(save, now) >= 8 * 3600_000, go: () => push({ name: 'camp' }) },
+          { id: 'exp', title: 'Expéditions', feature: 'expeditions' as const, art: <EnemyArt enemyId="seam_stalker" />,
+            sub: (() => { const f = finishedExpeditions(save, now); const r = save.expeditions?.runs.length ?? 0; return f ? `${f} de retour : butin à récupérer` : r ? `${r} en cours` : `${EXPEDITION_SLOTS} missions par jour, même jeu fermé`; })(), dot: finishedExpeditions(save, now) > 0, go: () => push({ name: 'expeditions' }) },
+        ]).map((l) => {
+          const locked = !isUnlocked(save, l.feature);
+          return (
+            <button key={l.id} className={`bld-link ${locked ? 'locked' : ''}`} onClick={() => (locked ? toast(`${l.title} : ${unlockText(l.feature).toLowerCase()} de la campagne.`) : l.go())}>
+              <span className="bl-art">{l.art}</span>
+              <span className="bl-txt"><b>{l.title}</b><small>{locked ? unlockText(l.feature) : l.sub}</small></span>
+              {locked ? <Icon.lock size={16} /> : l.dot ? <span className="badge-dot" /> : <span className="bl-chev">›</span>}
+            </button>
+          );
+        })}
+      </div>
+
       {/* ── Mine ── */}
       <section className="bld-card">
         <div className="bld-art"><img src={mineArt} alt="" draggable={false} /><span className="bld-lvl">Niv. {b.mineLevel}/{MINE.maxLevel}</span></div>

@@ -56,7 +56,7 @@ export const DUNGEONS: DungeonDef[] = [
   },
   {
     id: 'alchemy', name: 'Laboratoire Brisé', description: 'Potions d’ascension.', boss: 'rogue_alchemist', minions: ['hollow_cantor', 'rift_hound', 'hollow_soldier'],
-    reward: (f) => (f <= 3 ? { potionMinor: 2 + f * 2 } : f <= 7 ? { potionMinor: 4 + f, potionGreater: f - 2 } : { potionGreater: Math.min(f, 10), potionSupreme: f - 6 }),
+    reward: (f) => (f <= 3 ? { potionMinor: 2 + f * 2 } : f <= 7 ? { potionMinor: 4 * f - 2 } : { potionMinor: 3 * Math.min(f, 10) + 6 * (f - 6) }),
     color: '#7fe7ff', icon: 'potion', region: 'prism',
   },
   {

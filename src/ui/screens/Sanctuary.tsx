@@ -129,7 +129,7 @@ export function Sanctuary({ uid }: { uid?: string }) {
       )}
       {tab === 'ascend' && (
         <>
-          <Wallet ids={['potionMinor', 'potionGreater', 'potionSupreme', 'awakenEssence', 'gold']} cols={5} />
+          <Wallet ids={['potionMinor', 'awakenEssence', 'gold']} cols={3} />
           <div className="upg-list">
             <CheckRow icon={<ResourceIcon icon="potion" color="#6fa8ff" size={20} />} label="Ascension" value={`${h.ascension}/${BALANCE.hero.maxAscension}`} check={ascendCheck(save, h)} max={h.ascension >= BALANCE.hero.maxAscension}
               heroId={h.heroId} onGo={() => run((s) => ascend(s, h.uid), `Ascension ${h.ascension + 1} !`)} />

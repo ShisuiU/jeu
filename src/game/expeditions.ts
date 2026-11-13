@@ -33,7 +33,7 @@ const PLACES: { place: string; region: string; art: string; focus: Reward }[] = 
   { place: 'Les tours du Prisme', region: 'prism', art: 'mother_ai', focus: { forgeOre: 14, skillTome: 0.12 } },
   { place: 'Les sables d’Akkar', region: 'akkar', art: 'scorpion_king', focus: { gold: 2600, rankSigil: 0.15 } },
   { place: 'Les forges de Cendre', region: 'ash', art: 'ash_lord', focus: { forgeOre: 18, awakenEssence: 0.05 } },
-  { place: 'L’Observatoire', region: 'astral', art: 'dead_constellation', focus: { crystals: 8, potionGreater: 0.25 } },
+  { place: 'L’Observatoire', region: 'astral', art: 'dead_constellation', focus: { crystals: 8, potionMinor: 0.75 } },
   { place: 'Les Marches recousues', region: 'seams', art: 'weaver_of_ages', focus: { shardDim: 0.35, crystals: 5 } },
   { place: 'Le Rivage gris', region: 'abyss', art: 'brine_siren', focus: { masteryScroll: 0.12, crystals: 4 } },
 ];

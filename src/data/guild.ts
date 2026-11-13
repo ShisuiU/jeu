@@ -15,7 +15,7 @@ export const GUILD_BOSS = { enemy: 'dead_constellation', name: 'La Constellation
 export const GUILD_TIERS: { dmg: number; reward: Reward }[] = [
   { dmg: 250_000, reward: { gold: 15000, crystals: 40 } },
   { dmg: 1_000_000, reward: { gold: 25000, crystals: 60, forgeOre: 40 } },
-  { dmg: 3_000_000, reward: { crystals: 80, potionGreater: 3, masteryScroll: 2 } },
+  { dmg: 3_000_000, reward: { crystals: 80, potionMinor: 9, masteryScroll: 2 } },
   { dmg: 6_000_000, reward: { crystals: 100, skillTome: 3, masteryScroll: 3 } },
   { dmg: 10_000_000, reward: { crystals: 150, shardAeon: 1, awakenEssence: 1 } },
   { dmg: 15_000_000, reward: { crystals: 200, shardAeon: 2, masteryScroll: 5 } },

@@ -11,7 +11,6 @@ import { TOWER_FLOORS } from '../../data/tower';
 import { WORLD_BOSS } from '../../data/worldBoss';
 import { ARENA, arenaTier } from '../../data/arena';
 import { chapterStars, isStageUnlocked } from '../../game/campaign';
-import { EXPEDITION_SLOTS, finishedExpeditions } from '../../game/expeditions';
 import { Screen } from '../components/common';
 import { EnemyArt } from '../art/EnemyArt';
 import { Icon } from '../art/Icons';
@@ -34,7 +33,6 @@ export function Combats() {
     { title: 'Donjon des familles', sub: (() => { const f = factionOfDay(now); return `Aujourd’hui : ${FACTIONS[f].short} · étage ${factionBest(save, f)}/${FACTION_FLOORS}`; })(), art: FACTION_DUNGEONS[factionOfDay(now)].boss, color: FACTIONS[factionOfDay(now)].colors.glow, route: { name: 'factionDungeon' }, feature: 'dungeons', dot: claimableMilestones(save).length > 0 || (factionBest(save, factionOfDay(now)) < FACTION_FLOORS && factionHeroes(save, factionOfDay(now)).length > 0) },
     { title: 'Tour des Âges', sub: `Étage ${save.progress.tower.floor}/${TOWER_FLOORS}`, art: 'tower_sentinel', color: '#b98cff', route: { name: 'tower' }, feature: 'tower' },
     { title: 'Boss mondial', sub: `${WORLD_BOSS.name} · ${keys}/${WORLD_BOSS.keysPerDay} clés`, art: WORLD_BOSS.enemy, color: '#ffcc66', route: { name: 'worldboss' }, dot: keys > 0, feature: 'worldboss' },
-    { title: 'Expéditions', sub: (() => { const f = finishedExpeditions(save, now); const r = save.expeditions?.runs.length ?? 0; return f ? `${f} de retour : butin à récupérer` : r ? `${r} en cours` : `${EXPEDITION_SLOTS} missions par jour, même jeu fermé`; })(), art: 'seam_stalker', color: '#9fb7ff', route: { name: 'expeditions' }, feature: 'expeditions', dot: finishedExpeditions(save, now) > 0 || (save.expeditions?.runs.length ?? 0) + (save.expeditions?.done.length ?? 0) === 0 },
     { title: 'Arène', sub: `Ligue ${arenaTier(save.arena.rating).name} · ${tickets}/${ARENA.ticketsPerDay} tickets`, art: 'hollow_knight', color: '#ff6b7d', route: { name: 'arena' }, dot: tickets > 0 || !!save.arena.seasonReward, feature: 'arena' },
   ];
   // Les événements n'ont qu'une entrée : le raccourci « Événements » de l'Accueil.

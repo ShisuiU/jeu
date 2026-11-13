@@ -26,7 +26,7 @@ export const DAILY_BONUS: Reward = { crystals: 100, shardDim: 2 };
 
 export const WEEKLY_MISSIONS: MissionDef[] = [
   { id: 'w_win', key: 'battleWin', target: 40, title: 'Remporter 40 combats', reward: { crystals: 150, skillTome: 2 } },
-  { id: 'w_dungeon', key: 'dungeonWin', target: 12, title: 'Vaincre 12 étages de donjon', reward: { potionGreater: 3, forgeOre: 60 } },
+  { id: 'w_dungeon', key: 'dungeonWin', target: 12, title: 'Vaincre 12 étages de donjon', reward: { potionMinor: 9, forgeOre: 60 } },
   { id: 'w_energy', key: 'energySpent', target: 600, title: 'Dépenser 600 énergie', reward: { shardAeon: 1 } },
   { id: 'w_summon', key: 'summon', target: 10, title: 'Invoquer 10 héros', reward: { crystals: 120 } },
   { id: 'w_boss', key: 'worldBoss', target: 6, title: 'Affronter 6 fois le boss mondial', reward: { rankSigil: 2 } },

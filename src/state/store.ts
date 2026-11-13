@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { collectTraining, trainDue } from '../game/buildings';
 import { stepBackground } from '../game/background';
 import { produce } from 'immer';
 import { observeTime } from '../core/time';
@@ -58,7 +59,9 @@ export const useGame = create<GameState>((set, get) => ({
     const resetDue = save.resets.day !== dayKey(obs.trusted) || save.resets.week !== weekKey(obs.trusted);
     // Combats en arrière-plan : on joue ceux dont l'heure est venue.
     const bgDue = !!save.bgRun && !save.bgRun.endedReason && obs.trusted >= save.bgRun.nextAt;
-    if (energyChanged || hwAdvanced || rollbackChanged || resetDue || bgDue) {
+    // Terrain d'entraînement : l'expérience arrive toute seule aux héros placés.
+    const trainNow = trainDue(save, obs.trusted);
+    if (energyChanged || hwAdvanced || rollbackChanged || resetDue || bgDue || trainNow) {
       set({
         now: obs.trusted,
         clockRollback: obs.rollback,
@@ -67,6 +70,7 @@ export const useGame = create<GameState>((set, get) => ({
           d.energy = energy;
           applyResets(d, obs.trusted);
           if (bgDue) stepBackground(d, obs.trusted);
+          if (trainNow) collectTraining(d, obs.trusted);
           bump(d, obs.trusted);
         }),
       });

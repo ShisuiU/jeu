@@ -15,6 +15,4 @@ export const TRAINING = {
   slotCost: [0, 100, 250] as const, // index = place (0 gratuite)
   /** Expérience gagnée par heure : 3 % de ce qu'il faut pour le niveau suivant (peu, mais sans rien faire). */
   xpPctPerHour: 0.03,
-  /** Au-delà de 24 h sans passer, l'entraînement ne rapporte plus rien de plus. */
-  capHours: 24,
 };

@@ -558,6 +558,11 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.82.1 — Caméra plus douce en accéléré
+
+- En ×2 et ×3, la caméra bouge beaucoup moins : son zoom et son décalage sont réduits (environ la moitié en ×2, un tiers en ×3).
+- Ses mouvements restent plus lents que le reste du combat accéléré, pour éviter les allers-retours brusques à chaque action.
+
 ## ✅ Version 1.82.0 — Scène de combat façon prototype
 
 - Le combat n'est plus une grille : chaque unité est posée librement sur un sol en perspective. Les héros forment un arc au premier plan, les ennemis se tiennent plus loin et paraissent plus petits.

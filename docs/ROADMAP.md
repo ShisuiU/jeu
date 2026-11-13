@@ -558,6 +558,15 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.81.0 — Combats en 2,5D
+
+- **Profondeur** : un sol en perspective sous les deux camps, les ennemis plus loin (plus petits), les cartes inclinées vers le sol avec une ombre portée, et les illustrations qui respirent doucement.
+- **Caméra** : à chaque action, la vue se rapproche de l'échange (plus encore pour une ultime) ; le décor bouge moins vite que les cartes.
+- **Assauts** : au corps à corps, la carte prend son élan, se rue sur sa cible en rapetissant avec la distance, frappe, puis revient à sa place.
+- **Impacts** : traînée d'arme, gerbe d'étincelles, éclair blanc et recul de la cible dans le sens du coup.
+- **Dissolution** : une unité vaincue blanchit puis s'éteint en poussière (violette pour les ennemis) ; lueurs vertes sur les soins, bleues sur les boucliers, dorées sur les résurrections, et une poussière d'ambiance qui monte sur le terrain.
+- Rien de tout cela avec « Animations réduites ».
+
 ## ✅ Version 1.80.0 — Nyxa Point-Zéro, nouvelle Mythique
 
 - **Nyxa Point-Zéro, Lame de la Réfraction** : 3ᵉ héros Mythique du jeu — Assassin, affinité Néant, famille du Prisme. Prototype zéro de l'Ordre, perdue dans la Fracture et revenue avec le Néant dans son armure.

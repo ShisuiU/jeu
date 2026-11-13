@@ -1,0 +1,115 @@
+// MISE EN SCÈNE 2,5D (v1.81.0) — couche de particules du combat, dessinée sur un canvas posé sur le terrain.
+// Étincelles d'impact, traînées d'arme, poussière des Effacés qui se dissolvent, lueurs de soin, et une
+// poussière d'ambiance qui monte doucement. Coordonnées en pixels CSS, relatives au conteneur du combat.
+
+export interface Pt { x: number; y: number }
+
+interface Particle { x: number; y: number; vx: number; vy: number; g: number; drag: number; r: number; life: number; max: number; col: string; alpha: number; amb: boolean }
+interface Trace { kind: 'slash' | 'ring'; x: number; y: number; ang: number; r: number; col: string; t: number; dur: number }
+
+const rnd = (a: number, b: number) => a + Math.random() * (b - a);
+const TAU = Math.PI * 2;
+
+export class Stage25 {
+  private ctx: CanvasRenderingContext2D | null;
+  private parts: Particle[] = [];
+  private traces: Trace[] = [];
+  private raf = 0;
+  private last = 0;
+  private ambient = 0;
+  private w = 0;
+  private h = 0;
+  private readonly onResize = () => this.resize();
+
+  constructor(private readonly canvas: HTMLCanvasElement, private readonly speed: () => number, private readonly ambientColors: string[], private readonly ambientCount = 22) {
+    this.ctx = canvas.getContext('2d');
+  }
+
+  start() {
+    this.resize();
+    window.addEventListener('resize', this.onResize);
+    this.last = performance.now();
+    const loop = (now: number) => { this.frame(now); this.raf = requestAnimationFrame(loop); };
+    this.raf = requestAnimationFrame(loop);
+  }
+
+  stop() {
+    cancelAnimationFrame(this.raf);
+    window.removeEventListener('resize', this.onResize);
+    this.parts = []; this.traces = [];
+  }
+
+  private resize() {
+    const r = this.canvas.getBoundingClientRect();
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    this.w = r.width; this.h = r.height;
+    this.canvas.width = Math.round(r.width * dpr); this.canvas.height = Math.round(r.height * dpr);
+    this.ctx?.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  /** Gerbe d'étincelles (impact). */
+  burst(p: Pt, col: string, n = 18, spd = 0.32) {
+    for (let i = 0; i < n; i++) {
+      const a = rnd(0, TAU), s = rnd(0.06, spd);
+      this.parts.push({ x: p.x, y: p.y, vx: Math.cos(a) * s, vy: Math.sin(a) * s - 0.05, g: 0.0007, drag: 0.97, r: rnd(1, 2.4), life: rnd(260, 620), max: 620, col, alpha: 1, amb: false });
+    }
+  }
+
+  /** Lueurs qui montent (soin, dissolution, apparition). */
+  motes(p: Pt, col: string, n = 24, spread = 34, up = 0.06) {
+    for (let i = 0; i < n; i++) {
+      this.parts.push({ x: p.x + rnd(-spread, spread), y: p.y + rnd(-spread, spread * 0.6), vx: rnd(-0.015, 0.015), vy: -rnd(up * 0.4, up), g: 0, drag: 1, r: rnd(1.2, 3), life: rnd(600, 1400), max: 1400, col, alpha: 1, amb: false });
+    }
+  }
+
+  /** Traînée d'arme en arc, centrée sur la cible. */
+  slash(p: Pt, col: string, ang = -0.7, r = 44) {
+    this.traces.push({ kind: 'slash', x: p.x - Math.cos(ang) * r, y: p.y - Math.sin(ang) * r, ang, r, col, t: 0, dur: 300 });
+  }
+
+  /** Onde au sol (ellipse aplatie). */
+  ring(p: Pt, col: string, r = 80, dur = 520) {
+    this.traces.push({ kind: 'ring', x: p.x, y: p.y, ang: 0, r, col, t: 0, dur });
+  }
+
+  private frame(now: number) {
+    const ctx = this.ctx; if (!ctx) return;
+    const raw = Math.min(50, now - this.last); this.last = now;
+    const dt = raw * Math.max(1, this.speed());
+    ctx.clearRect(0, 0, this.w, this.h);
+    while (this.ambient < this.ambientCount && this.w > 0) {
+      const col = this.ambientColors[Math.floor(Math.random() * this.ambientColors.length)] ?? '#b98cff';
+      this.parts.push({ x: rnd(0, this.w), y: rnd(this.h * 0.15, this.h * 1.05), vx: rnd(-0.008, 0.008), vy: rnd(-0.03, -0.008), g: 0, drag: 1, r: rnd(0.6, 1.8), life: rnd(3000, 8000), max: 8000, col, alpha: rnd(0.25, 0.55), amb: true });
+      this.ambient++;
+    }
+    ctx.globalCompositeOperation = 'lighter';
+    for (let i = this.parts.length - 1; i >= 0; i--) {
+      const p = this.parts[i];
+      p.life -= dt;
+      if (p.life <= 0) { this.parts.splice(i, 1); if (p.amb) this.ambient--; continue; }
+      p.vy += p.g * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= p.drag; p.vy *= p.drag;
+      const a = Math.min(1, (p.life / p.max) * 2) * p.alpha;
+      ctx.fillStyle = p.col;
+      ctx.globalAlpha = a * 0.25; ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 3.2, 0, TAU); ctx.fill();
+      ctx.globalAlpha = a; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, TAU); ctx.fill();
+    }
+    for (let i = this.traces.length - 1; i >= 0; i--) {
+      const f = this.traces[i]; f.t += dt;
+      const k = Math.min(1, f.t / f.dur);
+      ctx.lineCap = 'round';
+      if (f.kind === 'slash') {
+        const e = 1 - Math.pow(1 - Math.min(1, k * 1.7), 3), a0 = f.ang - 1, a1 = a0 + 2 * e;
+        ctx.globalAlpha = 1 - k; ctx.strokeStyle = f.col; ctx.lineWidth = 13 * (1 - k) + 1;
+        ctx.beginPath(); ctx.arc(f.x, f.y, f.r, a0, a1); ctx.stroke();
+        ctx.strokeStyle = '#fff'; ctx.lineWidth = 4 * (1 - k) + 0.5;
+        ctx.beginPath(); ctx.arc(f.x, f.y, f.r, Math.max(a0, a1 - 0.9), a1); ctx.stroke();
+      } else {
+        const r = f.r * (1 - Math.pow(1 - k, 3));
+        ctx.globalAlpha = 1 - k; ctx.strokeStyle = f.col; ctx.lineWidth = 7 * (1 - k) + 1;
+        ctx.beginPath(); ctx.ellipse(f.x, f.y, r, r * 0.36, 0, 0, TAU); ctx.stroke();
+      }
+      if (f.t >= f.dur) this.traces.splice(i, 1);
+    }
+    ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+  }
+}

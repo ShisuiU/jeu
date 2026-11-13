@@ -17,7 +17,8 @@ import { buyEpicShards, canAfford, summon, type SummonResult } from '../../game/
 import { applyReward } from '../../game/rewards';
 import { bannerAvailable } from '../../game/events';
 import { play } from '../../audio/sfx';
-import { playCardOut, playEmerge, playRiftOpen, playShardCharge, playShatter } from '../../audio/battleSfx';
+import { playEmerge, playFlip, playHush, playRevealFlash, playRiftOpen, playShardCharge, playShatter } from '../../audio/battleSfx';
+import { Stage25 } from '../fx/stage25';
 import { Modal, Screen, fmt } from '../components/common';
 import { HeroCard } from '../components/HeroCard';
 import { HeroArt } from '../art/HeroArt';
@@ -165,8 +166,14 @@ export function Summon() {
   );
 }
 
-type Stage = 'charge' | 'shatter' | 'rift' | 'emerge';
+type Stage = 'charge' | 'shatter' | 'rift' | 'hush' | 'flash' | 'emerge';
 
+// RÉVÉLATION D'INVOCATION (v1.85.0) — mise en scène façon grands jeux d'invocation :
+// 1. l'éclat monte, aspire des lueurs en tourbillon ; leur couleur vire à celle de la meilleure rareté (l'indice) ;
+// 2. il vole en éclats ; 3. la faille se déchire, des braises en montent (rayons et ralenti pour Légendaire/Mythique) ;
+// 4. Légendaire/Mythique : silence tendu, tout s'assombrit ; 5. éclair blanc (Épique et mieux) ;
+// 6. le héros sort : silhouette puis lumière, reflet sur la carte, étoiles une à une, nom lettre par lettre.
+// Appel ×10 : les cartes arrivent face cachée (leur dos brille déjà à la couleur de leur rareté) et se retournent une à une.
 function RiftReveal({ results, bannerColor, bannerGlow, altar, onClose, again, count }: { results: SummonResult[]; bannerColor: string; bannerGlow: string; altar?: string; onClose: () => void; again?: () => void; count: number }) {
   const best = results.reduce((a, r) => (RARITIES[r.rarity].order > RARITIES[a.rarity].order ? r : a), results[0]);
   const order = RARITIES[best.rarity].order;
@@ -175,73 +182,139 @@ function RiftReveal({ results, bannerColor, bannerGlow, altar, onClose, again, c
   const reduced = useGame.getState().save?.settings.reducedMotion;
   const [stage, setStage] = useState<Stage>(reduced ? 'emerge' : 'charge');
   const [cracks, setCracks] = useState(0);
+  const [tell, setTell] = useState(false);
+  const [flipped, setFlipped] = useState(reduced || count === 1 ? results.length : 0);
   const timers = useRef<number[]>([]);
+  const canvas = useRef<HTMLCanvasElement>(null);
+  const fx = useRef<Stage25 | null>(null);
+  const loop = useRef<number | undefined>(undefined);
+  const cardRef = useRef<HTMLDivElement>(null);
   const shards = useMemo(() => Array.from({ length: 14 }, (_, i) => ({ a: (i / 14) * 360 + Math.random() * 18, d: 90 + Math.random() * 120, r: Math.random() * 540 - 270, s: 0.5 + Math.random() * 0.8 })), []);
+  // Ordre de retournement (×10) : les plus rares en dernier, pour garder le suspense.
+  const flipOrder = useMemo(() => results.map((r, i) => ({ i, o: RARITIES[r.rarity].order })).sort((a, b) => a.o - b.o || a.i - b.i).map((x) => x.i), [results]);
+  const rank = useMemo(() => { const m = new Map<number, number>(); flipOrder.forEach((idx, k) => m.set(idx, k)); return m; }, [flipOrder]);
 
-  const go = (s: Stage) => {
-    setStage(s);
-    if (s === 'shatter') playShatter();
-    if (s === 'rift') playRiftOpen(order);
-    if (s === 'emerge') playEmerge(order);
+  const center = () => ({ x: window.innerWidth / 2, y: window.innerHeight * 0.44 });
+  const t = (ms: number, f: () => void) => timers.current.push(window.setTimeout(f, ms));
+  const every = (ms: number, f: () => void) => { if (loop.current) clearInterval(loop.current); loop.current = window.setInterval(f, ms); };
+
+  const go = (st: Stage) => {
+    setStage(st);
+    const st25 = fx.current, c = center();
+    if (st === 'shatter') { playShatter(); st25?.burst(c, rc, 50, 0.55); st25?.burst(c, '#ffffff', 24, 0.4); st25?.burst(c, bannerGlow, 20, 0.35); }
+    if (st === 'rift') { playRiftOpen(order); every(140, () => fx.current?.embers({ x: c.x, y: window.innerHeight * 0.36 }, Math.random() < 0.5 ? rc : rg, order >= 5 ? 5 : 3, 34, 120)); }
+    if (st === 'hush') { playHush(order); if (loop.current) clearInterval(loop.current); every(60, () => fx.current?.vortex({ x: c.x, y: window.innerHeight * 0.36 }, Math.random() < 0.3 ? '#ffffff' : rc, 4, 220)); }
+    if (st === 'flash') { if (loop.current) clearInterval(loop.current); playRevealFlash(order); }
+    if (st === 'emerge') {
+      if (loop.current) clearInterval(loop.current);
+      playEmerge(order);
+      if (count === 1 && order >= 4) {
+        // Aura : braises qui montent autour de la carte du héros.
+        every(160, () => { const r = cardRef.current?.getBoundingClientRect(); if (r) fx.current?.embers({ x: r.left + r.width / 2, y: r.bottom - 10 }, Math.random() < 0.6 ? rc : rg, order >= 5 ? 3 : 2, r.width / 2, 8); });
+      }
+    }
   };
+
   useEffect(() => {
-    if (reduced) { playEmerge(order); return; }
+    if (canvas.current && !reduced) { const st25 = new Stage25(canvas.current, () => 1, [], 0); st25.start(); fx.current = st25; }
+    if (reduced) { playEmerge(order); return () => { fx.current?.stop(); }; }
     playShardCharge();
-    const t = (ms: number, f: () => void) => timers.current.push(window.setTimeout(f, ms));
+    // Tourbillon de lueurs aspirées par l'éclat ; à 650 ms, elles prennent la couleur de la rareté (l'indice).
+    let tellOn = false;
+    every(90, () => { const c = center(); fx.current?.vortex(c, tellOn ? (Math.random() < 0.7 ? rc : '#ffffff') : (Math.random() < 0.6 ? bannerColor : bannerGlow), 3, 160); });
+    t(650, () => { tellOn = true; setTell(true); });
     [150, 350, 550, 750, 950].forEach((ms, i) => t(ms, () => setCracks((i + 1) / 5)));
     t(1150, () => go('shatter'));
     t(1500, () => go('rift'));
-    t(order >= 5 ? 3300 : order >= 4 ? 2700 : 2300, () => go('emerge'));
-    return () => timers.current.forEach(clearTimeout);
+    const riftLen = order >= 6 ? 2300 : order >= 5 ? 1900 : order >= 4 ? 1200 : 800;
+    let at = 1500 + riftLen;
+    if (order >= 5) { t(at, () => go('hush')); at += 650; }
+    if (order >= 4) { t(at, () => go('flash')); at += 240; }
+    t(at, () => go('emerge'));
+    return () => { timers.current.forEach(clearTimeout); if (loop.current) clearInterval(loop.current); fx.current?.stop(); fx.current = null; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const skip = () => { if (stage !== 'emerge') { timers.current.forEach(clearTimeout); go('emerge'); } };
+  const skip = () => { if (stage !== 'emerge') { timers.current.forEach(clearTimeout); timers.current = []; setTell(true); go('emerge'); } };
 
+  // ×10 : arrivée face cachée, puis retournements un à un (pause avant les Légendaires et Mythiques).
   useEffect(() => {
-    if (stage !== 'emerge' || count === 1) return;
-    results.forEach((r, i) => timers.current.push(window.setTimeout(() => playCardOut(RARITIES[r.rarity].order), 120 + i * 140)));
-  }, [stage, count, results]);
+    if (stage !== 'emerge' || count === 1 || reduced) return;
+    let at = 900;
+    flipOrder.forEach((idx, k) => {
+      const o = RARITIES[results[idx].rarity].order;
+      if (o >= 5) at += 450;
+      t(at, () => {
+        setFlipped(k + 1); playFlip(o);
+        const el = document.querySelector<HTMLElement>(`.rr-card[data-i="${idx}"]`); const r = el?.getBoundingClientRect();
+        if (r && o >= 4) fx.current?.burst({ x: r.left + r.width / 2, y: r.top + r.height / 2 }, RARITIES[results[idx].rarity].color, o >= 5 ? 34 : 16, o >= 5 ? 0.4 : 0.25);
+      });
+      at += o >= 5 ? 520 : 170;
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stage]);
+  const revealAll = () => { timers.current.forEach(clearTimeout); timers.current = []; setFlipped(results.length); };
 
+  const name = HERO_BY_ID[best.heroId].name;
   return (
-    <div className={`rift-reveal st-${stage} ${order >= 5 ? 'legend' : ''}`} style={{ ['--bc' as string]: bannerColor, ['--bg2' as string]: bannerGlow, ['--rc' as string]: rc, ['--rg' as string]: rg }} onClick={skip}>
+    <div className={`rift-reveal st-${stage} ${order >= 5 ? 'legend' : ''} ${order >= 6 ? 'mythic' : ''} ${tell ? 'tell' : ''}`} style={{ ['--bc' as string]: bannerColor, ['--bg2' as string]: bannerGlow, ['--rc' as string]: rc, ['--rg' as string]: rg }} onClick={skip}>
       <div className="rr-bg">{altar && <img src={altar} alt="" draggable={false} />}</div>
+      {order >= 5 && <div className="rr-rays" aria-hidden />}
       <div className="rr-rift"><i /><i /></div>
+      <canvas ref={canvas} className="rr-fx" aria-hidden />
       {(stage === 'charge' || stage === 'shatter') && (
-        <div className="rr-shard"><Crystal color={bannerColor} glow={bannerGlow} size={96} cracks={cracks} /></div>
+        <div className="rr-shard"><Crystal color={tell ? rc : bannerColor} glow={tell ? rg : bannerGlow} size={96} cracks={cracks} /></div>
       )}
       {stage === 'shatter' && (
         <div className="rr-pieces">
-          {shards.map((p, i) => <i key={i} style={{ ['--a' as string]: `${p.a}deg`, ['--d' as string]: `${p.d}px`, ['--r' as string]: `${p.r}deg`, ['--s' as string]: p.s, background: i % 2 ? bannerGlow : bannerColor }} />)}
+          {shards.map((p, i) => <i key={i} style={{ ['--a' as string]: `${p.a}deg`, ['--d' as string]: `${p.d}px`, ['--r' as string]: `${p.r}deg`, ['--s' as string]: p.s, background: i % 2 ? rg : rc }} />)}
         </div>
       )}
       {stage === 'shatter' && <div className="rr-flash" />}
-      {stage === 'rift' && order >= 5 && <div className="rr-title">{best.rarity === 'mythic' ? 'MYTHIQUE' : 'LÉGENDAIRE'}</div>}
+      {(stage === 'rift' || stage === 'hush') && order >= 5 && <div className="rr-title">{best.rarity === 'mythic' ? 'MYTHIQUE' : 'LÉGENDAIRE'}</div>}
+      {stage === 'flash' && <div className="rr-white" />}
       {stage !== 'emerge' && <div className="rr-skip faint">Toucher pour passer</div>}
 
       {stage === 'emerge' && (
         <div className="rr-result" onClick={(e) => e.stopPropagation()}>
           {count === 1 ? (
             <div className="rr-single">
-              <div className="rr-hero" style={{ borderColor: rc }}><HeroArt heroId={best.heroId} kind="full" /></div>
-              <div className="rr-rar" style={{ color: rc }}>{'★'.repeat(order)} {RARITIES[best.rarity].name.toUpperCase()}</div>
-              <h2>{HERO_BY_ID[best.heroId].name}</h2>
-              <div className="muted">{HERO_BY_ID[best.heroId].title}</div>
-              <div className={`chip ${best.duplicate ? '' : 'active'}`} style={{ margin: '10px auto 0', width: 'fit-content' }}>{best.duplicate ? 'Déjà à tes côtés · +1 doublon' : 'Un nouvel Héritier répond à l’appel'}</div>
+              {order >= 4 && <div className="rr-halo" aria-hidden />}
+              <div className="rr-hero" ref={cardRef} style={{ borderColor: rc }}><HeroArt heroId={best.heroId} kind="full" /><span className="rr-shine" /></div>
+              <div className="rr-rar" style={{ color: rc }}>
+                {Array.from({ length: order }, (_, i) => <span key={i} className="rr-star" style={{ animationDelay: `${0.75 + i * 0.12}s` }}>★</span>)}
+                <span className="rr-rarname" style={{ animationDelay: `${0.8 + order * 0.12}s` }}> {RARITIES[best.rarity].name.toUpperCase()}</span>
+              </div>
+              <h2 className="rr-name" aria-label={name}>{(() => { let k = 0; return name.split(' ').map((w, wi) => (
+                <span key={wi} className="rr-word">{wi > 0 && <span style={{ animationDelay: `${1 + k++ * 0.035}s` }}> </span>}{[...w].map((ch, i) => <span key={i} style={{ animationDelay: `${1 + k++ * 0.035}s` }}>{ch}</span>)}</span>
+              )); })()}</h2>
+              <div className="muted rr-sub" style={{ animationDelay: `${1.1 + name.length * 0.035}s` }}>{HERO_BY_ID[best.heroId].title}</div>
+              <div className={`chip rr-sub ${best.duplicate ? '' : 'active'}`} style={{ margin: '10px auto 0', width: 'fit-content', animationDelay: `${1.2 + name.length * 0.035}s` }}>{best.duplicate ? 'Déjà à tes côtés · +1 doublon' : 'Un nouvel Héritier répond à l’appel'}</div>
             </div>
           ) : (
             <div className="rr-grid">
-              {results.map((r, i) => (
-                <div key={i} className="rr-card" style={{ animationDelay: `${0.12 + i * 0.14}s`, ['--rc' as string]: RARITIES[r.rarity].color, ['--fx' as string]: `${((i % 5) - 2) * -60}px`, ['--fy' as string]: `${-160 - Math.floor(i / 5) * 90}px` }}>
-                  <HeroCard heroId={r.heroId} level={1} />
-                  <span className={`rg-tag ${r.duplicate ? '' : 'new'}`}>{r.duplicate ? 'DOUBLON' : 'NOUVEAU'}</span>
-                </div>
-              ))}
+              {results.map((r, i) => {
+                const o = RARITIES[r.rarity].order;
+                const up = (rank.get(i) ?? 0) < flipped;
+                return (
+                  <div key={i} data-i={i} className={`rr-card ${up ? 'up' : ''} ${o >= 5 ? 'hi' : o >= 4 ? 'mid' : ''}`} style={{ animationDelay: `${0.05 + i * 0.07}s`, ['--rc' as string]: RARITIES[r.rarity].color, ['--fx' as string]: `${((i % 5) - 2) * -60}px`, ['--fy' as string]: `${-160 - Math.floor(i / 5) * 90}px` }}
+                    onClick={() => { if (!up) revealAll(); }}>
+                    <div className="rr-flip">
+                      <div className="rr-face rr-back" aria-hidden><span /></div>
+                      <div className="rr-face rr-front"><HeroCard heroId={r.heroId} level={1} />{up && <span className={`rg-tag ${r.duplicate ? '' : 'new'}`}>{r.duplicate ? 'DOUBLON' : 'NOUVEAU'}</span>}</div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
-          <div className="row" style={{ gap: 8, marginTop: 18 }}>
-            <button className="btn secondary grow" onClick={onClose}>Continuer</button>
-            {again && <button className="btn grow" onClick={again}>Encore ×{count}</button>}
-          </div>
+          {count > 1 && flipped < results.length
+            ? <button className="btn secondary block" style={{ marginTop: 18 }} onClick={revealAll}>Tout révéler</button>
+            : (
+              <div className="row" style={{ gap: 8, marginTop: 18 }}>
+                <button className="btn secondary grow" onClick={onClose}>Continuer</button>
+                {again && <button className="btn grow" onClick={again}>Encore ×{count}</button>}
+              </div>
+            )}
         </div>
       )}
     </div>

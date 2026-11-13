@@ -91,4 +91,73 @@
 .rr-card .hero-card .name { font-size: 8px; }
 @keyframes rrCardOut { from { transform: translate(var(--fx), var(--fy)) scale(0.15); opacity: 0; filter: brightness(3); } 60% { opacity: 1; } to { transform: none; filter: none; } }
 
+/* ─── Révélation v1.85.0 : indice de rareté, rayons, silence, éclair, reflet, étoiles, nom, cartes retournées ─── */
+.rr-fx { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+.rr-result { z-index: 3; }
+/* L'éclat prend la couleur de la rareté (indice) */
+.tell .rr-shard .crystal { filter: drop-shadow(0 0 18px var(--rc)) drop-shadow(0 0 44px var(--rc)); transition: filter 0.4s; }
+.rift-reveal::after { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 1; background: radial-gradient(circle at 50% 44%, transparent 30%, rgba(0,0,0,0.75) 100%); opacity: 0.5; transition: opacity 0.5s; }
+/* Rayons divins (Légendaire, Mythique) */
+.rr-rays { position: absolute; left: 50%; top: 36%; width: 180vmax; height: 180vmax; transform: translate(-50%, -50%) scale(0.4); opacity: 0; pointer-events: none;
+  background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--rc) 40%, transparent) 0deg 3deg, transparent 3deg 15deg);
+  -webkit-mask-image: radial-gradient(circle, #000 0%, transparent 55%); mask-image: radial-gradient(circle, #000 0%, transparent 55%); }
+.st-rift .rr-rays { animation: rrRaysIn 1.4s cubic-bezier(.2,.8,.2,1) forwards, rrSpin 18s linear infinite; }
+.st-hush .rr-rays { opacity: 0.25; transform: translate(-50%, -50%) scale(0.5); transition: opacity 0.4s, transform 0.6s; }
+.st-emerge .rr-rays { top: 40%; opacity: 0.3; animation: rrSpin 30s linear infinite; }
+@keyframes rrRaysIn { to { opacity: 0.55; transform: translate(-50%, -50%) scale(1) rotate(20deg); } }
+@keyframes rrSpin { from { transform: translate(-50%, -50%) scale(1) rotate(0deg); } to { transform: translate(-50%, -50%) scale(1) rotate(360deg); } }
+.mythic .rr-rays { background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--rc) 65%, transparent) 0deg 3deg, transparent 3deg 12deg); }
+/* Ralenti des grandes raretés : la faille respire plus lentement, la caméra avance */
+.legend.st-rift .rr-rift { animation: rrTear 0.9s cubic-bezier(.2,.8,.2,1) forwards, rrBreath 2.4s ease-in-out 0.9s infinite; }
+.legend.st-rift .rr-bg img { transform: scale(1.08); transition: transform 2s cubic-bezier(.2,.7,.2,1), filter 0.8s; }
+/* Silence tendu : tout s'assombrit, la faille se resserre en un trait de lumière */
+.st-hush::after { opacity: 1; background: radial-gradient(circle at 50% 36%, transparent 8%, rgba(0,0,0,0.92) 60%); }
+.st-hush .rr-bg img { filter: brightness(0.12) saturate(0.6); transform: scale(1.12); }
+.st-hush .rr-rift { opacity: 1; animation: none; transform: translateX(-50%) scaleY(1) scaleX(0.25); transition: transform 0.6s cubic-bezier(.6,0,.9,.4); }
+.st-hush .rr-title { animation: rrTitleOut 0.5s ease-in forwards; }
+@keyframes rrTitleOut { to { opacity: 0; letter-spacing: 0.4em; } }
+/* Éclair blanc */
+.rr-white { position: absolute; inset: 0; z-index: 4; background: radial-gradient(circle at 50% 38%, #fff 0%, #fff 35%, color-mix(in srgb, var(--rc) 60%, #fff) 70%, var(--rc) 100%); animation: rrWhite 0.32s ease-out forwards; pointer-events: none; }
+@keyframes rrWhite { 0% { opacity: 0; } 25% { opacity: 1; } 100% { opacity: 1; } }
+.st-emerge::before { content: ''; position: absolute; inset: 0; z-index: 4; pointer-events: none; background: #fff; animation: rrWhiteOut 0.6s ease-out forwards; }
+.rift-reveal:not(.legend).st-emerge::before { animation-duration: 0.35s; }
+@keyframes rrWhiteOut { from { opacity: 0.9; } to { opacity: 0; } }
+/* Le héros : halo, carte qui flotte légèrement, reflet qui passe */
+.rr-single { position: relative; }
+.rr-halo { position: absolute; left: 50%; top: min(31vw, 125px); width: min(110vw, 440px); aspect-ratio: 1; transform: translate(-50%, -50%); z-index: -1; pointer-events: none;
+  background: radial-gradient(circle, color-mix(in srgb, var(--rc) 55%, transparent) 0%, transparent 62%); animation: rrHalo 3s ease-in-out infinite; }
+@keyframes rrHalo { 0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(0.95); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.05); } }
+.rr-hero { position: relative; animation: rrEmerge 1s cubic-bezier(.2,.7,.2,1) both, rrFloat 4s ease-in-out 1s infinite; }
+@keyframes rrFloat { 0%, 100% { transform: perspective(700px) rotateY(-3deg) translateY(0); } 50% { transform: perspective(700px) rotateY(3deg) translateY(-5px); } }
+.rr-shine { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,0.55) 48%, rgba(255,255,255,0.1) 54%, transparent 62%); background-size: 260% 100%; background-position: 130% 0; animation: rrShine 1.1s ease-in-out 0.85s both; mix-blend-mode: screen; }
+.legend .rr-shine { animation: rrShine 1.1s ease-in-out 0.85s both, rrShine 1.2s ease-in-out 4s infinite; }
+@keyframes rrShine { from { background-position: 130% 0; } to { background-position: -40% 0; } }
+/* Étoiles une à une, puis le nom lettre par lettre */
+.rr-rar { animation: none; }
+.rr-star, .rr-rarname { display: inline-block; animation: rrStar 0.45s cubic-bezier(.2,1.6,.4,1) both; text-shadow: 0 0 10px var(--rc); }
+.rr-rarname { animation-name: fadeIn; margin-left: 6px; }
+@keyframes rrStar { from { opacity: 0; transform: scale(2.6) rotate(-30deg); } to { opacity: 1; transform: none; } }
+.rr-single h2.rr-name { animation: none; }
+.rr-name .rr-word { display: inline-block; white-space: nowrap; }
+.rr-name .rr-word > span { display: inline-block; white-space: pre; animation: rrLetter 0.4s ease-out both; }
+@keyframes rrLetter { from { opacity: 0; transform: translateY(6px); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+.legend .rr-name { color: #fff; text-shadow: 0 0 14px var(--rc), 0 2px 6px #000; }
+.rr-single .rr-sub { animation: fadeIn 0.6s both; }
+/* ×10 : cartes face cachée qui se retournent */
+.rr-card { perspective: 600px; cursor: pointer; }
+.rr-flip { position: relative; transform-style: preserve-3d; transition: transform 0.5s cubic-bezier(.3,1.3,.5,1); }
+.rr-card.up .rr-flip { transform: rotateY(180deg); }
+.rr-face { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.rr-front { transform: rotateY(180deg); }
+.rr-back { position: absolute; inset: 0; border-radius: 12px; overflow: hidden; border: 1.5px solid color-mix(in srgb, var(--rc) 70%, #000);
+  background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--rc) 45%, #120d1c) 0%, #0c0913 70%); box-shadow: 0 0 10px color-mix(in srgb, var(--rc) 50%, transparent); }
+.rr-back span { position: absolute; left: 50%; top: 12%; bottom: 12%; width: 8px; transform: translateX(-50%); background: linear-gradient(180deg, transparent, var(--rc), #fff, var(--rc), transparent);
+  clip-path: polygon(50% 0, 100% 30%, 40% 55%, 100% 80%, 50% 100%, 0 70%, 60% 45%, 0 20%); filter: drop-shadow(0 0 6px var(--rc)); animation: rrBack 1.6s ease-in-out infinite; }
+@keyframes rrBack { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+.rr-card.mid .rr-back { box-shadow: 0 0 14px var(--rc); }
+.rr-card.hi .rr-back { box-shadow: 0 0 22px var(--rc), 0 0 6px #fff; animation: rrJitter 0.12s linear infinite; }
+.rr-card.hi.up .rr-back { animation: none; }
+.rr-card.up.hi .hero-card { box-shadow: 0 0 22px var(--rc), 0 0 50px color-mix(in srgb, var(--rc) 50%, transparent); }
+.rr-card .rg-tag { animation: fadeIn 0.3s 0.3s both; }
+
 .reduced-motion .rift-reveal * { animation-duration: 0.001s !important; }

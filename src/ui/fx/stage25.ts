@@ -62,6 +62,23 @@ export class Stage25 {
     }
   }
 
+  /** Tourbillon : des lueurs naissent sur un cercle et sont aspirées vers le centre en spirale (invocation). */
+  vortex(c: Pt, col: string, n = 10, radius = 150) {
+    for (let i = 0; i < n; i++) {
+      const a = rnd(0, TAU), d = rnd(radius * 0.6, radius), life = rnd(520, 760);
+      const sp = d / life; // arrive au centre en fin de vie
+      const tx = -Math.sin(a), ty = Math.cos(a); // composante tangentielle : spirale
+      this.parts.push({ x: c.x + Math.cos(a) * d, y: c.y + Math.sin(a) * d, vx: -Math.cos(a) * sp + tx * sp * 0.45, vy: -Math.sin(a) * sp + ty * sp * 0.45, g: 0, drag: 1, r: rnd(0.7, 1.7), life, max: life, col, alpha: 0.9, amb: false });
+    }
+  }
+
+  /** Braises qui montent d'une zone (faille ouverte, aura d'un héros). */
+  embers(c: Pt, col: string, n = 6, w = 60, h = 20) {
+    for (let i = 0; i < n; i++) {
+      this.parts.push({ x: c.x + rnd(-w, w), y: c.y + rnd(-h, h), vx: rnd(-0.02, 0.02), vy: -rnd(0.04, 0.12), g: 0, drag: 0.999, r: rnd(0.8, 2.2), life: rnd(900, 1800), max: 1800, col, alpha: rnd(0.6, 1), amb: false });
+    }
+  }
+
   /** Traînée d'arme en arc, centrée sur la cible. */
   slash(p: Pt, col: string, ang = -0.7, r = 44) {
     this.traces.push({ kind: 'slash', x: p.x - Math.cos(ang) * r, y: p.y - Math.sin(ang) * r, ang, r, col, t: 0, dur: 300 });

@@ -558,6 +558,15 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.85.0 — Animation d'invocation façon grands jeux
+
+- L'éclat aspire des lueurs en tourbillon ; à mi-chemin, elles prennent la couleur de la meilleure rareté obtenue (bleu, violet, or, rouge) : un indice qui fait monter l'attente.
+- L'éclat explose en une gerbe d'étincelles ; des braises montent de la faille ouverte.
+- Légendaire et Mythique : rayons de lumière qui tournent, ralenti, avancée de la caméra, puis un silence tendu (tout s'assombrit, la faille se resserre en un trait) avant un éclair blanc.
+- Révélation : halo, carte qui flotte légèrement, reflet de lumière qui passe, étoiles qui apparaissent une à une, nom écrit lettre par lettre, aura de braises autour des Épiques et mieux.
+- Appel ×10 : les cartes arrivent face cachée, leur dos brille déjà à la couleur de leur rareté, puis elles se retournent une à une, les plus rares en dernier (pause et gerbe d'étincelles pour les Légendaires). Bouton « Tout révéler ».
+- Nouveaux sons : grondement du silence, éclair, retournement de carte.
+
 ## ✅ Version 1.84.0 — Mythiques réservés aux Failles, éclats épiques
 
 - Les héros Mythiques ne sortent plus que des invocations de Faille : le taux Mythique des invocations rare et épique est reporté sur le Légendaire (rare : 2 %, épique : 4 %).

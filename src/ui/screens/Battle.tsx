@@ -158,12 +158,16 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
     if (!el || !host || !motionOn()) return;
     const spd = speedRef.current;
     const bgs = host.querySelectorAll<HTMLElement>('.painted-bg img, .battle-bg');
-    const tr = `transform ${Math.round(ms / spd)}ms cubic-bezier(.2,.8,.2,1)`;
+    // En accéléré, la caméra garde des mouvements doux : durée réduite moins vite que le reste,
+    // et amplitude réduite (×2 : 55 %, ×3 : 30 %) pour éviter les allers-retours brusques.
+    const amp = CAM_AMP[spd] ?? 1;
+    z = 1 + (z - 1) * amp;
+    const tr = `transform ${Math.round(Math.max(ms / Math.sqrt(spd), 260))}ms cubic-bezier(.25,.6,.3,1)`;
     el.style.transition = tr;
     if (!p) { el.style.transform = ''; camScale.current = 1; bgs.forEach((b) => { b.style.transition = tr; b.style.transform = ''; }); return; }
     const c = { x: el.offsetLeft + el.offsetWidth / 2, y: el.offsetTop + el.offsetHeight / 2 };
     const k = 0.6; // la cible fait un peu plus de la moitié du chemin vers le centre
-    const tx = (k - z) * (p.x - c.x), ty = (k - z) * (p.y - c.y) * 0.6;
+    const tx = amp * (k - z) * (p.x - c.x), ty = amp * (k - z) * (p.y - c.y) * 0.6;
     el.style.transform = `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px) scale(${z})`;
     camScale.current = z;
     bgs.forEach((b) => { b.style.transition = tr; b.style.transform = `translate(${(tx * 0.22).toFixed(1)}px, ${(ty * 0.22).toFixed(1)}px) scale(${1 + (z - 1) * 0.35})`; });
@@ -757,6 +761,8 @@ const shortName = (n: string) => n.replace(/^(Le|La|Les|L’|L')\s*/i, '').split
 
 /** Place d'une unité sur la scène 2,5D : x et y (pieds) en % de la scène, s = échelle (profondeur). */
 type Place = { x: number; y: number; s: number };
+/** Amplitude de la caméra selon la vitesse du combat. */
+const CAM_AMP: Record<number, number> = { 1: 1, 2: 0.55, 3: 0.3 };
 const ALLY_PLACES: Place[][] = [
   [],
   [{ x: 50, y: 92, s: 1 }],

@@ -39,7 +39,7 @@ export type DifficultyId = 'normal' | 'hard' | 'expert' | 'nightmare';
 export const DIFFICULTY_ORDER: DifficultyId[] = ['normal', 'hard', 'expert', 'nightmare'];
 export const DIFFICULTIES: Record<DifficultyId, { name: string; levelAdd: number; statMult: number; rewardMult: number; available: boolean }> = {
   normal: { name: 'Normal', levelAdd: 0, statMult: 1, rewardMult: 1, available: true },
-  hard: { name: 'Difficile', levelAdd: 15, statMult: 1.25, rewardMult: 1.6, available: true },
+  hard: { name: 'Difficile', levelAdd: 10, statMult: 1.3, rewardMult: 1.6, available: true },
   expert: { name: 'Expert', levelAdd: 30, statMult: 1.6, rewardMult: 2.4, available: true },
   nightmare: { name: 'Cauchemar', levelAdd: 45, statMult: 2.1, rewardMult: 3.5, available: true },
 };

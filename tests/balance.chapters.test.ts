@@ -4,46 +4,27 @@ import { createBattle } from '../src/game/battle/engine';
 import { runToEnd } from '../src/game/battle/simulate';
 import { stageWaves } from '../src/game/campaign';
 import type { UnitSetup } from '../src/game/battle/types';
-import { HERO_BY_ID } from '../src/data/heroes';
+import { HEROES, HERO_BY_ID } from '../src/data/heroes';
 
-const TEAMS: Record<number, string[]> = {
-  2: ['aldric', 'brann', 'corvin', 'elowen', 'torvald'],
-  3: ['aldric', 'ysolde', 'corvin', 'elowen', 'maelis'],
-  4: ['aldric', 'ysolde', 'kaedra', 'orin', 'maelis'],
-  5: ['aldric', 'ysolde', 'kaedra', 'orin', 'tamsin'],
-  6: ['varkhaal', 'ysolde', 'nerissa', 'orin', 'tamsin'],
-  7: ['varkhaal', 'ysolde', 'nerissa', 'orin', 'caelum'],
-  8: ['varkhaal', 'ysolde', 'nerissa', 'orin', 'solenne'],
-  9: ['varkhaal', 'ysolde', 'nerissa', 'orin', 'solenne'],
-};
-function team(n: number, lv: number): UnitSetup[] {
-  return TEAMS[n].map((id, i) => {
-    const asc = Math.max(0, Math.min(6, Math.floor(lv / 10)));
-    return { kind: 'hero', refId: id, slot: [0, 1, 2, 3, 4][i], level: lv, rank: Math.max(Math.ceil(lv / 10), 1), ascension: asc, heroUid: id, skillLevels: Object.fromEntries(HERO_BY_ID[id].skills.map((s) => [s.id, 2])) };
-  });
-}
-describe('équilibrage des chapitres 2 à 8 (simulation)', () => {
-  const rate = (n: number, i: number, off: number, seeds = 40) => {
-    const st = CHAPTERS[n - 1].stages[i - 1];
-    const elv = Math.max(...st.waves.flat().map((e) => e.level));
-    let w = 0;
-    for (let seed = 1; seed <= seeds; seed++) if (runToEnd(createBattle(team(n, Math.min(60, elv + off)), stageWaves(st, 'normal'), { seed, leaderUid: TEAMS[n][0] })).outcome === 'won') w++;
-    return w / seeds;
+// v1.87.0 (audit E-3) : courbe régulière. Pour une équipe de 5 héros Rares sans équipement (compétences au max),
+// le niveau requis pour battre chaque boss augmente d'un chapitre à l'autre, sans mur (+12 niveaux au plus),
+// reste sous le niveau des ennemis jusqu'au chapitre 8, et le chapitre 9 demande un peu d'équipement.
+describe('courbe de difficulté de la campagne (simulation)', () => {
+  const RARES = HEROES.filter((h) => h.rarity === 'rare').slice(0, 5).map((h) => h.id);
+  const unit = (id: string, slot: number, lv: number): UnitSetup => ({ kind: 'hero', refId: id, slot, level: lv, rank: Math.min(6, Math.max(3, Math.ceil(lv / 10))), ascension: Math.min(6, Math.floor(lv / 10)), heroUid: id + slot, skillLevels: Object.fromEntries(HERO_BY_ID[id].skills.map((sk) => [sk.id, sk.upgrades.length + 1])) });
+  const need = (n: number) => {
+    const st = CHAPTERS[n - 1].stages[9];
+    for (let lv = 1; lv <= 60; lv++) {
+      const t = RARES.map((id, i) => unit(id, i, lv));
+      let k = 0; for (let seed = 1; seed <= 3; seed++) if (runToEnd(createBattle(t, stageWaves(st, 'normal'), { seed, leaderUid: t[0].heroUid })).outcome === 'won') k++;
+      if (k >= 2) return lv;
+    }
+    return 99;
   };
-  for (let n = 2; n <= 8; n++) {
-    it(`chapitre ${n} : le boss se bat au niveau des ennemis, pas avant`, () => {
-      expect(rate(n, 10, 0)).toBeGreaterThanOrEqual(0.3);
-      expect(rate(n, 10, -8)).toBeLessThan(0.5);
-      expect(rate(n, 5, -8)).toBeLessThan(0.9); // le Pouvoir du Lien aide un peu les équipes en retard
-    });
-  }
-  // Chapitre 9 : au-delà du niveau maximum des héros (60). Une équipe au maximum, sans équipement ni maîtrises,
-  // doit pouvoir le terminer parfois : l'équipement et les maîtrises font la différence.
-  it('chapitre 9 : difficile mais faisable avec une équipe au maximum', () => {
-    expect(rate(9, 1, 0, 20)).toBeGreaterThanOrEqual(0.8);
-    const boss = rate(9, 10, 0, 40);
-    expect(boss).toBeGreaterThanOrEqual(0.2);
-    expect(boss).toBeLessThanOrEqual(0.7);
-    expect(rate(9, 9, 0, 40)).toBeLessThanOrEqual(rate(8, 9, 0, 40) + 0.1);
-  });
+  it('niveau requis aux boss : croissant, sans mur, chapitre 9 avec équipement', () => {
+    const req = CHAPTERS.map((c) => need(c.n));
+    for (let n = 1; n < 8; n++) { expect(req[n], `ch${n + 1}`).toBeGreaterThanOrEqual(req[n - 1]); expect(req[n] - req[n - 1], `ch${n + 1}`).toBeLessThanOrEqual(16); }
+    for (let n = 1; n <= 8; n++) { const elv = Math.max(...CHAPTERS[n - 1].stages[9].waves.flat().map((e) => e.level)); expect(req[n - 1], `ch${n}`).toBeLessThanOrEqual(elv); }
+    expect(req[8]).toBeGreaterThan(60);
+  }, 120000);
 });

@@ -21,7 +21,7 @@
 .hs-label { font-size: 23cqw; }
 .hs-label.long { font-size: 19cqw; }
 .home .pill.kit small { font-size: 10.5px; color: #c9bea9; }
-.ms-text, .m-lock, .foe-name, .hl-t { font-size: 11.5px; }
+.ms-text, .m-lock, .foe-name { font-size: 11.5px; }
 .pc-stats > div span { font-size: 11px !important; }
 .daily-cell .d { font-size: 10.5px; }
 .hist-item { font-size: 10.5px; }

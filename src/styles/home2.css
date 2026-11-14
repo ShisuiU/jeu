@@ -50,7 +50,6 @@
 .home .pill small { font-size: 11px; }
 .home .avatar-btn { min-width: 0; flex: 1 1 auto; }
 .home .avatar-btn > div:last-child { min-width: 64px; }
-.home .pill .pill-ico { width: 20px; height: 20px; object-fit: contain; }
 .home .pill .pill-plus { display: grid; place-items: center; width: 16px; height: 16px; margin-left: 2px; border-radius: 50%; border: 1px solid #c99d4f; color: #f0dcae; font-size: 13px; line-height: 1; font-family: var(--font-body, sans-serif); }
 .pill-wrap { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
 .pill-timer { font-family: var(--serif-ui); font-size: 11.5px; color: #a99e8e; margin-top: 1px; line-height: 1; font-variant-numeric: tabular-nums; }

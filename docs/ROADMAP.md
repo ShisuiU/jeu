@@ -558,6 +558,12 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.98.0 — Remise en ordre interne (combat et styles)
+
+- **Styles** : 135 règles CSS mortes retirées (classes absentes du code, détectées automatiquement en tenant compte des classes dynamiques) ; feuille compilée 252 → 240 Ko. 33 écrans comparés au pixel près avant/après : identiques.
+- **Combat** : `Battle.tsx` passe de 954 à 650 lignes. La mise en scène (caméra, plans du décor, lumière, assauts, impacts) vit dans `ui/battle/useStageFx.ts` ; cartes d'unités (`UnitView`), couche d'effets (`FxLayer`), placement sur la scène (`layout`), cibles prévues (`targets`), panneaux (fiche d'unité, légende, récap des dégâts) dans `ui/battle/`. Écran de combat comparé au pixel près : identique.
+- La fiche d'unité d'un boss mentionne maintenant ses actes (Acte II, Dernier acte).
+
 ## ✅ Version 1.97.0 — Phase 2 : décors en profondeur, boss en trois actes, défis à contraintes
 
 - **Décors en profondeur** : le paysage de combat est découpé en plans (ciel lointain, sol proche) qui suivent la caméra à des vitesses différentes ; brume qui dérive, rais de lumière selon la région, lueur d'horizon qui respire. Particules d'ambiance propres à chaque région (braises de la Fosse, sable d'Akkar, spores sylvanes, bulles des abysses, étoiles astrales…).

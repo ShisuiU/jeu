@@ -170,7 +170,7 @@
 }
 
 /* Clic : le bouton s'enfonce un instant, les boutons dorés lancent un petit éclat. */
-.btn:not(:disabled):active, .menu-tile:active, .combat-card:active, .hp-tile:active, .sc-btn:active, .nav-item:active { transform: scale(0.96); transition: transform 0.06s; }
+.btn:not(:disabled):active, .menu-tile:active, .combat-card:active, .hp-tile:active, .nav-item:active { transform: scale(0.96); transition: transform 0.06s; }
 .btn:not(.secondary):not(.danger):not(:disabled):active { filter: brightness(1.12); }
 .btn .tap-ripple { background: radial-gradient(circle, rgba(255,255,240,0.7) 0%, rgba(255,226,163,0.25) 40%, transparent 70%); }
 .btn.secondary .tap-ripple, .menu-tile .tap-ripple, .hp-tile .tap-ripple { background: radial-gradient(circle, rgba(217,179,106,0.45) 0%, rgba(217,179,106,0.12) 45%, transparent 70%); }

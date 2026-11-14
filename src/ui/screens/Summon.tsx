@@ -19,6 +19,7 @@ import { bannerAvailable } from '../../game/events';
 import { play } from '../../audio/sfx';
 import { playEmerge, playFlip, playHush, playRevealFlash, playRiftOpen, playShardCharge, playShatter } from '../../audio/battleSfx';
 import { Stage25 } from '../fx/stage25';
+import { HERO_LINES } from '../../data/heroLines';
 import { Modal, Screen, fmt } from '../components/common';
 import { HeroCard } from '../components/HeroCard';
 import { HeroArt } from '../art/HeroArt';
@@ -288,6 +289,7 @@ function RiftReveal({ results, bannerColor, bannerGlow, altar, onClose, again, c
                 <span key={wi} className="rr-word">{wi > 0 && <span style={{ animationDelay: `${1 + k++ * 0.035}s` }}> </span>}{[...w].map((ch, i) => <span key={i} style={{ animationDelay: `${1 + k++ * 0.035}s` }}>{ch}</span>)}</span>
               )); })()}</h2>
               <div className="muted rr-sub" style={{ animationDelay: `${1.1 + name.length * 0.035}s` }}>{HERO_BY_ID[best.heroId].title}</div>
+              {order >= 5 && HERO_LINES[best.heroId]?.[0] && <div className="rr-quote rr-sub" style={{ animationDelay: `${1.3 + name.length * 0.035}s` }}>« {HERO_LINES[best.heroId][0]} »</div>}
               <div className={`chip rr-sub ${best.duplicate ? '' : 'active'}`} style={{ margin: '10px auto 0', width: 'fit-content', animationDelay: `${1.2 + name.length * 0.035}s` }}>{best.duplicate ? 'Déjà à tes côtés · +1 doublon' : 'Un nouvel Héritier répond à l’appel'}</div>
             </div>
           ) : (

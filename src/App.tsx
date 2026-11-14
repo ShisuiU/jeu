@@ -245,6 +245,13 @@ export default function App() {
       ) : (
         <>
           <div key={`${depth}-${route.name}`} className={`route-layer ${navDir}`} style={{ position: 'absolute', inset: 0 }}>
+            {navDir === 'nav-in' && route.name !== 'battle' && (
+              <svg className="thread-wipe" viewBox="0 0 400 800" preserveAspectRatio="none" aria-hidden>
+                <defs><linearGradient id="threadGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#8a6a33" /><stop offset="0.5" stopColor="#ffe7a8" /><stop offset="1" stopColor="#cf9dff" /></linearGradient></defs>
+                <path d="M-20 120 C 90 90, 140 260, 210 300 S 330 470, 420 520" />
+                <path className="t2" d="M-20 140 C 90 110, 140 280, 210 320 S 330 490, 420 540" />
+              </svg>
+            )}
             <ErrorBoundary resetKey={`${depth}-${route.name}`}>
               <Suspense fallback={<div className="screen"><div className="bg-ambient" /></div>}>{renderRoute(route)}</Suspense>
             </ErrorBoundary>

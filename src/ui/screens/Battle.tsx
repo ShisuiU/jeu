@@ -75,6 +75,8 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
   const [awaiting, setAwaiting] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [banner, setBanner] = useState<{ text: string; side: string } | null>(null);
+  const [bossIntro, setBossIntro] = useState<Unit | null>(null);
+  const introDone = useRef(false);
   const [acting, setActing] = useState<string | null>(null);
   const [hits, setHits] = useState<Set<string>>(new Set());
   const [popups, setPopups] = useState<Record<string, Popup[]>>({});
@@ -97,6 +99,14 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
   // Musique : la couleur de la région ; le thème du boss dès que sa vague arrive.
   const bossWave = initial.info.waves.findIndex((w) => w.some((e) => e.kind === 'enemy' && ENEMIES[e.refId]?.boss));
   useEffect(() => { if (save.settings.music) playMusic(bossWave === 0 ? 'boss' : 'battle', initial.info.region); }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // Entrée du boss (v1.95.0) : bandes de cinéma, titre, faiblesse ; le combat attend la fin de la présentation.
+  const showBoss = async (boss: Unit) => {
+    if (useGame.getState().save?.settings.reducedMotion || speedRef.current >= 3) return;
+    setBossIntro(boss); play('rare');
+    const c = center(boss.id); if (c) camTo(c, 1.14, 700);
+    await sleep(1900 / Math.sqrt(speedRef.current));
+    camTo(null, 1, 600); setBossIntro(null);
+  };
   useLayoutEffect(() => {
     const el = measureRef.current; if (!el) return;
     let m = 0; el.querySelectorAll<HTMLElement>('.skill-info').forEach((x) => { m = Math.max(m, x.offsetHeight); });
@@ -117,6 +127,14 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
 
   useEffect(() => () => { alive.current = false; paused = false; }, []);
   useEffect(() => { paused = quit; }, [quit]);
+  // Boss dès la première vague : il fait son entrée avant le premier coup.
+  useEffect(() => {
+    if (phase !== 'fight' || introDone.current || bossWave !== 0) return;
+    introDone.current = true;
+    const boss = s.units.find((u) => u.side === 'enemy' && u.isBoss && u.alive); if (!boss) return;
+    paused = true;
+    void showBoss(boss).then(() => { paused = false; });
+  }, [phase]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const addPopup = (unitId: string, text: string, cls: string) => {
     const id = ++popSeq;
@@ -313,12 +331,15 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
           setBanner(null); setWaveCard({ n: e.wave, total: s.totalWaves, boss: isBoss }); play('open'); force();
           await wait(1700 / Math.min(2, speedRef.current));
           setWaveCard(null); force();
+          if (isBoss) { const boss = s.units.find((u) => u.side === 'enemy' && u.isBoss && u.alive); if (boss) { introDone.current = true; await showBoss(boss); } }
           break;
         }
       }
     }
     if (hit.size) { setHits(hit); setHeavyHits(heavy); }
     force();
+    // Hit-stop (v1.95.0) : sur un coup lourd, la scène se fige un instant, comme dans les jeux d'action.
+    if (heavy.size && !useGame.getState().save?.settings.reducedMotion) { const el = battleRef.current; el?.classList.add('hitstop'); await sleep(speedRef.current >= 3 ? 40 : 75); el?.classList.remove('hitstop'); }
     if (pause) await wait(620 / speedRef.current);
     setHits(new Set());
     setHeavyHits(new Set());
@@ -628,6 +649,18 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
       {phase === 'intro' && <Dialogue lines={initial.info.before!} onDone={() => setPhase('fight')} />}
       {phase === 'outro' && <Dialogue lines={initial.info.after!} onDone={() => setPhase('result')} />}
 
+      {bossIntro && (
+        <div className="boss-intro" aria-live="polite">
+          <div className="bi-bar top" /><div className="bi-bar bottom" />
+          <div className="bi-card">
+            <div className="bi-kicker">Gardien</div>
+            <div className="bi-name">{bossIntro.name}</div>
+            <div className="bi-sub"><AffinityIcon id={bossIntro.affinity} size={15} /> {AFFINITIES[bossIntro.affinity].name}
+              {(() => { const w = (Object.keys(AFFINITIES) as (keyof typeof AFFINITIES)[]).find((a) => AFFINITIES[a].strongAgainst === bossIntro.affinity); return w ? <> · faible face au <b style={{ color: AFFINITIES[w].color }}>{AFFINITIES[w].name}</b></> : null; })()}
+            </div>
+          </div>
+        </div>
+      )}
       {phase === 'result' && result && (
         <div className={`result-overlay ${result.won ? 'won' : 'lost'} ${skipFx ? 'skip' : ''}`} onClick={() => setSkipFx(true)}>
           <div className={`result-title ${result.won ? 'win' : 'lose'}`}>{spec.mode === 'worldboss' || spec.mode === 'guildboss' ? 'COMBAT TERMINÉ' : result.won ? 'VICTOIRE' : 'DÉFAITE'}</div>

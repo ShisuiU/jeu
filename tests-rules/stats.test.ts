@@ -29,3 +29,10 @@ describe('statistiques anonymes (v1.101.0)', () => {
     await assertFails(setDoc(doc(anon(), 'stats/2026-11-14_abcdef123456'), day({ at: 5 })));
   });
 });
+
+describe('statistiques : plantages (v1.102.1)', () => {
+  it('accepte le nombre de plantages par écran, borné', async () => {
+    await assertSucceeds(setDoc(doc(anon(), 'stats/2026-11-14_abcdef123456'), day({ err: { expeditions: 1 } })));
+    await assertFails(setDoc(doc(anon(), 'stats/2026-11-14_abcdef123456'), day({ err: 'x' })));
+  });
+});

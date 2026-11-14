@@ -247,7 +247,8 @@ service cloud.firestore {
     // Écrites sans compte (aucune donnée personnelle) : forme stricte, nombres bornés ; lues seulement par les modérateurs.
     match /stats/{id} {
       function statsOk(d) {
-        return d.keys().hasOnly(['day', 'v', 'lvl', 'ch', 'tower', 'bat', 'def', 'sum', 'ses', 'min', 'at'])
+        return d.keys().hasOnly(['day', 'v', 'lvl', 'ch', 'tower', 'bat', 'def', 'sum', 'ses', 'min', 'err', 'at'])
+          && (!('err' in d) || (d.err is map && d.err.size() <= 20))
           && d.day is string && d.day.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$') && id.matches('^' + d.day + '_[a-z0-9]{12}$')
           && shortText(d.v, 12)
           && d.lvl is int && d.lvl >= 0 && d.lvl <= 1000 && d.ch is int && d.ch >= 0 && d.ch <= 10000

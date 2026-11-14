@@ -26,3 +26,6 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+      # Parcours de fumée : tous les écrans et un combat dans un vrai navigateur ; un écran qui plante bloque la fusion.
+      - run: npx playwright install --with-deps chromium
+      - run: npm run smoke

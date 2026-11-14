@@ -86,3 +86,19 @@ describe('Économie v1.68.2 (audit : trop d’invocations)', () => {
     expect(Object.values(b.rates).reduce((a, x) => a + (x ?? 0), 0)).toBeCloseTo(100, 5);
   });
 });
+
+describe('Économie des éclats épiques (v1.102.1, après la fin des cristaux)', () => {
+  it('un joueur régulier gagne 1,5 à 3 éclats épiques par jour (environ un appel épique et demi à trois)', async () => {
+    const { normalizeReward } = await import('../src/data/resources');
+    const { DAILY_REWARDS } = await import('../src/data/dailyRewards');
+    const { ARENA_TIERS } = await import('../src/data/arena');
+    const { riftReward } = await import('../src/data/rift');
+    const epic = (rs: { [k: string]: number | undefined }[]) => rs.reduce((a, r) => a + (normalizeReward(r).shardEpic ?? 0), 0);
+    const perDay = epic([...DAILY_MISSIONS.map((m) => m.reward), DAILY_BONUS])
+      + epic([...WEEKLY_MISSIONS.map((m) => m.reward), WEEKLY_BONUS]) / 7
+      + epic(DAILY_REWARDS.map((d) => d.reward)) / 28
+      + epic([ARENA_TIERS[2].season, riftReward('boss', 10)]) / 7;
+    expect(perDay).toBeGreaterThanOrEqual(1.5);
+    expect(perDay).toBeLessThanOrEqual(3);
+  });
+});

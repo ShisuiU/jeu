@@ -6,3 +6,4 @@ dev-dist
 test-results
 *.tsbuildinfo
 dist-emu
+smoke-fail.png

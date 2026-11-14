@@ -41,4 +41,11 @@ describe('statistiques anonymes (v1.101.0)', () => {
     expect(s.stuck[0]).toEqual({ where: 'Campagne 3-4', count: 3 });
     expect(s.modes[0]).toEqual({ mode: 'campaign', won: 3, lost: 3 });
   });
+  it('compte les plantages par écran (sans message ni donnée de partie)', () => {
+    let d = emptyDay('2026-11-14', 'v');
+    d = addEvent(d, { kind: 'crash', screen: 'expeditions' });
+    d = addEvent(d, { kind: 'crash', screen: 'expeditions' });
+    expect(d.err).toEqual({ expeditions: 2 });
+    expect(summarize([{ bat: {}, def: {}, sum: 0, ses: 0, min: 0, lvl: 1, err: d.err }]).crashes).toEqual([{ screen: 'expeditions', count: 2 }]);
+  });
 });

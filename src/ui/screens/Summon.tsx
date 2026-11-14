@@ -1,3 +1,4 @@
+import { GetButton } from '../components/Sources';
 import shCommon from '../../assets/kit/shard_common.webp';
 import shAeon from '../../assets/kit/shard_aeon.webp';
 import shEpic from '../../assets/kit/shard_epic.webp';
@@ -80,6 +81,7 @@ export function Summon() {
           </div>
         )}
         <div className="altar-shard" key={b.id}><Crystal color={b.color} glow={b.glow} size={74} /></div>
+        <GetButton res={b.cost.resource} label />
         <div className="altar-caption">
           <h2>{b.name.replace('Invocation ', 'Appel ').replace('Appel standard', 'Appel ordinaire')}</h2>
           <p>{b.subtitle}</p>

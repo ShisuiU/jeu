@@ -21,6 +21,7 @@ import { BondsIntro } from './ui/components/Copies';
 import { BottomNav } from './ui/components/BottomNav';
 import { BgIndicator } from './ui/components/BgIndicator';
 import { Toasts } from './ui/components/Toasts';
+import { SourcesModal } from './ui/components/Sources';
 import { Title } from './ui/screens/Title';
 import { Home } from './ui/screens/Home';
 
@@ -266,6 +267,7 @@ export default function App() {
           {save.flags.guide_done && route.name !== 'battle' && needsName(save) && <NamePrompt />}
         </>
       )}
+      <SourcesModal />
       <Toasts />
     </div>
   );

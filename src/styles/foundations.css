@@ -344,3 +344,42 @@
   .prep-sweep { flex: 0 0 auto; padding-left: 12px !important; padding-right: 12px !important; }
   .bld-body .row .btn { font-size: 11px; letter-spacing: 0.02em; }
 }
+/* ─── Obtenir une ressource (v1.100.0) ─── */
+.res-get { display: inline-grid; place-items: center; width: 15px; height: 15px; margin-left: 2px; border-radius: 50%; font-size: 12px; font-weight: 800; line-height: 1; color: #1d1408; background: linear-gradient(180deg, #f2d08a, #b88a3e); box-shadow: 0 0 0 1px rgba(0,0,0,0.5); flex-shrink: 0; }
+.res-cell { position: relative; }
+.res-cell .res-get { position: absolute; top: 6px; right: 6px; width: 16px; height: 16px; }
+.res-cell.zero { opacity: 0.62; }
+.res-cell.zero b { color: var(--text-faint); }
+.forge-res button { display: inline-flex; align-items: center; gap: 4px; color: inherit; font: inherit; padding: 4px 2px; }
+.get-btn { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 10px 0 4px; border-radius: 15px; color: #f1e3c4; font-size: 12.5px; background: rgba(10,8,14,0.78); border: 1px solid rgba(226,184,102,0.55); box-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+.get-btn > span { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; font-weight: 800; font-size: 15px; line-height: 1; color: #1d1408; background: linear-gradient(180deg, #f2d08a, #b88a3e); }
+.get-btn:not(.with-label) { padding: 0 4px; }
+.get-btn:active { transform: scale(0.95); }
+.altar-stage > .get-btn { position: absolute; top: 10px; right: 10px; z-index: 3; }
+/* Fenêtre « Obtenir » */
+.src-head { display: flex; align-items: center; gap: 12px; margin: 2px 26px 6px 0; }
+.src-res { width: 52px; height: 52px; flex-shrink: 0; display: grid; place-items: center; border-radius: 12px; background: radial-gradient(circle, rgba(226,184,102,0.18), rgba(0,0,0,0.35) 70%); border: 1px solid rgba(226,184,102,0.35); }
+.src-title { min-width: 0; }
+.src-title h2 { margin: 0; text-align: left; font-size: 19px; line-height: 1.15; }
+.src-title span { font-size: 12.5px; color: var(--text-dim); }
+.src-title b { color: #f1e3c4; font-variant-numeric: tabular-nums; }
+.src-desc { margin: 0 0 10px; font-size: 12.5px; line-height: 1.4; color: var(--text-dim); }
+.src-list { display: grid; gap: 6px; max-height: min(56vh, 460px); overflow-y: auto; margin: 0 -4px; padding: 0 4px 2px; }
+.src-row { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 52px; padding: 8px 10px; text-align: left; color: inherit; border-radius: 10px; border: 1px solid rgba(226,184,102,0.22); background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.015)); transition: transform 0.12s ease, border-color 0.15s ease, background 0.15s ease; animation: srcIn 0.22s ease both; }
+.src-row:nth-child(2) { animation-delay: 0.03s; } .src-row:nth-child(3) { animation-delay: 0.06s; } .src-row:nth-child(4) { animation-delay: 0.09s; } .src-row:nth-child(n+5) { animation-delay: 0.12s; }
+@keyframes srcIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.src-row:hover, .src-row:focus-visible { border-color: rgba(226,184,102,0.6); background: linear-gradient(180deg, rgba(226,184,102,0.12), rgba(226,184,102,0.03)); }
+.src-row:active { transform: scale(0.985); }
+.src-ic { width: 34px; height: 34px; flex-shrink: 0; display: grid; place-items: center; border-radius: 9px; color: #e2b866; background: rgba(0,0,0,0.35); border: 1px solid rgba(226,184,102,0.3); }
+.src-txt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.src-txt b { font-size: 14px; color: #f1e3c4; line-height: 1.2; }
+.src-txt small { font-size: 11.5px; color: var(--text-dim); line-height: 1.25; }
+.src-amt { font-style: normal; font-size: 11.5px; font-weight: 700; color: #e2b866; white-space: nowrap; }
+.src-go { width: 16px; text-align: center; font-size: 20px; line-height: 1; color: #e2b866; flex-shrink: 0; }
+.src-row.later .src-txt small { color: #e6b35c; }
+.src-row.locked { opacity: 0.6; border-style: dashed; }
+.src-row.locked .src-ic, .src-row.locked .src-go { color: var(--text-faint); }
+.src-sep { margin: 6px 2px 0; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint); }
+.src-none { padding: 18px 10px; text-align: center; font-size: 13px; color: var(--text-dim); border: 1px dashed rgba(255,255,255,0.12); border-radius: 10px; }
+.reduced-motion .src-row { animation: none; }
+.rc-item[role=button], .reward-item[role=button] { cursor: pointer; }

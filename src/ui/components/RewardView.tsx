@@ -1,5 +1,6 @@
+import { useUI } from '../../state/ui';
 import type { Reward } from '../../data/resources';
-import { RESOURCES } from '../../data/resources';
+import { RESOURCES, type ResourceId } from '../../data/resources';
 import { ResourceIcon, Icon } from '../art/Icons';
 import { fmt } from './common';
 import type { GearItem } from '../../save/schema';
@@ -28,7 +29,7 @@ export function RewardView({ reward, gear = [], compact }: { reward: Reward; gea
         const def = k === 'energy' ? null : RESOURCES[k as keyof typeof RESOURCES];
         if (k !== 'energy' && !def) return null;
         return (
-          <div key={k} className="rc-item" style={{ animationDelay: `${i * 0.06}s` }}>
+          <div key={k} className="rc-item" style={{ animationDelay: `${i * 0.06}s` }} {...srcProps(k)}>
             {def ? <ResourceIcon icon={def.icon} color={def.color} size={30} res={k} /> : <Icon.energy size={28} />}
             <span className="rc-txt"><b>{fmt(v ?? 0)}</b><small>{def ? def.name : 'Énergie'}</small></span>
           </div>
@@ -57,7 +58,7 @@ export function RewardView({ reward, gear = [], compact }: { reward: Reward; gea
         const def = k === 'energy' ? null : RESOURCES[k as keyof typeof RESOURCES];
         if (k !== 'energy' && !def) return null;
         return (
-          <div key={k} className="reward-item" style={{ animationDelay: `${i * 0.08}s` }}>
+          <div key={k} className="reward-item" style={{ animationDelay: `${i * 0.08}s` }} {...srcProps(k)}>
             {def ? <ResourceIcon icon={def.icon} color={def.color} size={34} res={k} /> : <Icon.energy size={34} />}
             <b>{fmt(v ?? 0)}</b>
             <span className="muted">{def ? def.name : 'Énergie'}</span>
@@ -73,6 +74,13 @@ export function RewardView({ reward, gear = [], compact }: { reward: Reward; gea
       {detail}
     </div>
   );
+}
+
+/** Toucher une ressource reçue : où en obtenir d'autres (v1.100.0). */
+function srcProps(k: string) {
+  if (!(k in RESOURCES)) return {};
+  const open = () => useUI.getState().openSources(k as ResourceId);
+  return { role: 'button', tabIndex: 0, 'aria-label': `${RESOURCES[k as ResourceId].name} : où l’obtenir`, onClick: open, onKeyDown: (e: { key: string }) => { if (e.key === 'Enter') open(); } };
 }
 
 export function rewardMainIcon(r: Reward, size = 20) {

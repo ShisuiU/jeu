@@ -111,7 +111,7 @@ export function Expeditions() {
         <Sheet title={offer.place} onClose={() => setPrep(null)} footer={
           <div className="row" style={{ gap: 8 }}>
             <button className="btn secondary grow" onClick={() => setPrep(null)}>Annuler</button>
-            <button className="btn grow" disabled={picked.length !== offer.size} onClick={launch}>{picked.length === offer.size ? `Partir (${dur(offer.minutes)})` : `Choisis ${offer.size - picked.length} héros`}</button>
+            <button className="btn grow" disabled={picked.length !== offer.size} onClick={launch}>{picked.length === offer.size ? `Partir (${dur(offer.minutes)})` : `Encore ${offer.size - picked.length}`}</button>
           </div>
         }>
           <div className="ex-prep-head">

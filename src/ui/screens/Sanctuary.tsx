@@ -129,7 +129,7 @@ export function Sanctuary({ uid }: { uid?: string }) {
             <CheckRow icon={<ResourceIcon icon="sigil" color="#ffd48a" size={20} />} label="Rang" value={`${h.rank}/${BALANCE.hero.maxRank}`} check={rankUpCheck(save, h)} max={h.rank >= BALANCE.hero.maxRank}
               heroId={h.heroId} onGo={() => run((s) => rankUp(s, h.uid), `Rang ${h.rank + 1}`, 'rank')} />
           </div>
-          <p className="faint">Chaque rang relève le niveau maximum de {BALANCE.hero.levelsPerRank} niveaux et renforce le héros.</p>
+          <p className="faint">Chaque rang : +{BALANCE.hero.levelsPerRank} niveaux maximum et stats renforcées.</p>
         </>
       )}
       {tab === 'ascend' && (
@@ -141,7 +141,7 @@ export function Sanctuary({ uid }: { uid?: string }) {
             <CheckRow icon={<ResourceIcon icon="essence" color="#ff9bb5" size={20} />} label="Éveil" value={`${h.awaken}/${BALANCE.hero.maxAwaken}`} check={awakenCheck(save, h)} max={h.awaken >= BALANCE.hero.maxAwaken}
               heroId={h.heroId} onGo={() => run((s) => awaken(s, h.uid), `Éveil ${h.awaken + 1}`, 'awaken')} />
           </div>
-          <p className="faint">L’éveil demande un doublon du héros (obtenu en l’invoquant à nouveau).</p>
+          <p className="faint">L’éveil demande un doublon du héros.</p>
         </>
       )}
       {tab === 'mastery' && (

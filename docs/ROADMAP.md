@@ -558,6 +558,12 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.100.1 — Finition : fenêtres et écrans internes
+
+- Fenêtre Énergie, détail d'équipement (une seule ligne pour les secondaires à venir), onglets Rang et Ascension du Sanctuaire, préparation d'expédition (bouton sur une ligne) : textes raccourcis.
+- Synergies d'équipe : nom puis effet sur deux lignes nettes (plus de colonnes serrées).
+- Revue visuelle de la fiche héros, des onglets du Sanctuaire, du détail d'équipement, du choix des héros et de l'écran de victoire.
+
 ## ✅ Version 1.100.0 — « Obtenir » : où trouver chaque ressource
 
 - **Registre central** (`game/sources.ts`) : chaque activité du jeu (campagne, coffres d'étoiles, chaque donjon, donjon des familles, Tour, défis, Failles, boss mondial, Arène, boss de clan, missions, progression, événements, connexion, roue, marché, camp, expéditions, mine, collection, démantèlement, échange à l'Autel) déclare ce qu'elle peut donner en lisant les **vraies tables de récompenses**. Les sources d'une ressource sont calculées, jamais écrites à la main : ajouter une activité suffit à la faire apparaître partout. Aucune quantité inventée : seules les quantités garanties s'affichent (Mine « 1 par heure », Échange « 1 contre 300 cristaux »).

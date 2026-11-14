@@ -89,7 +89,7 @@ export function Team() {
 
       <Panel title="Synergies">
         {Object.entries(factionCount).map(([f, n]) => (
-          <div key={f} className="stat-row"><span>{FACTIONS[f as keyof typeof FACTIONS].name} ×{n}</span><span className="faint" style={{ maxWidth: '60%', textAlign: 'right' }}>{FACTIONS[f as keyof typeof FACTIONS].synergy}</span></div>
+          <div key={f} className="syn-row"><b>{FACTIONS[f as keyof typeof FACTIONS].name} ×{n}</b><span className="faint">{FACTIONS[f as keyof typeof FACTIONS].synergy}</span></div>
         ))}
         {leaderDef?.leaderSkill && <div className="stat-row"><span>Aura de chef</span><b>{leaderDef.leaderSkill.description}</b></div>}
         <div className="row" style={{ marginTop: 10, gap: 8 }}>

@@ -558,6 +558,13 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.101.0 — Statistiques de jeu anonymes, textes du combat allégés
+
+- **Statistiques anonymes** (pour équilibrer) : par journée de jeu, combats gagnés/perdus par mode, défaites par niveau de campagne et étage de Tour, invocations, sessions, minutes de jeu, niveau de compte et progression. **Aucune donnée personnelle** (ni nom, ni e-mail, ni compte, ni sauvegarde) ; identifiant tiré au hasard **chaque jour** (deux journées d'un même joueur ne peuvent pas être reliées). Additionnées sur l'appareil, envoyées au plus toutes les 5 minutes ; jamais depuis une adresse locale ni en mode test. **Désactivables** dans Paramètres ▸ Jeu ▸ Statistiques anonymes.
+- **Lecture** : écran Modération ▸ « Statistiques anonymes · 7 jours » (journées, minutes et sessions moyennes, invocations, taux de victoire par mode, lieux où les joueurs perdent le plus, niveaux de compte).
+- **Serveur** : `stats/{jour_id}` dans `firestore.rules` (écriture sans compte, forme stricte et nombres bornés ; lecture réservée aux modérateurs), vérifié sur l'émulateur (37 tests de règles). ⚠️ Les règles doivent être republiées dans la console Firebase pour que l'envoi fonctionne.
+- **Textes** : pause (avertissement seul), défaite (conseils introduits en une ligne), Arène et Boss mondial, Clan et Amis (avec compte) raccourcis.
+
 ## ✅ Version 1.100.1 — Finition : fenêtres et écrans internes
 
 - Fenêtre Énergie, détail d'équipement (une seule ligne pour les secondaires à venir), onglets Rang et Ascension du Sanctuaire, préparation d'expédition (bouton sur une ligne) : textes raccourcis.

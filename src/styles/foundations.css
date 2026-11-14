@@ -388,3 +388,8 @@
 .syn-row:last-child { border-bottom: 0; }
 .syn-row b { font-size: 13.5px; color: #f1e3c4; }
 .syn-row span { font-size: 12px; line-height: 1.35; }
+/* Statistiques anonymes (modération) */
+.mod-stats .ms-kpi { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-bottom: 8px; }
+.mod-stats .ms-kpi span { display: flex; flex-direction: column; align-items: center; padding: 8px 4px; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid var(--surface-line); font-size: 11.5px; color: var(--text-dim); }
+.mod-stats .ms-kpi b { font-size: 17px; color: #f1e3c4; }
+.mod-stats .ms-h { margin: 10px 0 4px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint); }

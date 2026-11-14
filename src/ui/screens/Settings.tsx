@@ -48,6 +48,10 @@ export function Settings() {
           <div className="grow"><b>Animations réduites</b><div className="faint">Économise la batterie, réduit les mouvements</div></div>
           <Toggle label="Animations réduites" on={st.reducedMotion} onChange={(v) => update({ reducedMotion: v })} />
         </div>
+        <div className="setting-row">
+          <div className="grow"><b>Statistiques anonymes</b><div className="faint">Aide à équilibrer le jeu. Aucune donnée personnelle.</div></div>
+          <Toggle label="Statistiques anonymes" on={st.shareStats} onChange={(v) => update({ shareStats: v })} />
+        </div>
       </Panel>
       <NotifyPanel />
       <Panel title="Application">

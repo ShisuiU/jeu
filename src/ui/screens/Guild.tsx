@@ -91,7 +91,6 @@ function FindGuild() {
           <button className="btn small" disabled={busy || !g.open || g.count >= GUILD_MAX} onClick={() => void join(g)}>Rejoindre</button>
         </div>
       ))}
-      {list && list.length > 0 && <p className="faint" style={{ textAlign: 'center' }}>Touche un clan pour voir ses membres.</p>}
       {preview && <ClanPreview g={preview} busy={busy} onClose={() => setPreview(null)} onJoin={() => { const g = preview; setPreview(null); void join(g); }} />}
       {create && (
         <Modal onClose={() => setCreate(null)}>
@@ -183,7 +182,7 @@ function MyGuild({ gid, uid }: { gid: string; uid: string }) {
                 </div>
               );
             })}
-            <p className="hint" style={{ marginBottom: 0 }}>Chaque palier atteint par le clan récompense tous les membres qui ont attaqué au moins une fois cette semaine.</p>
+            <p className="hint" style={{ marginBottom: 0 }}>Chaque palier récompense les membres ayant attaqué au moins une fois cette semaine.</p>
           </Panel>
         </>
       )}
@@ -265,7 +264,7 @@ function Members({ g, uid, now, act, confirm, leave }: {
   return (
     <>
       <Panel title={`Membres · ${g.count}/${GUILD_MAX}`}>
-        <p className="faint" style={{ marginTop: 0 }}>Ton rôle : <b className={`cl-role ${me}`}>{ROLE_NAMES[me]}</b>{me === 'leader' ? ' · touche un membre pour le nommer adjoint, chef, ou l’exclure.' : me === 'officer' ? ' · touche un simple membre pour l’exclure.' : ''}</p>
+        <p className="faint" style={{ marginTop: 0 }}>Ton rôle : <b className={`cl-role ${me}`}>{ROLE_NAMES[me]}</b>{me === 'leader' ? ' · touche un membre pour le gérer.' : me === 'officer' ? ' · touche un simple membre pour l’exclure.' : ''}</p>
         {list.map(([id, mm]) => {
           const role = roleOf(g, id);
           return (

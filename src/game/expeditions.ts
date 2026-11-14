@@ -27,7 +27,7 @@ export interface ExpeditionState { day: string; offers: ExpeditionOffer[]; runs:
 
 export const EXPEDITION_SLOTS = 4;
 
-const PLACES: { place: string; region: string; art: string; focus: Reward }[] = [
+export const PLACES: { place: string; region: string; art: string; focus: Reward }[] = [
   { place: 'Les ruines de Valcrest', region: 'valcrest', art: 'herald', focus: { gold: 2200, xpElixir: 1.2 } },
   { place: 'Les sylves murmurantes', region: 'sylvaran', art: 'mother_tree', focus: { xpElixir: 2, potionMinor: 1 } },
   { place: 'Les tours du Prisme', region: 'prism', art: 'mother_ai', focus: { forgeOre: 14, skillTome: 0.12 } },

@@ -73,8 +73,8 @@ export function Gear({ gearUid }: { gearUid?: string }) {
   return (
     <Screen title="Forge" bg={<PlaceAmbient place="forge" />} right={
       <span className="forge-res">
-        <span><ResourceIcon icon="ore" color="#c08a5a" size={16} />{fmt(save.resources.forgeOre)}</span>
-        <span><ResourceIcon icon="coin" size={16} />{fmt(save.resources.gold)}</span>
+        <button onClick={() => useUI.getState().openSources('forgeOre')} aria-label="Minerai de forge : où l’obtenir"><ResourceIcon icon="ore" color="#c08a5a" size={16} />{fmt(save.resources.forgeOre)}</button>
+        <button onClick={() => useUI.getState().openSources('gold')} aria-label="Or : où l’obtenir"><ResourceIcon icon="coin" size={16} />{fmt(save.resources.gold)}</button>
       </span>
     }>
       <div className="seg" style={{ marginBottom: 10 }}>

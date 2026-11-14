@@ -11,7 +11,6 @@ import { Modal } from './common';
 import { useState } from 'react';
 import { refillCost, refillEnergy } from '../../game/comfort';
 import { play } from '../../audio/sfx';
-import { isUnlocked } from '../../game/unlocks';
 import avatarRing from '../../assets/home/avatar_ring.webp';
 
 export function TopBar() {
@@ -42,10 +41,10 @@ export function TopBar() {
         {e.current < eMax && <span className="pill-timer">{formatDuration(next)}</span>}
       </div>
       <button className="pill kit k-gold" onClick={() => push({ name: 'inventory' })} aria-label="Or"><Counter id="gold" value={save.resources.gold} />
-        <span className="pill-plus" role="button" aria-label="Marché" onClick={(ev) => { ev.stopPropagation(); push(isUnlocked(save, 'market') ? { name: 'market' } : { name: 'inventory' }); }} /></button>
+        <span className="pill-plus" role="button" aria-label="Obtenir de l’or" onClick={(ev) => { ev.stopPropagation(); useUI.getState().openSources('gold'); }} /></button>
       {/* Diamants (v1.78.0) : la monnaie précieuse, extraite à la Mine des Bâtiments. */}
       <button className="pill kit k-diamond" onClick={() => push({ name: 'buildings' })} aria-label="Diamants"><Counter id="diamonds" value={save.resources.diamonds ?? 0} />
-        <span className="pill-plus" role="button" aria-label="Bâtiments" onClick={(ev) => { ev.stopPropagation(); push({ name: 'buildings' }); }} /></button>
+        <span className="pill-plus" role="button" aria-label="Obtenir des diamants" onClick={(ev) => { ev.stopPropagation(); useUI.getState().openSources('diamonds'); }} /></button>
       {open && (
         <Modal onClose={() => setOpen(false)}>
           <h2>Énergie</h2>

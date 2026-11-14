@@ -13,12 +13,12 @@ const GROUPS: { title: string; ids: string[] }[] = [
   { title: 'Forge', ids: ['forgeOre'] },
 ];
 
-// Toujours affichées ; le reste n'apparaît qu'une fois possédé (un Sac plein de « 0 » noie l'utile).
-const ALWAYS = ['gold', 'crystals'];
+// Toutes les ressources sont listées (v1.100.0) : toucher une ressource, même à 0, montre où l'obtenir.
+// Seule l'ancienne monnaie convertie (sans source) n'apparaît que si le joueur en a encore.
+const LEGACY = ['shardPrimal'];
 
 export function Inventory() {
   const save = useGame((s) => s.save)!;
-  const toast = useUI((s) => s.toast);
   return (
     <Screen title="Sac">
       <Panel title="Énergie">
@@ -31,16 +31,17 @@ export function Inventory() {
         </div>
       </Panel>
       {/* Les doublons de héros ne sont plus listés ici : ils se gèrent depuis l'onglet Héros (Liens) et le Sanctuaire. */}
-      {GROUPS.map((g) => ({ g, list: RESOURCE_LIST.filter((r) => g.ids.includes(r.id) && (ALWAYS.includes(r.id) || save.resources[r.id] > 0)) })).filter((x) => x.list.length).map(({ g, list }) => (
+      {GROUPS.map((g) => ({ g, list: RESOURCE_LIST.filter((r) => g.ids.includes(r.id) && (!LEGACY.includes(r.id) || save.resources[r.id] > 0)) })).filter((x) => x.list.length).map(({ g, list }) => (
         <Panel key={g.title} title={g.title}>
           <div className="res-grid">
             {list.map((r) => (
-              <button key={r.id} className="res-cell" onClick={() => toast(`${r.name} : ${r.description}`)}>
+              <button key={r.id} className={`res-cell ${save.resources[r.id] > 0 ? '' : 'zero'}`} onClick={() => useUI.getState().openSources(r.id)} aria-label={`${r.name} : où l’obtenir`}>
                 <ResourceIcon icon={r.icon} color={r.color} size={30} res={r.id} />
                 <div className="grow">
                   <b>{fmt(save.resources[r.id])}</b>
                   <div className="faint" style={{ lineHeight: 1.25 }}>{r.name}</div>
                 </div>
+                <span className="res-get" aria-hidden>+</span>
               </button>
             ))}
           </div>

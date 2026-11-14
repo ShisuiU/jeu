@@ -1,6 +1,6 @@
 import { BALANCE } from '../data/balance';
 import { HERO_BY_ID } from '../data/heroes';
-import type { ResourceId } from '../data/resources';
+import { RESOURCES, type ResourceId } from '../data/resources';
 import type { HeroInstance, SaveData } from '../save/schema';
 import { addHeroXp, heroXpToNext } from './progression';
 import { maxLevelForRank } from './stats';
@@ -20,7 +20,7 @@ function affordable(s: SaveData, h: HeroInstance, cost: Cost): string | undefine
   for (const [k, v] of Object.entries(cost)) {
     if (!v) continue;
     if (k === 'copies') { if ((s.heroCopies[h.heroId] ?? 0) < v) return 'Il faut un doublon de ce héros (invocation).'; }
-    else if ((s.resources[k as ResourceId] ?? 0) < v) return 'Ressources insuffisantes.';
+    else if ((s.resources[k as ResourceId] ?? 0) < v) return `Il manque : ${RESOURCES[k as ResourceId]?.name ?? 'des ressources'}.`;
   }
   return undefined;
 }

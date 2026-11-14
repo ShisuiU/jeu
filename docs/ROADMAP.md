@@ -558,6 +558,14 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.100.0 — « Obtenir » : où trouver chaque ressource
+
+- **Registre central** (`game/sources.ts`) : chaque activité du jeu (campagne, coffres d'étoiles, chaque donjon, donjon des familles, Tour, défis, Failles, boss mondial, Arène, boss de clan, missions, progression, événements, connexion, roue, marché, camp, expéditions, mine, collection, démantèlement, échange à l'Autel) déclare ce qu'elle peut donner en lisant les **vraies tables de récompenses**. Les sources d'une ressource sont calculées, jamais écrites à la main : ajouter une activité suffit à la faire apparaître partout. Aucune quantité inventée : seules les quantités garanties s'affichent (Mine « 1 par heure », Échange « 1 contre 300 cristaux »).
+- **Accès réel** : mode pas encore débloqué → verrouillé avec sa condition (« Après le niveau 3-8 de la campagne ») ; boss de clan → « Rejoins un clan » ; événements → « Pas en ce moment » si la récompense n'est pas au programme de la semaine. Ressource sans source (ancienne monnaie convertie) → « Aucune source pour le moment ».
+- **Fenêtre « Obtenir »** : icône, quantité possédée, description, sources ouvertes d'abord (source principale en tête), puis « À débloquer » ; toucher une source y mène directement (le bon donjon, le bon écran).
+- **Où la trouver** : Sac (toutes les ressources, même à 0), porte-monnaie (Marché, Sanctuaire), Forge, Autel (bouton « Obtenir »), « + » de l'or et des diamants en haut de l'accueil, récompenses affichées, et chaque message « … insuffisant » propose « Obtenir ».
+- Tests : chaque ressource a une source réelle, chaque source donne vraiment la ressource, conditions de déblocage respectées ; parcours vérifié dans le navigateur pour les 15 ressources et toutes leurs destinations.
+
 ## ✅ Version 1.99.0 — Combats fluides et première passe de finition
 
 - **Fluidité des combats** (mesurée avec un processeur ralenti ×4, comme un téléphone) : 36 → 55 images/s. La scène en profondeur de la v1.97 utilisait un second plan masqué, des modes de fusion et un flou qui forçaient le téléphone à recomposer l'écran à chaque image : retirés (la brume, les rais, la lumière des sorts et les actes restent). Particules du combat dessinées d'un seul coup à partir d'un halo pré-calculé, en définition 1,5× au lieu de 2×.

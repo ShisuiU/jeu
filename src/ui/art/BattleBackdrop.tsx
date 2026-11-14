@@ -91,3 +91,45 @@ export const BattleBackdrop = memo(function BattleBackdrop({ region = 'valcrest'
     </svg>
   );
 });
+
+// ─── SCÈNE DE COMBAT EN PROFONDEUR (v1.97.0, phase 2 lot 3) ───
+// Le même paysage peint est découpé en deux plans : le ciel (loin, bouge peu) et le sol (près, bouge plus)
+// quand la caméra avance. Entre les deux : une brume qui dérive, des rais de lumière selon la région,
+// et une lumière dynamique (.bs-light) que les sorts allument. Les actes du boss teintent la scène.
+// Tout est animé en transform/opacity (composité par le GPU) : rien ne repeint pendant le combat.
+const RAYS: Partial<Record<Region, true>> = { sylvaran: true, abyss: true, valcrest: true, heart: true, prism: true };
+
+/** Particules d'ambiance de chaque région (couleurs + mouvement), pour la couche canvas du combat. */
+export function regionAmbient(region?: string): { colors: string[]; count: number; cfg: import('../fx/stage25').AmbientCfg } {
+  const r = (region && region in PALETTES ? region : 'valcrest') as Region;
+  switch (r) {
+    case 'ash': return { colors: ['#ff6a1f', '#ffb347', '#ff3d1f'], count: 34, cfg: { vx: [-0.012, 0.012], vy: [-0.07, -0.025], r: [0.7, 2], sway: 0.02, alpha: [0.45, 0.9] } };
+    case 'akkar': return { colors: ['#e3a457', '#ffcc66', '#c98a4a'], count: 30, cfg: { vx: [0.02, 0.05], vy: [-0.006, 0.006], r: [0.5, 1.4], alpha: [0.25, 0.6] } };
+    case 'sylvaran': return { colors: ['#c9f25a', '#9bbf5a', '#e8ff9a'], count: 26, cfg: { vx: [-0.006, 0.006], vy: [-0.018, -0.004], r: [0.8, 2.2], sway: 0.025, alpha: [0.3, 0.75] } };
+    case 'prism': return { colors: ['#7fe7ff', '#b8f6ff', '#ffffff'], count: 22, cfg: { vx: [-0.004, 0.004], vy: [-0.012, 0.004], r: [0.5, 1.5], alpha: [0.35, 0.85] } };
+    case 'astral': return { colors: ['#efe6ff', '#c7b6ff', '#ffffff'], count: 30, cfg: { vx: [-0.004, 0.004], vy: [0.004, 0.014], r: [0.4, 1.4], alpha: [0.3, 0.9] } };
+    case 'abyss': return { colors: ['#7fd8d0', '#b8f0ea', '#5fc8c0'], count: 22, cfg: { vx: [-0.004, 0.004], vy: [-0.04, -0.015], r: [1, 2.6], sway: 0.015, alpha: [0.2, 0.5] } };
+    case 'heart': return { colors: ['#ff9bb5', '#ffcc66', '#ffe6c0'], count: 24, cfg: { vx: [-0.006, 0.006], vy: [-0.025, -0.006], r: [0.6, 1.8], sway: 0.012 } };
+    case 'seams': return { colors: ['#c9d4ff', '#9fb7ff', '#e0d6ff'], count: 22, cfg: { vx: [-0.01, 0.01], vy: [-0.02, -0.004], r: [0.5, 1.5] } };
+    default: return { colors: ['#b98cff', '#f2c46b', '#b98cff'], count: 22, cfg: { vx: [-0.008, 0.008], vy: [-0.03, -0.008], r: [0.6, 1.8] } };
+  }
+}
+
+export const BattleScene = memo(function BattleScene({ region, act = 1 }: { region?: string; act?: number }) {
+  const r = (region && region in PALETTES ? region : 'valcrest') as Region;
+  const land = battleLandscape(r);
+  if (!land) return <BattleBackdrop region={r} />;
+  const p = PALETTES[r];
+  return (
+    <div className={`bscene act-${act}`} style={{ ['--glow' as string]: p.glow, ['--rift' as string]: p.rift }} aria-hidden>
+      <img className="bs-far" data-depth="0.12" src={land} alt="" draggable={false} />
+      <img className="bs-ground" data-depth="0.42" src={land} alt="" draggable={false} />
+      <div className="bs-glow" />
+      {RAYS[r] && <div className="bs-rays" data-depth="0.2" />}
+      <div className="bs-mist" data-depth="0.3"><i /><i /></div>
+      <div className="bs-light" />
+      <div className="painted-vignette" />
+      <div className="bs-act" />
+    </div>
+  );
+});

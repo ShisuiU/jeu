@@ -558,6 +558,13 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.97.0 — Phase 2 : décors en profondeur, boss en trois actes, défis à contraintes
+
+- **Décors en profondeur** : le paysage de combat est découpé en plans (ciel lointain, sol proche) qui suivent la caméra à des vitesses différentes ; brume qui dérive, rais de lumière selon la région, lueur d'horizon qui respire. Particules d'ambiance propres à chaque région (braises de la Fosse, sable d'Akkar, spores sylvanes, bulles des abysses, étoiles astrales…).
+- **Lumière dynamique** : chaque sort allume le décor de sa couleur à l'endroit où il part (plus fort pour une ultime), les coups lourds et les Fractures aussi. Tout est animé en transform/opacity (composité, sans repeinte).
+- **Boss en trois actes** : Acte II sous 50 % (enrage, se purifie, se protège), puis **Dernier acte** sous 25 % avec un pouvoir propre à son affinité (Brasier, Écorce, Marée gelée, Effondrement), sans dégâts directs. La scène rougit à chaque acte ; repères des actes sur la barre de vie ; actes annoncés à la préparation. Effet mesuré sur la courbe de la campagne : négligeable.
+- **Défis à contraintes** : dans la Tour, un défi par étage multiple de 5 déjà conquis (20 défis : Sans soigneur, À quatre, Sans légende, Sans rempart, Deux affinités), récompense unique en cristaux (et essence d'éveil tous les 20 étages). Dans les Failles, un **serment de la semaine** à prendre au départ, bonus sur le Gardien. Règle vérifiée à la préparation et au résultat. Aucun nouveau menu ni nouvelle monnaie.
+
 ## ✅ Version 1.96.0 — Phase 2 : voies, retouche d'équipement, équilibrage
 
 - Voies : au niveau 60, chaque héros choisit une voie parmi deux, propre à son rôle (Rempart ou Briseur pour les défenseurs, Lame ou Tempête pour les attaquants, Ombre ou Bourreau pour les assassins, Source ou Aurore pour les soigneurs, Tisseur ou Bastion pour les soutiens, Arcane ou Entrave pour les contrôleurs). Un même héros peut ainsi servir deux équipes différentes. Premier choix gratuit, changement contre 50 000 or. Sur la fiche du héros, en tête des compétences.

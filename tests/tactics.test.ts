@@ -57,6 +57,22 @@ describe('Boss à deux phases (v1.92.0)', () => {
   });
 });
 
+describe('Boss en trois actes (v1.97.0)', () => {
+  it('sous 25 % de PV, le boss joue son dernier acte (pouvoir de son affinité)', () => {
+    const team = ['torvald', 'brann', 'corvin', 'elowen', 'aldric'].map((id, i) => unit(id, i));
+    const b = runToEnd(createBattle(team, waves(40), { seed: 1, leaderUid: 'torvald' }));
+    const boss = b.units.find((u) => u.isBoss)!;
+    expect(b.outcome).toBe('won');
+    expect(boss.flags.acts).toBe(3);
+    expect(boss.flags.act3).toBe(1);
+  });
+  it('pas de dernier acte sans mécaniques (boss à actions limitées)', () => {
+    const team = ['torvald', 'brann', 'corvin', 'elowen', 'aldric'].map((id, i) => unit(id, i));
+    const b = runToEnd(createBattle(team, waves(40), { seed: 1, leaderUid: 'torvald', mechanics: false }));
+    expect(b.units.find((u) => u.isBoss)!.flags.act3).toBeFalsy();
+  });
+});
+
 describe('Coutures d’époque (v1.94.0)', () => {
   it('une paire de familles déclenche une attaque cousue une fois par combat', () => {
     // Torvald (Valcrest ?) et Brann/Corvin/Elowen : on cherche une paire présente dans la liste des coutures

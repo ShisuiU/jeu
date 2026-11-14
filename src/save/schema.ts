@@ -106,7 +106,7 @@ export interface SaveData {
   progress: {
     campaign: Record<string, { stars: number; clears: number }>;
     dungeons: Record<string, { bestFloor: number; best?: Partial<Record<'hard' | 'expert' | 'nightmare', number>> }>;
-    tower: { floor: number };
+    tower: { floor: number; /** étages dont le défi à contrainte est relevé (v1.97.0) */ challenges?: number[] };
   };
   stats: { battlesWon: number; battlesLost: number; summons: number };
   settings: Settings;
@@ -220,7 +220,7 @@ export function createNewSave(now: number = Date.now()): SaveData {
     ],
     activeTeamId: teamId,
     daily: { lastLoginDay: null, cycleIndex: 0, totalLogins: 0 },
-    progress: { campaign: {}, dungeons: {}, tower: { floor: 0 } },
+    progress: { campaign: {}, dungeons: {}, tower: { floor: 0, challenges: [] } },
     stats: { battlesWon: 0, battlesLost: 0, summons: 0 },
     settings: { sound: true, volume: 0.6, reducedMotion: false, battleSpeed: 1, autoBattleDefault: false, music: true, musicVolume: 0.35, showInRanks: true },
     flags: { epic_shards_v184: true },

@@ -33,7 +33,8 @@ import { AFFINITIES } from '../../data/affinities';
 import { HeroArt } from '../art/HeroArt';
 import { EnemyArt } from '../art/EnemyArt';
 import { Icon } from '../art/Icons';
-import { BattleBackdrop } from '../art/BattleBackdrop';
+import { BattleScene, regionAmbient } from '../art/BattleBackdrop';
+import { ACT3 } from '../../data/bossActs';
 import { Dialogue } from '../components/Dialogue';
 import { Modal } from '../components/common';
 import { RewardView } from '../components/RewardView';
@@ -76,6 +77,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
   const [selected, setSelected] = useState<string | null>(null);
   const [banner, setBanner] = useState<{ text: string; side: string } | null>(null);
   const [bossIntro, setBossIntro] = useState<Unit | null>(null);
+  const [bossAct, setAct] = useState(1); // acte du boss (v1.97.0) : teinte la scène
   const introDone = useRef(false);
   const [acting, setActing] = useState<string | null>(null);
   const [hits, setHits] = useState<Set<string>>(new Set());
@@ -172,7 +174,8 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
   useEffect(() => {
     const cv = stageCanvas.current;
     if (!cv || !motionOn()) return;
-    const st = new Stage25(cv, () => speedRef.current, ['#b98cff', '#f2c46b', '#b98cff']);
+    const amb = regionAmbient(initial.info.region);
+    const st = new Stage25(cv, () => speedRef.current, amb.colors, amb.count, amb.cfg);
     st.start(); stage.current = st;
     return () => { st.stop(); stage.current = null; };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -182,7 +185,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
     const el = camRef.current, host = battleRef.current;
     if (!el || !host || !motionOn()) return;
     const spd = speedRef.current;
-    const bgs = host.querySelectorAll<HTMLElement>('.painted-bg img, .battle-bg');
+    const bgs = host.querySelectorAll<HTMLElement>('.painted-bg img, .battle-bg, [data-depth]');
     // En accéléré, la caméra garde des mouvements doux : durée réduite moins vite que le reste,
     // et amplitude réduite (×2 : 55 %, ×3 : 30 %) pour éviter les allers-retours brusques.
     const amp = CAM_AMP[spd] ?? 1;
@@ -196,7 +199,17 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
     const tx = amp * (k - z) * (p.x - c.x) * 0.15, ty = amp * (k - z) * (p.y - c.y) * 0.6;
     el.style.transform = `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px) scale(${z})`;
     camScale.current = z;
-    bgs.forEach((b) => { b.style.transition = tr; b.style.transform = `translate(${(tx * 0.22).toFixed(1)}px, ${(ty * 0.22).toFixed(1)}px) scale(${1 + (z - 1) * 0.35})`; });
+    // Profondeur : chaque plan suit la caméra selon sa distance (ciel 0,12 ; brume 0,3 ; sol 0,42).
+    bgs.forEach((b) => { const d = Number(b.dataset.depth ?? 0.22); b.style.transition = tr; b.style.transform = `translate(${(tx * d).toFixed(1)}px, ${(ty * d).toFixed(1)}px) scale(${1 + (z - 1) * d * 1.6})`; });
+  };
+  /** Lumière dynamique : un halo de la couleur du sort éclaire le décor à cet endroit, puis s'éteint. */
+  const flashLight = (p: Pt | null, color: string, power = 0.5, ms = 520) => {
+    const el = battleRef.current?.querySelector<HTMLElement>('.bs-light');
+    if (!el || !p || !motionOn()) return;
+    const sz = el.offsetWidth;
+    el.style.setProperty('--lc', color);
+    el.style.transform = `translate(${(p.x - sz / 2).toFixed(0)}px, ${(p.y - sz / 2).toFixed(0)}px)`;
+    el.animate([{ opacity: 0 }, { opacity: power, offset: 0.25 }, { opacity: 0 }], { duration: ms / Math.sqrt(speedRef.current), easing: 'ease-out' });
   };
   /** Assaut : la carte s'élance vers sa cible (petit recul, ruée), puis revient à sa place. */
   const lungeTo = async (actor: Unit, from: { x: number; y: number; w: number }, to: { x: number; y: number; w: number }) => {
@@ -268,7 +281,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
           { const t = s.units.find((u) => u.id === e.target); knock(e.target, e.source, f.color, e.crit || (!!t && e.amount > t.base.hp * 0.25)); }
           { const t = s.units.find((u) => u.id === e.target); const big = !!t && e.amount > t.base.hp * 0.25; if (e.crit || big) doShake(e.crit && big ? 'hard' : 'soft'); }
           if (!soundOnce.has('hit:' + e.source)) { soundOnce.add('hit:' + e.source); playImpact(f, { crit: ev.some((x) => x.kind === 'damage' && x.source === e.source && x.crit), many: ev.filter((x) => x.kind === 'damage' && x.source === e.source).length > 1 }); }
-          if (f.weapon === 'blunt' || e.crit) heavy.add(e.target);
+          if (f.weapon === 'blunt' || e.crit) { heavy.add(e.target); flashLight(center(e.target), f.color, 0.5, 420); }
           hit.add(e.target); if (e.combo) addPopup(e.target, 'Combo !', 'buff'); addPopup(e.target, `${e.crit ? 'CRIT ' : ''}-${e.amount}${e.strong ? ' ▲' : e.weak ? ' ▼' : ''}`, `dmg ${e.crit ? 'crit' : ''} ${e.strong ? 'strong' : ''} ${e.weak ? 'weak' : ''}`); pause = true; break;
         }
         case 'dot': hit.add(e.target); addPopup(e.target, `-${e.amount}`, e.status === 'poison' ? 'poison' : 'burn'); addVfx(e.target, `impact w-none e-${e.status === 'poison' ? 'poison' : 'fire'} small`, e.status === 'poison' ? '#8be04e' : '#ff8a3a'); if (!soundOnce.has('dot' + e.status)) { soundOnce.add('dot' + e.status); playDot(e.status); } pause = true; break;
@@ -313,8 +326,16 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
           if (!useGame.getState().save?.flags[`couture_${e.id}`]) { mutate((d) => { d.flags[`couture_${e.id}`] = true; }); useUI.getState().toast(`Nouvelle couture découverte : ${def?.name} (Codex)`, 'ok'); }
           break;
         }
-        case 'phase': { const bu = s.units.find((x) => x.id === e.target); setBanner({ text: `Seconde phase · ${bu?.name ?? 'Le boss'} se déchaîne`, side: 'enemy' }); addVfx(e.target, 'cursefx', '#ff3d6e'); doShake('hard'); play('rare'); pause = true; break; }
-        case 'fracture': addPopup(e.target, 'Fracture ! Étourdi, +40 % de dégâts subis', 'buff'); addVfx(e.target, 'cursefx', '#ffffff'); doShake('hard'); { const c = center(e.target); if (c) stage.current?.burst(c, '#ffffff', 40, 0.5); } play('rare'); pause = true; break;
+        case 'phase': {
+          const bu = s.units.find((x) => x.id === e.target);
+          if (e.act === 3 && e.power) {
+            const pw = ACT3[e.power];
+            setBanner({ text: `Dernier acte · ${pw.name} : ${bu?.name ?? 'le boss'} ${pw.text}`, side: 'enemy' }); setAct(3);
+            flashLight(center(e.target), pw.color, 1, 1400); { const c = center(e.target); if (c) { stage.current?.burst(c, pw.color, 50, 0.55); stage.current?.ring(c, pw.color, 160, 900); } }
+            addVfx(e.target, 'cursefx', pw.color); doShake('hard'); play('rare'); pause = true; break;
+          }
+          setBanner({ text: `Acte II · ${bu?.name ?? 'Le boss'} se déchaîne`, side: 'enemy' }); setAct(2); flashLight(center(e.target), '#ff3d6e', 1, 1200); addVfx(e.target, 'cursefx', '#ff3d6e'); doShake('hard'); play('rare'); pause = true; break; }
+        case 'fracture': addPopup(e.target, 'Fracture ! Étourdi, +40 % de dégâts subis', 'buff'); flashLight(center(e.target), '#ffffff', 0.9, 800); addVfx(e.target, 'cursefx', '#ffffff'); doShake('hard'); { const c = center(e.target); if (c) stage.current?.burst(c, '#ffffff', 40, 0.5); } play('rare'); pause = true; break;
         case 'carapace':
           if (e.broken) { addPopup(e.target, 'Carapace brisée !', 'buff'); addVfx(e.target, 'cursefx', '#ffd36b'); pause = true; }
           else if (e.reformed) { addPopup(e.target, 'Carapace reformée', 'shieldp'); addVfx(e.target, 'shieldfx', '#c9b27a'); }
@@ -368,6 +389,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
       const aim = targets.find((t) => t.id !== actor.id);
       const aimP = aim ? posOf(aim.id) : null;
       if (from) camTo(aimP ? { x: (from.x + aimP.x) / 2, y: (from.y + aimP.y) / 2 } : from, sk.slot === 'ultimate' ? 1.12 : 1.06);
+      flashLight(from, fx.color, sk.slot === 'ultimate' ? 0.85 : sk.slot === 'basic' ? 0.35 : 0.55, sk.slot === 'ultimate' ? 900 : 560);
       if (fx.motion === 'melee' && from && aim && aim.side !== actor.side && aimP) { comeBack = await lungeTo(actor, from, aimP); travel = 0; }
       if (fx.motion === 'projectile' && from) {
         for (const t of targets) { const to = posOf(t.id); if (to) spawn({ kind: 'proj', fx, x0: from.x, y0: from.y, x1: to.x, y1: to.y, dur: 320 / spd }); }
@@ -519,7 +541,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
 
   return (
     <div ref={battleRef} className={`battle ${shake ? `shake ${shake}` : ''} ${slowmo ? 'slowmo' : ''}`}>
-      <BattleBackdrop region={initial.info.region} />
+      <BattleScene region={initial.info.region} act={bossAct} />
       <div className="battle-top">
         <div className="row between">
           <div>
@@ -883,7 +905,9 @@ function UnitView({ u, place, order = 0, vfx, focus, active, acting, hit, heavy,
 
       </div>
       <div className="u-bars">
-        <div className="u-hp"><div style={{ width: `${hpPct(u) * 100}%` }} />{sh > 0 && <div className="u-sh" style={{ width: `${sh * 100}%` }} />}</div>
+        <div className="u-hp"><div style={{ width: `${hpPct(u) * 100}%` }} />{sh > 0 && <div className="u-sh" style={{ width: `${sh * 100}%` }} />}
+          {u.isBoss && u.side === 'enemy' && <><i className={`u-act ${u.flags.phase2 ? 'past' : ''}`} style={{ left: '50%' }} />{u.flags.acts === 3 && <i className={`u-act ${u.flags.act3 ? 'past' : ''}`} style={{ left: '25%' }} />}</>}
+        </div>
         {u.flags.fractureMax > 0 && <div className={`u-frac ${u.flags.fractured ? 'broken' : ''}`} title="Fracture"><div style={{ width: `${u.flags.fractured ? 100 : (u.flags.fracture / u.flags.fractureMax) * 100}%` }} /></div>}
         <div className="u-tm"><div style={{ width: `${Math.min(100, u.tm / 10)}%` }} /></div>
       </div>

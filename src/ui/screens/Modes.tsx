@@ -6,6 +6,7 @@ import { DIFFICULTIES, DIFFICULTY_ORDER, type DifficultyId } from '../../data/ca
 import { dungeonBest, dungeonDiffOpen, dungeonTopDiff } from '../../game/dungeons';
 import { usePersisted } from '../components/ListControls';
 import { TOWER_FLOORS, towerReward } from '../../data/tower';
+import { CHALLENGES, TOWER_CHALLENGE_STEP, towerChallengeOf, towerChallengeReward } from '../../data/challenges';
 import { sweepTower, towerSweepMax } from '../../game/towerSweep';
 import type { Reward } from '../../data/resources';
 import { BOSS_TIERS, DAMAGE_CHESTS, WORLD_BOSS } from '../../data/worldBoss';
@@ -148,6 +149,27 @@ export function Tower() {
           </div>
         ))}
       </div>
+      {cur >= TOWER_CHALLENGE_STEP && (() => {
+        const doneCh = save.progress.tower.challenges ?? [];
+        const open = Array.from({ length: Math.floor(cur / TOWER_CHALLENGE_STEP) }, (_, i) => (i + 1) * TOWER_CHALLENGE_STEP).filter((f) => !doneCh.includes(f));
+        const total = TOWER_FLOORS / TOWER_CHALLENGE_STEP;
+        return (
+          <Panel title={`Défis de la Tour · ${doneCh.length}/${total}`} className="tower-ch-panel">
+            {open.length ? (
+              <div className="tower-ch">
+                {open.slice(0, 3).map((f) => { const c = CHALLENGES[towerChallengeOf(f)]; return (
+                  <div key={f} className="tch-row">
+                    <span className="tf-n">{f}</span>
+                    <span className="grow"><b>{c.name}</b><small>{c.text}</small><RewardInline reward={towerChallengeReward(f)} /></span>
+                    <button className="btn secondary" onClick={() => push({ name: 'prep', spec: { mode: 'tower', floor: f, challenge: true } })}>Relever</button>
+                  </div>
+                ); })}
+                {open.length > 3 && <div className="faint" style={{ fontSize: 12 }}>Encore {open.length - 3} autre{open.length - 3 > 1 ? 's' : ''} après ceux-ci.</div>}
+              </div>
+            ) : <div className="faint">Tous les défis des étages conquis sont relevés. Monte plus haut pour en débloquer d’autres.</div>}
+          </Panel>
+        );
+      })()}
       {sweepTo > 0 && (
         <div className="hint" style={{ marginTop: 14 }}>
           Les étages {cur + 1} à {sweepTo} sont bien en dessous du niveau de ton équipe.

@@ -1,3 +1,5 @@
+import { HERO_BY_ID } from '../data/heroes';
+import { CHALLENGES, checkChallenge, isTowerChallengeFloor, towerChallengeOf, towerChallengeReward, type ChallengeId } from '../data/challenges';
 import { FACTIONS } from '../data/factions';
 import { FACTION_DUNGEONS, factionReward, factionWaves } from '../data/factionDungeon';
 import { RIFT_NODE, RIFT_ROOMS, riftReward } from '../data/rift';
@@ -30,7 +32,7 @@ import { generateOpponents, ratingDelta } from './arena';
 export type BattleSpec =
   | { mode: 'campaign'; stageId: string; difficulty: DifficultyId }
   | { mode: 'dungeon'; dungeonId: string; floor: number; difficulty?: DifficultyId }
-  | { mode: 'tower'; floor: number }
+  | { mode: 'tower'; floor: number; /** défi à contrainte (v1.97.0) sur un étage déjà conquis */ challenge?: boolean }
   | { mode: 'faction'; faction: import('../data/types').FactionId; floor: number }
   | { mode: 'rift'; room: number }
   | { mode: 'worldboss'; tier: string }
@@ -53,6 +55,8 @@ export interface ModeInfo {
   rewardLabel: string;
   notes: string[];
   firstTime: boolean;
+  /** Règle imposée à l'équipe (défis à contraintes, v1.97.0). */
+  challenge?: ChallengeId;
 }
 
 export interface ModeResult extends BattleResult {
@@ -126,6 +130,14 @@ export function resolveMode(s: SaveData, spec: BattleSpec): ModeInfo {
       };
     }
     case 'tower':
+      if (spec.challenge) {
+        const c = CHALLENGES[towerChallengeOf(spec.floor)];
+        return {
+          title: `Défi · Étage ${spec.floor}`, subtitle: `${c.name} : ${c.text}`, region: 'heart', waves: toSetups(towerWaves(spec.floor)),
+          cost: { kind: 'free', amount: 0 }, rewardPreview: towerChallengeReward(spec.floor), rewardLabel: 'Récompense du défi', notes: ['Sans énergie', 'Une seule fois'], firstTime: true,
+          challenge: towerChallengeOf(spec.floor),
+        };
+      }
       return {
         title: `Tour des Âges · Étage ${spec.floor}`, subtitle: spec.floor % 10 === 0 ? (spec.floor > 50 ? 'Étage gardé par un boss de chapitre' : 'Étage gardé par une Sentinelle') : spec.floor > 50 ? 'Les Sommets' : 'Ascension', region: 'heart', waves: toSetups(towerWaves(spec.floor)),
         cost: { kind: 'free', amount: 0 }, rewardPreview: towerReward(spec.floor), rewardLabel: 'Récompense de l’étage', notes: ['Sans énergie'], firstTime: true,
@@ -199,7 +211,9 @@ export function canStart(s: SaveData, spec: BattleSpec): { ok: boolean; reason?:
   switch (spec.mode) {
     case 'campaign': return isStageUnlocked(s, spec.difficulty, STAGE_BY_ID[spec.stageId]) ? { ok: true } : { ok: false, reason: 'Niveau verrouillé.' };
     case 'dungeon': return dungeonFloorCheck(s, spec.dungeonId, spec.difficulty ?? 'normal', spec.floor);
-    case 'tower': return spec.floor === s.progress.tower.floor + 1 && spec.floor <= TOWER_FLOORS ? { ok: true } : { ok: false, reason: 'Étage indisponible.' };
+    case 'tower':
+      if (spec.challenge) return isTowerChallengeFloor(spec.floor) && spec.floor <= s.progress.tower.floor && !(s.progress.tower.challenges ?? []).includes(spec.floor) ? { ok: true } : { ok: false, reason: 'Défi indisponible.' };
+      return spec.floor === s.progress.tower.floor + 1 && spec.floor <= TOWER_FLOORS ? { ok: true } : { ok: false, reason: 'Étage indisponible.' };
     case 'rift': return s.rift.status === 'run' && s.rift.room === spec.room && (s.rift.current === 'fight' || s.rift.current === 'elite' || s.rift.current === 'boss') ? { ok: true } : { ok: false, reason: 'Choisis d’abord ta route dans la Faille.' };
     case 'faction': return canEnterFaction(s, spec.faction, spec.floor, s.time.highWater);
     case 'worldboss': return s.worldBoss.keysUsed < WORLD_BOSS.keysPerDay ? { ok: true } : { ok: false, reason: 'Plus de clés aujourd’hui.' };
@@ -276,6 +290,16 @@ export function applyMode(s: SaveData, spec: BattleSpec, o: Outcome, now: number
     case 'tower': {
       const res = empty(o.won);
       if (!o.won) { s.stats.battlesLost++; return res; }
+      if (spec.challenge) {
+        s.stats.battlesWon++; track(s, 'battleWin');
+        const why = checkChallenge(towerChallengeOf(spec.floor), o.participants.map((u) => s.heroes.find((h) => h.uid === u)).filter((h): h is NonNullable<typeof h> => !!h).map((h) => HERO_BY_ID[h.heroId]));
+        const list = (s.progress.tower.challenges ??= []);
+        if (why || list.includes(spec.floor)) { res.lines.push(why ? `Défi non validé : ${why}` : 'Défi déjà relevé.'); return res; }
+        list.push(spec.floor);
+        res.firstClear = true; res.reward = towerChallengeReward(spec.floor); applyReward(s, res.reward);
+        res.lines.push(`Défi relevé : ${CHALLENGES[towerChallengeOf(spec.floor)].name} !`);
+        return res;
+      }
       s.stats.battlesWon++; track(s, 'battleWin'); track(s, 'towerWin');
       s.progress.tower.floor = Math.max(s.progress.tower.floor, spec.floor);
       res.firstClear = true;
@@ -390,7 +414,7 @@ export function nextSpec(s: SaveData, spec: BattleSpec): BattleSpec | null {
     return n ? { ...spec, stageId: n.id } : null;
   }
   if (spec.mode === 'dungeon') return spec.floor < DUNGEON_FLOORS ? { ...spec, floor: spec.floor + 1 } : null;
-  if (spec.mode === 'tower') return s.progress.tower.floor < TOWER_FLOORS ? { mode: 'tower', floor: s.progress.tower.floor + 1 } : null;
+  if (spec.mode === 'tower') return spec.challenge ? null : s.progress.tower.floor < TOWER_FLOORS ? { mode: 'tower', floor: s.progress.tower.floor + 1 } : null;
   if (spec.mode === 'faction') { const n: BattleSpec = { mode: 'faction', faction: spec.faction, floor: (s.factionDungeon.best[spec.faction] ?? 0) + 1 }; return canStart(s, n).ok ? n : null; }
   if (spec.mode === 'challenge' && spec.trial != null && spec.trial < 2) { const n = { ...spec, trial: spec.trial + 1 }; return canStart(s, n).ok ? n : null; }
   return null;

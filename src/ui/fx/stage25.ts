@@ -4,7 +4,10 @@
 
 export interface Pt { x: number; y: number }
 
-interface Particle { x: number; y: number; vx: number; vy: number; g: number; drag: number; r: number; life: number; max: number; col: string; alpha: number; amb: boolean }
+interface Particle { x: number; y: number; vx: number; vy: number; g: number; drag: number; r: number; life: number; max: number; col: string; alpha: number; amb: boolean; sw?: number }
+/** Ambiance d'une région (v1.97.0) : braises qui montent, spores qui flottent, sable qui file, bulles... */
+export interface AmbientCfg { vx: [number, number]; vy: [number, number]; r: [number, number]; sway?: number; alpha?: [number, number] }
+const DEFAULT_AMB: AmbientCfg = { vx: [-0.008, 0.008], vy: [-0.03, -0.008], r: [0.6, 1.8] };
 interface Trace { kind: 'slash' | 'ring'; x: number; y: number; ang: number; r: number; col: string; t: number; dur: number }
 
 const rnd = (a: number, b: number) => a + Math.random() * (b - a);
@@ -21,7 +24,7 @@ export class Stage25 {
   private h = 0;
   private readonly onResize = () => this.resize();
 
-  constructor(private readonly canvas: HTMLCanvasElement, private readonly speed: () => number, private readonly ambientColors: string[], private readonly ambientCount = 22) {
+  constructor(private readonly canvas: HTMLCanvasElement, private readonly speed: () => number, private readonly ambientColors: string[], private readonly ambientCount = 22, private readonly amb: AmbientCfg = DEFAULT_AMB) {
     this.ctx = canvas.getContext('2d');
   }
 
@@ -96,15 +99,17 @@ export class Stage25 {
     ctx.clearRect(0, 0, this.w, this.h);
     while (this.ambient < this.ambientCount && this.w > 0) {
       const col = this.ambientColors[Math.floor(Math.random() * this.ambientColors.length)] ?? '#b98cff';
-      this.parts.push({ x: rnd(0, this.w), y: rnd(this.h * 0.15, this.h * 1.05), vx: rnd(-0.008, 0.008), vy: rnd(-0.03, -0.008), g: 0, drag: 1, r: rnd(0.6, 1.8), life: rnd(3000, 8000), max: 8000, col, alpha: rnd(0.25, 0.55), amb: true });
+      const m = this.amb, al = m.alpha ?? [0.25, 0.55];
+      this.parts.push({ x: rnd(0, this.w), y: rnd(this.h * 0.05, this.h * 1.05), vx: rnd(m.vx[0], m.vx[1]), vy: rnd(m.vy[0], m.vy[1]), g: 0, drag: 1, r: rnd(m.r[0], m.r[1]), life: rnd(3000, 8000), max: 8000, col, alpha: rnd(al[0], al[1]), amb: true, sw: m.sway ? rnd(0.5, 1) * m.sway : 0 });
       this.ambient++;
     }
     ctx.globalCompositeOperation = 'lighter';
     for (let i = this.parts.length - 1; i >= 0; i--) {
       const p = this.parts[i];
-      p.life -= dt;
+      const st = p.amb ? raw : dt; // l'ambiance garde son rythme, même en accéléré
+      p.life -= st;
       if (p.life <= 0) { this.parts.splice(i, 1); if (p.amb) this.ambient--; continue; }
-      p.vy += p.g * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= p.drag; p.vy *= p.drag;
+      p.vy += p.g * st; p.x += p.vx * st + (p.sw ? Math.sin(p.life / 520) * p.sw * st : 0); p.y += p.vy * st; p.vx *= p.drag; p.vy *= p.drag;
       const a = Math.min(1, (p.life / p.max) * 2) * p.alpha;
       ctx.fillStyle = p.col;
       ctx.globalAlpha = a * 0.25; ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 3.2, 0, TAU); ctx.fill();

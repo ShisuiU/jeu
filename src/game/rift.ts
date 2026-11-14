@@ -1,3 +1,4 @@
+import { CHALLENGES, RIFT_OATH_BONUS, checkChallenge, riftOathOf, type ChallengeId } from '../data/challenges';
 import { RIFT_ROOMS, RELICS, RELIC_BY_ID, riftReward, type RiftNodeKind } from '../data/rift';
 import { towerWaves } from '../data/tower';
 import { HERO_BY_ID } from '../data/heroes';
@@ -20,6 +21,7 @@ export interface RiftState {
   altar: string[] | null;       // reliques proposées (à choisir)
   base: number;                 // étage de Tour de référence (difficulté)
   best: number;                 // meilleure salle atteinte cette semaine
+  oath?: ChallengeId | null;    // serment pris au départ (v1.97.0) : règle d'équipe, bonus sur le Gardien
 }
 export const emptyRift = (): RiftState => ({ week: '', status: 'idle', room: 0, nodes: [], current: null, team: [], hp: {}, relics: [], altar: null, base: 5, best: 0 });
 
@@ -47,11 +49,13 @@ export function syncRift(s: SaveData, now: number): RiftState {
   return s.rift;
 }
 
-export function startRift(s: SaveData, teamUids: string[], now: number): { ok: boolean; reason?: string } {
+export function startRift(s: SaveData, teamUids: string[], now: number, oath = false): { ok: boolean; reason?: string } {
   const r = syncRift(s, now);
   if (r.status !== 'idle') return { ok: false, reason: 'Une seule traversée par semaine.' };
   const team = teamUids.filter((u) => s.heroes.some((h) => h.uid === u)).slice(0, 5);
   if (!team.length) return { ok: false, reason: 'Ton équipe est vide.' };
+  if (oath) { const why = checkChallenge(riftOathOf(r.week), team.map((u) => HERO_BY_ID[s.heroes.find((h) => h.uid === u)!.heroId])); if (why) return { ok: false, reason: `Serment impossible : ${why}` }; }
+  r.oath = oath ? riftOathOf(r.week) : null;
   r.status = 'run'; r.room = 1; r.current = null; r.team = team; r.relics = []; r.altar = null;
   r.hp = Object.fromEntries(team.map((u) => [u, 1]));
   r.base = Math.max(3, Math.min(80, (s.progress.tower?.floor ?? 0) - 8));
@@ -104,7 +108,10 @@ export function applyRiftBattle(s: SaveData, won: boolean, allyHp: Record<string
   for (const u of r.team) if (u in allyHp) r.hp[u] = allyHp[u];
   if (!won) { r.status = 'lost'; r.best = Math.max(r.best, r.room - 1); lines.push(`La faille t’a rejeté à la salle ${r.room}.`); return { reward: {}, lines }; }
   const reward = riftReward(kind, r.room); applyReward(s, reward);
-  if (kind === 'boss') { r.status = 'won'; r.best = RIFT_ROOMS; r.current = null; lines.push('Gardien vaincu : la faille est refermée cette semaine !'); }
+  if (kind === 'boss') {
+    r.status = 'won'; r.best = RIFT_ROOMS; r.current = null; lines.push('Gardien vaincu : la faille est refermée cette semaine !');
+    if (r.oath) { applyReward(s, RIFT_OATH_BONUS); for (const [k, v] of Object.entries(RIFT_OATH_BONUS)) (reward as Record<string, number>)[k] = ((reward as Record<string, number>)[k] ?? 0) + (v as number); lines.push(`Serment tenu (${CHALLENGES[r.oath].name}) : récompense bonus !`); }
+  }
   else if (kind === 'elite') { r.altar = offer(s); lines.push(`Salle ${r.room} franchie : choisis une relique.`); }
   else { lines.push(`Salle ${r.room} franchie.`); advance(s); }
   return { reward, lines };

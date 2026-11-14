@@ -1,3 +1,5 @@
+import { act3Of } from '../../data/bossActs';
+import { CHALLENGES, checkChallenge } from '../../data/challenges';
 import { Coach } from '../components/Coach';
 import { AffinityIcon } from '../art/Identity';
 import type { AffinityId } from '../../data/types';
@@ -109,7 +111,8 @@ export function Prep({ spec }: { spec: BattleSpec }) {
     }
     return [...m.values()].sort((x, y) => Number(y.boss) - Number(x.boss));
   })();
-  const blocked = !start.ok || energyShort || !count;
+  const ruleWhy = info.challenge ? checkChallenge(info.challenge, members.filter(Boolean).map((h) => HERO_BY_ID[h!.heroId])) : null;
+  const blocked = !start.ok || energyShort || !count || !!ruleWhy;
 
   return (
     <Screen title={info.title}>
@@ -121,6 +124,12 @@ export function Prep({ spec }: { spec: BattleSpec }) {
         <div className={`prep-odds ${odds.tone}`} role="status">
           <b>{odds.label}</b>
           <span>{odds.wins}/{odds.runs} victoires sur des combats simulés avec cette équipe{odds.tone === 'bad' ? ' : renforce-la ou change de héros' : ''}</span>
+        </div>
+      )}
+      {info.challenge && (
+        <div className={`prep-rule ${ruleWhy ? 'bad' : ''}`} role="status">
+          <b>Règle du défi · {CHALLENGES[info.challenge].name}</b> : {CHALLENGES[info.challenge].text}
+          <div className={ruleWhy ? 'neg' : 'pos'} style={{ marginTop: 3 }}>{ruleWhy ? ruleWhy : '✓ Ton équipe respecte la règle.'}</div>
         </div>
       )}
       {spec.mode === 'campaign' && <StarRules best={stageProgress(save, spec.difficulty, spec.stageId).stars} />}
@@ -138,7 +147,18 @@ export function Prep({ spec }: { spec: BattleSpec }) {
             );
           })}
         </div>
-        {boss && spec.mode !== 'arena' && <p className="faint" style={{ margin: '8px 0 0' }}>Boss : insensible à l’étourdissement et au gel, plus fort sous 50 % de PV.</p>}
+        {boss && spec.mode !== 'arena' && (() => {
+          const b = foes.find((f) => f.boss); const a3 = b && !info.turnLimit ? act3Of(ENEMIES[b.refId].affinity) : null;
+          return (
+            <div className="prep-acts">
+              <b>Boss en {a3 ? 3 : 2} actes</b> <span className="faint">· insensible à l’étourdissement et au gel</span>
+              <ol>
+                <li><b>Acte II</b>, sous 50 % de PV : il enrage (+30 % ATQ), se purifie et se protège.</li>
+                {a3 && <li><b style={{ color: a3.color }}>Dernier acte · {a3.name}</b>, sous 25 % : il {a3.text}.</li>}
+              </ol>
+            </div>
+          );
+        })()}
       </Panel>
 
       {fac && (
@@ -221,7 +241,7 @@ export function Prep({ spec }: { spec: BattleSpec }) {
 
       {/* Barre d'action : toujours visible en bas, au-dessus de la navigation. */}
       <div className="prep-bar">
-        {blocked && <div className="prep-why">{!count ? 'Équipe vide : touche l’équipe pour ajouter des héros.' : !start.ok ? start.reason : `Énergie ${save.energy.current}/${info.cost.amount} · +1 dans ${formatDuration(msToNextEnergy(save.energy, now, energyMax(save.profile.level)))}`}</div>}
+        {blocked && <div className="prep-why">{!count ? 'Équipe vide : touche l’équipe pour ajouter des héros.' : !start.ok ? start.reason : ruleWhy ? `Défi : ${ruleWhy}` : `Énergie ${save.energy.current}/${info.cost.amount} · +1 dans ${formatDuration(msToNextEnergy(save.energy, now, energyMax(save.profile.level)))}`}</div>}
         <div className="row" style={{ gap: 8 }}>
           {(spec.mode === 'campaign' || spec.mode === 'dungeon') && (
             <button className="btn secondary prep-sweep" disabled={!bgOk.ok || !count} onClick={() => setBgOpen(true)} title={bgOk.ok ? 'Combats automatiques pendant que tu joues ailleurs' : bgOk.reason} aria-label="Combats en arrière-plan">

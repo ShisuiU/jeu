@@ -1,3 +1,4 @@
+import { ACT3_BY_AFFINITY, ACT3_HP } from '../../data/bossActs';
 import { SIGNATURES, type SignatureKind } from '../../data/signatures';
 import { COUTURES, COUTURE_BY_ID } from '../../data/coutures';
 import { affinityModifier } from '../../data/affinities';
@@ -150,6 +151,7 @@ function spawnWave(s: BattleState, wave: UnitSetup[]) {
     if (s.mechanics && u.isBoss) { const c = carapaceCharges(u.level); if (c) { u.flags.carapace = c; u.flags.carapaceMax = c; } }
     // Fracture (v1.90.0, audit G-2) : jauge des boss, brisée surtout par l'affinité avantagée.
     if (u.isBoss && u.side === 'enemy') { u.flags.fracture = FRACTURE_MAX; u.flags.fractureMax = FRACTURE_MAX; }
+    if (s.mechanics && u.isBoss && u.side === 'enemy') u.flags.acts = 3; // dernier acte possible (v1.97.0)
     s.units.push(u);
   });
 }
@@ -315,6 +317,17 @@ function dealDamage(s: BattleState, source: Unit, target: Unit, effect: Extract<
       target.flags.phase2 = 1;
       s.events.push({ kind: 'phase', target: target.id });
     }
+  }
+  // Dernier acte (v1.97.0) : sous 25 % de PV, le boss déchaîne le pouvoir de son affinité.
+  if (target.isBoss && target.side === 'enemy' && s.mechanics && target.flags.phase2 && !target.flags.act3 && hpPct(target) < ACT3_HP && target.hp > 0) {
+    target.flags.act3 = 1;
+    const power = ACT3_BY_AFFINITY[target.affinity];
+    s.events.push({ kind: 'phase', target: target.id, act: 3, power });
+    const team = s.units.filter((u) => u.alive && u.side !== target.side);
+    if (power === 'brasier') team.forEach((u) => tryDebuff(s, target, u, 'burn', 1, 2, 0));
+    else if (power === 'ecorce') { addStatus(s, target, 'defUp', 2, 0.3, target); addStatus(s, target, 'regen', 3, 0.03, target); }
+    else if (power === 'maree') team.forEach((u) => { tryDebuff(s, target, u, 'spdDown', 1, 2, 0.25); applyTm(s, target, u, -0.15); });
+    else team.forEach((u) => { tryDebuff(s, target, u, 'atkDown', 1, 2, 0.25); applyTm(s, target, u, -0.15); });
   }
   if (target.hp <= 0) kill(s, target, source);
   const ls = (effect.lifestealPct ?? 0) + mods.lifesteal + (source.flags.leech ?? 0) / 100;

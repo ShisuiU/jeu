@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { CHALLENGES, RIFT_OATH_BONUS, checkChallenge, riftOathOf } from '../../data/challenges';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
 import { RIFT_NODE, RIFT_ROOMS, RELIC_BY_ID, riftReward, type RiftNodeKind } from '../../data/rift';
@@ -25,7 +26,10 @@ export function Rifts() {
   const team = save.teams.find((t) => t.id === save.activeTeamId) ?? save.teams[0];
   const resetIn = formatDuration(msUntilWeekReset(now));
 
-  const enter = () => { let res = { ok: false } as ReturnType<typeof startRift>; mutate((s) => { res = startRift(s, team.slots.filter((u): u is string => !!u), Date.now()); }); if (res.ok) play('rare'); else toast(res.reason ?? 'Impossible.', 'error'); };
+  const [oath, setOath] = useState(false);
+  const oathId = riftOathOf(r.week || 'x');
+  const oathWhy = checkChallenge(oathId, team.slots.filter((u): u is string => !!u).map((u) => save.heroes.find((h) => h.uid === u)).filter((h): h is NonNullable<typeof h> => !!h).map((h) => HERO_BY_ID[h.heroId]));
+  const enter = () => { let res = { ok: false } as ReturnType<typeof startRift>; mutate((s) => { res = startRift(s, team.slots.filter((u): u is string => !!u), Date.now(), oath && !oathWhy); }); if (res.ok) play('rare'); else toast(res.reason ?? 'Impossible.', 'error'); };
   const choose = (i: number) => {
     let res = { ok: false } as ReturnType<typeof chooseNode>;
     mutate((s) => { res = chooseNode(s, i); });
@@ -49,6 +53,7 @@ export function Rifts() {
           ); })}
         </section>
       )}
+      {r.status !== 'idle' && r.oath && <div className="rift-relics"><span className="chip oath-chip">⚑ Serment : {CHALLENGES[r.oath].name}</span></div>}
       {r.relics.length > 0 && <div className="rift-relics">{r.relics.map((id) => <span key={id} className="chip" title={RELIC_BY_ID[id]?.text}>✦ {RELIC_BY_ID[id]?.name}</span>)}</div>}
 
       <div className="rift-path">
@@ -73,7 +78,18 @@ export function Rifts() {
         })}
       </div>
 
-      {r.status === 'idle' && <button className="btn block" style={{ marginTop: 12 }} onClick={enter}>Entrer dans la faille avec l’équipe active</button>}
+      {r.status === 'idle' && (
+        <button className={`oath-card ${oath && !oathWhy ? 'on' : ''}`} disabled={!!oathWhy} aria-pressed={oath && !oathWhy} onClick={() => { play('tap'); setOath((v) => !v); }}>
+          <span className="oc-box">{oath && !oathWhy ? '✓' : ''}</span>
+          <span className="grow">
+            <b>⚑ Serment de la semaine · {CHALLENGES[oathId].name}</b>
+            <small>{CHALLENGES[oathId].text} Tiens-le jusqu’au Gardien pour un bonus :</small>
+            <RewardInline reward={RIFT_OATH_BONUS} />
+            {oathWhy && <small className="neg">Équipe active : {oathWhy}</small>}
+          </span>
+        </button>
+      )}
+      {r.status === 'idle' && <button className="btn block" style={{ marginTop: 12 }} onClick={enter}>Entrer dans la faille{oath && !oathWhy ? ' sous serment' : ' avec l’équipe active'}</button>}
       {r.status === 'run' && r.current && (r.current === 'fight' || r.current === 'elite' || r.current === 'boss') && !r.altar && (
         <button className="btn block" style={{ marginTop: 12 }} onClick={() => push({ name: 'battle', spec: { mode: 'rift', room: r.room }, teamId: 'rift', seed: Date.now() })}>Combattre · salle {r.room}</button>
       )}

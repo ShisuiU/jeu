@@ -39,11 +39,11 @@ function summitWaves(floor: number): WaveEnemy[][] {
 
 export function towerReward(floor: number): Reward {
   if (floor >= SUMMIT_FROM) {
-    if (floor % 10 === 0) return { crystals: 220 + floor * 5 + (floor === 100 ? 600 : 0), shardAeon: 2, masteryScroll: 5, awakenEssence: 1 };
+    if (floor % 10 === 0) return { crystals: 220 + floor * 5 + (floor === 100 ? 600 : 0), shardAeon: 2, masteryScroll: 5, awakenEssence: 1, shardEpic: 1 };
     if (floor % 5 === 0) return { crystals: 80, skillTome: 2, potionMinor: 6 };
     return { gold: 4000 + floor * 250, crystals: 25 };
   }
-  if (floor % 10 === 0) return { crystals: 150 + floor * 5 + (floor === 50 ? 300 : 0), shardAeon: floor >= 30 ? 2 : 1, masteryScroll: 4 };
+  if (floor % 10 === 0) return { crystals: 150 + floor * 5 + (floor === 50 ? 300 : 0), shardAeon: floor >= 30 ? 2 : 1, masteryScroll: 4, shardEpic: 1 };
   if (floor % 5 === 0) return { crystals: 60, skillTome: 1, potionMinor: 3 };
   return { gold: 1500 + floor * 200, crystals: 20 };
 }

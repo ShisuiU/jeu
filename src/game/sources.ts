@@ -14,7 +14,6 @@ import { DAILY_REWARDS } from '../data/dailyRewards';
 import { MINE } from '../data/buildings';
 import { RIFT_ROOMS, riftReward } from '../data/rift';
 import { FACTION_FLOORS, FACTION_STAR_MILESTONES, factionReward } from '../data/factionDungeon';
-import { EPIC_SHARD_PRICE } from '../data/summons';
 import { BUNDLED_EVENTS, type GameEvent } from '../data/events';
 import { WHEEL } from './wheel';
 import { campRates } from './camp';
@@ -95,8 +94,6 @@ export const ACTIVITIES: Activity[] = [
     amount: (s) => { const lv = s.buildings?.mineLevel ?? 1; return `${MINE.rate[lv] ?? 1} par heure`; } },
   { id: 'collection', name: 'Paliers de collection', hint: 'Héros ▸ Collection', route: { name: 'collection' }, rewards: () => COLLECTION_STEPS.map(collectionReward) },
   { id: 'dismantle', name: 'Démanteler un équipement', hint: 'Forge ▸ Démanteler', route: { name: 'gear' }, rewards: () => [{ gold: 1, forgeOre: 1 }] },
-  { id: 'epicExchange', name: 'Échange à l’Autel', hint: 'Invocation épique', route: { name: 'summon' }, rewards: () => [{ shardEpic: 1 }], main: ['shardEpic'],
-    amount: () => `1 contre ${EPIC_SHARD_PRICE} cristaux` },
 ];
 
 /** Récompenses des événements spéciaux (hors semaine) : objectifs, jours de connexion, épreuve. */

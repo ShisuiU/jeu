@@ -79,6 +79,9 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
   const [banner, setBanner] = useState<{ text: string; side: string } | null>(null);
   const [bossIntro, setBossIntro] = useState<Unit | null>(null);
   const [bossAct, setAct] = useState(1); // acte du boss (v1.97.0) : teinte la scène
+  // Bandeau du nom de compétence (v1.101.2) : dans l'espace libre entre la barre du haut et l'équipe ennemie ;
+  // sur un petit écran sans espace, il chevauche l'ordre des tours plutôt que les ennemis.
+  const [bannerTop, setBannerTop] = useState<number | null>(null);
   const introDone = useRef(false);
   const [acting, setActing] = useState<string | null>(null);
   const [hits, setHits] = useState<Set<string>>(new Set());
@@ -110,6 +113,17 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
     await sleep(1900 / Math.sqrt(speedRef.current));
     camTo(null, 1, 600); setBossIntro(null);
   };
+  useLayoutEffect(() => {
+    if (!banner) return;
+    const host = battleRef.current; if (!host) return;
+    const hb = host.getBoundingClientRect();
+    const topBar = host.querySelector('.battle-top')?.getBoundingClientRect();
+    const foes = [...host.querySelectorAll<HTMLElement>('.unit.enemy')].map((e) => e.getBoundingClientRect().top);
+    if (!topBar || !foes.length) { setBannerTop(null); return; }
+    const half = 19; // demi-hauteur du bandeau
+    const free0 = topBar.bottom - hb.top + 4, free1 = Math.min(...foes) - hb.top - 4;
+    setBannerTop(free1 - free0 >= half * 2 ? (free0 + free1) / 2 : Math.max(half + 4, free0 - half));
+  }, [banner]); // eslint-disable-line react-hooks/exhaustive-deps
   useLayoutEffect(() => {
     const el = measureRef.current; if (!el) return;
     let m = 0; el.querySelectorAll<HTMLElement>('.skill-info').forEach((x) => { m = Math.max(m, x.offsetHeight); });
@@ -506,7 +520,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
         </div>
       )}
       {wave && <div key={wave.id} className={`field-wave ${wave.side}`} style={{ ['--vc' as string]: wave.color }} onAnimationEnd={() => setWave(null)} />}
-      {banner && !(ult && speed < 3) && <div className={`skill-banner ${banner.side} ${ult ? 'ult' : ''}`} key={banner.text + banner.side}>{banner.text}</div>}
+      {banner && !(ult && speed < 3) && <div className={`skill-banner ${banner.side} ${ult ? 'ult' : ''}`} key={banner.text + banner.side} style={bannerTop != null ? { top: bannerTop } : undefined}>{banner.text}</div>}
 
       {waveCard && (
         <div className={`wave-card ${waveCard.boss ? 'boss' : ''}`} key={waveCard.n}>

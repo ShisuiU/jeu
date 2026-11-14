@@ -30,7 +30,7 @@ export function DailyBody() {
     <>
       <Panel>
         <div className="row between" style={{ marginBottom: 10, alignItems: 'baseline' }}>
-          <span className="muted" style={{ whiteSpace: 'nowrap' }}><b style={{ color: 'var(--gold-hi)', fontSize: 18 }}>{save.daily.totalLogins}</b> jour(s)</span>
+          <span className="muted" style={{ whiteSpace: 'nowrap' }}><b style={{ color: 'var(--gold-hi)', fontSize: 18 }}>{save.daily.totalLogins}</b> jour{save.daily.totalLogins > 1 ? 's' : ''}</span>
           <span className="faint" style={{ whiteSpace: 'nowrap' }}>Prochain dans {formatDuration(msUntilReset(now))}</span>
         </div>
         <div className="daily-grid">

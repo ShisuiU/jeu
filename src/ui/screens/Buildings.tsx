@@ -94,7 +94,7 @@ export function Buildings() {
         <div className="bld-art"><img src={trainArt} alt="" draggable={false} /></div>
         <div className="bld-body">
           <div className="bld-head"><b>Terrain d’entraînement</b></div>
-          <p className="faint" style={{ margin: '0 0 8px', fontSize: 12.5 }}>Les héros placés ici gagnent un peu d’expérience chaque heure ({Math.round(TRAINING.xpPctPerHour * 100)} % d’un niveau). Elle leur est donnée automatiquement, même quand tu n’es pas ici ou que le jeu est fermé. Ils peuvent toujours combattre.</p>
+          <p className="faint" style={{ margin: '0 0 8px', fontSize: 12.5 }}>+{Math.round(TRAINING.xpPctPerHour * 100)} % d’un niveau par heure, même jeu fermé. Les héros placés peuvent toujours combattre.</p>
           <div className="train-slots">
             {Array.from({ length: TRAINING.slots }, (_, i) => {
               const open = i < b.trainSlots;

@@ -129,7 +129,7 @@ export function Wheel() {
           <RewardView reward={WHEEL[lastIdx].reward} />
         </Panel>
       )}
-      <p className="faint" style={{ textAlign: 'center' }}>Un tour gratuit par jour. Énergie (5, 10, 30, 50), élixirs (1, 3, 5, 10), or, cristaux, et une case rare : un <b style={{ color: '#ff3d6e' }}>Éclat de faille</b>.</p>
+      <p className="faint" style={{ textAlign: 'center' }}>Un tour gratuit par jour · case rare : <b style={{ color: '#ff3d6e' }}>Éclat de faille</b></p>
     </Screen>
   );
 }

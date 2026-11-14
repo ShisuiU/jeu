@@ -11,6 +11,23 @@ const DEFAULT_AMB: AmbientCfg = { vx: [-0.008, 0.008], vy: [-0.03, -0.008], r: [
 interface Trace { kind: 'slash' | 'ring'; x: number; y: number; ang: number; r: number; col: string; t: number; dur: number }
 
 const rnd = (a: number, b: number) => a + Math.random() * (b - a);
+// Halo pré-dessiné par couleur (v1.99.0) : une particule = un seul drawImage, au lieu de deux tracés de cercle.
+const SPRITES = new Map<string, HTMLCanvasElement>();
+function sprite(col: string): HTMLCanvasElement {
+  const key = col;
+  let c = SPRITES.get(key);
+  if (c) return c;
+  c = document.createElement('canvas'); c.width = c.height = 32;
+  const g = c.getContext('2d')!;
+  g.fillStyle = col; const hex = /^#[0-9a-f]{6}$/i.test(String(g.fillStyle)) ? String(g.fillStyle) : '#ffffff'; // couleur normalisée en #rrggbb
+  col = hex;
+  const grd = g.createRadialGradient(16, 16, 0, 16, 16, 16);
+  grd.addColorStop(0, '#ffffff'); grd.addColorStop(0.16, col); grd.addColorStop(0.32, col);
+  grd.addColorStop(0.36, `${col}40`); grd.addColorStop(1, `${col}00`);
+  g.fillStyle = grd; g.fillRect(0, 0, 32, 32);
+  SPRITES.set(key, c);
+  return c;
+}
 const TAU = Math.PI * 2;
 
 export class Stage25 {
@@ -44,7 +61,7 @@ export class Stage25 {
 
   private resize() {
     const r = this.canvas.getBoundingClientRect();
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const dpr = Math.min(1.5, window.devicePixelRatio || 1); // les particules n'ont pas besoin de la pleine définition
     this.w = r.width; this.h = r.height;
     this.canvas.width = Math.round(r.width * dpr); this.canvas.height = Math.round(r.height * dpr);
     this.ctx?.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -111,9 +128,8 @@ export class Stage25 {
       if (p.life <= 0) { this.parts.splice(i, 1); if (p.amb) this.ambient--; continue; }
       p.vy += p.g * st; p.x += p.vx * st + (p.sw ? Math.sin(p.life / 520) * p.sw * st : 0); p.y += p.vy * st; p.vx *= p.drag; p.vy *= p.drag;
       const a = Math.min(1, (p.life / p.max) * 2) * p.alpha;
-      ctx.fillStyle = p.col;
-      ctx.globalAlpha = a * 0.25; ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 3.2, 0, TAU); ctx.fill();
-      ctx.globalAlpha = a; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, TAU); ctx.fill();
+      const R = p.r * 3.2;
+      ctx.globalAlpha = a; ctx.drawImage(sprite(p.col), p.x - R, p.y - R, R * 2, R * 2);
     }
     for (let i = this.traces.length - 1; i >= 0; i--) {
       const f = this.traces[i]; f.t += dt;

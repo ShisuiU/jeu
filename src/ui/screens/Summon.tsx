@@ -43,7 +43,6 @@ export function Summon() {
   const [reveal, setReveal] = useState<{ results: SummonResult[]; banner: string; count: 1 | 10; key: number } | null>(null);
   const b = BANNER_BY_ID[bannerId];
   const res = RESOURCES[b.cost.resource];
-  const have = save.resources[b.cost.resource];
   const pity = save.summons.pity[b.id] ?? 0;
   const altar = placeArt('altar');
 
@@ -102,7 +101,7 @@ export function Summon() {
 
       <div className="row summon-bar" style={{ gap: 10, marginTop: 12 }}>
         <button className="btn grow summon-btn summon-one kit-s1" disabled={!canAfford(save, b.id, 1)} onClick={() => doSummon(1)}>
-          Appeler ×1<small><ResourceIcon icon={res.icon} color={res.color} size={14} /> {fmt(b.cost.amount)} · tu as : {fmt(have)}</small>
+          Appeler ×1<small><ResourceIcon icon={res.icon} color={res.color} size={14} /> {fmt(b.cost.amount)}</small>
         </button>
         <button className="btn grow summon-btn kit-s10" disabled={!canAfford(save, b.id, 10)} onClick={() => doSummon(10)}>
           Appeler ×10<small><ResourceIcon icon={res.icon} color={res.color} size={14} /> {fmt(b.cost.amount * 10)}</small>

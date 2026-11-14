@@ -52,7 +52,7 @@ export function Settings() {
       <NotifyPanel />
       <Panel title="Application">
         {!isStandalone() && (
-          <div className="hint" style={{ marginTop: 0 }}><b>Installe le jeu</b> : sur iPhone, dans Safari, touche <b>Partager</b> puis <b>« Sur l’écran d’accueil »</b>. Il s’ouvrira en plein écran, marchera hors ligne, et Safari n’effacera plus tes données.</div>
+          <div className="hint" style={{ marginTop: 0 }}><b>Installe le jeu</b> : dans Safari, <b>Partager</b> puis <b>« Sur l’écran d’accueil »</b>. Plein écran, hors ligne, et tes données restent à l’abri.</div>
         )}
         <div className="setting-row">
           <div className="grow"><b>Version</b><div className="faint">{__APP_VERSION__}</div></div>

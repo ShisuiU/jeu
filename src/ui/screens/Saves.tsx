@@ -90,15 +90,15 @@ export function Saves({ mode }: { mode?: 'register' } = {}) {
       </Panel>
 
       <Panel title="Fichier de sauvegarde">
-        <p className="faint" style={{ marginTop: 0 }}>Sans compte en ligne : enregistre un fichier de ta partie (dans Fichiers ou iCloud Drive) avant de changer de téléphone, puis ouvre-le sur le nouveau.</p>
+        <p className="faint" style={{ marginTop: 0 }}>Sans compte : enregistre ce fichier avant de changer de téléphone, puis ouvre-le sur le nouveau.</p>
         <div className="row" style={{ gap: 8 }}>
           <button className="btn grow" onClick={download}>Enregistrer</button>
-          <button className="btn secondary grow" onClick={() => fileRef.current?.click()}>Ouvrir un fichier</button>
+          <button className="btn secondary grow" onClick={() => fileRef.current?.click()}>Importer</button>
           <input ref={fileRef} type="file" accept=".txt,text/plain" hidden onChange={(e) => onFile(e.target.files?.[0])} />
         </div>
       </Panel>
 
-      <Panel title="Copies de secours automatiques">
+      <Panel title="Copies de secours">
         {backups.length === 0 && <p className="faint">Aucune copie pour l’instant.</p>}
         {backups.map((b) => {
           const s = parseStored(b);
@@ -115,7 +115,7 @@ export function Saves({ mode }: { mode?: 'register' } = {}) {
       </Panel>
 
       <Panel title="Zone dangereuse">
-        <button className="btn danger block" onClick={() => setResetStep(1)}>Recommencer une nouvelle partie</button>
+        <button className="btn danger block" onClick={() => setResetStep(1)}>Nouvelle partie</button>
       </Panel>
 
       {pending && (

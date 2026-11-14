@@ -93,10 +93,10 @@ export const BattleBackdrop = memo(function BattleBackdrop({ region = 'valcrest'
 });
 
 // ─── SCÈNE DE COMBAT EN PROFONDEUR (v1.97.0, phase 2 lot 3) ───
-// Le même paysage peint est découpé en deux plans : le ciel (loin, bouge peu) et le sol (près, bouge plus)
-// quand la caméra avance. Entre les deux : une brume qui dérive, des rais de lumière selon la région,
+// Le paysage peint suit la caméra moins vite que les cartes (profondeur) ; par-dessus : une brume qui dérive, des rais de lumière selon la région,
 // et une lumière dynamique (.bs-light) que les sorts allument. Les actes du boss teintent la scène.
-// Tout est animé en transform/opacity (composité par le GPU) : rien ne repeint pendant le combat.
+// Tout est animé en transform/opacity, sans flou, masque ni mode de fusion (v1.99.0 : ces effets faisaient
+// tomber les combats de ~50 à ~36 images/s sur téléphone).
 const RAYS: Partial<Record<Region, true>> = { sylvaran: true, abyss: true, valcrest: true, heart: true, prism: true };
 
 /** Particules d'ambiance de chaque région (couleurs + mouvement), pour la couche canvas du combat. */
@@ -122,8 +122,7 @@ export const BattleScene = memo(function BattleScene({ region, act = 1 }: { regi
   const p = PALETTES[r];
   return (
     <div className={`bscene act-${act}`} style={{ ['--glow' as string]: p.glow, ['--rift' as string]: p.rift }} aria-hidden>
-      <img className="bs-far" data-depth="0.12" src={land} alt="" draggable={false} />
-      <img className="bs-ground" data-depth="0.42" src={land} alt="" draggable={false} />
+      <img className="bs-far" data-depth="0.22" src={land} alt="" draggable={false} />
       <div className="bs-glow" />
       {RAYS[r] && <div className="bs-rays" data-depth="0.2" />}
       <div className="bs-mist" data-depth="0.3"><i /><i /></div>

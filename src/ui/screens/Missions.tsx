@@ -54,7 +54,7 @@ export function Missions() {
           <Panel>
             {list.map((m) => { const st = missionState(save, kind, m.id); return <Row key={m.id} title={m.title} value={st.value} target={m.target} reward={m.reward} claimed={st.claimed} goKey={m.key} onClaim={() => claim((s) => claimMission(s, kind, m.id))} />; })}
           </Panel>
-          <Panel title={tab === 'daily' ? 'Coffre du jour (toutes les missions)' : 'Coffre de la semaine (toutes les missions)'}>
+          <Panel title={tab === 'daily' ? 'Coffre du jour' : 'Coffre de la semaine'}>
             <RewardView reward={tab === 'daily' ? DAILY_BONUS : WEEKLY_BONUS} />
             <button className="btn block" style={{ marginTop: 10 }} disabled={!bonusAvailable(save, kind)} onClick={() => claim((s) => claimBonus(s, kind))}>{save.missions[kind].bonus ? 'Déjà ouvert' : 'Ouvrir le coffre'}</button>
           </Panel>

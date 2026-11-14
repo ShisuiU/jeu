@@ -30,7 +30,7 @@ export function Camp() {
     <Screen title="Camp des Héritiers">
       <div className={`camp-fire ${pct >= 100 ? 'full' : ''}`} aria-hidden><span /><span /><span /></div>
       <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>
-        Pendant ton absence, les héros restés au camp rapportent du butin. Il s’accumule jusqu’à <b>{CAMP_MAX_HOURS} h</b>, même jeu fermé.
+        Butin d’absence, jusqu’à <b>{CAMP_MAX_HOURS} h</b>, même jeu fermé.
       </p>
       <Panel title="Butin accumulé">
         <div className="progress" style={{ marginBottom: 6 }}><div style={{ width: `${pct}%` }} /></div>

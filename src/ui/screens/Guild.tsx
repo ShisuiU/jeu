@@ -34,9 +34,8 @@ export function Guild() {
   if (!user) return (
     <Screen title="Clan">
       <Panel>
-        <p className="muted" style={{ marginTop: 0 }}>Un clan réunit jusqu’à {GUILD_MAX} joueurs : une discussion, et chaque semaine un boss commun dont les dégâts de tous les membres s’additionnent. Chaque palier atteint ensemble donne une récompense à chacun.</p>
-        <p className="muted">Il faut un compte pour rejoindre un clan.</p>
-        <button className="btn block" onClick={() => push({ name: 'saves' })}>Créer un compte ou se connecter</button>
+        <p className="muted" style={{ marginTop: 0 }}>Jusqu’à {GUILD_MAX} joueurs, un chat et un boss commun chaque semaine : chaque palier atteint ensemble récompense tout le clan.</p>
+        <button className="btn block" onClick={() => push({ name: 'saves' })}>Se connecter</button>
       </Panel>
     </Screen>
   );

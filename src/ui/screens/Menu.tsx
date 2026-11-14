@@ -13,7 +13,7 @@ import icLaurel from '../../assets/kit/ic_laurel.webp';
 import icSwords from '../../assets/kit/ic_swords.webp';
 import icCrystal from '../../assets/kit/ic_crystal.webp';
 // Icônes peintes du kit SpriteCook (v1.73.0).
-const TILE_ICON: Record<string, string> = { 'Sac': icBag, 'Codex': icCodex, 'Amis': icHand, 'Clan': icBanner, 'Classements': icTrophy, 'Sauvegarde et compte': icSave, 'Paramètres': icGear, 'Modération': icHelp };
+const TILE_ICON: Record<string, string> = { 'Sac': icBag, 'Codex': icCodex, 'Amis': icHand, 'Clan': icBanner, 'Classements': icTrophy, 'Sauvegarde': icSave, 'Paramètres': icGear, 'Modération': icHelp };
 const STAT_ICON: Record<string, string> = { 'Héros': icHero, 'Histoire': icBook, 'Tour': icTower, 'Arène': icLaurel, 'Victoires': icSwords, 'Invocations': icCrystal };
 import { cloudWanted, useAccount } from '../../cloud/account';
 import { isUnlocked } from '../../game/unlocks';
@@ -57,7 +57,7 @@ export function Menu() {
       ...(admin ? [{ label: 'Modération', icon: 'lock' as const, route: { name: 'moderation' } as Route }] : []),
     ] },
     { title: 'Système', items: [
-      { label: 'Sauvegarde et compte', icon: 'save', route: { name: 'saves' }, dot: !save.flags.saves_seen && !useAccount.getState().user && !cloudWanted() && save.stats.battlesWon >= 3 },
+      { label: 'Sauvegarde', icon: 'save', route: { name: 'saves' }, dot: !save.flags.saves_seen && !useAccount.getState().user && !cloudWanted() && save.stats.battlesWon >= 3 },
       { label: 'Paramètres', icon: 'gear', route: { name: 'settings' } },
       { label: 'Code promo', icon: 'gift', action: () => setPromo(true) },
     ] },
@@ -83,7 +83,6 @@ export function Menu() {
         </div>
       ))}
       {promo && <PromoModal onClose={() => setPromo(false)} />}
-      <p className="faint menu-map"><b>Héros</b> : Sanctuaire, Forge, Équipes, Liens · <b>Combats</b> : tous les modes · <b>Accueil</b> : Missions, Courrier, Camp, Marché.</p>
     </Screen>
   );
 }

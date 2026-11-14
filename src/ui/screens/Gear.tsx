@@ -103,7 +103,7 @@ export function Gear({ gearUid }: { gearUid?: string }) {
           {items.length === 0 && (
             <p className="hint" style={{ marginTop: 10 }}>{save.equipment.length === 0
               ? 'Pas encore d’équipement : il se gagne dans les 4 donjons d’équipement (ouverts après le niveau 2-2), un objet garanti à chaque victoire, chaque donjon ayant ses propres ensembles. Équipe-le ensuite depuis la fiche du héros.'
-              : 'Ce héros ne porte rien : touche un emplacement de sa fiche (onglet Héros) pour l’équiper depuis le sac.'}</p>
+              : 'Aucun objet équipé.'}</p>
           )}
         </>
       )}

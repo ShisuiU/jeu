@@ -259,21 +259,20 @@
 .gd-reforge:active { transform: rotate(-90deg); transition: transform 0.2s; }
 /* Scène de combat en profondeur (v1.97.0) : ciel loin, sol près, brume, rais, lumière dynamique, actes du boss. */
 .battle > .bscene { position: absolute; inset: 0; z-index: 0; overflow: hidden; background: #07060b; pointer-events: none; }
-.bscene > img { position: absolute; inset: -28px; width: calc(100% + 56px); height: calc(100% + 56px); object-fit: cover; object-position: center 40%; filter: blur(0.6px) brightness(0.72) saturate(1.15); will-change: transform; transition: filter 1.4s ease; }
-.bscene .bs-ground { -webkit-mask-image: linear-gradient(180deg, transparent 50%, #000 64%); mask-image: linear-gradient(180deg, transparent 50%, #000 64%); filter: brightness(0.74) saturate(1.18); }
-.bscene .bs-glow { position: absolute; left: -20%; right: -20%; top: 30%; height: 34%; background: radial-gradient(50% 50% at 50% 50%, var(--glow), transparent 70%); opacity: 0.14; mix-blend-mode: screen; animation: bsBreath 7s ease-in-out infinite alternate; }
+.bscene > img { position: absolute; inset: -28px; width: calc(100% + 56px); height: calc(100% + 56px); object-fit: cover; object-position: center 40%; filter: brightness(0.72) saturate(1.15); will-change: transform; }
+.bscene .bs-glow { position: absolute; left: -20%; right: -20%; top: 30%; height: 34%; background: radial-gradient(50% 50% at 50% 50%, var(--glow), transparent 70%); opacity: 0.14; animation: bsBreath 7s ease-in-out infinite alternate; }
 @keyframes bsBreath { from { opacity: 0.08; } to { opacity: 0.2; } }
-.bscene .bs-rays { position: absolute; left: -30%; right: -30%; top: -10%; height: 75%; background: repeating-linear-gradient(105deg, transparent 0 46px, rgba(255,255,255,0.06) 60px, transparent 92px, transparent 150px); -webkit-mask-image: linear-gradient(180deg, #000, transparent 90%); mask-image: linear-gradient(180deg, #000, transparent 90%); mix-blend-mode: screen; animation: bsRays 11s ease-in-out infinite alternate; will-change: opacity, transform; }
+.bscene .bs-rays { position: absolute; left: -30%; right: -30%; top: -10%; height: 75%; background: repeating-linear-gradient(105deg, transparent 0 46px, rgba(255,255,255,0.06) 60px, transparent 92px, transparent 150px); -webkit-mask-image: linear-gradient(180deg, #000, transparent 90%); mask-image: linear-gradient(180deg, #000, transparent 90%); animation: bsRays 11s ease-in-out infinite alternate; will-change: opacity, transform; }
 @keyframes bsRays { from { opacity: 0.35; transform: translateX(-12px); } to { opacity: 0.9; transform: translateX(14px); } }
 .bscene .bs-mist { position: absolute; left: 0; right: 0; top: 34%; height: 40%; will-change: transform; }
 .bscene .bs-mist i { position: absolute; inset: 0 -100% 0 0; background: radial-gradient(28% 40% at 20% 55%, rgba(210,200,230,0.16), transparent 70%), radial-gradient(22% 34% at 55% 40%, rgba(210,200,230,0.12), transparent 70%), radial-gradient(30% 42% at 85% 60%, rgba(210,200,230,0.14), transparent 70%); animation: bsMist 46s linear infinite; will-change: transform; }
 .bscene .bs-mist i + i { top: 28%; opacity: 0.8; animation-duration: 70s; animation-direction: reverse; }
 @keyframes bsMist { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-.bscene .bs-light { position: absolute; left: 0; top: 0; width: 120vmin; height: 120vmin; max-width: 900px; max-height: 900px; border-radius: 50%; background: radial-gradient(circle, var(--lc, #fff) 0%, transparent 62%); opacity: 0; mix-blend-mode: screen; will-change: opacity, transform; }
+.bscene .bs-light { position: absolute; left: 0; top: 0; width: 120vmin; height: 120vmin; max-width: 900px; max-height: 900px; border-radius: 50%; background: radial-gradient(circle, var(--lc, #fff) 0%, transparent 62%); opacity: 0; will-change: opacity, transform; }
 .bscene .bs-act { position: absolute; inset: 0; opacity: 0; transition: opacity 1.4s ease; background: radial-gradient(120% 90% at 50% 45%, transparent 35%, rgba(150, 10, 30, 0.55) 100%); }
 .bscene.act-2 .bs-act { opacity: 0.55; }
 .bscene.act-3 .bs-act { opacity: 1; background: radial-gradient(110% 85% at 50% 45%, rgba(120, 0, 20, 0.12) 20%, rgba(110, 0, 25, 0.7) 100%); }
-.bscene.act-3 > img { filter: blur(0.6px) brightness(0.62) saturate(1.45) sepia(0.2) hue-rotate(-12deg); }
+.bscene.act-3 > img { filter: brightness(0.6) saturate(1.4); }
 .bscene.act-3 .bs-glow { --glow: #ff2a3c; }
 .reduced-motion .bscene * { animation: none !important; }
 @media (prefers-reduced-motion: reduce) { .bscene * { animation: none !important; } }
@@ -305,3 +304,43 @@
 .prep-rule.bad { border-color: rgba(255,90,90,0.55); background: rgba(255,90,90,0.08); }
 .prep-rule b { color: #f1e3c4; }
 .tower-ch-panel { margin-top: 14px; }
+/* ─── Passe de finition (v1.99.0) : composants communs ─── */
+/* Boutons d'en-tête (Classement, Ligues…) : le libellé reste dans son cadre. */
+.theme-v2 .screen-header .btn { padding: 0 8px !important; font-size: 10px; letter-spacing: 0.04em; }
+/* Onglets : chaque onglet prend la largeur de son libellé, les plus longs ne sont plus tronqués. */
+.theme-v2 .seg button { flex: 1 1 auto; padding: 0 4px; }
+/* Tuiles du Menu : icône de secours à la même taille que les icônes peintes, libellé centré sur une ligne. */
+.menu-tile.kit > svg { width: 34px; height: 34px; margin: 3px 0; filter: drop-shadow(0 2px 3px #000); }
+.menu-tile.kit > span:not(.badge-dot) { line-height: 1.1; text-align: center; }
+/* Bouton Campagne de l'accueil : titre et chapitre ne se touchent plus. */
+.hs-campaign .big { top: 41%; }
+.hs-campaign .sub { top: 61%; }
+/* Libellés des raccourcis de l'accueil : marge intérieure garantie. */
+.hs-label.long { font-size: 17.5cqw; letter-spacing: -0.01em; }
+/* Petits boutons : le libellé ne déborde jamais. */
+.btn.small { white-space: nowrap; }
+.theme-v2 .btn.small { padding-left: 4px; padding-right: 4px; }
+/* Panneaux : titres sur une ligne, hiérarchie régulière. */
+.panel-title { line-height: 1.2; }
+.hs-campaign .cc-stars { top: 73.5%; }
+/* Boutons compacts : ne se compriment pas sous leur libellé. */
+.btn.small { flex-shrink: 0; }
+.pc-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.menu-tile.kit > span:not(.badge-dot) { font-size: clamp(11.5px, 3.5vw, 13px); padding: 0 2px; }
+.pf-frame > span { font-size: clamp(10.5px, 3vw, 12px); padding: 0 2px; }
+/* Petits écrans (iPhone SE 1re génération et équivalents) */
+@media (max-width: 360px) {
+  .theme-v2 .seg { overflow-x: auto; scrollbar-width: none; }
+  .theme-v2 .seg::-webkit-scrollbar { display: none; }
+  .theme-v2 .seg button { flex: 1 0 auto; overflow: visible; text-overflow: clip; padding: 0 6px; }
+  .theme-v2 .summon-btn.kit-s1, .theme-v2 .summon-btn.kit-s10 { border-width: 0 24px; border-image-width: 0 24px; padding-left: 14px; font-size: 12px; letter-spacing: 0.02em; }
+  .pc-stats img { display: none; }
+  .pc-stats > div { grid-template-columns: 1fr !important; text-align: center; padding: 4px 2px !important; }
+  .pc-stats > div span, .pc-stats > div b { overflow: visible; text-overflow: clip; white-space: nowrap; }
+  .pc-name { font-size: 16px; }
+  .pc-stats + * , .pc .btn.secondary { font-size: 9.5px; }
+  .menu-tile.kit .mt-ico, .menu-tile.kit > svg { width: 30px; height: 30px; margin: 0; }
+  .prep-sweep .lbl { display: none; }
+  .prep-sweep { flex: 0 0 auto; padding-left: 12px !important; padding-right: 12px !important; }
+  .bld-body .row .btn { font-size: 11px; letter-spacing: 0.02em; }
+}

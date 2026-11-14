@@ -26,6 +26,8 @@ export interface HeroInstance {
   obtainedAt: number;
   /** Maîtrises apprises (identifiants), voir data/masteries.ts. */
   masteries?: string[];
+  /** Voie choisie au niveau 60 (v1.96.0). */
+  spec?: 'a' | 'b';
 }
 
 export interface Buildings {

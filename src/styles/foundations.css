@@ -245,3 +245,15 @@
 .rr-quote { margin: 8px auto 0; max-width: 300px; font-style: italic; font-size: 13.5px; color: #f1e3c4; text-shadow: 0 1px 4px #000; }
 .legend .rr-single::before, .legend .rr-single::after { content: ''; position: fixed; left: 0; right: 0; height: 9vh; background: #000; z-index: -1; animation: biBar 0.5s cubic-bezier(.2,.8,.2,1) both; }
 .legend .rr-single::before { top: 0; } .legend .rr-single::after { bottom: 0; }
+/* Voies (v1.96.0) */
+.spec-block { padding: 8px 0 10px; border-bottom: 1px solid var(--surface-line); margin-bottom: 8px; }
+.spec-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
+.spec-opt { display: flex; flex-direction: column; gap: 3px; padding: 10px; border-radius: 8px; text-align: left; color: inherit; border: 1px solid var(--surface-line); background: rgba(255,255,255,0.03); font-size: 12px; }
+.spec-opt b { font-family: var(--font-title); font-size: 15px; color: #f1e3c4; }
+.spec-opt span { color: var(--text-dim); }
+.spec-opt.on { border-color: #e2b866; background: linear-gradient(180deg, rgba(226,184,102,0.16), transparent); box-shadow: 0 0 12px rgba(226,184,102,0.25); }
+.spec-opt:disabled:not(.on) { opacity: 0.55; }
+/* Retouche d'équipement (v1.96.0) */
+.gd-sub { position: relative; }
+.gd-reforge { margin-left: 6px; width: 30px; height: 30px; border-radius: 50%; color: #e2b866; border: 1px solid rgba(226,184,102,0.45); background: rgba(226,184,102,0.08); font-size: 15px; flex-shrink: 0; }
+.gd-reforge:active { transform: rotate(-90deg); transition: transform 0.2s; }

@@ -1,4 +1,6 @@
 import { SIGNATURES } from '../../data/signatures';
+import { SPECS, SPEC_CHANGE_GOLD } from '../../data/specs';
+import { chooseSpec } from '../../game/specs';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
 import { HERO_BY_ID } from '../../data/heroes';
@@ -80,6 +82,20 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
       </section>
 
       <Disclosure title="Compétences" summary={`${d.skills.length} compétences${SIGNATURES[d.id] ? ' · signature' : ''}${d.leaderSkill ? ' · aura de chef' : ''}`}>
+        {inst && (
+          <div className="spec-block">
+            <div className="skill-tag">Voie · {inst.level >= 60 ? (inst.spec ? 'choisie' : 'à choisir') : 'au niveau 60'}</div>
+            <div className="spec-row">
+              {(['a', 'b'] as const).map((k) => { const sp = SPECS[d.role][k]; const on = inst.spec === k; return (
+                <button key={k} className={`spec-opt ${on ? 'on' : ''}`} disabled={inst.level < 60 || on}
+                  onClick={() => { let r = { ok: false } as ReturnType<typeof chooseSpec>; useGame.getState().mutate((st) => { r = chooseSpec(st, inst.uid, k); }); toast(r.ok ? `Voie choisie : ${sp.name}` : r.reason ?? 'Impossible.', r.ok ? 'ok' : 'error'); }}>
+                  <b>{sp.name}</b><span>{sp.text}</span>
+                </button>
+              ); })}
+            </div>
+            {inst.spec && <div className="faint" style={{ fontSize: 11.5, marginTop: 4 }}>Changer de voie : {SPEC_CHANGE_GOLD.toLocaleString('fr-FR')} or.</div>}
+          </div>
+        )}
         {SIGNATURES[d.id] && (
           <div className="skill sig-skill">
             <div className="skill-icon" style={{ ['--sc' as string]: rar.color }}>★</div>

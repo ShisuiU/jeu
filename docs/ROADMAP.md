@@ -558,6 +558,12 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.96.0 — Phase 2 : voies, retouche d'équipement, équilibrage
+
+- Voies : au niveau 60, chaque héros choisit une voie parmi deux, propre à son rôle (Rempart ou Briseur pour les défenseurs, Lame ou Tempête pour les attaquants, Ombre ou Bourreau pour les assassins, Source ou Aurore pour les soigneurs, Tisseur ou Bastion pour les soutiens, Arcane ou Entrave pour les contrôleurs). Un même héros peut ainsi servir deux équipes différentes. Premier choix gratuit, changement contre 50 000 or. Sur la fiche du héros, en tête des compétences.
+- Retouche d'équipement : chaque statistique secondaire peut être relancée (nouvelle statistique, mêmes renforcements) contre 20 000 or et 40 minerai de forge. La chance de l'équipement se maîtrise, et le minerai a un vrai usage de fin de jeu.
+- Équilibrage (simulation des 89 héros) : Solenne, Sire Corentin et Vael'Shira dépassaient nettement leur rareté. Retouches de leurs compétences (soins et résurrection de Solenne, bouclier et gel de Corentin, renforts de Vael'Shira) et de leurs signatures (Corentin −6 % de dégâts subis au lieu de −10 %, Vael'Shira +20 % de jauge au lieu de +30 %). Descriptions mises à jour.
+
 ## ✅ Version 1.95.0 — Phase 2 : identité « fil d'Aeon » et spectacle
 
 - Identité : le Monde Cousu devient un langage visuel. Un fil d'or pointillé court à l'intérieur des panneaux, et à chaque entrée dans un écran un fil d'or le « recoud » en diagonale.

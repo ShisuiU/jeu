@@ -27,7 +27,7 @@
 }
 
 /* ─── Panneaux ─── */
-.panel, .modal, .upg-line, .stage-node, .mode-card, .res-cell, .forge-res-box {
+.panel, .modal, .upg-line, .stage-node, .mode-card, .res-cell {
   background-color: var(--stone);
   background-image: var(--grain);
   border: 1px solid var(--edge);
@@ -59,7 +59,7 @@
 /* ─── Étiquettes : rectangles, plus de pilules ─── */
 .chip { border-radius: 3px; background: rgba(255,255,255,0.04); border-color: var(--edge); }
 .chip.active { background: rgba(184,149,90,0.16); border-color: var(--brass); }
-.tag, .rarity-tag { border-radius: 3px; }
+.tag { border-radius: 3px; }
 
 /* ─── Onglets : soulignés ─── */
 .seg { background: transparent; border: 0; border-bottom: 1px solid var(--edge); border-radius: 0; padding: 0; }
@@ -86,7 +86,7 @@
 .chapter-card, .mode-hero { border-radius: var(--radius); box-shadow: none; }
 .stage-node { border-radius: var(--radius); }
 .stage-node .sn-idx { border-radius: 2px; }
-.ss-item, .sf-art, .sh-art { border-radius: 3px; }
+.ss-item, .sf-art { border-radius: 3px; }
 .ss-item.on { box-shadow: none; transform: none; }
 .ss-item > :first-child { border-radius: 2px; }
 .sf-art { box-shadow: 0 8px 24px rgba(0,0,0,0.6); }
@@ -94,7 +94,6 @@
 .upg-line { backdrop-filter: none; -webkit-backdrop-filter: none; background-color: rgba(21,18,27,0.94); }
 
 /* ─── Accueil ─── */
-.sc-btn { border-radius: var(--radius); background: rgba(12,10,16,0.78); border-color: var(--edge-hi); box-shadow: none; }
 .campaign-cta { border-radius: 0; clip-path: var(--bevel); border: 0; box-shadow: inset 0 0 0 1px var(--brass); }
 .campaign-cta::before { display: none; }
 
@@ -109,7 +108,6 @@
 /* ─── Invocation ─── */
 .banner { border-radius: var(--radius); box-shadow: inset 0 0 50px rgba(0,0,0,0.6); }
 .banner::after { content: ''; position: absolute; inset: -1px; pointer-events: none; background: var(--corners); opacity: 0.8; }
-.banner-info h2 { text-shadow: 0 2px 6px #000; }
 
 /* ─── Netteté : plus de voile flou en haut des écrans ─── */
 .screen-header { backdrop-filter: none; -webkit-backdrop-filter: none; background: #0a090e; }
@@ -163,7 +161,6 @@
 .ui-stats b { color: var(--text); }
 .ui-status { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
 .ui-st { display: flex; align-items: center; gap: 8px; font-size: 13.5px; }
-.ui-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 0 1px rgba(0,0,0,0.6); }
 .ui-st .neg { color: #ff8f8f; font-size: 11.5px; }
 .ui-st .pos { color: #8fe3a0; font-size: 11.5px; }
 
@@ -199,7 +196,6 @@
 .skill-card.sel { transform: translateY(-3px); box-shadow: inset 0 0 0 2px var(--brass), inset 0 -2px 0 rgba(0,0,0,0.5); }
 .skill-card.sel .sk-name { color: var(--gold-hi); }
 .skill-card:disabled { filter: grayscale(0.85) brightness(0.6); }
-.skill-card .sk-cd { position: absolute; right: 6px; bottom: 4px; font-size: 9.5px; font-weight: 700; color: #fff; }
 .skill-card .sk-tag.cd { color: #ffb0b0; }
 
 /* iPhone : iOS réserve déjà le bas de l'écran → pas de marge supplémentaire (voir viewport.ts). */
@@ -245,7 +241,6 @@
 
 /* ─── Identité : affinité, rôle, rareté, famille ─── */
 .aff-icon { flex-shrink: 0; display: inline-block; vertical-align: -3px; }
-.aff-icon.disc { border-radius: 50%; background: radial-gradient(circle, rgba(0,0,0,0.75) 55%, rgba(0,0,0,0.35)); box-shadow: 0 0 0 1px color-mix(in srgb, var(--ac) 60%, transparent), 0 0 6px color-mix(in srgb, var(--ac) 45%, transparent); padding: 2px; box-sizing: content-box; }
 .role-icon { flex-shrink: 0; vertical-align: -3px; }
 
 .identity { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; margin-top: 8px; }
@@ -263,7 +258,6 @@
 
 /* Combat : logo d'affinité sur la carte, statuts à gauche, avantage au ciblage */
 .u-aff { position: absolute; right: 2px; top: 2px; z-index: 3; line-height: 0; }
-.u-status { right: auto !important; left: 3px; top: 19px !important; }
 .u-edge { position: absolute; left: 50%; top: -15px; transform: translateX(-50%); z-index: 6; padding: 0 5px; height: 15px; line-height: 15px; border-radius: 2px; font-size: 9.5px; font-weight: 800; white-space: nowrap; pointer-events: none; }
 .u-edge.up { background: #ffd36b; color: #2a1c05; box-shadow: 0 0 8px rgba(255,211,107,0.7); animation: edgePulse 1s ease-in-out infinite alternate; }
 .u-edge.down { background: rgba(30,28,36,0.95); color: #b9b3c4; border: 1px solid #5a5466; }
@@ -273,8 +267,6 @@
 /* Préparation : conseil d'affinité, rôle des ennemis */
 .aff-advice { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; font-size: 12.5px; color: var(--text-dim); margin: 0 0 10px; padding: 8px 10px; border-radius: var(--radius); background: rgba(14,12,20,0.6); border: 1px solid rgba(255,255,255,0.05); }
 .aff-advice > span { display: inline-flex; align-items: center; gap: 4px; }
-.ec-role { display: inline-flex; align-items: center; gap: 3px; justify-content: center; }
-.enemy-chip .ec-art .u-aff { right: 2px; top: 2px; }
 
 /* ─── Vitrine du héros : illustration + emplacements d'équipement autour ─── */
 .showcase { position: relative; height: min(60vh, 520px); margin: -12px -16px 0; overflow: hidden; }
@@ -294,13 +286,9 @@
 .sc-slot .sc-plus { position: absolute; right: 5px; bottom: 2px; font-size: 13px; font-weight: 800; color: #8a8494; }
 .sc-slot .sc-lv { position: absolute; left: 5px; top: 3px; font-size: 10px; font-weight: 800; color: #fff; text-shadow: 0 1px 2px #000; }
 .sc-slot .sc-set { position: absolute; right: 6px; top: 6px; width: 6px; height: 6px; border-radius: 50%; box-shadow: 0 0 4px currentColor; }
-.sc-nav { position: absolute; top: 46%; z-index: 3; width: 30px; height: 44px; display: grid; place-items: center; font-size: 30px; line-height: 1; color: rgba(255,255,255,0.75); text-shadow: 0 2px 6px #000; }
-.sc-nav.prev { left: 70px; } .sc-nav.next { right: 70px; }
 .showcase + .hero-sheet-head { margin-top: -96px; }
 .sc-tools { margin-top: 2px; }
 .sc-tools { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; }
-.sc-sets { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
-.sc-setchip { font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 2px; color: var(--sc); border: 1px solid color-mix(in srgb, var(--sc) 55%, transparent); background: color-mix(in srgb, var(--sc) 10%, transparent); }
 
 /* ─── Tutoriel en situation ─── */
 .coach { position: fixed; inset: 0; z-index: 62; pointer-events: none; }
@@ -387,8 +375,6 @@ body:has(.coach) .toasts { visibility: hidden; }
 /* ─── Invitation à créer un compte ─── */
 .acc-prompt-ic { width: 64px; height: 64px; margin: 2px auto 8px; display: grid; place-items: center; border-radius: 50%; color: var(--gold-hi); background: radial-gradient(circle, rgba(217,179,106,0.22), rgba(20,16,28,0.9) 70%); border: 1px solid var(--line-strong); }
 .acc-prompt-sum { margin: 0 0 14px; padding: 8px 10px; text-align: center; font-size: 13px; color: var(--text-dim); border-radius: 10px; background: rgba(255,255,255,0.04); border: 1px solid var(--line); }
-.acc-cloud-hint { display: block; width: 100%; margin-top: 10px; text-align: left; }
-.acc-cloud-hint b { color: var(--gold-hi); }
 body:has(.acc-prompt-ic) .toasts { visibility: hidden; }
 
 /* ─── Héros vivants : souffle et particules d'affinité ─── */
@@ -405,9 +391,7 @@ body:has(.acc-prompt-ic) .toasts { visibility: hidden; }
 @keyframes mote-drift { 0% { transform: translate(0, 0) rotate(0); opacity: 0; } 15% { opacity: 0.7; } 100% { transform: translate(-40px, -55vh) rotate(260deg); opacity: 0; } }
 @keyframes mote-fall { 0% { transform: translate(0, 0); opacity: 0; } 15% { opacity: 0.8; } 100% { transform: translate(-12px, 70vh); opacity: 0; } }
 .reduced-motion .sc-motes { display: none; }
-.result-voice { max-width: 320px; margin: 4px auto 8px; text-align: center; font-style: italic; font-size: 14px; color: #efe4cf; animation: voice-in 0.4s 0.5s both; }
 @keyframes voice-in { from { opacity: 0; transform: translateY(6px); } }
-.result-voice span { display: block; margin-top: 3px; font-style: normal; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); }
 
 /* ─── Doublons et liens ─── */
 .copies-card { position: relative; display: flex; align-items: center; gap: 10px; width: 100%; margin: 10px 0 4px; padding: 10px 12px; text-align: left;
@@ -505,7 +489,6 @@ body:has(.summon-bar) .toasts { bottom: calc(var(--nav-h) + var(--sab) + 96px); 
 .daily-cell { font-size: 11px; }
 .daily-cell .d { font-size: 10.5px; }
 .shard-tab span { font-size: 11px; }
-.hl-t { font-size: 11px; }
 .seg button.locked { color: #8a8378; font-style: italic; }
 .foe-art .u-lvl { font-size: 11px; }
 .foe-name { font-size: 11px; }
@@ -554,8 +537,6 @@ body:has(.summon-bar) .toasts { bottom: calc(var(--nav-h) + var(--sab) + 96px); 
 .screen-scroll { overscroll-behavior-y: none; }
 
 /* ─── Résumé des ensembles sur la fiche du héros ─── */
-.sc-sum { flex: 1; display: flex; align-items: baseline; gap: 8px; }
-.sc-sum b { font-family: var(--font-title); font-size: 15px; color: var(--gold-hi); letter-spacing: 0.04em; }
 .set-sum { display: flex; flex-direction: column; gap: 6px; margin: 0 0 12px; }
 .set-row { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 4px; background: rgba(14,12,20,0.6); border: 1px solid rgba(255,255,255,0.06); }
 .set-row.on { background: linear-gradient(90deg, color-mix(in srgb, var(--sc) 16%, transparent), rgba(14,12,20,0.6) 70%); border-color: color-mix(in srgb, var(--sc) 45%, transparent); }
@@ -564,14 +545,8 @@ body:has(.summon-bar) .toasts { bottom: calc(var(--nav-h) + var(--sab) + 96px); 
 .set-x { font-weight: 800; color: var(--sc); }
 .set-bonus { font-size: 12px; color: var(--text-dim); }
 .set-row:not(.on) .set-bonus { color: var(--text-faint); }
-.set-pips { display: flex; gap: 3px; flex-shrink: 0; }
-.set-pips i { width: 8px; height: 8px; transform: rotate(45deg); border: 1px solid color-mix(in srgb, var(--sc) 60%, transparent); }
-.set-pips i.on { background: var(--sc); box-shadow: 0 0 5px var(--sc); }
 .set-state { min-width: 40px; text-align: right; font-size: 12px; font-weight: 800; color: var(--text-faint); }
 .set-row.on .set-state { color: var(--sc); }
-.set-pending { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 2px 2px 0; }
-.set-chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 7px; border-radius: 3px; font-size: 12px; color: color-mix(in srgb, var(--sc) 75%, #ccc); border: 1px solid color-mix(in srgb, var(--sc) 35%, transparent); background: rgba(14,12,20,0.6); }
-.set-chip b { color: var(--text); }
 
 /* ─── Bulles d'ensemble (fiche du héros) ─── */
 .set-bubbles { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
@@ -618,7 +593,6 @@ body:has(.summon-bar) .toasts { bottom: calc(var(--nav-h) + var(--sab) + 96px); 
 .mk-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
 .mk-gear-head { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 8px; }
 .mk-gear-head .gd-card { width: 72px; flex-shrink: 0; }
-.home-places { flex-wrap: wrap; }
 /* Une fenêtre est ouverte : les messages passent en haut de l'écran pour ne jamais cacher ses boutons. */
 body:has(.modal-backdrop) .toasts, body:has(.sheet-backdrop) .toasts { bottom: auto; top: calc(var(--sat, 0px) + 10px); }
 .mk-cost { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding: 8px 10px; border-radius: 4px; background: rgba(0,0,0,0.3); border: 1px solid var(--edge); }
@@ -636,7 +610,6 @@ body:has(.modal-backdrop) .toasts, body:has(.sheet-backdrop) .toasts { bottom: a
 .rk-row { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 4px; background: rgba(12,10,16,0.75); border: 1px solid var(--edge); }
 .rk-row.me { border-color: var(--gold-hi); background: rgba(60,44,18,0.55); }
 .rk-pos { width: 24px; text-align: center; font-weight: 800; color: var(--text-dim); font-variant-numeric: tabular-nums; }
-.rk-row.top1 .rk-pos { color: #ffd45a; } .rk-row.top2 .rk-pos { color: #d6dbe0; } .rk-row.top3 .rk-pos { color: #d69a5a; }
 .rk-row.top .rk-pos { font-size: 17px; }
 .rk-name { display: flex; flex-direction: column; min-width: 0; }
 .rk-name b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -649,7 +622,6 @@ body:has(.modal-backdrop) .toasts, body:has(.sheet-backdrop) .toasts { bottom: a
 .ms-head { text-align: center; font-size: 12px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--mc); padding-bottom: 2px; border-bottom: 1px solid color-mix(in srgb, var(--mc) 45%, transparent); }
 .ms-node { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 4px 7px; min-height: 84px; border-radius: 4px; text-align: center;
   border: 1px solid var(--edge); background: rgba(12,10,16,0.82); color: var(--text-dim); }
-.ms-node.t4 { min-height: 92px; border-style: double; border-width: 3px; }
 .ms-node.on { border-color: var(--mc); background: color-mix(in srgb, var(--mc) 18%, rgba(12,10,16,0.9)); color: var(--text); box-shadow: 0 0 10px color-mix(in srgb, var(--mc) 35%, transparent); }
 .ms-node.ready { border-color: color-mix(in srgb, var(--mc) 70%, transparent); color: var(--text); animation: msPulse 2s ease-in-out infinite; }
 .ms-node.locked { opacity: 0.55; }
@@ -865,7 +837,6 @@ body:has(.battle-controls) .toasts { bottom: auto; top: calc(var(--sat, 0px) + 1
 .sc-slot .sc-set { right: 3px; top: 3px; }
 .sc-slot .sc-stars { bottom: 3px; }
 .sc-slot .sc-stars .gstars svg { width: 8px; height: 8px; }
-.sc-nav.prev { left: 80px; } .sc-nav.next { right: 80px; }
 
 /* Préparation : héros bien visibles (cartes plus hautes, portrait dégagé), seulement l'affinité, le chef sous sa carte. */
 .prep-team-strip { gap: 6px; }
@@ -941,7 +912,6 @@ body:has(.prep-bar) .bg-pill, body:has(.summon-bar) .bg-pill { bottom: calc(var(
 .sc-bar { position: relative; height: 6px; border-radius: 3px; background: rgba(255,255,255,0.08); margin: 0 4px 8px; }
 .sc-bar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: linear-gradient(90deg, #b4863d, #ffe7ad); }
 .sc-bar b { position: absolute; top: -3px; width: 2px; height: 12px; background: rgba(255,255,255,0.35); transform: translateX(-1px); }
-.sc-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .sc-chest { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px; border-radius: 8px; background: rgba(12,10,16,0.75); border: 1px solid var(--line); color: var(--text); min-width: 0; }
 .sc-chest .scc-head { display: inline-flex; align-items: center; gap: 3px; font-weight: 800; color: var(--text-dim, #c9c1b3); font-size: 13px; }
 .sc-chest .reward-inline { justify-content: center; flex-wrap: wrap; gap: 4px 8px; }
@@ -952,7 +922,6 @@ body:has(.prep-bar) .bg-pill, body:has(.summon-bar) .bg-pill { bottom: calc(var(
 .scc-go { font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; color: #23180a; background: linear-gradient(180deg, #ffe7ad, #b4863d); border-radius: 4px; padding: 1px 6px; }
 @keyframes scPulse { 50% { box-shadow: 0 0 18px rgba(255,211,107,0.55); } }
 @media (prefers-reduced-motion: reduce) { .sc-chest.ready { animation: none; } }
-.chip-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #e0474f; margin-left: 4px; vertical-align: middle; }
 
 /* v1.68.13 — Fenêtre « Les ligues » de l'Arène. */
 .league-list { display: grid; gap: 6px; }
@@ -991,7 +960,7 @@ body:has(.prep-bar) .bg-pill, body:has(.summon-bar) .bg-pill { bottom: calc(var(
 /* ─── Profil du joueur (v1.68.21) ─── */
 .pf-head { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
 .pf-ava { position: relative; width: 88px; height: 88px; flex: none; border-radius: 50%; overflow: visible; padding: 0; }
-.pf-ava > .hero-art, .pf-ava > img, .pf-ava > div:first-child { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; }
+.pf-ava > img, .pf-ava > div:first-child { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; }
 .pf-lvl { position: absolute; right: -2px; bottom: -2px; min-width: 28px; height: 26px; padding: 0 6px; display: grid; place-items: center; border-radius: 999px; font-weight: 900; color: #23180a; background: linear-gradient(180deg, #ffe7ad, #b4863d); border: 2px solid #1a1208; }
 .pf-name { font-family: var(--font-title); font-size: 21px; color: var(--gold-hi); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* Cadres d'avatar */

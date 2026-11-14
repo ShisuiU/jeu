@@ -29,7 +29,6 @@
   /* Les grilles suivent la largeur réelle de la colonne : 4 héros par ligne seulement si elle est large. */
   .app { container-type: inline-size; container-name: app; }
   .battle { --unit-max: 136px; }
-  .mode-grid { gap: 10px; }
   /* Souris : le survol montre ce qui se clique. */
   button:not(:disabled), .hero-card, .stage-node:not(.locked), .combat-card, .menu-tile { transition: filter 0.15s, transform 0.15s; }
   @media (hover: hover) {

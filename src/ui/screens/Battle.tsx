@@ -1,4 +1,3 @@
-import { SIGNATURES } from '../../data/signatures';
 import { factionTeam } from '../../game/factionDungeon';
 import { defeatTips } from '../../game/tips';
 import { riftSetups } from '../../game/rift';
@@ -7,17 +6,14 @@ import { energyMax } from '../../game/energy';
 import { AccountXp } from '../components/AccountXp';
 import { Coach } from '../components/Coach';
 import { useCallback, useEffect, useLayoutEffect, useReducer, useRef, useState } from 'react';
-import type { SkillDef } from '../../data/types';
 import { useGame } from '../../state/store';
 import { useUI, type Route } from '../../state/ui';
 import { HERO_BY_ID } from '../../data/heroes';
-import { createBattle, beginTurn, performAction, unitById, availableSkills, targetKind, validTargets, hpPct, shieldOf, predictOrder, autoLien, castLien, lienReady, LIEN_POWERS } from '../../game/battle/engine';
+import { createBattle, beginTurn, performAction, unitById, availableSkills, targetKind, validTargets,  predictOrder, autoLien, castLien, lienReady, LIEN_POWERS } from '../../game/battle/engine';
 import { LIEN_MAX, LIEN_USES, type LienPower } from '../../game/battle/types';
-import { groupStatuses, statusDescription, statusValueText, STATUS_LEGEND } from '../../game/battle/statusText';
 import { chooseAction } from '../../game/battle/ai';
 import { StatusIcon } from '../art/StatusIcon';
 import { STATUS_INFO, type Action, type BattleState, type Unit, type UnitSetup } from '../../game/battle/types';
-import { effectiveCooldown } from '../../game/battle/skillMods';
 import { teamSetups } from '../../game/campaign';
 import { applyMode, nextSpec, payMode, resolveMode, type BattleSpec, type ModeResult } from '../../game/modes';
 import { play } from '../../audio/sfx';
@@ -27,13 +23,18 @@ import { playerTeamPower } from '../../game/arena';
 import { ENEMIES } from '../../data/enemies';
 import { playCast, playDeath, playDot, playFlip, playHeal, playImpact, playRevive, playShield, playStatus } from '../../audio/battleSfx';
 import { skillFx, type SkillFx } from '../fx/skillFx';
-import { Stage25, type Pt } from '../fx/stage25';
 import { AffinityIcon, affinityEdge } from '../art/Identity';
 import { AFFINITIES } from '../../data/affinities';
 import { HeroArt } from '../art/HeroArt';
 import { EnemyArt } from '../art/EnemyArt';
 import { Icon } from '../art/Icons';
-import { BattleScene, regionAmbient } from '../art/BattleBackdrop';
+import { BattleScene } from '../art/BattleBackdrop';
+import { useStageFx } from '../battle/useStageFx';
+import { stagePlace, type Place } from '../battle/layout';
+import { previewTargets } from '../battle/targets';
+import { FxLayer, type FxItem } from '../battle/FxLayer';
+import { UnitView, type Popup } from '../battle/UnitView';
+import { DamageRecap, EffectsLegend, SkillInfoBody, SLOT_TAG, UnitInfo } from '../battle/Panels';
 import { ACT3 } from '../../data/bossActs';
 import { Dialogue } from '../components/Dialogue';
 import { Modal } from '../components/common';
@@ -41,7 +42,6 @@ import { RewardView } from '../components/RewardView';
 import { HeroCard } from '../components/HeroCard';
 
 type Phase = 'intro' | 'fight' | 'outro' | 'result';
-interface Popup { id: number; text: string; cls: string }
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 // Pause (v1.73.7) : tant que le menu pause est ouvert, le déroulé du combat attend.
 let paused = false;
@@ -154,112 +154,11 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
   // ─── Couche d'effets (projectiles, pluies, rayons) positionnée sur les cartes ───
   const battleRef = useRef<HTMLDivElement>(null);
   const [fxItems, setFxItems] = useState<FxItem[]>([]);
-  const posOf = (id: string) => {
-    const host = battleRef.current?.getBoundingClientRect();
-    const el = battleRef.current?.querySelector(`[data-uid="${id}"] .u-art`)?.getBoundingClientRect();
-    if (!host || !el) return null;
-    return { x: el.left - host.left + el.width / 2, y: el.top - host.top + el.height / 2, w: el.width, top: el.top - host.top };
-  };
+  const { camRef, stageCanvas, stage, posOf, center, camTo, flashLight, lungeTo, knock, motionOn } = useStageFx(battleRef, speedRef, initial.info.region);
   const spawn = (item: Omit<FxItem, 'id'>) => {
     const id = ++popSeq;
     setFxItems((l) => [...l, { ...item, id }]);
     setTimeout(() => setFxItems((l) => l.filter((x) => x.id !== id)), item.dur + 60);
-  };
-  // ─── Mise en scène 2,5D (v1.81.0) : caméra, assauts au corps à corps, impacts, dissolution ───
-  const camRef = useRef<HTMLDivElement>(null);
-  const stageCanvas = useRef<HTMLCanvasElement>(null);
-  const stage = useRef<Stage25 | null>(null);
-  const camScale = useRef(1);
-  const motionOn = () => !useGame.getState().save?.settings.reducedMotion;
-  useEffect(() => {
-    const cv = stageCanvas.current;
-    if (!cv || !motionOn()) return;
-    const amb = regionAmbient(initial.info.region);
-    const st = new Stage25(cv, () => speedRef.current, amb.colors, amb.count, amb.cfg);
-    st.start(); stage.current = st;
-    return () => { st.stop(); stage.current = null; };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-  const center = (id: string): Pt | null => { const p = posOf(id); return p ? { x: p.x, y: p.y } : null; };
-  /** Caméra : zoom léger vers l'action, le décor bouge moins vite (profondeur). */
-  const camTo = (p: Pt | null, z = 1, ms = 420) => {
-    const el = camRef.current, host = battleRef.current;
-    if (!el || !host || !motionOn()) return;
-    const spd = speedRef.current;
-    const bgs = host.querySelectorAll<HTMLElement>('.painted-bg img, .battle-bg, [data-depth]');
-    // En accéléré, la caméra garde des mouvements doux : durée réduite moins vite que le reste,
-    // et amplitude réduite (×2 : 55 %, ×3 : 30 %) pour éviter les allers-retours brusques.
-    const amp = CAM_AMP[spd] ?? 1;
-    z = 1 + (z - 1) * amp;
-    const tr = `transform ${Math.round(Math.max(ms / Math.sqrt(spd), 260))}ms cubic-bezier(.25,.6,.3,1)`;
-    el.style.transition = tr;
-    if (!p) { el.style.transform = ''; camScale.current = 1; bgs.forEach((b) => { b.style.transition = tr; b.style.transform = ''; }); return; }
-    const c = { x: el.offsetLeft + el.offsetWidth / 2, y: el.offsetTop + el.offsetHeight / 2 };
-    const k = 0.6; // la cible fait un peu plus de la moitié du chemin vers le centre
-    // Presque aucun panoramique gauche-droite (15 %) : la caméra avance surtout en profondeur.
-    const tx = amp * (k - z) * (p.x - c.x) * 0.15, ty = amp * (k - z) * (p.y - c.y) * 0.6;
-    el.style.transform = `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px) scale(${z})`;
-    camScale.current = z;
-    // Profondeur : chaque plan suit la caméra selon sa distance (ciel 0,12 ; brume 0,3 ; sol 0,42).
-    bgs.forEach((b) => { const d = Number(b.dataset.depth ?? 0.22); b.style.transition = tr; b.style.transform = `translate(${(tx * d).toFixed(1)}px, ${(ty * d).toFixed(1)}px) scale(${1 + (z - 1) * d * 1.6})`; });
-  };
-  /** Lumière dynamique : un halo de la couleur du sort éclaire le décor à cet endroit, puis s'éteint. */
-  const flashLight = (p: Pt | null, color: string, power = 0.5, ms = 520) => {
-    const el = battleRef.current?.querySelector<HTMLElement>('.bs-light');
-    if (!el || !p || !motionOn()) return;
-    const sz = el.offsetWidth;
-    el.style.setProperty('--lc', color);
-    el.style.transform = `translate(${(p.x - sz / 2).toFixed(0)}px, ${(p.y - sz / 2).toFixed(0)}px)`;
-    el.animate([{ opacity: 0 }, { opacity: power, offset: 0.25 }, { opacity: 0 }], { duration: ms / Math.sqrt(speedRef.current), easing: 'ease-out' });
-  };
-  /** Assaut : la carte s'élance vers sa cible (petit recul, ruée), puis revient à sa place. */
-  const lungeTo = async (actor: Unit, from: { x: number; y: number; w: number }, to: { x: number; y: number; w: number }) => {
-    const el = battleRef.current?.querySelector<HTMLElement>(`[data-uid="${actor.id}"]`);
-    if (!el) return null;
-    const sc = camScale.current || 1;
-    const dir = actor.side === 'ally' ? 1 : -1; // l'allié monte vers l'ennemi et s'arrête juste devant lui
-    const dx = (to.x - from.x) / sc, dy = (to.y - from.y + dir * to.w * 0.62) / sc;
-    const depth = actor.side === 'ally' ? 0.9 : 1.1; // plus loin = plus petit
-    const field = el.closest<HTMLElement>('.field');
-    if (field) { field.style.position = 'relative'; field.style.zIndex = '6'; }
-    el.style.zIndex = '6';
-    const cur = getComputedStyle(el).transform;
-    const b = cur && cur !== 'none' ? ` ${cur}` : '';
-    const spd = speedRef.current;
-    const away = `translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px)${b} scale(${depth})`;
-    const go = el.animate([
-      { transform: `translate(0px, 0px)${b}` },
-      { transform: `translate(${(-dx * 0.04).toFixed(1)}px, ${dir * 12}px)${b}`, offset: 0.3 },
-      { transform: away },
-    ], { duration: 330 / spd, easing: 'cubic-bezier(.45,0,.85,.45)', fill: 'forwards' });
-    await go.finished.catch(() => undefined);
-    return async () => {
-      const back = el.animate([{ transform: away }, { transform: `translate(0px, 0px)${b}` }], { duration: 300 / speedRef.current, easing: 'cubic-bezier(.3,.7,.4,1)', fill: 'forwards' });
-      go.cancel();
-      await back.finished.catch(() => undefined);
-      back.cancel();
-      el.style.zIndex = '';
-      if (field) { field.style.zIndex = ''; field.style.position = ''; }
-    };
-  };
-  /** Réaction au coup : éclair blanc et recul dans le sens du coup. */
-  const knock = (targetId: string, sourceId: string, color: string, heavy: boolean) => {
-    if (!motionOn()) return;
-    const tp = center(targetId); if (!tp) return;
-    const sp = center(sourceId);
-    let kx = 0, ky = 0;
-    if (sp && (sp.x !== tp.x || sp.y !== tp.y)) { const l = Math.hypot(tp.x - sp.x, tp.y - sp.y); kx = (tp.x - sp.x) / l; ky = (tp.y - sp.y) / l; }
-    const st = stage.current;
-    if (st) {
-      st.burst(tp, color, heavy ? 30 : 18, heavy ? 0.44 : 0.32); st.burst(tp, '#ffffff', 7, 0.24);
-      st.slash(tp, color, Math.atan2(ky, kx) + Math.PI / 2 + (Math.random() - 0.5) * 0.6, 40);
-    }
-    const art = battleRef.current?.querySelector<HTMLElement>(`[data-uid="${targetId}"] .u-art`);
-    const m = heavy ? 13 : 8;
-    art?.animate([
-      { transform: 'translate(0px, 0px)', filter: 'brightness(1)' },
-      { transform: `translate(${(kx * m).toFixed(1)}px, ${(ky * m).toFixed(1)}px) rotate(${(kx * 4).toFixed(1)}deg)`, filter: 'brightness(2.3) saturate(0.3)', offset: 0.18 },
-      { transform: 'translate(0px, 0px)', filter: 'brightness(1)' },
-    ], { duration: 360 / speedRef.current, easing: 'ease-out' });
   };
   const fxFor = (unitId: string): SkillFx => { const u = unitById(s, unitId); const sk = u.skills.find((x) => x.slot === 'basic') ?? u.skills[0]; return skillFx(sk, u.affinity); };
 
@@ -737,57 +636,8 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
         </div>
       )}
 
-      {infoId && (() => {
-        const u = s.units.find((x) => x.id === infoId);
-        if (!u) return null;
-        const list = [...u.statuses].sort((a, b) => Number(STATUS_INFO[b.status].debuff) - Number(STATUS_INFO[a.status].debuff));
-        return (
-          <div className="unit-info-backdrop" onClick={() => setInfoId(null)}>
-            <div className={`unit-info ${u.side}`} role="dialog" aria-label={u.name}>
-              <div className="ui-head"><b>{u.name}</b><span className="faint">Niv. {u.level}</span></div>
-              {u.kind === 'hero' && SIGNATURES[u.refId] && <div className="ui-sig"><b>★ {SIGNATURES[u.refId].name}</b> : {SIGNATURES[u.refId].text}</div>}
-              <div className="ui-aff"><AffinityIcon id={u.affinity} size={16} /> {AFFINITIES[u.affinity].name}{AFFINITIES[u.affinity].strongAgainst ? ` · fort contre ${AFFINITIES[AFFINITIES[u.affinity].strongAgainst!].name}` : ' · neutre'}</div>
-              <div className="ui-hp"><span>PV</span><b>{Math.max(0, Math.round(u.hp))} / {Math.round(u.base.hp)}</b></div>
-              <div className="ui-stats"><span>ATQ <b>{Math.round(u.base.atk)}</b></span><span>DÉF <b>{Math.round(u.base.def)}</b></span><span>VIT <b>{Math.round(u.base.spd)}</b></span></div>
-              {u.isBoss && u.side === 'enemy' && u.flags.fractureMax > 0 && <div className="ui-boss"><div><b>Fracture</b> {u.flags.fractured ? '· brisée' : `· ${u.flags.fracture}/${u.flags.fractureMax}`} : chaque coup use la jauge (beaucoup plus avec l’affinité avantagée ▲). À zéro, le boss perd un tour et subit +40 % de dégâts pendant 2 de ses tours.</div></div>}
-              {u.isBoss && (u.flags.carapaceMax > 0 || s.mechanics) && (
-                <div className="ui-boss">
-                  {u.flags.carapaceMax > 0 && <div><b>Carapace</b> {u.flags.carapace > 0 ? `· ${u.flags.carapace} charge${u.flags.carapace > 1 ? 's' : ''}` : '· brisée'} : −30 % de dégâts, chaque coup retire une charge. Brisée, le boss perd 30 % de DÉF pendant 2 tours ; elle se reforme 8 tours plus tard. Les attaques à plusieurs coups la brisent vite.</div>}
-                  <div><b>{u.flags.enraged ? 'Seconde phase' : 'Seconde phase à 50 %'}</b> : sous la moitié de ses PV, le boss gagne +30 % d’ATQ, se purifie de ses effets négatifs, se protège d’un bouclier et recharge son ultime.</div>
-                </div>
-              )}
-              {list.length === 0 ? <p className="faint" style={{ margin: '8px 0 0' }}>Aucun effet en cours.</p> : (
-                <div className="ui-status">
-                  {groupStatuses(list).sort((a, b) => Number(STATUS_INFO[b.id].debuff) - Number(STATUS_INFO[a.id].debuff)).map((g) => (
-                    <div key={g.id} className="ui-st">
-                      <StatusIcon id={g.id} size={20} />
-                      <span className="grow"><b className={STATUS_INFO[g.id].debuff ? 'neg' : 'pos'}>{STATUS_INFO[g.id].name}{statusValueText(g, u.isBoss) ? ` ${statusValueText(g, u.isBoss)}` : ''}</b><br /><span className="faint">{statusDescription(g, u.isBoss)}</span></span>
-                      <span className="faint">{g.turns} tour{g.turns > 1 ? 's' : ''}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-              <p className="faint" style={{ margin: '10px 0 0', textAlign: 'center' }}>Touche pour fermer</p>
-            </div>
-          </div>
-        );
-      })()}
-
-      {legend && (
-        <Modal onClose={() => setLegend(false)}>
-          <h2>Effets en combat</h2>
-          <p className="faint" style={{ textAlign: 'center', margin: '0 0 8px' }}>Sous chaque carte : symbole, valeur, puis tours restants. Vert = bonus, rouge = malus.</p>
-          <div className="fx-legend">
-            {STATUS_LEGEND.map(({ id, text }, i) => (
-              <div key={id} className={`fxl-row ${STATUS_INFO[id].debuff ? 'neg' : 'pos'} ${i === 6 ? 'sep' : ''}`}>
-                <span className="fxl-ico"><StatusIcon id={id} size={22} /></span>
-                <span>{text}</span>
-              </div>
-            ))}
-          </div>
-          <button className="btn grow" style={{ width: '100%', marginTop: 10 }} onClick={() => setLegend(false)}>Compris</button>
-        </Modal>
-      )}
+      {infoId && (() => { const u = s.units.find((x) => x.id === infoId); return u ? <UnitInfo u={u} mechanics={s.mechanics} onClose={() => setInfoId(null)} /> : null; })()}
+      {legend && <EffectsLegend onClose={() => setLegend(false)} />}
       {quit && (
         <Modal onClose={() => setQuit(false)}>
           <h2>Pause</h2>
@@ -797,182 +647,6 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
           <button className="btn danger block" onClick={doQuit}>Abandonner</button>
         </Modal>
       )}
-    </div>
-  );
-}
-
-type FxItem = { id: number; kind: 'proj' | 'rain' | 'burst' | 'beam' | 'aura'; fx: SkillFx; x0: number; y0: number; x1: number; y1: number; w?: number; dur: number };
-
-/** Cibles prévues d'une compétence, pour lancer l'animation avant le calcul (sans tirage aléatoire). */
-function previewTargets(s: BattleState, actor: Unit, sk: SkillDef, targetId?: string): Unit[] {
-  const main = sk.effects.find((e) => e.kind === 'damage') ?? sk.effects.find((e) => e.kind === 'heal' || e.kind === 'shield' || e.kind === 'revive') ?? sk.effects[0];
-  if (!main) return [actor];
-  const foes = s.units.filter((u) => u.alive && u.side !== actor.side);
-  const friends = s.units.filter((u) => u.alive && u.side === actor.side);
-  const picked = targetId ? s.units.find((u) => u.id === targetId && u.alive) : undefined;
-  switch (main.target) {
-    case 'enemy': return [picked && picked.side !== actor.side ? picked : foes[0]].filter(Boolean) as Unit[];
-    case 'allEnemies': return foes;
-    case 'randomEnemies': return foes.slice(0, 1);
-    case 'ally': return [picked && picked.side === actor.side ? picked : actor];
-    case 'allAllies': return friends;
-    case 'lowestAlly': return [...friends].sort((a, b) => a.hp / a.base.hp - b.hp / b.base.hp).slice(0, 1);
-    default: return [actor];
-  }
-}
-
-function FxLayer({ items }: { items: FxItem[] }) {
-  return (
-    <div className="fx-layer" aria-hidden>
-      {items.map((it) => {
-        const dx = it.x1 - it.x0, dy = it.y1 - it.y0;
-        const ang = Math.atan2(dy, dx) * 180 / Math.PI;
-        const style = { left: it.x0, top: it.y0, ['--dx' as string]: `${dx}px`, ['--dy' as string]: `${dy}px`, ['--ang' as string]: `${ang}deg`,
-          ['--len' as string]: `${Math.hypot(dx, dy)}px`, ['--c' as string]: it.fx.color, ['--w' as string]: `${it.w ?? 70}px`, animationDuration: `${it.dur}ms` } as React.CSSProperties;
-        const cls = `fx-${it.kind} w-${it.fx.weapon} e-${it.fx.element}`;
-        if (it.kind === 'rain') return <span key={it.id} className={cls} style={style}>{[0, 1, 2, 3].map((i) => <i key={i} style={{ animationDuration: `${it.dur}ms`, animationDelay: `${i * it.dur * 0.12}ms`, left: `${(i - 1.5) * 12}px` }} />)}</span>;
-        return <span key={it.id} className={cls} style={style}><i /></span>;
-      })}
-    </div>
-  );
-}
-
-const SLOT_TAG = { basic: 'Base', special: 'Spéciale', ultimate: 'Ultime', passive: 'Passif' } as const;
-
-function SkillInfoBody({ unit, sk, onLaunch }: { unit: Unit; sk: SkillDef; onLaunch?: () => void }) {
-  const tk = targetKind(sk);
-  return (
-    <>
-      <div className="si-head">
-        <span><b>{shortName(unit.name)}</b> · {sk.name}</span>
-        {onLaunch ? <button className="btn small" style={{ minHeight: 28 }} onClick={onLaunch}>Lancer</button>
-          : <span className="hint-target">{tk === 'ally' ? '▸ un allié' : tk === 'none' ? '▸ automatique' : '▸ un ennemi'}</span>}
-      </div>
-      <div className="si-meta">{SLOT_TAG[sk.slot]} · {sk.cooldown ? `recharge ${effectiveCooldown(sk, unit.skillLevels[sk.id] ?? 1)} tours` : 'utilisable à chaque tour'}</div>
-      <div className="desc">{sk.description}</div>
-    </>
-  );
-}
-
-const shortName = (n: string) => n.replace(/^(Le|La|Les|L’|L')\s*/i, '').split(' ')[0];
-
-/** Place d'une unité sur la scène 2,5D : x et y (pieds) en % de la scène, s = échelle (profondeur). */
-type Place = { x: number; y: number; s: number };
-/** Amplitude de la caméra selon la vitesse du combat. */
-const CAM_AMP: Record<number, number> = { 1: 1, 2: 0.55, 3: 0.3 };
-const ALLY_PLACES: Place[][] = [
-  [],
-  [{ x: 50, y: 92, s: 1 }],
-  [{ x: 36, y: 92, s: 1 }, { x: 64, y: 92, s: 1 }],
-  [{ x: 50, y: 93, s: 1 }, { x: 24, y: 86, s: 0.92 }, { x: 76, y: 86, s: 0.92 }],
-  [{ x: 37, y: 93, s: 1 }, { x: 63, y: 93, s: 1 }, { x: 16, y: 83, s: 0.86 }, { x: 84, y: 83, s: 0.86 }],
-  [{ x: 50, y: 94, s: 1 }, { x: 29, y: 89, s: 0.93 }, { x: 71, y: 89, s: 0.93 }, { x: 13, y: 81, s: 0.82 }, { x: 87, y: 81, s: 0.82 }],
-];
-const FOE_PLACES: Place[][] = [
-  [],
-  [{ x: 50, y: 58, s: 0.86 }],
-  [{ x: 34, y: 57, s: 0.82 }, { x: 66, y: 57, s: 0.82 }],
-  [{ x: 50, y: 59, s: 0.84 }, { x: 25, y: 53, s: 0.76 }, { x: 75, y: 53, s: 0.76 }],
-  [{ x: 37, y: 59, s: 0.82 }, { x: 63, y: 59, s: 0.82 }, { x: 16, y: 52, s: 0.72 }, { x: 84, y: 52, s: 0.72 }],
-  [{ x: 50, y: 60, s: 0.8 }, { x: 29, y: 56, s: 0.76 }, { x: 71, y: 56, s: 0.76 }, { x: 13, y: 51, s: 0.68 }, { x: 87, y: 51, s: 0.68 }],
-];
-function stagePlace(sd: 'ally' | 'enemy', n: number, i: number, boss: boolean): Place {
-  const set = (sd === 'ally' ? ALLY_PLACES : FOE_PLACES)[Math.max(1, Math.min(5, n))];
-  const p = set[Math.min(i, set.length - 1)];
-  return boss ? { ...p, s: Math.min(1.08, p.s * 1.28), y: p.y + 2 } : p;
-}
-
-function UnitView({ u, place, order = 0, vfx, focus, active, acting, hit, heavy, targetable, popups, onClick, onInfo, edge }: { u: Unit; place?: Place; order?: number; vfx?: { id: number; cls: string; color: string }; focus?: boolean; active: boolean; acting: boolean; hit: boolean; heavy?: boolean; targetable: boolean; popups: Popup[]; onClick: () => void; onInfo: () => void; edge?: -1 | 0 | 1 }) {
-  const sh = Math.min(1, shieldOf(u) / u.base.hp);
-  // Appui long (0,45 s) : fiche de l'unité ; le toucher simple garde son rôle (cibler).
-  const timer = useRef<number | undefined>(undefined);
-  const longDone = useRef(false);
-  const startPress = () => { longDone.current = false; window.clearTimeout(timer.current); timer.current = window.setTimeout(() => { longDone.current = true; onInfo(); }, 450); };
-  const endPress = () => window.clearTimeout(timer.current);
-  // États visibles en permanence sur la carte (givre, braises, poison, étourdissement, bouclier, provocation).
-  const has = (id: string) => u.alive && u.statuses.some((x) => x.status === id);
-  const stCls = [has('freeze') && 'st-freeze', has('burn') && 'st-burn', has('poison') && 'st-poison', has('stun') && 'st-stun', has('taunt') && 'st-taunt', u.alive && sh > 0 && 'st-shield'].filter(Boolean).join(' ');
-  return (
-    <button className={`unit ${u.side} ${u.flags.phase2 ? 'phase2' : ''} ${u.alive ? '' : 'dead'} ${active ? 'active' : ''} ${acting ? 'acting' : ''} ${hit ? 'hit' : ''} ${targetable ? 'targetable' : ''} ${u.isBoss ? 'boss' : ''} ${heavy ? 'heavy' : ''} ${focus ? 'focus' : ''} ${stCls}`} data-uid={u.id}
-      style={place ? { left: `${place.x}%`, top: `${place.y}%`, zIndex: Math.round(place.y * 10), ['--s' as string]: place.s, ['--i' as string]: order, ['--affc' as string]: AFFINITIES[u.affinity].color } : undefined}
-      onClick={() => { if (longDone.current) { longDone.current = false; return; } onClick(); }}
-      onPointerDown={startPress} onPointerUp={endPress} onPointerLeave={endPress} onPointerCancel={endPress}
-      onContextMenu={(e) => { e.preventDefault(); if (e.nativeEvent instanceof MouseEvent && (e.nativeEvent as PointerEvent).pointerType !== 'touch') { window.clearTimeout(timer.current); onInfo(); } }}>
-      {/* Intention du boss (v1.90.0) : son ultime part au prochain tour, le joueur peut s'y préparer. */}
-      {u.isBoss && u.side === 'enemy' && u.alive && (() => { const ul = u.skills.find((k) => k.slot === 'ultimate'); return ul && (u.cooldowns[ul.id] ?? 0) <= 1 ? <span className="u-intent" title={`Au prochain tour : ${ul.name}`}>⚠ {ul.name}</span> : null; })()}
-      <div className="u-art">{u.kind === 'hero' ? <HeroArt heroId={u.refId} /> : <EnemyArt enemyId={u.refId} />}<span className="u-lvl">{u.level}</span><span className="u-aff"><AffinityIcon id={u.affinity} size={15} /></span><span className="u-name">{shortName(u.name)}</span>
-        {stCls && <span className="u-stfx" aria-hidden><i /><i /><i /></span>}
-
-      </div>
-      <div className="u-bars">
-        <div className="u-hp"><div style={{ width: `${hpPct(u) * 100}%` }} />{sh > 0 && <div className="u-sh" style={{ width: `${sh * 100}%` }} />}
-          {u.isBoss && u.side === 'enemy' && <><i className={`u-act ${u.flags.phase2 ? 'past' : ''}`} style={{ left: '50%' }} />{u.flags.acts === 3 && <i className={`u-act ${u.flags.act3 ? 'past' : ''}`} style={{ left: '25%' }} />}</>}
-        </div>
-        {u.flags.fractureMax > 0 && <div className={`u-frac ${u.flags.fractured ? 'broken' : ''}`} title="Fracture"><div style={{ width: `${u.flags.fractured ? 100 : (u.flags.fracture / u.flags.fractureMax) * 100}%` }} /></div>}
-        <div className="u-tm"><div style={{ width: `${Math.min(100, u.tm / 10)}%` }} /></div>
-      </div>
-      <EffectChips u={u} />
-      {stCls.includes('st-stun') && <span className="u-stars" aria-hidden>✦ ✦ ✦</span>}
-      {u.alive && u.flags.carapaceMax > 0 && <span className={`u-cara ${u.flags.carapace ? '' : 'broken'}`} title="Carapace">{u.flags.carapace || '✕'}</span>}
-      {u.alive && u.isBoss && u.flags.enraged > 0 && <span className="u-rage" title="Enragé">ENRAGÉ</span>}
-      {focus && <span className="u-focus" aria-label="Cible prioritaire"><svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" strokeWidth="2" /><path d="M12 1v6M12 17v6M1 12h6M17 12h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg></span>}
-      {edge === 1 && <span className="u-edge up">▲ +30 %</span>}
-      {edge === -1 && <span className="u-edge down">▼ −20 %</span>}
-      {vfx && <span key={vfx.id} className={`vfx ${vfx.cls}`} style={{ ['--vc' as string]: vfx.color }}><i /><i /><i /></span>}
-      {popups.map((p) => <span key={p.id} className={`popup ${p.cls}`}>{p.text}</span>)}
-    </button>
-  );
-}
-
-/** Effets en cours, listés sous la carte avec leur valeur : néfastes d'abord (rouge), puis bénéfiques (vert), et les tours restants. */
-/** Récap de fin de combat : part des dégâts infligés par chaque héros (du plus gros au plus petit). */
-/** Héros du combat : part des dégâts (et, après une victoire, niveau et expérience gagnée) en une seule liste. */
-function DamageRecap({ units, xp }: { units: Unit[]; xp?: { uid: string; heroId: string; xp: number; levelsGained: number; capped: boolean; level: number }[] }) {
-  const heroes = units.filter((u) => u.side === 'ally' && u.kind === 'hero');
-  const total = heroes.reduce((n, u) => n + (u.flags.dmgDealt ?? 0), 0);
-  if (!total && !xp?.length) return null;
-  const rows = [...heroes].sort((a, b) => (b.flags.dmgDealt ?? 0) - (a.flags.dmgDealt ?? 0));
-  const top = rows[0].flags.dmgDealt ?? 0;
-  const fmt = (n: number) => (n >= 10000 ? `${Math.round(n / 1000)} k` : n.toLocaleString('fr-FR'));
-  return (
-    <div className="dmg-recap">
-      <div className="dr-title">{xp ? 'Tes héros' : 'Dégâts infligés'}</div>
-      {rows.map((u, i) => {
-        const d = u.flags.dmgDealt ?? 0;
-        const pct = total ? Math.round((d / total) * 100) : 0;
-        const x = xp?.find((h) => h.uid === u.heroUid);
-        return (
-          <div key={u.id} className={`dr-row ${i === 0 ? 'mvp' : ''}`}>
-            <div className="xp-ava"><HeroArt heroId={u.refId} /></div>
-            <div className="grow">
-              <div className="row between"><b>{HERO_BY_ID[u.refId]?.name.split(/[ ,]/)[0] ?? u.name}{i === 0 && <span className="dr-mvp">Meilleur</span>}</b><span className="dr-pct">{pct} %</span></div>
-              <div className="dr-bar"><div style={{ width: `${top ? (d / top) * 100 : 0}%`, animationDelay: `${0.15 + i * 0.12}s` }} /></div>
-              {x && <div className="dr-xp"><span className={x.levelsGained ? 'lvlup' : ''}>{x.levelsGained ? `Niv. ${x.level} ▲` : x.capped ? 'Niveau max' : `Niv. ${x.level}`}</span><span>+{x.xp} XP</span></div>}
-            </div>
-            <span className="faint dr-val">{fmt(d)}</span>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
-function EffectChips({ u }: { u: Unit }) {
-  if (!u.alive || !u.statuses.length) return <div className="u-fx" aria-hidden />;
-  const list = groupStatuses(u.statuses).sort((a, b) => Number(STATUS_INFO[b.id].debuff) - Number(STATUS_INFO[a.id].debuff));
-  const shown = list.slice(0, 4);
-  return (
-    <div className="u-fx" aria-label={list.map((g) => `${STATUS_INFO[g.id].name} ${statusValueText(g, u.isBoss)}, ${g.turns} tour${g.turns > 1 ? 's' : ''}`).join(' ; ')}>
-      {shown.map((g) => {
-        // Version courte pour la pastille : la flèche (▲▼) et la couleur disent déjà le sens, on garde le chiffre.
-        const v = statusValueText(g, u.isBoss).replace(/^[+−]/, '').replace(' %', '%');
-        return (
-          <span key={g.id} className={`fx-chip ${STATUS_INFO[g.id].debuff ? 'neg' : 'pos'}`} style={{ ['--fc' as string]: STATUS_INFO[g.id].color }} title={`${STATUS_INFO[g.id].name} · ${statusDescription(g, u.isBoss)} · ${g.turns} tour${g.turns > 1 ? 's' : ''}`}>
-            <StatusIcon id={g.id} size={10} />{v && <i>{v}</i>}<b>{g.turns}</b>
-          </span>
-        );
-      })}
-      {list.length > shown.length && <span className="fx-chip more">+{list.length - shown.length}</span>}
     </div>
   );
 }

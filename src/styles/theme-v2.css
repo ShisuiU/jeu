@@ -48,8 +48,7 @@
 .theme-v2 .nav-item.active svg { filter: drop-shadow(0 0 6px rgba(255, 210, 130, 0.45)); }
 
 /* Blocs : pierre ancienne, filet doré fin, ombre portée douce. */
-.theme-v2 .panel, .theme-v2 .modal, .theme-v2 .upg-line, .theme-v2 .stage-node, .theme-v2 .mode-card, .theme-v2 .res-cell,
-.theme-v2 .forge-res-box, .theme-v2 .copies-card, .theme-v2 .ex-card, .theme-v2 .hero-summary, .theme-v2 .stat-sheet {
+.theme-v2 .panel, .theme-v2 .modal, .theme-v2 .upg-line, .theme-v2 .stage-node, .theme-v2 .mode-card, .theme-v2 .res-cell, .theme-v2 .copies-card, .theme-v2 .ex-card, .theme-v2 .hero-summary, .theme-v2 .stat-sheet {
   background: var(--v2-panel), var(--v2-stone) 0 0 / 256px;
   border: 1px solid var(--v2-gold-soft);
   box-shadow: inset 0 1px 0 rgba(255, 226, 163, 0.06), inset 0 0 0 1px rgba(0, 0, 0, 0.35), 0 6px 16px rgba(0, 0, 0, 0.35);

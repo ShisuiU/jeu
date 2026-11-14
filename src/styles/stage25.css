@@ -2,21 +2,11 @@
    Les cartes restent les mêmes ; on leur donne un sol, de la profondeur et une caméra.
    Caméra et assauts : Battle.tsx (camTo, lungeTo, knock) ; particules : ui/fx/stage25.ts. */
 .cam25 { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; transform-origin: 50% 50%; will-change: transform; }
-.cam25 > .fields { flex: 1 1 0; position: relative; }
 .battle > .stage25-fx { position: absolute !important; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5 !important; }
 
 /* Sol en perspective sous les deux camps (lueur violette côté ennemi, dorée côté héros). */
-.cam25 > .fields::before { content: ''; position: absolute; left: -35%; right: -35%; top: 16%; bottom: -30%; z-index: -1; pointer-events: none;
-  background:
-    radial-gradient(40% 22% at 50% 28%, rgba(185,140,255,0.18), transparent 70%),
-    radial-gradient(46% 26% at 50% 74%, rgba(216,180,106,0.14), transparent 70%),
-    repeating-linear-gradient(90deg, rgba(255,255,255,0.04) 0 1px, transparent 1px 48px),
-    repeating-linear-gradient(0deg, rgba(255,255,255,0.035) 0 1px, transparent 1px 48px);
-  transform: perspective(520px) rotateX(58deg); transform-origin: 50% 42%;
-  -webkit-mask-image: radial-gradient(60% 55% at 50% 50%, #000 35%, transparent 80%); mask-image: radial-gradient(60% 55% at 50% 50%, #000 35%, transparent 80%); }
 
 /* Profondeur : le camp ennemi est plus loin (plus petit), les cartes s'inclinent vers le sol. */
-.cam25 .enemy-field .frow { transform: scale(0.92); transform-origin: 50% 100%; }
 .cam25 .unit.enemy .u-art { transform: perspective(520px) rotateX(-5deg); }
 .cam25 .unit.ally .u-art { transform: perspective(520px) rotateX(4deg); }
 /* Ombre portée au sol sous chaque carte. */
@@ -26,8 +16,6 @@
 
 /* Respiration : l'illustration vit légèrement dans sa carte. */
 .cam25 .unit:not(.dead) .u-art .art-img { animation: breathe25 4.2s ease-in-out infinite; transform-origin: 50% 85%; }
-.cam25 .frow .unit:nth-child(2) .u-art .art-img { animation-delay: -1.4s; }
-.cam25 .frow .unit:nth-child(3) .u-art .art-img { animation-delay: -2.8s; }
 @keyframes breathe25 { 0%, 100% { transform: scale(1.02); } 50% { transform: scale(1.055) translateY(-1.2%); } }
 
 .reduced-motion .cam25 .u-art .art-img { animation: none; }

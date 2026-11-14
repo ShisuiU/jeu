@@ -1,13 +1,18 @@
 import { Component, type ReactNode } from 'react';
 import { useUI } from '../../state/ui';
 import { flushSave } from '../../save/saveManager';
+import { flushStats, trackStat } from '../../state/stats';
 
 // FILET DE SÉCURITÉ : si un écran plante, la partie n'est pas perdue. Le joueur peut revenir à
 // l'accueil, copier une sauvegarde de secours ou recharger. La sauvegarde est forcée immédiatement.
 export class ErrorBoundary extends Component<{ children: ReactNode; resetKey: string }, { error: Error | null }> {
   state = { error: null as Error | null };
   static getDerivedStateFromError(error: Error) { return { error }; }
-  componentDidCatch(error: Error) { console.error('Erreur d’écran :', error); void flushSave(); }
+  componentDidCatch(error: Error) {
+    console.error('Erreur d’écran :', error); void flushSave();
+    // Statistiques anonymes : quel écran plante (jamais le message ni la sauvegarde).
+    const st = useUI.getState().stack; trackStat({ kind: 'crash', screen: st[st.length - 1]?.name ?? 'inconnu' }); void flushStats();
+  }
   componentDidUpdate(prev: { resetKey: string }) { if (prev.resetKey !== this.props.resetKey && this.state.error) this.setState({ error: null }); }
   render() {
     if (!this.state.error) return this.props.children;

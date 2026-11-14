@@ -22,6 +22,8 @@ export interface DayStats {
   sum: number;
   ses: number;
   min: number;
+  /** Plantages d'écran (v1.102.1) : nom de l'écran → nombre. 20 entrées au plus. */
+  err?: Record<string, number>;
 }
 
 export const STATS_DEF_MAX = 40;
@@ -44,6 +46,7 @@ export type StatEvent =
   | { kind: 'summon'; n: number }
   | { kind: 'session' }
   | { kind: 'minute' }
+  | { kind: 'crash'; screen: string }
   | { kind: 'progress'; lvl: number; ch: number; tower: number };
 
 /** Ajoute un événement à la journée (fonction pure, testée). */
@@ -59,6 +62,7 @@ export function addEvent(d: DayStats, e: StatEvent): DayStats {
   } else if (e.kind === 'summon') x.sum = clampInt(x.sum + e.n);
   else if (e.kind === 'session') x.ses = clampInt(x.ses + 1, 500);
   else if (e.kind === 'minute') x.min = clampInt(x.min + 1, 1440);
+  else if (e.kind === 'crash') { const k = e.screen.replace(/[^a-z]/gi, '').slice(0, 20) || 'inconnu'; const err = { ...(x.err ?? {}) }; if (k in err || Object.keys(err).length < 20) err[k] = clampInt((err[k] ?? 0) + 1, 1000); x.err = err; }
   else { x.lvl = clampInt(e.lvl, 1000); x.ch = clampInt(e.ch, 10000); x.tower = clampInt(e.tower, 1000); }
   return x;
 }
@@ -76,8 +80,10 @@ export interface StatsSummary {
   modes: { mode: string; won: number; lost: number }[];
   stuck: { where: string; count: number }[];
   levels: { lvl: string; count: number }[];
+  crashes: { screen: string; count: number }[];
 }
-export function summarize(list: Pick<DayStats, 'bat' | 'def' | 'sum' | 'ses' | 'min' | 'lvl'>[]): StatsSummary {
+export function summarize(list: (Pick<DayStats, 'bat' | 'def' | 'sum' | 'ses' | 'min' | 'lvl'> & { err?: Record<string, number> })[]): StatsSummary {
+  const crash = new Map<string, number>();
   const modes = new Map<string, { won: number; lost: number }>();
   const stuck = new Map<string, number>();
   const lv = new Map<string, number>();
@@ -86,6 +92,7 @@ export function summarize(list: Pick<DayStats, 'bat' | 'def' | 'sum' | 'ses' | '
     min += d.min ?? 0; ses += d.ses ?? 0; sum += d.sum ?? 0;
     for (const [k, n] of Object.entries(d.bat ?? {})) { const [m, r] = k.split('_'); const o = modes.get(m) ?? { won: 0, lost: 0 }; if (r === 'w') o.won += n; else o.lost += n; modes.set(m, o); }
     for (const [k, n] of Object.entries(d.def ?? {})) stuck.set(k, (stuck.get(k) ?? 0) + n);
+    for (const [k, n] of Object.entries(d.err ?? {})) crash.set(k, (crash.get(k) ?? 0) + n);
     const b = d.lvl >= 60 ? '60+' : d.lvl >= 40 ? '40-59' : d.lvl >= 20 ? '20-39' : d.lvl >= 10 ? '10-19' : '1-9';
     lv.set(b, (lv.get(b) ?? 0) + 1);
   }
@@ -95,5 +102,6 @@ export function summarize(list: Pick<DayStats, 'bat' | 'def' | 'sum' | 'ses' | '
     modes: [...modes.entries()].map(([mode, o]) => ({ mode, ...o })).sort((a, b) => b.won + b.lost - a.won - a.lost),
     stuck: [...stuck.entries()].map(([k, count]) => ({ where: k.startsWith('c') ? `Campagne ${k.slice(1)}` : `Tour ${k.slice(1)}`, count })).sort((a, b) => b.count - a.count).slice(0, 12),
     levels: ['1-9', '10-19', '20-39', '40-59', '60+'].map((l) => ({ lvl: l, count: lv.get(l) ?? 0 })),
+    crashes: [...crash.entries()].map(([screen, count]) => ({ screen, count })).sort((a, b) => b.count - a.count),
   };
 }

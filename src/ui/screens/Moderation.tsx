@@ -63,6 +63,8 @@ export function Moderation() {
             {stats.modes.map((m) => <div key={m.mode} className="stat-row"><span>{MODE_NAME[m.mode] ?? m.mode}</span><b>{m.won} / {m.lost} · {Math.round((m.won / Math.max(1, m.won + m.lost)) * 100)} %</b></div>)}
             <div className="ms-h">Où les joueurs perdent le plus</div>
             {stats.stuck.length === 0 ? <p className="faint" style={{ margin: 0 }}>Pas encore de données.</p> : stats.stuck.map((x) => <div key={x.where} className="stat-row"><span>{x.where}</span><b>{x.count}</b></div>)}
+            <div className="ms-h">Écrans en erreur</div>
+            {stats.crashes.length === 0 ? <p className="faint" style={{ margin: 0 }}>Aucun plantage signalé.</p> : stats.crashes.map((x) => <div key={x.screen} className="stat-row"><span>{x.screen}</span><b>{x.count}</b></div>)}
             <div className="ms-h">Niveau de compte</div>
             {stats.levels.map((l) => <div key={l.lvl} className="stat-row"><span>Niv. {l.lvl}</span><b>{l.count}</b></div>)}
           </div>

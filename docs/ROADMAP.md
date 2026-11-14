@@ -558,6 +558,12 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.102.1 — Objectif 10/10, lot 1 : économie vérifiée, filet de sécurité technique
+
+- **Économie des éclats épiques mesurée** après la fin des cristaux : ~2,4 éclats épiques par jour pour un joueur régulier (missions, semaine, connexion, Arène, Failles), contre ~2,1 avant les changements des v1.101.1 et v1.102.0 (+12 %) ; stocks uniques (Tour, campagne, étoiles, succès, collection) du même ordre. Verrouillé par un test (entre 1,5 et 3 par jour).
+- **Parcours de fumée** (`npm run smoke`, `scripts/smoke.mjs`) : le jeu construit est ouvert dans un vrai navigateur, 34 écrans visités avec une partie avancée (fenêtre « Obtenir » comprise) et un combat joué jusqu'au résultat ; le moindre plantage ou erreur fait échouer la vérification GitHub, donc bloque la mise en ligne. Vérifié en cassant volontairement un écran : détecté.
+- **Plantages signalés** : chaque plantage d'écran est compté (nom de l'écran seulement) dans les statistiques anonymes, visible dans Modération. Règles du serveur mises à jour et testées (38 tests).
+
 ## ✅ Version 1.102.0 — Fin des cristaux d'Aeon
 
 - **Les cristaux d'Aeon sont retirés du jeu** (ils ne servaient plus qu'à des achats marginaux) : une monnaie de moins.

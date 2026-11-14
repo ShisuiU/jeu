@@ -49,8 +49,8 @@ export function TopBar() {
         <Modal onClose={() => setOpen(false)}>
           <h2>Énergie</h2>
           <div style={{ textAlign: 'center', fontSize: 30, fontWeight: 800 }}><Icon.energy size={30} /> {e.current}<span className="faint" style={{ fontSize: 16 }}> / {eMax}</span></div>
-          <p className="faint" style={{ textAlign: 'center' }}>{e.current > eMax ? 'Bonus au-delà du maximum grâce aux récompenses (la régénération reprend sous le maximum).' : e.current >= eMax ? 'Énergie au maximum (la régénération est en pause).' : `+1 dans ${formatDuration(next)} · 1 point toutes les ${BALANCE.energy.regenMs / 60000} min, même jeu fermé.`}</p>
-          <p className="faint" style={{ textAlign: 'center', marginTop: 0 }}>Ton maximum grandit de {BALANCE.energy.perLevel} à chaque niveau de compte (jusqu’à {BALANCE.energy.maxCap}), et chaque nouveau niveau recharge toute ton énergie.</p>
+          <p className="faint" style={{ textAlign: 'center' }}>{e.current > eMax ? 'Au-delà du maximum : la recharge reprend en dessous.' : e.current >= eMax ? 'Énergie au maximum.' : `+1 dans ${formatDuration(next)} · 1 toutes les ${BALANCE.energy.regenMs / 60000} min, même jeu fermé`}</p>
+          <p className="faint" style={{ textAlign: 'center', marginTop: 0 }}>Maximum +{BALANCE.energy.perLevel} par niveau de compte (jusqu’à {BALANCE.energy.maxCap}) ; chaque niveau recharge tout.</p>
           <div className="panel" style={{ marginTop: 8 }}>
             <div className="row between"><b>Recharge +{BALANCE.energyRefill.amount}</b><span className="faint">{BALANCE.energyRefill.costs.length - save.shop.energyRefills} / {BALANCE.energyRefill.costs.length} aujourd’hui</span></div>
             <button className="btn block" style={{ marginTop: 10 }} disabled={cost === null || (save.resources.diamonds ?? 0) < (cost ?? 0)} onClick={() => { let r = { ok: false } as { ok: boolean; reason?: string }; mutate((d) => { r = refillEnergy(d); }); if (r.ok) { play('claim'); toast(`+${BALANCE.energyRefill.amount} énergie !`, 'ok'); } else toast(r.reason ?? 'Impossible.', 'error'); }}>

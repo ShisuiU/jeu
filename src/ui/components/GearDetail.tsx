@@ -121,8 +121,8 @@ export function GearDetail({ gearUid, onClose, equipTo, place = 'hero', onReplac
             onClick={() => { let res = { ok: false } as ReturnType<typeof reforgeSub>; mutate((st) => { res = reforgeSub(st, g.uid, i, Math.random); }); if (res.ok) { play('claim'); useUI.getState().toast('Statistique retouchée.', 'ok'); } else useUI.getState().toast(res.reason ?? 'Impossible.', 'error'); }}>↻</button>
         </div>
       ))}
-      {g.subs.length < 4 && <div className="gd-sub empty">{4 - g.subs.length} secondaire{g.subs.length < 3 ? 's' : ''} à débloquer en améliorant</div>}
-      {nextMilestone && <p className="faint" style={{ margin: '8px 0 0' }}>Au +{nextMilestone} : {g.subs.length < 4 ? 'nouvelle statistique secondaire' : 'une secondaire renforcée'}.</p>}
+      {g.subs.length < 4 && <div className="gd-sub empty">{4 - g.subs.length} secondaire{g.subs.length < 3 ? 's' : ''} à débloquer{nextMilestone ? ` · prochaine au +${nextMilestone}` : ''}</div>}
+      {nextMilestone && g.subs.length >= 4 && <p className="faint" style={{ margin: '8px 0 0' }}>Au +{nextMilestone} : une secondaire renforcée.</p>}
       <p className="faint" style={{ margin: '4px 0 0' }}>{owner ? `Équipé sur ${HERO_BY_ID[owner.heroId].name}` : 'Non équipé'}</p>
 
       {equipTo && g.heroUid !== equipTo && <GearCompare save={save} g={g} heroUid={equipTo} />}

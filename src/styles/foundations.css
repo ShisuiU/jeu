@@ -383,3 +383,8 @@
 .src-none { padding: 18px 10px; text-align: center; font-size: 13px; color: var(--text-dim); border: 1px dashed rgba(255,255,255,0.12); border-radius: 10px; }
 .reduced-motion .src-row { animation: none; }
 .rc-item[role=button], .reward-item[role=button] { cursor: pointer; }
+/* Synergies d'équipe : nom puis effet, sur deux lignes nettes. */
+.syn-row { display: flex; flex-direction: column; gap: 2px; padding: 8px 0; border-bottom: 1px solid var(--surface-line); }
+.syn-row:last-child { border-bottom: 0; }
+.syn-row b { font-size: 13.5px; color: #f1e3c4; }
+.syn-row span { font-size: 12px; line-height: 1.35; }

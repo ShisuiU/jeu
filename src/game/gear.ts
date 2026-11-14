@@ -87,6 +87,21 @@ export function upgradeGear(s: SaveData, gearUid: string, r: Rand): { ok: boolea
   return { ok: true, boosted };
 }
 
+/** Retouche (v1.96.0) : relance UNE statistique secondaire (nouvelle stat, mêmes renforcements), contre or et minerai.
+ *  Donne du contrôle sur la chance de l'équipement et un vrai usage au minerai de forge. */
+export const REFORGE_COST = { gold: 20000, forgeOre: 40 };
+export function reforgeSub(s: SaveData, gearUid: string, idx: number, r: Rand): { ok: boolean; reason?: string } {
+  const g = s.equipment.find((x) => x.uid === gearUid); if (!g) return { ok: false, reason: 'Équipement introuvable.' };
+  const sub = g.subs[idx]; if (!sub) return { ok: false, reason: 'Statistique introuvable.' };
+  if (s.resources.gold < REFORGE_COST.gold || s.resources.forgeOre < REFORGE_COST.forgeOre) return { ok: false, reason: `Il faut ${REFORGE_COST.gold} or et ${REFORGE_COST.forgeOre} minerai.` };
+  const pool = SUB_POOL.filter((x) => x !== g.main && !g.subs.some((y, i) => i !== idx && y.stat === x));
+  const st = pick(r, pool);
+  let v = 0; for (let k = 0; k < sub.rolls; k++) v += rollSub(r, st, g.rarity);
+  s.resources.gold -= REFORGE_COST.gold; s.resources.forgeOre -= REFORGE_COST.forgeOre;
+  g.subs[idx] = { stat: st, value: st === 'hp' || st === 'atk' || st === 'def' || st === 'acc' || st === 'res' ? Math.round(v) : Math.round(v * 10) / 10, rolls: sub.rolls };
+  return { ok: true };
+}
+
 export function dismantleGear(s: SaveData, gearUid: string): { gold: number; forgeOre: number } | null {
   const g = s.equipment.find((x) => x.uid === gearUid);
   if (!g || g.locked || g.heroUid) return null;

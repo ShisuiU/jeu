@@ -39,7 +39,7 @@ describe('Passifs signatures (v1.91.0)', () => {
     const b = createBattle(team, waves(1), { seed: 1, leaderUid: 'thalor' });
     const allies = b.units.filter((u) => u.side === 'ally');
     expect(allies.every((u) => u.statuses.some((st) => st.status === 'shield'))).toBe(true);
-    expect(allies.every((u) => u.tm >= 300)).toBe(true);
+    expect(allies.every((u) => u.tm >= 200)).toBe(true);
   });
   it('tous les légendaires sans passif propre ont une signature', async () => {
     const { SIGNATURES } = await import('../src/data/signatures');
@@ -70,5 +70,33 @@ describe('Coutures d’époque (v1.94.0)', () => {
     const { COUTURES } = await import('../src/data/coutures');
     for (const c of COUTURES) expect(c.factions[0]).not.toBe(c.factions[1]);
     expect(new Set(COUTURES.map((c) => c.id)).size).toBe(COUTURES.length);
+  });
+});
+
+describe('Voies (v1.96.0)', () => {
+  it('niveau 60 requis, premier choix gratuit, changement payant, bonus appliqué', async () => {
+    const { chooseSpec } = await import('../src/game/specs');
+    const { heroBonus } = await import('../src/game/copies');
+    const s = createNewSave(Date.now()); const h = s.heroes[0];
+    expect(chooseSpec(s, h.uid, 'a').ok).toBe(false);
+    h.level = 60; h.rank = 6;
+    const before = heroBonus(s, h);
+    expect(chooseSpec(s, h.uid, 'a').ok).toBe(true);
+    const after = heroBonus(s, h);
+    expect(JSON.stringify(after)).not.toBe(JSON.stringify(before));
+    s.resources.gold = 0; expect(chooseSpec(s, h.uid, 'b').ok).toBe(false);
+    s.resources.gold = 60000; expect(chooseSpec(s, h.uid, 'b').ok).toBe(true); expect(s.resources.gold).toBe(10000);
+  });
+});
+
+describe('Retouche d’équipement (v1.96.0)', () => {
+  it('relance une secondaire, garde ses renforcements, coûte or et minerai', async () => {
+    const { generateGear, reforgeSub, seededRand, REFORGE_COST } = await import('../src/game/gear');
+    const s = createNewSave(Date.now()); const g = generateGear(seededRand(5), 'legendary', Date.now(), 'weapon'); s.equipment.push(g);
+    s.resources.gold = REFORGE_COST.gold; s.resources.forgeOre = REFORGE_COST.forgeOre;
+    const rolls = g.subs[0].rolls;
+    expect(reforgeSub(s, g.uid, 0, seededRand(9)).ok).toBe(true);
+    expect(g.subs[0].rolls).toBe(rolls); expect(new Set(g.subs.map((x) => x.stat)).size).toBe(g.subs.length); expect(g.subs.every((x) => x.stat !== g.main)).toBe(true);
+    expect(reforgeSub(s, g.uid, 0, seededRand(9)).ok).toBe(false); // plus assez de ressources
   });
 });

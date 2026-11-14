@@ -3,7 +3,7 @@ import { useUI } from '../../state/ui';
 import { GEAR_MAX_LEVEL, GEAR_MAX_STARS, GEAR_RARITIES, SETS, SLOT_BY_ID, gearDismantleValue, gearUpgradeCost } from '../../data/equipment';
 import { GearStars, SetEmblem } from '../art/SetEmblem';
 import { HERO_BY_ID } from '../../data/heroes';
-import { defaultStars, dismantleGear, mainValue, upgradeGear, unequipGear, equipGear } from '../../game/gear';
+import { defaultStars, dismantleGear, mainValue, upgradeGear, unequipGear, equipGear, reforgeSub, REFORGE_COST } from '../../game/gear';
 import { play } from '../../audio/sfx';
 import { Modal, fmt } from './common';
 import { CostView } from './Cost';
@@ -117,6 +117,8 @@ export function GearDetail({ gearUid, onClose, equipTo, place = 'hero', onReplac
         <div key={i} className="gd-sub">
           <span>{statText(sb.stat, sb.value)}</span>
           <span className="gd-rolls" aria-label={`${sb.rolls - 1} renforcement(s)`}>{Array.from({ length: sb.rolls - 1 }, (_, k) => <i key={k} />)}</span>
+          <button className="gd-reforge" aria-label={`Retoucher ${statText(sb.stat, sb.value)} (${REFORGE_COST.gold} or, ${REFORGE_COST.forgeOre} minerai)`} title={`Retoucher : ${REFORGE_COST.gold} or, ${REFORGE_COST.forgeOre} minerai`}
+            onClick={() => { let res = { ok: false } as ReturnType<typeof reforgeSub>; mutate((st) => { res = reforgeSub(st, g.uid, i, Math.random); }); if (res.ok) { play('claim'); useUI.getState().toast('Statistique retouchée.', 'ok'); } else useUI.getState().toast(res.reason ?? 'Impossible.', 'error'); }}>↻</button>
         </div>
       ))}
       {g.subs.length < 4 && <div className="gd-sub empty">{4 - g.subs.length} secondaire{g.subs.length < 3 ? 's' : ''} à débloquer en améliorant</div>}

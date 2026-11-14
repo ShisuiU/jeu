@@ -89,7 +89,24 @@ function balanceLeader(h: HeroDef): HeroDef['leaderSkill'] {
   return { ...ls, pct: cap, description };
 }
 
+/** Ajustements ciblés (v1.96.0) : héros nettement au-dessus de leur rareté en simulation (Tour, 89 héros). */
+export const OUTLIER_ADJ: Record<string, number> = {};
+
+/** Retouches de kit (v1.96.0) : leur force vient de soins, boucliers et bonus d'équipe en % des PV, pas de leurs stats.
+ *  Simulation avant retouche (étage de Tour, médiane de leur rareté 61-62) : Solenne 66, Corentin 65, Vael'Shira 64. */
+type Eff = SkillDef['effects'][number];
+const tweak = (sk: SkillDef, f: (e: Eff) => Eff, cd?: number, description?: string): SkillDef => ({ ...sk, cooldown: cd ?? sk.cooldown, effects: sk.effects.map(f), description: description ?? sk.description });
+export const KIT_ADJ: Record<string, (sk: SkillDef) => SkillDef> = {
+  solenne: (sk) => sk.slot === 'special' ? tweak(sk, (e) => (e.kind === 'heal' ? { ...e, pctMaxHp: 0.18 } : e), 4, 'Soigne tous les alliés de 18 %, retire leurs malus et augmente leur DÉF de 30 %.')
+    : sk.slot === 'ultimate' ? tweak(sk, (e) => (e.kind === 'revive' ? { ...e, pctMaxHp: 0.3 } : e.kind === 'shield' ? { ...e, pctMaxHp: 0.12 } : e), undefined, 'Ressuscite tous les alliés tombés avec 30 % de PV, bouclier de 12 % pour toute l’équipe.') : sk,
+  corentin: (sk) => sk.slot === 'special' ? tweak(sk, (e) => (e.kind === 'shield' ? { ...e, pctMaxHp: 0.08 } : e.kind === 'status' && e.status === 'defUp' ? { ...e, value: 0.2 } : e), undefined, 'Provoque tous les ennemis pendant 2 tours, augmente la DÉF de tous les alliés de 20 % et leur donne un bouclier de 8 % de ses PV max.')
+    : sk.slot === 'ultimate' ? tweak(sk, (e) => (e.kind === 'status' && e.status === 'freeze' ? { ...e, chance: 0.3 } : e), undefined, 'Attaque tous les ennemis (dégâts basés sur la DÉF). 30 % de chances de les geler 1 tour. Se soigne de 15 %.') : sk,
+  vaelshira: (sk) => sk.slot === 'special' ? tweak(sk, (e) => (e.kind === 'status' && e.status === 'atkUp' ? { ...e, value: 0.35 } : e.kind === 'status' && e.status === 'spdUp' ? { ...e, value: 0.2 } : e), undefined, 'Augmente l’ATQ (+35 %) et la vitesse (+20 %) de tous les alliés pendant 2 tours.') : sk,
+};
+
 export function balanceHero(h: HeroDef): HeroDef {
   const [lo, hi] = speedRange(h);
-  return { ...h, baseSpd: Math.min(hi, Math.max(lo, h.baseSpd)), skills: h.skills.map((sk) => balanceSkill(h, sk)), leaderSkill: balanceLeader(h) };
+  const k = OUTLIER_ADJ[h.id];
+  const bias = k ? { ...h.bias, hp: (h.bias?.hp ?? 1) * k, atk: (h.bias?.atk ?? 1) * k, def: (h.bias?.def ?? 1) * k } : h.bias;
+  return { ...h, bias, baseSpd: Math.min(hi, Math.max(lo, h.baseSpd)), skills: h.skills.map((sk) => (KIT_ADJ[h.id] ?? ((x: SkillDef) => x))(balanceSkill(h, sk))), leaderSkill: balanceLeader(h) };
 }

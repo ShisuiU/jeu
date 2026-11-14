@@ -134,7 +134,7 @@ export function createBattle(allies: UnitSetup[], waves: UnitSetup[][], opts: Ba
   // Signatures de début de combat (v1.91.0).
   for (const side of ['ally', 'enemy'] as const) {
     const team = s.units.filter((u) => u.side === side);
-    if (team.some((u) => sig(u, 'firstStrike'))) for (const u of team) u.tm += 0.3 * TM_FULL;
+    if (team.some((u) => sig(u, 'firstStrike'))) for (const u of team) u.tm += 0.2 * TM_FULL;
     const th = team.find((u) => sig(u, 'prismAegis'));
     if (th) for (const u of team) addStatus(s, u, 'shield', 3, u.base.hp * 0.15, th);
   }
@@ -268,7 +268,7 @@ function dealDamage(s: BattleState, source: Unit, target: Unit, effect: Extract<
   if (sig(source, 'bossHunter') && target.isBoss) dmg *= 1.25;
   if (sig(source, 'debuffFeast') && target.statuses.some((st) => DEBUFFS.includes(st.status))) dmg *= 1.2;
   if (sig(source, 'silverThread') && hpPct(target) < 0.5) dmg *= 1.25;
-  if (alliesOf(s, target).some((a) => a.alive && a.id !== target.id && sig(a, 'drownedOath')) || sig(target, 'drownedOath')) dmg *= 0.9;
+  if (alliesOf(s, target).some((a) => a.alive && a.id !== target.id && sig(a, 'drownedOath')) || sig(target, 'drownedOath')) dmg *= 0.94;
   // Fracture : un boss brisé encaisse +40 %.
   if (target.flags.fractured > 0) dmg *= 1 + FRACTURE_DMG;
   // Carapace : dégâts réduits, une charge en moins par coup.

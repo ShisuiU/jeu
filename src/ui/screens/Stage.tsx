@@ -3,8 +3,7 @@ import { CHALLENGES, checkChallenge } from '../../data/challenges';
 import { Coach } from '../components/Coach';
 import { AffinityIcon } from '../art/Identity';
 import type { AffinityId } from '../../data/types';
-import { useEffect, useMemo, useState } from 'react';
-import { simulateOdds } from '../../game/odds';
+import { useEffect, useState } from 'react';
 import { COUTURES } from '../../data/coutures';
 import { useAccount } from '../../cloud/account';
 import { canBorrow, markBorrowed } from '../../game/friends';
@@ -64,9 +63,6 @@ export function Prep({ spec }: { spec: BattleSpec }) {
   const newHeroes = spec.mode === 'campaign' && info.firstTime ? STAGE_BY_ID[spec.stageId].firstClear.heroes : undefined;
   const boss = info.waves.flat().some((w) => w.kind === 'enemy' && ENEMIES[w.refId]?.boss);
 
-  // Pronostic : 6 combats simulés avec l'équipe choisie (pas pour les boss à paliers de dégâts).
-  const odds = useMemo(() => (spec.mode === 'worldboss' || spec.mode === 'guildboss' || !count ? null : simulateOdds(save, team, info.waves, info.turnLimit)),
-    [team.id, team.slots.join(','), JSON.stringify(spec), save.revision]); // eslint-disable-line react-hooks/exhaustive-deps
   const guestOk = (spec.mode === 'campaign' || spec.mode === 'dungeon') && !!user && count < 5;
   useEffect(() => {
     if (!guestOk || friendCache) return;
@@ -120,12 +116,6 @@ export function Prep({ spec }: { spec: BattleSpec }) {
       <Coach id="battle_target" target=".aff-advice" when={Object.values(save.progress.campaign).some((p) => p.clears > 0)} text="Les affinités comptent : Solaire bat Tellurique, qui bat Lunaire, qui bat Solaire. Un héros avantagé (▲) frappe 30 % plus fort. Regarde ici combien ton équipe en a." />
       <div className="prep-sub"><span className="muted">{info.subtitle}</span></div>
       {(() => { const fs = new Set(members.filter(Boolean).map((h) => HERO_BY_ID[h!.heroId].faction)); const c = COUTURES.find((x) => fs.has(x.factions[0]) && fs.has(x.factions[1])); return c ? <div className="prep-couture">✦ Couture d’époque possible : <b>{save.flags[`couture_${c.id}`] ? c.name : '???'}</b> <span className="faint">({FACTIONS[c.factions[0]].short} + {FACTIONS[c.factions[1]].short}, au 3ᵉ tour de l’équipe)</span></div> : null; })()}
-      {odds && (
-        <div className={`prep-odds ${odds.tone}`} role="status">
-          <b>{odds.label}</b>
-          <span>{odds.wins}/{odds.runs} victoires simulées{odds.tone === 'bad' ? ' : renforce ton équipe' : ''}</span>
-        </div>
-      )}
       {info.challenge && (
         <div className={`prep-rule ${ruleWhy ? 'bad' : ''}`} role="status">
           <b>Règle du défi · {CHALLENGES[info.challenge].name}</b> : {CHALLENGES[info.challenge].text}

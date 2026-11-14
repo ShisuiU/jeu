@@ -558,6 +558,12 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.101.2 — Combat : noms de compétences dégagés, préparation allégée
+
+- **Nom de la compétence** : le bandeau ne se pose plus au milieu de l'écran (sur l'équipe ennemie) mais dans l'espace libre entre la barre du haut et les ennemis, calculé à chaque affichage selon la taille de l'écran ; sur un très petit écran, il chevauche l'ordre des tours plutôt que les ennemis. Bandeau plus fin, sur une ligne.
+- **Messages en combat** (missions accomplies…) : tout en haut, sur le titre de l'étape, au lieu de couvrir le bandeau et les ennemis.
+- **Préparation** : le bloc des chances de réussite (combats simulés) est retiré.
+
 ## ✅ Version 1.101.1 — Éclats : une seule texture, plus d'échange de cristaux
 
 - **Texture des éclats** : partout (Sac, porte-monnaie, récompenses, fenêtre « Obtenir », coûts, petites icônes) la même que les cristaux de l'Autel ; l'ancienne icône générique et les anciennes illustrations sur fond noir ne servent plus.

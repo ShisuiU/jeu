@@ -1,3 +1,4 @@
+import { normalizeReward } from '../src/data/resources';
 import { describe, expect, it } from 'vitest';
 import { createNewSave } from '../src/save/schema';
 import { HERO_BY_ID, HEROES } from '../src/data/heroes';
@@ -35,10 +36,10 @@ describe('Défis à contraintes (v1.97.0)', () => {
     const rule = towerChallengeOf(10);
     const ok = s.heroes.filter((h) => !checkChallenge(rule, [HERO_BY_ID[h.heroId]])).slice(0, 4).map((h) => h.uid);
     expect(ok.length).toBeGreaterThan(0);
-    const before = s.resources.crystals ?? 0;
+    const before = s.resources.gold;
     const r = applyMode(s, spec, { won: true, alliesDead: 0, participants: ok }, T0);
     expect(r.firstClear).toBe(true);
-    expect((s.resources.crystals ?? 0) - before).toBe(towerChallengeReward(10).crystals);
+    expect(s.resources.gold - before).toBe(normalizeReward(towerChallengeReward(10)).gold);
     expect(s.progress.tower.challenges).toContain(10);
     expect(s.progress.tower.floor).toBe(12); // la progression normale ne bouge pas
     expect(canStart(s, spec).ok).toBe(false); // déjà relevé
@@ -68,5 +69,30 @@ describe('Défis à contraintes (v1.97.0)', () => {
     expect(res.ok).toBe(!why);
     if (res.ok) expect(s.rift.oath).toBe(rule);
     expect(RIFT_OATH_BONUS.crystals).toBeGreaterThan(0);
+  });
+});
+
+describe('Fin des cristaux d’Aeon (v1.102.0)', () => {
+  it('aucune récompense ne donne de cristaux : petites sommes en or, grosses en éclats épiques', async () => {
+    const { normalizeReward, crystalsTo } = await import('../src/data/resources');
+    expect(crystalsTo(100)).toEqual({ gold: 5000 });
+    expect(crystalsTo(300)).toEqual({ shardEpic: 1 });
+    expect(crystalsTo(550)).toEqual({ shardEpic: 2 });
+    expect(normalizeReward({ crystals: 100, gold: 1000, shardDim: 2 })).toEqual({ gold: 6000, shardDim: 2 });
+    const s = createNewSave(T0);
+    expect(s.resources.crystals).toBe(0);
+    const { applyReward } = await import('../src/game/rewards');
+    applyReward(s, { crystals: 600 });
+    expect(s.resources.crystals).toBe(0);
+    expect(s.resources.shardEpic).toBe(1 + 2);
+  });
+  it('le stock de cristaux d’une ancienne partie devient des éclats épiques et de l’or', async () => {
+    const { migrateSave } = await import('../src/save/migrations');
+    const old = JSON.parse(JSON.stringify(createNewSave(T0)));
+    old.resources.crystals = 1000; old.resources.gold = 0; old.resources.shardEpic = 0;
+    const m = migrateSave(old);
+    expect(m.resources.crystals).toBe(0);
+    expect(m.resources.shardEpic).toBe(3);
+    expect(m.resources.gold).toBe(100 * 50);
   });
 });

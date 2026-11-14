@@ -28,11 +28,11 @@ describe('Équilibrage v1.60', () => {
     for (const h of s.heroes) h.level = 40;
     const max = towerSweepMax(s);
     expect(max).toBe(29); // ennemis niv. 30 = 40 − 10
-    const before = s.resources.crystals;
+    const before = s.resources.shardEpic;
     const r = sweepTower(s);
     expect(r.floors).toBe(29);
     expect(s.progress.tower.floor).toBe(29);
-    expect(s.resources.crystals).toBeGreaterThan(before);
+    expect(s.resources.shardEpic).toBeGreaterThan(before);
     expect(towerSweepMax(s)).toBe(0);
   });
   it('classement complété jusqu’à 10, jamais au-delà', () => {

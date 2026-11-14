@@ -60,7 +60,7 @@ export const BALANCE = {
   energyRefill: { amount: 60, costs: [10, 20, 40] }, // en diamants (v1.78.1)
   starter: {
     gold: 20000,
-    crystals: 300,
+    shardEpic: 1, // v1.102.0 : à la place des 300 cristaux de départ (un appel épique)
     shardDim: 10,
     shardAeon: 3,
     xpElixir: 10,

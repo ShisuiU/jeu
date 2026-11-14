@@ -17,9 +17,10 @@ export function campProgress(s: SaveData): number {
 }
 
 /** Butin par heure. */
-export function campRates(s: SaveData): Required<Pick<Reward, 'gold' | 'xpElixir' | 'forgeOre' | 'crystals'>> {
+export function campRates(s: SaveData): Required<Pick<Reward, 'gold' | 'xpElixir' | 'forgeOre'>> {
   const n = campProgress(s);
-  return { gold: 300 + 45 * n, xpElixir: 0.2 + 0.015 * n, forgeOre: 0.5 + n / 30, crystals: 1 + n / 45 };
+  // v1.102.0 : plus de cristaux (retirés du jeu) ; leur part passe en or.
+  return { gold: 350 + 48 * n, xpElixir: 0.2 + 0.015 * n, forgeOre: 0.5 + n / 30 };
 }
 
 const since = (s: SaveData) => s.camp?.since ?? s.createdAt;

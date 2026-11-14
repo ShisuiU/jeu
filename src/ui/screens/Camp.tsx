@@ -45,7 +45,6 @@ export function Camp() {
         <div className="stat-row"><span className="row" style={{ gap: 6 }}><Icon.coin size={16} /> Or</span><b>{per('gold')}</b></div>
         <div className="stat-row"><span className="row" style={{ gap: 6 }}><ResourceIcon icon={RESOURCES.xpElixir.icon} color={RESOURCES.xpElixir.color} size={16} /> Élixirs d’expérience</span><b>{per('xpElixir', 2)}</b></div>
         <div className="stat-row"><span className="row" style={{ gap: 6 }}><ResourceIcon icon={RESOURCES.forgeOre.icon} color={RESOURCES.forgeOre.color} size={16} /> Minerai de forge</span><b>{per('forgeOre', 1)}</b></div>
-        <div className="stat-row"><span className="row" style={{ gap: 6 }}><ResourceIcon icon={RESOURCES.crystals.icon} color={RESOURCES.crystals.color} size={16} /> Cristaux d’Aeon</span><b>{per('crystals', 1)}</b></div>
         <p className="hint" style={{ marginBottom: 0 }}>Le butin grandit avec la campagne : {campProgress(save)} niveaux terminés sur 90.</p>
       </Panel>
     </Screen>

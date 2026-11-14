@@ -25,8 +25,7 @@ export const MARKET_REFRESH_COSTS = [5, 10, 20];
 export const MARKET_POOL: MarketOfferDef[] = [
   { id: 'dim1', reward: { shardDim: 1 }, price: { resource: 'gold', amount: 12000 }, weight: 6 },
   { id: 'dim3', reward: { shardDim: 3 }, price: { resource: 'gold', amount: 33000 }, weight: 3 },
-  { id: 'aeon_c', reward: { shardAeon: 1 }, price: { resource: 'crystals', amount: 180 }, weight: 3 },
-  { id: 'aeon_g', reward: { shardAeon: 1 }, price: { resource: 'gold', amount: 150000 }, weight: 1, minChapter: 3 },
+  { id: 'aeon_g', reward: { shardAeon: 1 }, price: { resource: 'gold', amount: 120000 }, weight: 3, minChapter: 2 },
   { id: 'elixir', reward: { xpElixir: 6 }, price: { resource: 'gold', amount: 9000 }, weight: 6 },
   { id: 'tome', reward: { skillTome: 1 }, price: { resource: 'gold', amount: 22000 }, weight: 4 },
   { id: 'sigil', reward: { rankSigil: 1 }, price: { resource: 'gold', amount: 35000 }, weight: 3 },
@@ -35,11 +34,10 @@ export const MARKET_POOL: MarketOfferDef[] = [
   { id: 'psupreme', reward: { potionMinor: 14 }, price: { resource: 'gold', amount: 55000 }, weight: 2, minChapter: 5 },
   { id: 'ore', reward: { forgeOre: 40 }, price: { resource: 'gold', amount: 10000 }, weight: 5 },
   { id: 'mscroll', reward: { masteryScroll: 2 }, price: { resource: 'gold', amount: 24000 }, weight: 4, minChapter: 2 },
-  { id: 'essence', reward: { awakenEssence: 1 }, price: { resource: 'crystals', amount: 90 }, weight: 2, minChapter: 2 },
+  { id: 'essence', reward: { awakenEssence: 1 }, price: { resource: 'gold', amount: 60000 }, weight: 2, minChapter: 2 },
   { id: 'g_rare', gear: 'rare', price: { resource: 'gold', amount: 18000 }, weight: 4 },
   { id: 'g_epic', gear: 'epic', price: { resource: 'gold', amount: 45000 }, weight: 3, minChapter: 2 },
   { id: 'g_leg', gear: 'legendary', price: { resource: 'gold', amount: 110000 }, weight: 1, minChapter: 4 },
-  { id: 'g_leg_c', gear: 'legendary', price: { resource: 'crystals', amount: 250 }, weight: 1, minChapter: 4 },
 ];
 
 export const MARKET_BY_ID: Record<string, MarketOfferDef> = Object.fromEntries(MARKET_POOL.map((o) => [o.id, o]));

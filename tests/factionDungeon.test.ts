@@ -1,3 +1,4 @@
+import { normalizeReward } from '../src/data/resources';
 import { describe, expect, it } from 'vitest';
 import { createNewSave } from '../src/save/schema';
 import { HERO_BY_ID } from '../src/data/heroes';
@@ -68,9 +69,9 @@ describe('Donjon des familles (v1.79.0)', () => {
     expect(totalFactionStars(s)).toBe(32);
     expect(claimableMilestones(s)).toEqual([0]);
     expect(claimFactionMilestone(s, 1).ok).toBe(false);
-    const c0 = s.resources.crystals;
+    const g0 = s.resources.gold;
     expect(claimFactionMilestone(s, 0).ok).toBe(true);
-    expect(s.resources.crystals).toBe(c0 + (FACTION_STAR_MILESTONES[0].reward.crystals ?? 0));
+    expect(s.resources.gold).toBe(g0 + (normalizeReward(FACTION_STAR_MILESTONES[0].reward).gold ?? 0));
     expect(claimFactionMilestone(s, 0).ok).toBe(false);
     expect(FACTION_MAX_STARS).toBe(540);
     expect(FACTION_STAR_MILESTONES.at(-1)!.stars).toBe(540);

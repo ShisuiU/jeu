@@ -12,7 +12,7 @@ import { Modal } from '../components/common';
 import { claimEventTask, eventClaimable, eventTaskState } from '../../game/missions';
 import { canStart } from '../../game/modes';
 import { BONUS_LABEL, BONUS_SHORT } from '../../data/eventCycle';
-import { RESOURCES } from '../../data/resources';
+import { RESOURCES, normalizeReward } from '../../data/resources';
 import type { GameEvent } from '../../data/events';
 import { formatDuration } from '../../core/time';
 import { play } from '../../audio/sfx';
@@ -25,7 +25,7 @@ import { BattleBackdrop } from '../art/BattleBackdrop';
 
 const left = (ms: number) => { const d = Math.floor(ms / 86_400_000); return d >= 1 ? `${d} j ${Math.floor((ms % 86_400_000) / 3_600_000)} h` : formatDuration(ms); };
 const fmtMult = (m: number) => `×${String(m).replace('.', ',')}`;
-const rewardText = (r: Record<string, number | undefined>) => Object.entries(r).map(([k, v]) => `+${(v ?? 0).toLocaleString('fr-FR')} ${RESOURCES[k as keyof typeof RESOURCES]?.name ?? k}`).join(' · ');
+const rewardText = (r: Record<string, number | undefined>) => Object.entries(normalizeReward(r)).map(([k, v]) => `+${(v ?? 0).toLocaleString('fr-FR')} ${RESOURCES[k as keyof typeof RESOURCES]?.name ?? k}`).join(' · ');
 
 export function Events() {
   const save = useGame((s) => s.save)!;

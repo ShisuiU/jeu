@@ -60,12 +60,14 @@ describe('absorption de héros (Sanctuaire)', () => {
     expect(s.heroes.some((h) => h.uid === 'food1')).toBe(true);
   });
 
-  it('migration v6 : les éclats primordiaux deviennent des cristaux', () => {
+  it('migration v6 puis v1.102 : les éclats primordiaux deviennent des cristaux, puis des éclats épiques', () => {
     const old = createNewSave(1000) as unknown as { version: number; resources: Record<string, number> };
     old.version = 5; old.resources.shardPrimal = 3; old.resources.crystals = 100;
     const s = migrateSave(old);
     expect(s.version).toBe(SAVE_VERSION);
-    expect(s.resources.crystals).toBe(1000);
+    // 3 × 300 + 100 = 1000 cristaux → 3 éclats épiques et 100 × 50 or
+    expect(s.resources.crystals).toBe(0);
+    expect(s.resources.shardEpic).toBe(1 + 3);
     expect(s.resources.shardPrimal).toBe(0);
   });
 });

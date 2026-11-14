@@ -54,7 +54,7 @@ describe('invocations', () => {
     expect(new Set(s.heroes.map((h) => h.heroId)).size).toBe(s.heroes.length);
   });
   it('refuse sans ressources', () => {
-    const s = createNewSave(1); s.resources.crystals = 0;
+    const s = createNewSave(1); s.resources.shardEpic = 0;
     expect(summon(s, 'epic', 1, seededRand(1), 1).ok).toBe(false);
   });
   it('garantie : un légendaire au plus tard à la 100e invocation rare', () => {

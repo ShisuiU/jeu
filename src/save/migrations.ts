@@ -2,7 +2,7 @@ import { DUNGEON_BY_ID } from '../data/dungeons';
 import { HERO_BY_ID } from '../data/heroes';
 import { DUPLICATE_FRAGMENTS } from '../data/summons';
 import { createNewSave, SAVE_VERSION, type SaveData } from './schema';
-import { cleanReward } from '../data/resources';
+import { cleanReward, CRYSTALS_PER_EPIC, GOLD_PER_CRYSTAL } from '../data/resources';
 
 // MIGRATIONS
 // Chaque entrée transforme une sauvegarde de la version N vers N+1. On ne supprime jamais une migration :
@@ -94,5 +94,11 @@ export function migrateSave(raw: unknown): SaveData {
   // v1.84.0 : les éclats épiques (nouvelle monnaie de l'invocation épique) partent de 0 pour tous les comptes, une fois.
   // (les parties créées depuis portent déjà la marque : on regarde la sauvegarde d'origine, avant les valeurs par défaut)
   if (!s.flags?.epic_shards_v184) { merged.resources.shardEpic = 0; merged.flags.epic_shards_v184 = true; }
+  // v1.102.0 : les cristaux d'Aeon sont retirés du jeu ; le stock devient des éclats épiques (300 → 1) et de l'or pour le reste,
+  // et les offres du Marché encore affichées en cristaux passent en or.
+  { const r = merged.resources as Record<string, number>; const c = Math.floor(r.crystals ?? 0);
+    if (c > 0) { const epic = Math.floor(c / CRYSTALS_PER_EPIC); r.shardEpic = (r.shardEpic ?? 0) + epic; r.gold = (r.gold ?? 0) + (c - epic * CRYSTALS_PER_EPIC) * GOLD_PER_CRYSTAL; }
+    r.crystals = 0;
+    for (const o of merged.shop?.market?.offers ?? []) if (o.price?.resource === 'crystals') o.price = { resource: 'gold', amount: o.price.amount * 600 }; }
   return merged;
 }

@@ -1,6 +1,6 @@
 import { useUI } from '../../state/ui';
 import type { Reward } from '../../data/resources';
-import { RESOURCES, type ResourceId } from '../../data/resources';
+import { RESOURCES, normalizeReward, type ResourceId } from '../../data/resources';
 import { ResourceIcon, Icon } from '../art/Icons';
 import { fmt } from './common';
 import type { GearItem } from '../../save/schema';
@@ -11,7 +11,8 @@ import { GEAR_RARITIES, SETS, SLOT_BY_ID } from '../../data/equipment';
 import { GearStars, SetEmblem } from '../art/SetEmblem';
 import { defaultStars, mainValue } from '../../game/gear';
 
-export function RewardView({ reward, gear = [], compact }: { reward: Reward; gear?: GearItem[]; compact?: boolean }) {
+export function RewardView({ reward: rawReward, gear = [], compact }: { reward: Reward; gear?: GearItem[]; compact?: boolean }) {
+  const reward = normalizeReward(rawReward);
   // Grille équilibrée : 4 récompenses sur une ligne, 5 ou 6 en deux lignes de 3 (jamais une seule toute seule).
   // L'équipement gagné se range dans la même grille, à côté de l'or et des ressources.
   const n = Object.keys(reward).length + gear.length;
@@ -83,7 +84,8 @@ function srcProps(k: string) {
   return { role: 'button', tabIndex: 0, 'aria-label': `${RESOURCES[k as ResourceId].name} : où l’obtenir`, onClick: open, onKeyDown: (e: { key: string }) => { if (e.key === 'Enter') open(); } };
 }
 
-export function rewardMainIcon(r: Reward, size = 20) {
+export function rewardMainIcon(raw: Reward, size = 20) {
+  const r = normalizeReward(raw);
   const k = Object.keys(r)[0];
   if (!k || k === 'energy') return <Icon.energy size={size} />;
   const def = RESOURCES[k as keyof typeof RESOURCES];
@@ -92,7 +94,8 @@ export function rewardMainIcon(r: Reward, size = 20) {
 }
 
 /** Récompenses sur une ligne (icône + quantité), pour les écrans où la place compte. */
-export function RewardInline({ reward }: { reward: Reward }) {
+export function RewardInline({ reward: raw }: { reward: Reward }) {
+  const reward = normalizeReward(raw);
   return (
     <div className="reward-inline">
       {Object.entries(reward).filter(([, v]) => (v ?? 0) > 0).map(([k, v]) => {

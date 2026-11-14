@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import bgArt from '../../assets/home/bg.webp';
 import panelArt from '../../assets/home/panel.webp';
 import bWheel from '../../assets/home/btn_wheel.webp';
@@ -7,6 +8,7 @@ import bMail from '../../assets/home/btn_mail.webp';
 import bEvents from '../../assets/home/btn_events.webp';
 import bBuildings from '../../assets/home/btn_buildings.webp';
 import { finishedExpeditions } from '../../game/expeditions';
+import { Stage25 } from '../fx/stage25';
 import { buildingsDot } from '../../game/buildings';
 import { wheelReady } from '../../game/wheel';
 import { Coach } from '../components/Coach';
@@ -56,9 +58,25 @@ export function Home() {
   const primary = firstWin ? PRIORITY.find((l) => spots.some((sp) => sp.label === l && sp.dot && isOpen(sp))) : undefined;
   const chapter = CHAPTERS.find((c) => c.n === (nextStage?.chapter ?? CHAPTERS.length));
 
+  // Décor vivant (v1.95.0) : poussière d'or et de faille qui flotte, et qui jaillit sous le doigt quand on touche le décor.
+  const fxRef = useRef<HTMLCanvasElement>(null);
+  const fx = useRef<Stage25 | null>(null);
+  useEffect(() => {
+    const cv = fxRef.current; if (!cv || save.settings.reducedMotion) return;
+    const st = new Stage25(cv, () => 1, ['#ffd98a', '#cf9dff', '#ffe7c2'], 28); st.start(); fx.current = st;
+    return () => { st.stop(); fx.current = null; };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const onSceneTouch = (e: React.PointerEvent) => {
+    if ((e.target as HTMLElement).closest('button, a, .top-bar, .bottom-nav')) return;
+    const cv = fxRef.current; if (!cv || !fx.current) return;
+    const r = cv.getBoundingClientRect(); const p = { x: e.clientX - r.left, y: e.clientY - r.top };
+    fx.current.burst(p, '#ffd98a', 22, 0.28); fx.current.motes(p, '#cf9dff', 14, 26, 0.07);
+  };
+
   return (
-    <div className="home screen">
+    <div className="home screen" onPointerDown={onSceneTouch}>
       <div className="home-scene">
+        <canvas ref={fxRef} className="home-fx" aria-hidden />
         <img className="home-bg" src={bgArt} alt="" draggable={false} />
         <div className="home-rift" aria-hidden />
         {!save.settings.reducedMotion && <div className="home-sky-motes" aria-hidden><Particles count={10} /></div>}

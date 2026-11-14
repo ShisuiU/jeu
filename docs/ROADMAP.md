@@ -558,6 +558,14 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.95.0 — Phase 2 : identité « fil d'Aeon » et spectacle
+
+- Identité : le Monde Cousu devient un langage visuel. Un fil d'or pointillé court à l'intérieur des panneaux, et à chaque entrée dans un écran un fil d'or le « recoud » en diagonale.
+- Entrée des boss : bandes de cinéma, la caméra s'approche du boss, son nom se grave avec son affinité et sa faiblesse (« faible face au Lunaire »). Le combat attend la fin de la présentation (pas en ×3 ni avec « Animations réduites »).
+- Hit-stop : sur les coups lourds et critiques, la scène se fige un instant (75 ms) pour donner du poids à l'impact.
+- Accueil vivant : une poussière d'or et de faille flotte dans le décor et jaillit sous le doigt quand on touche le paysage.
+- Invocation : un légendaire ou un mythique est présenté avec des bandes de cinéma et sa première réplique.
+
 ## ✅ Version 1.94.0 — Coutures d'époque (idée signature, audit)
 
 - Le Monde Cousu mêle les époques : deux héros de familles différentes dans la même équipe peuvent déclencher, une fois par combat (au 3ᵉ tour de l'équipe), une attaque cousue qui frappe tous les ennemis et ajoute un effet propre à leur paire.

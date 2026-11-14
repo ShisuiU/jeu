@@ -212,3 +212,36 @@
 .prep-couture { margin: -4px 0 10px; padding: 6px 10px; border-radius: 8px; font-size: 12.5px; color: #e9dbff; border: 1px solid rgba(207, 157, 255, 0.45); background: linear-gradient(90deg, rgba(120, 70, 200, 0.22), transparent); }
 .codex-couture { display: flex; flex-direction: column; gap: 2px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--surface-line); margin-bottom: 6px; font-size: 12.5px; }
 .codex-couture.unknown { opacity: 0.55; }
+
+/* ═══ PHASE 2 · Identité « fil d'Aeon » et spectacle (v1.95.0) ═══ */
+/* Entrée des boss : bandes de cinéma, titre gravé, faiblesse. */
+.boss-intro { position: absolute !important; inset: 0; z-index: 9 !important; pointer-events: none; }
+.boss-intro .bi-bar { position: absolute; left: 0; right: 0; height: 13%; background: #000; animation: biBar 0.45s cubic-bezier(.2,.8,.2,1) both; }
+.boss-intro .bi-bar.top { top: 0; transform-origin: top; } .boss-intro .bi-bar.bottom { bottom: 0; transform-origin: bottom; }
+@keyframes biBar { from { transform: scaleY(0); } }
+.boss-intro::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 50% 42%, transparent 30%, rgba(0,0,0,0.65) 85%); animation: fadeIn 0.4s both; }
+.boss-intro .bi-card { position: absolute; left: 0; right: 0; bottom: 16%; text-align: center; }
+.bi-kicker { font-size: 12px; letter-spacing: 0.4em; text-transform: uppercase; color: #ff9bb5; animation: biIn 0.5s ease-out 0.25s both; }
+.bi-name { font-family: var(--font-title); font-weight: 900; font-size: clamp(22px, 7vw, 32px); line-height: 1.1; padding: 0 16px; letter-spacing: 0.06em; color: #fff; text-shadow: 0 0 18px rgba(255, 61, 110, 0.75), 0 4px 10px #000; animation: biName 0.7s cubic-bezier(.2,1.2,.4,1) 0.35s both; }
+.bi-sub { margin-top: 4px; font-size: 13px; color: #f1e3c4; display: inline-flex; align-items: center; gap: 5px; animation: biIn 0.5s ease-out 0.7s both; }
+@keyframes biIn { from { opacity: 0; transform: translateY(8px); } }
+@keyframes biName { from { opacity: 0; letter-spacing: 0.5em; filter: blur(6px); } }
+/* Hit-stop : la scène se fige un instant sur les coups lourds. */
+.battle.hitstop .stage25 *, .battle.hitstop .stage25 { animation-play-state: paused !important; transition: none !important; }
+/* Coutures : un fil doré pointillé court à l'intérieur des panneaux (le Monde Cousu). */
+.theme-v2 .panel { position: relative; }
+.theme-v2 .panel::before { display: block !important; content: ''; position: absolute; inset: 5px; border: 1px dashed rgba(217, 192, 138, 0.16); border-radius: 5px; pointer-events: none; }
+.theme-v2 .panel .panel::before { display: none !important; }
+/* Transition « fil d'Aeon » : un fil d'or recoud l'écran en diagonale à chaque entrée. */
+.thread-wipe { position: absolute; inset: 0; z-index: 40; pointer-events: none; width: 100%; height: 100%; }
+.thread-wipe path { fill: none; stroke: url(#threadGrad); stroke-width: 2.2; stroke-linecap: round; stroke-dasharray: 1400; stroke-dashoffset: 1400; filter: drop-shadow(0 0 4px rgba(255, 210, 120, 0.9)); animation: threadDraw 0.55s cubic-bezier(.5,0,.2,1) forwards, threadFade 0.25s ease-out 0.5s forwards; }
+.thread-wipe path.t2 { stroke-width: 1; opacity: 0.6; animation-delay: 0.05s, 0.55s; }
+@keyframes threadDraw { to { stroke-dashoffset: 0; } }
+@keyframes threadFade { to { opacity: 0; } }
+.reduced-motion .thread-wipe, .reduced-motion .boss-intro .bi-bar { display: none; }
+/* Accueil : particules qui répondent au doigt. */
+.home-fx { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+/* Présentation des légendaires : réplique sous le nom. */
+.rr-quote { margin: 8px auto 0; max-width: 300px; font-style: italic; font-size: 13.5px; color: #f1e3c4; text-shadow: 0 1px 4px #000; }
+.legend .rr-single::before, .legend .rr-single::after { content: ''; position: fixed; left: 0; right: 0; height: 9vh; background: #000; z-index: -1; animation: biBar 0.5s cubic-bezier(.2,.8,.2,1) both; }
+.legend .rr-single::before { top: 0; } .legend .rr-single::after { bottom: 0; }

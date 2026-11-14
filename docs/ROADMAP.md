@@ -558,6 +558,12 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.102.2 — Objectif 10/10, lot 2 : première impression
+
+- **Prologue cinématique** au tout premier lancement (nouveau joueur) : trois phrases courtes en fondu sur l'illustration du Monde Cousu, avec un lent travelling ; toucher passe à la suivante, « Passer » va au nom. Remplace l'ancien paragraphe de 7 lignes dans une fenêtre.
+- **Carte du nom** épurée (« Tu es le Lien · Les Héritiers t'appelleront par ton nom »).
+- **Plus de message technique** (« Jeu prêt à fonctionner hors ligne ») par-dessus le premier écran.
+
 ## ✅ Version 1.102.1 — Objectif 10/10, lot 1 : économie vérifiée, filet de sécurité technique
 
 - **Économie des éclats épiques mesurée** après la fin des cristaux : ~2,4 éclats épiques par jour pour un joueur régulier (missions, semaine, connexion, Arène, Failles), contre ~2,1 avant les changements des v1.101.1 et v1.102.0 (+12 %) ; stocks uniques (Tour, campagne, étoiles, succès, collection) du même ordre. Verrouillé par un test (entre 1,5 et 3 par jour).

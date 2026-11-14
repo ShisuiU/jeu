@@ -17,11 +17,7 @@ export function setupPWA() {
       });
     },
     onOfflineReady() {
-      try {
-        if (localStorage.getItem('aeonfall.offlineToast')) return;
-        localStorage.setItem('aeonfall.offlineToast', '1');
-      } catch { /* */ }
-      useUI.getState().toast('Jeu prêt à fonctionner hors ligne.', 'ok');
+      // v1.102.2 : plus de message technique au premier lancement (le jeu marche hors ligne sans rien demander).
     },
     onRegisteredSW(_url, reg) {
       registration = reg;

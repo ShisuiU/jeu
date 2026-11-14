@@ -401,3 +401,15 @@
 /* En combat, les messages passent tout en haut (sur le titre de l'étape) : ni le nom des compétences ni les ennemis ne sont couverts. */
 body:has(.battle-controls) .toasts { top: calc(var(--sat, 0px) + 4px) !important; bottom: auto !important; }
 body:has(.battle-controls) .toast { font-size: 12.5px; padding-top: 7px; padding-bottom: 7px; }
+/* Prologue (v1.102.2) : trois phrases en fondu sur le Monde Cousu, au tout premier lancement. */
+.prologue { position: fixed; inset: 0; z-index: 56; display: grid; place-items: center; background: #050408; overflow: hidden; cursor: pointer; }
+.pro-art { position: absolute; inset: -4%; width: 108%; height: 108%; object-fit: cover; filter: brightness(0.5) saturate(1.1); animation: proPan 12s ease-out both; }
+@keyframes proPan { from { transform: scale(1.12) translateY(2%); } to { transform: scale(1) translateY(0); } }
+.pro-shade { position: absolute; inset: 0; background: radial-gradient(90% 60% at 50% 50%, transparent, rgba(5,4,8,0.85)), linear-gradient(180deg, rgba(5,4,8,0.6), transparent 30%, transparent 60%, rgba(5,4,8,0.9)); }
+.pro-line { position: relative; z-index: 1; max-width: 340px; margin: 0; padding: 0 20px; text-align: center; font-family: var(--font-title); font-size: 22px; line-height: 1.35; letter-spacing: 0.02em; color: #f1e3c4; text-shadow: 0 2px 14px #000, 0 0 30px rgba(226,184,102,0.25); animation: proLine 2.6s ease both; }
+@keyframes proLine { 0% { opacity: 0; transform: translateY(8px); filter: blur(4px); } 18% { opacity: 1; transform: none; filter: none; } 82% { opacity: 1; } 100% { opacity: 0; transform: translateY(-4px); } }
+.pro-dots { position: absolute; bottom: calc(var(--sab, 0px) + 90px); display: flex; gap: 8px; }
+.pro-dots span { width: 6px; height: 6px; border-radius: 50%; background: rgba(241,227,196,0.25); transition: background 0.4s; }
+.pro-dots span.on { background: #e2b866; }
+.pro-skip { position: absolute; right: 16px; top: calc(var(--sat, 0px) + 14px); padding: 6px 12px; border-radius: 14px; font-size: 13px; color: rgba(241,227,196,0.8); border: 1px solid rgba(241,227,196,0.25); background: rgba(0,0,0,0.3); }
+.reduced-motion .pro-art, .reduced-motion .pro-line { animation: none; }

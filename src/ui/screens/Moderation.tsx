@@ -2,12 +2,14 @@ import { useCallback, useEffect, useState } from 'react';
 import { useUI } from '../../state/ui';
 import { Modal, Panel, Screen } from '../components/common';
 import type { Ban, Report } from '../../cloud/moderationCloud';
+import type { StatsSummary } from '../../game/telemetry';
 
 // MODÉRATION (modérateurs seulement) — signalements reçus, joueurs bannis.
 // Bannir : le joueur disparaît des classements, de l'Arène et des fiches d'amis, et ne peut plus rien publier.
 type Api = typeof import('../../cloud/moderationCloud');
 const mapi = () => import('../../cloud/moderationCloud');
 const KIND: Record<Report['kind'], string> = { name: 'Nom', chat: 'Message', clan: 'Clan', behavior: 'Triche / comportement' };
+const MODE_NAME: Record<string, string> = { campaign: 'Campagne', dungeon: 'Donjons', tower: 'Tour', faction: 'Donjon des familles', rift: 'Failles', worldboss: 'Boss mondial', arena: 'Arène', guildboss: 'Boss de clan', challenge: 'Événements' };
 const when = (t: number) => new Date(t).toLocaleString('fr-FR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
 
 export function Moderation() {
@@ -16,6 +18,8 @@ export function Moderation() {
   const [bans, setBans] = useState<Ban[]>([]);
   const [err, setErr] = useState<string | null>(null);
   const [confirm, setConfirm] = useState<{ text: string; run: () => Promise<void> } | null>(null);
+  const [stats, setStats] = useState<StatsSummary | null>(null);
+  const loadStats = async () => { try { setStats(await (await mapi()).loadStats(7)); } catch { toast('Statistiques indisponibles (règles du serveur à publier ?).', 'error'); } };
   const load = useCallback(async () => {
     try { const m = await mapi(); setReports(await m.listReports()); setBans(await m.listBans()); setErr(null); }
     catch { setErr('Accès refusé : ce compte n’est pas modérateur, ou les règles du serveur ne sont pas à jour.'); }
@@ -50,6 +54,19 @@ export function Moderation() {
             <button className="btn small secondary" onClick={() => void act((m) => m.unbanPlayer(b.uid), `${b.name} n’est plus banni.`)}>Lever</button>
           </div>
         ))}
+      </Panel>
+      <Panel title="Statistiques anonymes · 7 jours">
+        {!stats ? <button className="btn secondary block" onClick={() => void loadStats()}>Charger</button> : (
+          <div className="mod-stats">
+            <div className="ms-kpi"><span><b>{stats.days}</b>journées de jeu</span><span><b>{stats.minutesAvg} min</b>par journée</span><span><b>{stats.sessionsAvg}</b>sessions</span><span><b>{stats.summons}</b>invocations</span></div>
+            <div className="ms-h">Combats (victoires / défaites)</div>
+            {stats.modes.map((m) => <div key={m.mode} className="stat-row"><span>{MODE_NAME[m.mode] ?? m.mode}</span><b>{m.won} / {m.lost} · {Math.round((m.won / Math.max(1, m.won + m.lost)) * 100)} %</b></div>)}
+            <div className="ms-h">Où les joueurs perdent le plus</div>
+            {stats.stuck.length === 0 ? <p className="faint" style={{ margin: 0 }}>Pas encore de données.</p> : stats.stuck.map((x) => <div key={x.where} className="stat-row"><span>{x.where}</span><b>{x.count}</b></div>)}
+            <div className="ms-h">Niveau de compte</div>
+            {stats.levels.map((l) => <div key={l.lvl} className="stat-row"><span>Niv. {l.lvl}</span><b>{l.count}</b></div>)}
+          </div>
+        )}
       </Panel>
       {confirm && (
         <Modal onClose={() => setConfirm(null)}>

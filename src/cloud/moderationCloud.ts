@@ -1,4 +1,4 @@
-import { doc, getDoc, setDoc, deleteDoc, addDoc, collection, query, orderBy, limit, getDocs, serverTimestamp, type Timestamp } from 'firebase/firestore/lite';
+import { doc, getDoc, setDoc, deleteDoc, addDoc, collection, query, orderBy, limit, getDocs, where, serverTimestamp, type Timestamp } from 'firebase/firestore/lite';
 import { cloud } from './cloudCore';
 import { useGame } from '../state/store';
 
@@ -53,4 +53,13 @@ export async function listBans(): Promise<Ban[]> {
   const { db } = ctx();
   const snap = await getDocs(query(collection(db, 'bans'), limit(100)));
   return snap.docs.map((d) => ({ ...(d.data() as Omit<Ban, 'uid' | 'at'>), uid: d.id, at: ms(d.data().at) }));
+}
+
+/** Statistiques anonymes des derniers jours (modérateurs seulement), résumées pour l'écran de modération. */
+export async function loadStats(days = 7) {
+  const { db } = ctx();
+  const since = new Date(Date.now() - days * 86400_000).toISOString().slice(0, 10);
+  const snap = await getDocs(query(collection(db, 'stats'), where('day', '>=', since), limit(5000)));
+  const { summarize } = await import('../game/telemetry');
+  return summarize(snap.docs.map((d) => d.data() as Parameters<typeof summarize>[0][number]));
 }

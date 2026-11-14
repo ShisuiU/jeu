@@ -82,7 +82,7 @@ function FriendsBody({ uid }: { uid: string }) {
           <b className="fr-code">{code ?? '······'}</b>
           <button className="btn secondary small" disabled={!code} onClick={() => void copy()}>Copier</button>
         </div>
-        <p className="faint" style={{ marginBottom: 0 }}>Donne-le à un ami : il l’entre ci-dessous de son côté, puis tu acceptes sa demande.</p>
+        <p className="faint" style={{ marginBottom: 0 }}>Ton ami l’entre de son côté, puis tu acceptes sa demande.</p>
         <form className="row" style={{ gap: 8, marginTop: 10 }} onSubmit={(e) => { e.preventDefault(); if (!rows) return; const c = input; void run(async (a) => { const n = await a.addByCode(c, rows); toast(`Demande envoyée à ${n}.`, 'ok'); setInput(''); }); }}>
           <input className="text-input grow fr-input" placeholder="Code d’un ami" value={input} maxLength={8} onChange={(e) => setInput(e.target.value.toUpperCase())} aria-label="Code d’un ami" />
           <button className="btn small" type="submit" disabled={busy || input.trim().length < 6}>Ajouter</button>
@@ -124,7 +124,7 @@ function FriendsBody({ uid }: { uid: string }) {
               </span>
             </div>
           ))}
-          {friends.length > 0 && <p className="hint" style={{ marginBottom: 0 }}>Chaque jour : un cadeau de {GIFT_ENERGY} énergie par ami, à recevoir sans limite (même avec l’énergie pleine). Le meilleur héros d’un ami peut te rejoindre en campagne et en donjon (une fois par jour et par ami).</p>}
+          {friends.length > 0 && <p className="hint" style={{ marginBottom: 0 }}>Chaque jour : +{GIFT_ENERGY} énergie par ami (même énergie pleine) et un renfort par ami en campagne ou en donjon.</p>}
         </Panel>
       )}
 

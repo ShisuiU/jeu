@@ -1,3 +1,4 @@
+import { trackStat } from '../../state/stats';
 import { factionTeam } from '../../game/factionDungeon';
 import { defeatTips } from '../../game/tips';
 import { riftSetups } from '../../game/rift';
@@ -341,6 +342,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
       res = applyMode(d, spec, { won, alliesDead: dead, participants: initial.allies.map((a) => a.heroUid).filter((u): u is string => !!u), allyHp: Object.fromEntries(s.units.filter((u) => u.side === 'ally' && u.heroUid).map((u) => [u.heroUid!, u.alive ? Math.max(0, u.hp) / u.base.hp : 0])), bossDamage: boss ? { dealt: boss.base.hp - Math.max(0, boss.hp), max: boss.base.hp } : undefined }, Date.now());
     });
     setResult(res);
+    trackStat({ kind: 'battle', mode: spec.mode, won, stage: spec.mode === 'campaign' && spec.difficulty === 'normal' ? spec.stageId : undefined, floor: spec.mode === 'tower' && !spec.challenge ? spec.floor : undefined });
     const ok = (res as ModeResult | null)?.won;
     play(ok ? 'claim' : 'error');
     setPhase(ok && initial.info.after?.length ? 'outro' : 'result');
@@ -609,9 +611,9 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
               </>
             ) : (
               <div className="hint">
-                {spec.mode === 'arena' ? 'L’équipe adverse l’emporte cette fois. Choisis un adversaire plus accessible ou renforce tes héros (niveau, équipement, rang).'
-                  : spec.mode === 'worldboss' ? 'Aucun palier de dégâts atteint. Renforce tes héros pour infliger plus de dégâts avant la fin du temps imparti.'
-                  : 'Les ennemis l’emportent cette fois. Voici ce qui aiderait le plus :'}
+                {spec.mode === 'arena' ? 'Choisis un adversaire plus accessible, ou renforce tes héros (niveau, équipement, rang).'
+                  : spec.mode === 'worldboss' ? 'Aucun palier de dégâts atteint : renforce tes héros.'
+                  : 'Pour l’emporter la prochaine fois :'}
                 {spec.mode !== 'arena' && spec.mode !== 'worldboss' && (
                   <div className="defeat-tips">
                     {defeatTips(useGame.getState().save!, initial.team, initial.info.waves).map((t, i) => (
@@ -641,9 +643,8 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
       {quit && (
         <Modal onClose={() => setQuit(false)}>
           <h2>Pause</h2>
-          <p className="muted" style={{ textAlign: 'center' }}>Le combat est en attente.</p>
           <button className="btn block" onClick={() => setQuit(false)}>Reprendre</button>
-          <p className="faint" style={{ textAlign: 'center', margin: '14px 0 6px' }}>Abandonner compte comme une défaite. L’énergie n’est pas rendue.</p>
+          <p className="faint" style={{ textAlign: 'center', margin: '14px 0 6px' }}>Abandonner = défaite, énergie non rendue.</p>
           <button className="btn danger block" onClick={doQuit}>Abandonner</button>
         </Modal>
       )}

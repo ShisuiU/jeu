@@ -1,3 +1,4 @@
+import { startStats } from './state/stats';
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { ErrorBoundary } from './ui/components/ErrorBoundary';
 import { Guide } from './ui/components/Guide';
@@ -122,7 +123,7 @@ export default function App() {
     if (booted.current) return;
     booted.current = true;
     initSaveSystem()
-      .then(() => setReady(true))
+      .then(() => { setReady(true); startStats(); })
       .then(() => loadEvents(import.meta.env.BASE_URL))
       .catch((e) => setError(`Impossible d’accéder au stockage : ${e instanceof Error ? e.message : e}. Désactive la navigation privée.`));
   }, []);

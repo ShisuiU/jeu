@@ -1,3 +1,4 @@
+import { trackStat } from '../../state/stats';
 import { GetButton } from '../components/Sources';
 import shCommon from '../../assets/kit/shard_common.webp';
 import shAeon from '../../assets/kit/shard_aeon.webp';
@@ -51,6 +52,7 @@ export function Summon() {
     let out: ReturnType<typeof summon> = { ok: false, results: [] };
     mutate((s) => { out = summon(s, id, count, Math.random, Date.now()); });
     if (!out.ok) { toast(out.reason ?? 'Impossible.', 'error'); return; }
+    trackStat({ kind: 'summon', n: count });
     setReveal({ results: out.results, banner: id, count, key: Date.now() });
   };
   const giftAvailable = b.featured && !save.flags[EVENT_WELCOME_GIFT.flag];

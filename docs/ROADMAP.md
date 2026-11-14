@@ -558,6 +558,12 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.101.1 — Éclats : une seule texture, plus d'échange de cristaux
+
+- **Texture des éclats** : partout (Sac, porte-monnaie, récompenses, fenêtre « Obtenir », coûts, petites icônes) la même que les cristaux de l'Autel ; l'ancienne icône générique et les anciennes illustrations sur fond noir ne servent plus.
+- **Plus d'échange à l'Autel** : les cristaux d'Aeon ne s'échangent plus contre des éclats épiques (bloc et fonction retirés). L'invocation épique reste ouverte, payée en éclats épiques.
+- **Éclats épiques gagnés en jouant** (même rythme qu'avant, environ un appel épique par jour) : coffre des missions du jour (+1), coffre de la semaine (+2), étages gardés de la Tour (+1 tous les 10 étages), saison d'Arène (Argent et Or +1, Platine +2, Diamant +3), connexion (jour 14 +1, jour 28 +2), en plus du Donjon des familles et des Failles. La fenêtre « Obtenir » les liste d'elle-même.
+
 ## ✅ Version 1.101.0 — Statistiques de jeu anonymes, textes du combat allégés
 
 - **Statistiques anonymes** (pour équilibrer) : par journée de jeu, combats gagnés/perdus par mode, défaites par niveau de campagne et étage de Tour, invocations, sessions, minutes de jeu, niveau de compte et progression. **Aucune donnée personnelle** (ni nom, ni e-mail, ni compte, ni sauvegarde) ; identifiant tiré au hasard **chaque jour** (deux journées d'un même joueur ne peuvent pas être reliées). Additionnées sur l'appareil, envoyées au plus toutes les 5 minutes ; jamais depuis une adresse locale ni en mode test. **Désactivables** dans Paramètres ▸ Jeu ▸ Statistiques anonymes.

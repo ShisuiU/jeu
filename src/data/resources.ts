@@ -19,7 +19,7 @@ export const RESOURCES: Record<ResourceId, ResourceDef> = {
   crystals: { id: 'crystals', name: 'Cristaux d’Aeon', description: 'Ressource rare : recharge d’énergie, invocations spéciales. Obtenue uniquement en jouant.', icon: 'crystal', color: '#7fe7ff' },
   shardDim: { id: 'shardDim', name: 'Éclat terne', description: 'Invocation standard (Commun → Rare).', icon: 'shard', color: '#a9b0b8' },
   shardAeon: { id: 'shardAeon', name: 'Éclat d’Aeon', description: 'Invocation rare (Rare → Légendaire).', icon: 'shard', color: '#3d8bff' },
-  shardEpic: { id: 'shardEpic', name: 'Éclat épique', description: 'Invocation épique (Rare garanti, Épique presque une fois sur deux). S’échange à l’Autel contre 300 cristaux d’Aeon.', icon: 'shard', color: '#a64dff' },
+  shardEpic: { id: 'shardEpic', name: 'Éclat épique', description: 'Invocation épique (Rare garanti, Épique presque une fois sur deux).', icon: 'shard', color: '#a64dff' },
   shardPrimal: { id: 'shardPrimal', name: 'Éclat primordial', description: 'Ancienne monnaie, convertie en cristaux.', icon: 'shard', color: '#ffae2b' },
   shardEvent: { id: 'shardEvent', name: 'Éclat de faille', description: 'Invocation spéciale des événements.', icon: 'shard', color: '#ff3d6e' },
   xpElixir: { id: 'xpElixir', name: 'Élixir d’expérience', description: 'Donne de l’expérience à un héros.', icon: 'flask', color: '#9bdc6a' },

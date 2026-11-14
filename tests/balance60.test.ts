@@ -4,8 +4,9 @@ import { migrateSave } from '../src/save/migrations';
 import { awakenCheck } from '../src/game/upgrade';
 import { sweepTower, towerSweepMax } from '../src/game/towerSweep';
 import { ghostRanks } from '../src/game/ranks';
-import { BANNERS, BANNER_BY_ID, EPIC_SHARD_PRICE } from '../src/data/summons';
-import { buyEpicShards } from '../src/game/summon';
+import { BANNERS, BANNER_BY_ID } from '../src/data/summons';
+/** Repère économique : prix historique d'un appel épique en cristaux. */
+const EPIC_SHARD_PRICE = 300;
 import { DAILY_BONUS, DAILY_MISSIONS, WEEKLY_BONUS, WEEKLY_MISSIONS } from '../src/data/missions';
 import { BOSS_TIERS } from '../src/data/worldBoss';
 
@@ -53,17 +54,13 @@ describe('Invocations v1.66.4', () => {
     expect(b.multiGuarantee).toBe('epic');
     expect(Object.values(b.rates).reduce((a, x) => a + (x ?? 0), 0)).toBeCloseTo(100, 5);
   });
-  it('v1.84.0 : Mythique seulement aux Failles ; l’appel épique coûte 1 éclat épique (300 cristaux à l’échange)', () => {
+  it('v1.84.0 : Mythique seulement aux Failles ; l’appel épique coûte 1 éclat épique (plus d’échange contre des cristaux)', () => {
     for (const b of BANNERS) {
       if (b.cost.resource === 'shardEvent') expect(b.rates.mythic ?? 0).toBeGreaterThan(0);
       else expect(b.rates.mythic ?? 0).toBe(0);
       expect(Object.values(b.rates).reduce((a, x) => a + (x ?? 0), 0)).toBeCloseTo(100, 5);
     }
     expect(BANNER_BY_ID.epic.cost).toEqual({ resource: 'shardEpic', amount: 1 });
-    const s = createNewSave(Date.now()); s.resources.crystals = 650; s.resources.shardEpic = 0;
-    expect(buyEpicShards(s, 1).ok).toBe(true);
-    expect(buyEpicShards(s, 2).ok).toBe(false);
-    expect(s.resources.crystals).toBe(350); expect(s.resources.shardEpic).toBe(1);
     // remise à 0 unique pour tous les comptes existants
     const old = JSON.parse(JSON.stringify(createNewSave(Date.now()))); old.resources.shardEpic = 7; delete old.flags.epic_shards_v184;
     const m = migrateSave(old);

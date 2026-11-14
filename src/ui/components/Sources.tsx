@@ -14,7 +14,7 @@ const ACT_ICON: Record<string, IconName> = {
   campaign: 'sword', starChests: 'star', factionDungeon: 'temple', tower: 'tower', towerChallenges: 'tower', rifts: 'portal',
   worldboss: 'skull', arena: 'arena', guild: 'team', dailyMissions: 'scroll', weeklyMissions: 'scroll', achievements: 'star',
   weeklyEvent: 'calendar', specialEvents: 'calendar', dailyLogin: 'mail', wheel: 'wheel', market: 'coin', camp: 'gift',
-  expeditions: 'loop', mine: 'diamond', collection: 'heroes', dismantle: 'forge', epicExchange: 'shard',
+  expeditions: 'loop', mine: 'diamond', collection: 'heroes', dismantle: 'forge',
 };
 const iconOf = (id: string): IconName => ACT_ICON[id] ?? (id.startsWith('dungeon_') ? 'dungeon' : 'gem');
 

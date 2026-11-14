@@ -53,9 +53,8 @@ export const BANNERS: BannerDef[] = [
   },
 ];
 
-/** v1.84.0 : l'invocation épique se paie en éclats épiques (1 par appel, comme les autres) ; un éclat épique
- *  s'échange à l'Autel contre le prix qu'avait un appel en cristaux : l'économie ne change pas. */
-export const EPIC_SHARD_PRICE = 300;
+/** v1.84.0 : l'invocation épique se paie en éclats épiques (1 par appel, comme les autres).
+ *  v1.101.1 : plus d'échange de cristaux d'Aeon contre des éclats épiques à l'Autel ; les éclats épiques se gagnent en jouant. */
 
 export const BANNER_BY_ID: Record<string, BannerDef> = Object.fromEntries(BANNERS.map((b) => [b.id, b]));
 

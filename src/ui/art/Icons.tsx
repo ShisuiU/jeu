@@ -69,12 +69,23 @@ export const Icon = {
 
 // Illustrations des ressources (src/assets/res/res-<ressource>.webp) : utilisées dans les grandes vignettes
 // (sac, récompenses, Marché) ; les petites icônes dans le texte gardent le symbole, plus lisible à cette taille.
+import shardCommonImg from '../../assets/kit/shard_common.webp';
+import shardAeonImg from '../../assets/kit/shard_aeon.webp';
+import shardEpicImg from '../../assets/kit/shard_epic.webp';
+import shardRiftImg from '../../assets/kit/shard_rift.webp';
 const RES_FILES = import.meta.glob('/src/assets/res/*.webp', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
 const RES_ART: Record<string, string> = {};
 for (const [path, url] of Object.entries(RES_FILES)) { const m = path.match(/res-([a-zA-Z]+)\.webp$/); if (m) RES_ART[m[1]] = url; }
+// Éclats (v1.101.1) : UNE seule texture partout, celle des cristaux de l'Autel (petites icônes comprises).
+RES_ART.shardDim = shardCommonImg; RES_ART.shardAeon = shardAeonImg; RES_ART.shardEpic = shardEpicImg; RES_ART.shardEvent = shardRiftImg;
+const SHARD_BY_COLOR: Record<string, string> = { '#a9b0b8': 'shardDim', '#3d8bff': 'shardAeon', '#a64dff': 'shardEpic', '#ff3d6e': 'shardEvent' };
+const SHARDS = new Set(['shardDim', 'shardAeon', 'shardEpic', 'shardEvent']);
 export const resArtUrl = (id: string) => RES_ART[id];
 
 export function ResourceIcon({ icon, color, size, res }: { icon: string; color?: string; size?: number; res?: string }) {
+  // Un éclat est reconnu même quand l'appelant ne donne que l'icône et la couleur.
+  const shard = res && SHARDS.has(res) ? res : icon === 'shard' && color ? SHARD_BY_COLOR[color.toLowerCase()] : undefined;
+  if (shard) return <img className="art-img res-shard" src={RES_ART[shard]} alt="" width={size ?? 22} height={size ?? 22} draggable={false} decoding="async" />;
   const url = res && (size ?? 22) >= 26 ? RES_ART[res] : undefined;
   if (url) return <img className="art-img res-art" src={url} alt="" width={size} height={size} draggable={false} loading="lazy" decoding="async" onLoad={(e) => e.currentTarget.classList.add('ok')} style={{ ['--ph' as string]: color ?? '#2a2134' }} />;
   const f = (Icon as Record<string, (p: P) => JSX.Element>)[icon] ?? Icon.crystal;

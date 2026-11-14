@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import worldArt from '../../assets/title/world.webp';
 import { useUI } from '../../state/ui';
 import { useGame } from '../../state/store';
 import { isStandalone } from '../../pwa';
@@ -6,15 +7,38 @@ import { play } from '../../audio/sfx';
 import { Icon } from '../art/Icons';
 import { NAME_MAX, cleanName, nameError } from '../../game/profile';
 
-// GUIDE DE DÉMARRAGE — quelques écrans au premier lancement (relançable depuis les paramètres).
-const STEPS: { icon: keyof typeof Icon; title: string; text: string }[] = [
-  { icon: 'portal', title: 'Tu es le Lien', text: 'Quand le Cœur d’Aeon s’est brisé, des morceaux de toutes les époques ont été recousus en un seul monde : le Monde Cousu. Aujourd’hui, le Néant l’efface. Tu es la seule personne capable d’appeler les Héritiers, des héros venus de toutes les époques, à travers les failles. On te montre tout en jouant.' },
+// GUIDE DE DÉMARRAGE — au premier lancement : un prologue cinématique (v1.102.2), puis le choix du nom.
+// Le prologue remplace l'ancien paragraphe : trois phrases courtes qui apparaissent sur le Monde Cousu ;
+// toucher l'écran passe à la phrase suivante, « Passer » va directement au nom.
+const PROLOGUE = [
+  'Le Cœur d’Aeon s’est brisé.',
+  'Toutes les époques ont été recousues en un seul monde.',
+  'Le Néant l’efface. Toi seul peux appeler ses Héritiers.',
 ];
+const LINE_MS = 2600;
+
+function Prologue({ onDone }: { onDone: () => void }) {
+  const [k, setK] = useState(0);
+  useEffect(() => {
+    if (k >= PROLOGUE.length) { onDone(); return; }
+    const t = setTimeout(() => setK((x) => x + 1), LINE_MS);
+    return () => clearTimeout(t);
+  }, [k]); // eslint-disable-line react-hooks/exhaustive-deps
+  return (
+    <div className="prologue" role="dialog" aria-label="Prologue" onClick={() => setK((x) => x + 1)}>
+      <img className="pro-art" src={worldArt} alt="" draggable={false} />
+      <div className="pro-shade" />
+      {k < PROLOGUE.length && <p className="pro-line" key={k}>{PROLOGUE[k]}</p>}
+      <div className="pro-dots" aria-hidden>{PROLOGUE.map((_, j) => <span key={j} className={j <= k ? 'on' : ''} />)}</div>
+      <button className="pro-skip" onClick={(e) => { e.stopPropagation(); onDone(); }}>Passer</button>
+    </div>
+  );
+}
 
 export function Guide() {
   const mutate = useGame((s) => s.mutate);
   const current = useGame((s) => s.save?.profile.name ?? '');
-  const [i, setI] = useState(0);
+  const [named, setNamed] = useState(false); // prologue vu
   // Premier écran : nouveau joueur (l'histoire commence) ou ancien joueur (retrouver sa partie).
   const [who, setWho] = useState<'ask' | 'new' | 'old'>('ask');
   const push = useUI((s) => s.push);
@@ -50,28 +74,20 @@ export function Guide() {
       </div>
     </div>
   );
-  const st = STEPS[i];
-  const I = Icon[st.icon] as (p: { size?: number }) => JSX.Element;
-  const last = i === STEPS.length - 1;
+  if (!named) return <Prologue onDone={() => setNamed(true)} />;
   return (
     <div className="modal-backdrop" style={{ zIndex: 55 }}>
-      <div className="modal guide" key={i}>
-        <div className="guide-ic"><I size={40} /></div>
-        <h2>{st.title}</h2>
-        <p className="lore" style={{ textAlign: 'center' }}>{st.text}</p>
-        {last && (
-          <label className="guide-name">
-            <span>Ton nom</span>
-            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Choisis ton nom" maxLength={NAME_MAX} autoComplete="nickname" aria-label="Ton nom" />
-          </label>
-        )}
-        {last && <p className={`name-err ${tried && err ? 'on' : ''}`}>{tried && err ? err : '3 à 18 caractères.'}</p>}
-        {last && !isStandalone() && /iPad|iPhone|iPod/.test(navigator.userAgent) && <div className="hint">Astuce : dans Safari, Partager → « Sur l’écran d’accueil » pour jouer en plein écran et hors ligne.</div>}
-        <div className="guide-dots">{STEPS.map((_, k) => <span key={k} className={k === i ? 'on' : ''} />)}</div>
-        <div className="row" style={{ gap: 8 }}>
-          {!last && <button className="btn secondary grow" onClick={() => setI(STEPS.length - 1)}>Passer</button>}
-          <button className="btn grow" onClick={() => { play('tap'); if (last) done(); else setI(i + 1); }}>{last ? 'C’est parti !' : 'Suivant'}</button>
-        </div>
+      <div className="modal guide name-card">
+        <div className="guide-ic"><Icon.portal size={40} /></div>
+        <h2>Tu es le Lien</h2>
+        <p className="lore" style={{ textAlign: 'center', margin: '0 0 10px' }}>Les Héritiers t’appelleront par ton nom.</p>
+        <label className="guide-name">
+          <span>Ton nom</span>
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Choisis ton nom" maxLength={NAME_MAX} autoComplete="nickname" aria-label="Ton nom" />
+        </label>
+        <p className={`name-err ${tried && err ? 'on' : ''}`}>{tried && err ? err : '3 à 18 caractères.'}</p>
+        {!isStandalone() && /iPad|iPhone|iPod/.test(navigator.userAgent) && <div className="hint">Astuce : dans Safari, Partager → « Sur l’écran d’accueil » pour jouer en plein écran et hors ligne.</div>}
+        <button className="btn block" style={{ marginTop: 12 }} onClick={() => { play('tap'); done(); }}>C’est parti !</button>
       </div>
     </div>
   );

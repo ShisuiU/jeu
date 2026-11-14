@@ -54,9 +54,10 @@ export function formatDuration(ms: number): string {
   const h = Math.floor(s / 3600);
   const m = Math.floor((s % 3600) / 60);
   const sec = s % 60;
-  if (h > 0) return `${h} h ${String(m).padStart(2, '0')}`;
-  if (m > 0) return `${m} min ${String(sec).padStart(2, '0')}`;
-  return `${sec} s`;
+  // Espaces insécables : une durée ne se coupe jamais en fin de ligne (« 16 h » / « 08 »).
+  if (h > 0) return `${h}\u00a0h\u00a0${String(m).padStart(2, '0')}`;
+  if (m > 0) return `${m}\u00a0min\u00a0${String(sec).padStart(2, '0')}`;
+  return `${sec}\u00a0s`;
 }
 
 /** Clé de semaine de jeu (lundi de la semaine, au renouvellement quotidien). */

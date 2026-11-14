@@ -62,7 +62,6 @@ export function FactionDungeon() {
           );
         })}
       </div>
-      <p className="faint" style={{ textAlign: 'center', margin: '0 0 10px', fontSize: 12.5 }}>Un donjon par famille, qui change chaque jour. Ta progression est gardée : tu reprends où tu en étais quand il revient.</p>
 
       <button className={`fd-stars ${claimable.length ? 'ready' : ''}`} onClick={() => setShowMs(true)}>
         <div className="row between" style={{ gap: 8 }}>

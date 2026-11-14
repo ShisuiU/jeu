@@ -123,7 +123,7 @@ export function Prep({ spec }: { spec: BattleSpec }) {
       {odds && (
         <div className={`prep-odds ${odds.tone}`} role="status">
           <b>{odds.label}</b>
-          <span>{odds.wins}/{odds.runs} victoires sur des combats simulés avec cette équipe{odds.tone === 'bad' ? ' : renforce-la ou change de héros' : ''}</span>
+          <span>{odds.wins}/{odds.runs} victoires simulées{odds.tone === 'bad' ? ' : renforce ton équipe' : ''}</span>
         </div>
       )}
       {info.challenge && (
@@ -245,7 +245,7 @@ export function Prep({ spec }: { spec: BattleSpec }) {
         <div className="row" style={{ gap: 8 }}>
           {(spec.mode === 'campaign' || spec.mode === 'dungeon') && (
             <button className="btn secondary prep-sweep" disabled={!bgOk.ok || !count} onClick={() => setBgOpen(true)} title={bgOk.ok ? 'Combats automatiques pendant que tu joues ailleurs' : bgOk.reason} aria-label="Combats en arrière-plan">
-              <Icon.loop size={16} /> Répéter
+              <Icon.loop size={16} /> <span className="lbl">Répéter</span>
             </button>
           )}
           <button className="btn grow fight-btn" disabled={blocked} onClick={go}>

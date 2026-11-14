@@ -82,14 +82,13 @@ export function Ranks({ tab: initial }: { tab?: RankField }) {
       {view && <PlayerCard uid={view.uid} entry={view} ghost={isGhost(view)} signedIn={!!user} self={view.uid === uid} canReport={!!user && !isGhost(view) && view.uid !== uid}
         onReport={() => { setReport({ uid: view.uid, name: view.name, kind: 'name', where: `Classement ${def.label}` }); setView(null); }} onClose={() => setView(null)} />}
       {report && <ReportSheet target={report} onClose={() => setReport(null)} />}
-      {rows && rows.length > 0 && <p className="faint" style={{ fontSize: 12, textAlign: 'center' }}>Touche un joueur pour voir son profil.</p>}
       {user && (
         <button className="btn secondary block" style={{ marginTop: 14 }} onClick={toggle}>
           {save.settings.showInRanks ? 'Ne plus apparaître au classement' : 'Apparaître au classement'}
         </button>
       )}
-      {rows?.some(isGhost) && <p className="faint" style={{ fontSize: 12, textAlign: 'center' }}>Peu de joueurs pour l’instant : le classement est complété par des Héritiers imaginaires, en attendant les vrais.</p>}
-      <p className="faint" style={{ fontSize: 12, textAlign: 'center' }}>Seuls ton nom (modifiable sur ta carte du Menu), ton avatar et tes scores sont visibles.</p>
+      {rows?.some(isGhost) && <p className="faint" style={{ fontSize: 12, textAlign: 'center' }}>Les « Imaginaires » complètent le classement en attendant plus de joueurs.</p>}
+      <p className="faint" style={{ fontSize: 12, textAlign: 'center' }}>Seuls ton nom, ton avatar et tes scores sont visibles.</p>
     </Screen>
   );
 }

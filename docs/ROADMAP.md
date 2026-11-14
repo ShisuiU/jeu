@@ -558,6 +558,15 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.99.0 — Combats fluides et première passe de finition
+
+- **Fluidité des combats** (mesurée avec un processeur ralenti ×4, comme un téléphone) : 36 → 55 images/s. La scène en profondeur de la v1.97 utilisait un second plan masqué, des modes de fusion et un flou qui forçaient le téléphone à recomposer l'écran à chaque image : retirés (la brume, les rais, la lumière des sorts et les actes restent). Particules du combat dessinées d'un seul coup à partir d'un halo pré-calculé, en définition 1,5× au lieu de 2×.
+- **Textes allégés** : explications raccourcies ou retirées quand l'écran se comprend seul (Collection, Compte, Sauvegarde, Paramètres, Forge, Sanctuaire, Camp, Bâtiments, Failles, Donjon des familles, Roue, Clan, Amis, Classements, Sac, Menu, Préparation). « tu as : X » retiré des boutons d'invocation (déjà affiché en haut).
+- **Libellés** : plus de boutons sur deux lignes (« Nouvelle partie », « Importer », « Sauvegarde », « Se connecter », « Équipe recommandée ») ni de titres de panneau qui débordent (« Copies de secours », « Coffre du jour »).
+- **Composants communs** : boutons d'en-tête (Classement…) dans leur cadre, onglets à largeur de libellé (plus de « Faille de Cen… »), tuiles du Menu alignées (icône de secours à la taille des autres), bouton Campagne de l'accueil sans chevauchement, petits boutons qui ne débordent plus, durées insécables (« 16 h 08 » jamais coupé).
+- **Petits écrans (320 px)** : onglets défilants, boutons d'invocation, carte de profil, barre de préparation et bâtiments ajustés.
+- Méthode : audit automatique de 35 écrans à 320, 375 et 393 px (centrage mesuré des libellés, débordements, chevauchements, textes collés aux bords), puis revue visuelle.
+
 ## ✅ Version 1.98.1 — Correctif : écran des Expéditions en erreur
 
 - Les expéditions proposées ou lancées avant la v1.88 gardaient l'ancienne potion (fusionnée depuis) dans leur butin : l'écran plantait en voulant l'afficher. La sauvegarde est réparée au chargement (ancienne potion convertie, ressources inconnues retirées) et les affichages de récompenses ignorent désormais toute ressource inconnue au lieu de planter. Test ajouté.

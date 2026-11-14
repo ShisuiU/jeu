@@ -25,9 +25,8 @@ export function Friends() {
   if (!user) return (
     <Screen title="Amis">
       <Panel>
-        <p className="muted" style={{ marginTop: 0 }}>Ajoute tes amis avec leur code : chaque jour, vous vous envoyez de l’énergie, et le meilleur héros d’un ami peut venir en renfort dans tes combats.</p>
-        <p className="muted">Il faut un compte pour avoir des amis.</p>
-        <button className="btn block" onClick={() => push({ name: 'saves' })}>Créer un compte ou se connecter</button>
+        <p className="muted" style={{ marginTop: 0 }}>Échangez de l’énergie chaque jour et empruntez le meilleur héros d’un ami en renfort.</p>
+        <button className="btn block" onClick={() => push({ name: 'saves' })}>Se connecter</button>
       </Panel>
     </Screen>
   );

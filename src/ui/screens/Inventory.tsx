@@ -18,7 +18,6 @@ const ALWAYS = ['gold', 'crystals'];
 
 export function Inventory() {
   const save = useGame((s) => s.save)!;
-  const hidden = GROUPS.flatMap((g) => g.ids).filter((id) => !ALWAYS.includes(id) && !(save.resources[id as keyof typeof save.resources] > 0)).length;
   const toast = useUI((s) => s.toast);
   return (
     <Screen title="Sac">
@@ -47,7 +46,6 @@ export function Inventory() {
           </div>
         </Panel>
       ))}
-      {hidden > 0 && <div className="hint" style={{ textAlign: 'center' }}>{hidden} objet{hidden > 1 ? 's' : ''} pas encore obtenu{hidden > 1 ? 's' : ''} : ils apparaîtront ici.</div>}
     </Screen>
   );
 }

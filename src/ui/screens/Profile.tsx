@@ -111,7 +111,7 @@ export function Profile() {
       </Panel>
 
       <div className="row" style={{ gap: 8 }}>
-        <button className="btn secondary grow" onClick={() => push({ name: 'saves' })}><Icon.save size={16} /> Sauvegarde et compte</button>
+        <button className="btn secondary grow" onClick={() => push({ name: 'saves' })}><Icon.save size={16} /> Sauvegarde</button>
         <button className="btn secondary grow" onClick={() => push({ name: 'settings' })}><Icon.gear size={16} /> Paramètres</button>
       </div>
 

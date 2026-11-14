@@ -41,7 +41,7 @@ export function AccountBody({ mode: initial }: { mode?: 'register' } = {}) {
   if (!acc.user) return (
     <>
       <Panel>
-        <p className="muted" style={{ marginTop: 0 }}>Avec un compte gratuit, ta partie est sauvegardée en ligne : tu la retrouves sur un autre appareil ou après avoir réinstallé le jeu. Le jeu reste jouable hors ligne.</p>
+        <p className="muted" style={{ marginTop: 0 }}>Compte gratuit : ta partie est sauvegardée en ligne et te suit sur tous tes appareils.</p>
         <button className="btn block acc-google" disabled={busy} onClick={() => void run(async (c) => { if ((await c.loginGoogle()) === 'done') toast('Connecté avec Google : ta partie est sauvegardée en ligne.', 'ok'); })}><GoogleLogo /> Continuer avec Google</button>
         <div className="acc-or"><span>ou avec une adresse e-mail</span></div>
         <div className="seg" style={{ marginBottom: 12 }}>
@@ -58,7 +58,7 @@ export function AccountBody({ mode: initial }: { mode?: 'register' } = {}) {
         )}
         {mode === 'register' && <p className="faint" style={{ marginBottom: 0 }}>Ta partie actuelle ({saveSummary(save)}) deviendra celle du compte.</p>}
       </Panel>
-      <p className="faint" style={{ textAlign: 'center' }}>Données conservées : ton adresse e-mail et ta sauvegarde de jeu, chez Google Firebase. Tu peux supprimer ton compte à tout moment.</p>
+      <p className="faint" style={{ textAlign: 'center' }}>Seuls ton e-mail et ta sauvegarde sont conservés (Google Firebase). Compte supprimable à tout moment.</p>
     </>
   );
 
@@ -151,7 +151,7 @@ export function AccountPrompt() {
     <Modal onClose={() => close()}>
       <div className="acc-prompt-ic"><Icon.save size={34} /></div>
       <h2>Ne perds pas ta partie</h2>
-      <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>Elle n’est enregistrée que sur ce téléphone. Avec un compte gratuit, elle est aussi sauvegardée en ligne : tu la retrouves sur un autre appareil ou après avoir réinstallé le jeu.</p>
+      <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>Elle n’existe que sur ce téléphone. Un compte gratuit la sauvegarde en ligne.</p>
       <div className="acc-prompt-sum">{saveSummary(save)}</div>
       <button className="btn block" onClick={() => { close(); useUI.getState().push({ name: 'account', mode: 'register' }); }}>Créer un compte</button>
       <button className="btn secondary block" style={{ marginTop: 8 }} onClick={() => close()}>Plus tard</button>

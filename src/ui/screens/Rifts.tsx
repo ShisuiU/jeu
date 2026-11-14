@@ -43,7 +43,7 @@ export function Rifts() {
     <Screen title="Les Failles">
       <section className="rift-head">
         <div className="faint" style={{ fontSize: 12 }}>Traversée de la semaine{resetIn ? ` · nouvelle faille dans ${resetIn}` : ''}</div>
-        <p style={{ margin: '6px 0 0', fontSize: 13 }}>Dix salles, une seule tentative. À chaque salle, choisis ta route. Les PV de ton équipe sont conservés d’un combat à l’autre ; un héros tombé reste à terre jusqu’à une halte. Les reliques s’additionnent.</p>
+        <p style={{ margin: '6px 0 0', fontSize: 13 }}>Dix salles, une tentative. Les PV sont conservés entre les combats ; un héros tombé attend une halte.</p>
       </section>
 
       {r.status !== 'idle' && (

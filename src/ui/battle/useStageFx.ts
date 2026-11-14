@@ -48,7 +48,7 @@ export function useStageFx(battleRef: RefObject<HTMLDivElement | null>, speedRef
     const tx = amp * (k - z) * (p.x - c.x) * 0.15, ty = amp * (k - z) * (p.y - c.y) * 0.6;
     el.style.transform = `translate(${tx.toFixed(1)}px, ${ty.toFixed(1)}px) scale(${z})`;
     camScale.current = z;
-    // Profondeur : chaque plan suit la caméra selon sa distance (ciel 0,12 ; brume 0,3 ; sol 0,42).
+    // Profondeur : chaque plan suit la caméra selon sa distance (décor 0,22 ; rais 0,2 ; brume 0,3).
     bgs.forEach((b) => { const d = Number(b.dataset.depth ?? 0.22); b.style.transition = tr; b.style.transform = `translate(${(tx * d).toFixed(1)}px, ${(ty * d).toFixed(1)}px) scale(${1 + (z - 1) * d * 1.6})`; });
   };
   /** Lumière dynamique : un halo de la couleur du sort éclaire le décor à cet endroit, puis s'éteint. */
@@ -58,7 +58,7 @@ export function useStageFx(battleRef: RefObject<HTMLDivElement | null>, speedRef
     const sz = el.offsetWidth;
     el.style.setProperty('--lc', color);
     el.style.transform = `translate(${(p.x - sz / 2).toFixed(0)}px, ${(p.y - sz / 2).toFixed(0)}px)`;
-    el.animate([{ opacity: 0 }, { opacity: power, offset: 0.25 }, { opacity: 0 }], { duration: ms / Math.sqrt(speedRef.current), easing: 'ease-out' });
+    el.animate([{ opacity: 0 }, { opacity: power * 0.55, offset: 0.25 }, { opacity: 0 }], { duration: ms / Math.sqrt(speedRef.current), easing: 'ease-out' });
   };
   /** Assaut : la carte s'élance vers sa cible (petit recul, ruée), puis revient à sa place. */
   const lungeTo = async (actor: Unit, from: { x: number; y: number; w: number }, to: { x: number; y: number; w: number }) => {

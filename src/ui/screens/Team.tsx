@@ -64,7 +64,7 @@ export function Team() {
             : <button className="btn small" onClick={() => { setActiveTeam(team.id); toast(`« ${team.name} » est l’équipe active.`, 'ok'); }}>Définir comme active</button>}
           {leaderDef && <span className="chip">Chef : {leaderDef.name}</span>}
         </div>
-        <button className="btn secondary small block" style={{ marginTop: 10 }} onClick={() => { const r = recommendTeam(save); useGame.getState().mutate((s) => { const t = s.teams.find((x) => x.id === team.id); if (t) { t.slots = r.slots; t.leader = r.leader; } }); toast('Équipe recommandée appliquée.', 'ok'); setPicking(null); }}>Composer l’équipe recommandée</button>
+        <button className="btn secondary small block" style={{ marginTop: 10 }} onClick={() => { const r = recommendTeam(save); useGame.getState().mutate((s) => { const t = s.teams.find((x) => x.id === team.id); if (t) { t.slots = r.slots; t.leader = r.leader; } }); toast('Équipe recommandée appliquée.', 'ok'); setPicking(null); }}>Équipe recommandée</button>
       </Panel>
 
       {picking !== null && (

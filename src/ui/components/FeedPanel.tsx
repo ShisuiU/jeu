@@ -41,7 +41,7 @@ export function FeedPanel({ targetUid }: { targetUid: string }) {
 
   return (
     <Panel title="Absorber des héros">
-      <p className="faint" style={{ marginTop: 0 }}>Donne de l’expérience en absorbant des <b>doublons</b> (ils valent le double et ta collection reste intacte) ou des héros dont tu n’as plus besoin (ils disparaissent, leur équipement retourne au sac).</p>
+      <p className="faint" style={{ marginTop: 0 }}><b>Doublons</b> : XP ×2, collection intacte. Autres héros : ils disparaissent, leur équipement revient au sac.</p>
       <div className="feed-slots">
         {Array.from({ length: FEED_MAX }, (_, i) => {
           const k = valid[i];

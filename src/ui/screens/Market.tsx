@@ -54,7 +54,7 @@ export function Market() {
 
   return (
     <Screen title="Marché">
-      <Wallet ids={['gold', 'crystals', 'diamonds']} cols={3} />
+      <Wallet ids={['gold', 'diamonds']} cols={2} />
       <div className="mk-grid">
         {m.offers.map((x, i) => {
           const res = x.reward ? Object.entries(x.reward)[0] : null;

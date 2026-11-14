@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
 import { HERO_BY_ID } from '../../data/heroes';
-import { RESOURCES, type Reward } from '../../data/resources';
+import { RESOURCES, normalizeReward, type Reward } from '../../data/resources';
 import type { AffinityId, FactionId, RoleId } from '../../data/types';
 import { formatDuration, msUntilReset } from '../../core/time';
 import { busyHeroes, claimExpedition, condLabel, condMet, expeditionLoot, recallExpedition, refreshExpeditions, startExpedition, type ExpeditionOffer } from '../../game/expeditions';
@@ -27,7 +27,7 @@ function CondIcon({ c, size = 14 }: { c: ExpeditionOffer['cond']; size?: number 
 function MiniLoot({ reward }: { reward: Reward }) {
   return (
     <div className="ex-loot">
-      {Object.entries(reward).filter(([, v]) => (v ?? 0) >= 0.5).map(([k, v]) => {
+      {Object.entries(normalizeReward(reward)).filter(([, v]) => (v ?? 0) >= 0.5).map(([k, v]) => {
         const d = RESOURCES[k as keyof typeof RESOURCES];
         if (!d) return null;
         return <span key={k} title={d.name}><ResourceIcon icon={d.icon} color={d.color} size={14} />{fmt(Math.round(v ?? 0))}</span>;

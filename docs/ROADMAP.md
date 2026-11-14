@@ -558,6 +558,14 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.102.0 — Fin des cristaux d'Aeon
+
+- **Les cristaux d'Aeon sont retirés du jeu** (ils ne servaient plus qu'à des achats marginaux) : une monnaie de moins.
+- **Conversion centrale** (`normalizeReward`, `data/resources.ts`) au seul endroit où l'on donne une récompense (`applyReward`) et là où on l'affiche (`RewardView`, `RewardInline`, missions, événements, expéditions, fenêtre « Obtenir ») : environ 300 cristaux → 1 éclat épique (ancien prix d'un appel épique), les petites sommes en or (1 cristal = 50 or). Cela couvre aussi les événements chargés en ligne et les codes promo, sans réécrire chaque table.
+- **Stock des joueurs** : converti une fois au chargement (300 → 1 éclat épique, le reste en or). Partie neuve : 1 éclat épique au lieu de 300 cristaux.
+- **Marché** : plus d'offres en cristaux (Éclat d'Aeon en or, plus fréquent ; Essence d'éveil en or) ; offres déjà tirées converties en or. **Maîtrises** : réinitialisation à 50 000 or. **Camp** : sa part de cristaux passe en or. **Roue** : la case « 30 cristaux » devient 10 000 or. Sac et porte-monnaie : les cristaux n'apparaissent plus.
+- Tests mis à jour (285) ; aucun cristal visible sur 25 écrans vérifiés.
+
 ## ✅ Version 1.101.2 — Combat : noms de compétences dégagés, préparation allégée
 
 - **Nom de la compétence** : le bandeau ne se pose plus au milieu de l'écran (sur l'équipe ennemie) mais dans l'espace libre entre la barre du haut et les ennemis, calculé à chaque affichage selon la taille de l'écran ; sur un très petit écran, il chevauche l'ordre des tours plutôt que les ennemis. Bandeau plus fin, sur une ligne.

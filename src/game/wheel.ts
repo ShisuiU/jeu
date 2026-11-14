@@ -12,7 +12,7 @@ export const WHEEL: WheelSlot[] = [
   { id: 'g5', reward: { gold: 5000 }, weight: 12, label: '5 000 or', short: '5 000', color: '#6b4c1c' },
   { id: 'e10', reward: { energy: 10 }, weight: 12, label: '10 énergie', short: '10', color: '#24506b' },
   { id: 'x3', reward: { xpElixir: 3 }, weight: 10, label: '3 élixirs', short: '×3', color: '#33522a' },
-  { id: 'cr', reward: { crystals: 30 }, weight: 9, label: '30 cristaux', short: '30', color: '#1d5560' },
+  { id: 'cr', reward: { gold: 10000 }, weight: 9, label: '10 000 or', short: '10 000', color: '#6b4c1c' },
   { id: 'e30', reward: { energy: 30 }, weight: 7, label: '30 énergie', short: '30', color: '#24506b' },
   { id: 'x5', reward: { xpElixir: 5 }, weight: 7, label: '5 élixirs', short: '×5', color: '#33522a' },
   { id: 'g15', reward: { gold: 15000 }, weight: 6, label: '15 000 or', short: '15 000', color: '#6b4c1c' },

@@ -12,11 +12,11 @@ describe('Paliers de collection', () => {
     for (const d of HEROES) { if (ownedCount(s) >= 10) break; if (!owned.has(d.id)) s.heroes.push(createHeroInstance(d.id, 0)); }
     expect(collectionClaimable(s)).toEqual([10]);
     const before = heroBonus(s, s.heroes[0]).pct.atk;
-    const crystals = s.resources.crystals;
+    const epic = s.resources.shardEpic;
     expect(claimCollection(s)).toEqual([10]);
     expect(collectionPct(s)).toBe(1);
     expect(heroBonus(s, s.heroes[0]).pct.atk).toBe(before + 1);
-    expect(s.resources.crystals).toBeGreaterThan(crystals);
+    expect(s.resources.shardEpic).toBeGreaterThan(epic);
     expect(collectionClaimable(s)).toEqual([]);
     expect(nextCollectionStep(s)).toBe(15);
   });

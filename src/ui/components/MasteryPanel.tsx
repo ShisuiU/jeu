@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
-import { MASTERIES, MASTERY_BRANCHES, MASTERY_RESET_CRYSTALS, MASTERY_TIERS, MAX_ULTIMATES, type MasteryDef } from '../../data/masteries';
+import { MASTERIES, MASTERY_BRANCHES, MASTERY_RESET_GOLD, MASTERY_TIERS, MAX_ULTIMATES, type MasteryDef } from '../../data/masteries';
 import { RESOURCES } from '../../data/resources';
 import { heroMasteries, learnMastery, masteryBlock, masteryScrollsSpent, resetMasteries } from '../../game/masteries';
 import { play } from '../../audio/sfx';
@@ -86,10 +86,10 @@ export function MasteryPanel({ h }: { h: HeroInstance }) {
       {reset && (
         <Modal onClose={() => setReset(false)}>
           <h2>Réinitialiser les maîtrises ?</h2>
-          <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>Les {masteryScrollsSpent(h)} parchemins sont rendus (pas l’or). Coût : {MASTERY_RESET_CRYSTALS} cristaux.</p>
+          <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>Les {masteryScrollsSpent(h)} parchemins sont rendus (pas l’or). Coût : {MASTERY_RESET_GOLD.toLocaleString('fr-FR')} or.</p>
           <div className="row" style={{ gap: 8 }}>
             <button className="btn secondary grow" onClick={() => setReset(false)}>Annuler</button>
-            <button className="btn grow" disabled={save.resources.crystals < MASTERY_RESET_CRYSTALS} onClick={doReset}>Réinitialiser</button>
+            <button className="btn grow" disabled={save.resources.gold < MASTERY_RESET_GOLD} onClick={doReset}>Réinitialiser</button>
           </div>
         </Modal>
       )}

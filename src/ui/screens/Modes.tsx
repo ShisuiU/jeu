@@ -314,7 +314,7 @@ export function Arena() {
         <button className="btn secondary small" onClick={() => {
           let r: ReturnType<typeof refreshOpponents> = { ok: false, cost: 0 };
           mutate((d) => { r = refreshOpponents(d, seededRand(Date.now())); });
-          if (r.ok) { play('tap'); toast(r.cost ? `Nouveaux adversaires (−${r.cost} cristaux).` : 'Nouveaux adversaires (actualisation gratuite du jour).', 'ok'); } else toast(r.reason ?? 'Impossible.', 'error');
+          if (r.ok) { play('tap'); toast(r.cost ? `Nouveaux adversaires (−${r.cost} diamants).` : 'Nouveaux adversaires (actualisation gratuite du jour).', 'ok'); } else toast(r.reason ?? 'Impossible.', 'error');
         }}>
           <Icon.loop size={14} /> Actualiser {refreshCost(save) ? <><Icon.diamond size={14} /> {refreshCost(save)}</> : <span className="faint">· gratuit</span>}
         </button>

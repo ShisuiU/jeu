@@ -32,7 +32,7 @@ describe('robustesse : 300 actions aléatoires', () => {
   it('la sauvegarde reste valide et identique après export/import', () => {
     const r = seededRand(2026);
     let s: SaveData = createNewSave(Date.parse('2026-11-10T10:00:00Z'));
-    for (const k of Object.keys(s.resources) as (keyof SaveData['resources'])[]) s.resources[k] = 5000;
+    for (const k of Object.keys(s.resources) as (keyof SaveData['resources'])[]) s.resources[k] = k === 'crystals' ? 0 : 5000; // plus de cristaux (v1.102.0)
     let now = Date.parse('2026-11-10T10:00:00Z');
     const actions: ((d: SaveData) => void)[] = [
       (d) => claimDaily(d, now),

@@ -47,11 +47,11 @@ describe('objectifs, points et paliers', () => {
     expect(eventClaimable(s, NOW, e.id)).toBe(5);
     for (const t of e.tasks!) expect(claimEventTask(s, e.id, t.id)).toBe(true);
     expect(eventPoints(s, e)).toBe(e.tasks!.reduce((n, t) => n + (t.points ?? 0), 0));
-    const crystals = s.resources.crystals;
+    const gold = s.resources.gold;
     expect(milestoneState(s, e, 1)!.ready).toBe(true);
     expect(claimMilestone(s, e.id, 1, NOW)).toBe(true);
     expect(claimMilestone(s, e.id, 1, NOW)).toBe(false);
-    expect(s.resources.crystals).toBe(crystals + 100);
+    expect(s.resources.gold).toBe(gold + 100 * 50); // 100 cristaux → or (v1.102.0)
     expect(milestoneState(s, e, 4)!.ready).toBe(false); // 330 points < 500
   });
 });

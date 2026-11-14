@@ -55,7 +55,8 @@ function play(seed: number, steps: number, poor = false) {
   const s = createNewSave(now);
   s.time.highWater = now;
   // Une partie plutôt riche, pour que les actions aboutissent souvent.
-  if (!poor) for (const k of Object.keys(s.resources) as (keyof typeof s.resources)[]) s.resources[k] = 2000 + Math.floor(r() * 50_000);
+  // v1.102.0 : plus de cristaux d'Aeon (convertis au chargement) : le joueur riche n'en a pas.
+  if (!poor) for (const k of Object.keys(s.resources) as (keyof typeof s.resources)[]) s.resources[k] = k === 'crystals' ? 0 : 2000 + Math.floor(r() * 50_000);
   const log: string[] = [];
   const actions: [string, () => void][] = [
     ['invocation', () => { const b = pick(BANNERS); summon(s, b.id, r() < 0.3 ? 10 : 1, r, now); }],

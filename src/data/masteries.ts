@@ -43,4 +43,5 @@ export const MASTERY_TIERS: Record<1 | 2 | 3 | 4, { scrolls: number; gold: numbe
 };
 export const MAX_ULTIMATES = 2;
 /** Réinitialiser les maîtrises d'un héros : rend les parchemins (pas l'or). */
-export const MASTERY_RESET_CRYSTALS = 100;
+/** Réinitialiser les maîtrises d'un héros (v1.102.0 : en or, les cristaux n'existent plus). */
+export const MASTERY_RESET_GOLD = 50000;

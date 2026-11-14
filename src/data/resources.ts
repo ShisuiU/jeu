@@ -16,11 +16,11 @@ export interface ResourceDef {
 
 export const RESOURCES: Record<ResourceId, ResourceDef> = {
   gold: { id: 'gold', name: 'Or', description: 'Monnaie universelle : améliorations, forge, montée de niveau.', icon: 'coin', color: '#ffcf5a' },
-  crystals: { id: 'crystals', name: 'Cristaux d’Aeon', description: 'Ressource rare : recharge d’énergie, invocations spéciales. Obtenue uniquement en jouant.', icon: 'crystal', color: '#7fe7ff' },
+  crystals: { id: 'crystals', name: 'Cristaux d’Aeon', description: 'Ancienne monnaie, retirée du jeu (convertie en éclats épiques et en or).', icon: 'crystal', color: '#7fe7ff' },
   shardDim: { id: 'shardDim', name: 'Éclat terne', description: 'Invocation standard (Commun → Rare).', icon: 'shard', color: '#a9b0b8' },
   shardAeon: { id: 'shardAeon', name: 'Éclat d’Aeon', description: 'Invocation rare (Rare → Légendaire).', icon: 'shard', color: '#3d8bff' },
   shardEpic: { id: 'shardEpic', name: 'Éclat épique', description: 'Invocation épique (Rare garanti, Épique presque une fois sur deux).', icon: 'shard', color: '#a64dff' },
-  shardPrimal: { id: 'shardPrimal', name: 'Éclat primordial', description: 'Ancienne monnaie, convertie en cristaux.', icon: 'shard', color: '#ffae2b' },
+  shardPrimal: { id: 'shardPrimal', name: 'Éclat primordial', description: 'Ancienne monnaie, retirée du jeu.', icon: 'shard', color: '#ffae2b' },
   shardEvent: { id: 'shardEvent', name: 'Éclat de faille', description: 'Invocation spéciale des événements.', icon: 'shard', color: '#ff3d6e' },
   xpElixir: { id: 'xpElixir', name: 'Élixir d’expérience', description: 'Donne de l’expérience à un héros.', icon: 'flask', color: '#9bdc6a' },
   skillTome: { id: 'skillTome', name: 'Grimoire de compétence', description: 'Améliore une compétence d’un héros.', icon: 'book', color: '#c7a0ff' },
@@ -49,4 +49,25 @@ export function cleanReward(r: Reward | undefined): Reward {
     out[key] = (out[key] ?? 0) + v * (legacy ? legacy[1] : 1);
   }
   return out;
+}
+
+// ─── Fin des cristaux d'Aeon (v1.102.0) ───
+// Les cristaux ne servaient plus qu'à des achats marginaux : ils sont retirés du jeu. Toute récompense encore écrite
+// en cristaux (tables, événements en ligne, anciens codes) est convertie ici, au seul endroit où l'on donne ET où l'on
+// affiche une récompense : ~300 cristaux = 1 éclat épique (ancien prix d'un appel épique), les petites sommes en or.
+export const CRYSTALS_PER_EPIC = 300;
+export const GOLD_PER_CRYSTAL = 50;
+export function crystalsTo(n: number): Reward {
+  if (!(n > 0)) return {};
+  const epic = Math.round(n / CRYSTALS_PER_EPIC);
+  return epic >= 1 ? { shardEpic: epic } : { gold: Math.round(n * GOLD_PER_CRYSTAL) };
+}
+/** Récompense telle qu'elle est donnée et montrée au joueur : anciennes ressources converties, cristaux convertis. */
+export function normalizeReward(r: Reward | undefined): Reward {
+  const c = cleanReward(r);
+  const n = c.crystals ?? 0;
+  if (!n) return c;
+  delete c.crystals;
+  for (const [k, v] of Object.entries(crystalsTo(n))) c[k as keyof Reward] = (c[k as keyof Reward] ?? 0) + (v as number);
+  return c;
 }

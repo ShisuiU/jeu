@@ -1,4 +1,4 @@
-import { RESOURCES, type ResourceId, type Reward } from '../data/resources';
+import { RESOURCES, normalizeReward, type ResourceId, type Reward } from '../data/resources';
 import { CHAPTERS, DIFFICULTY_ORDER } from '../data/campaign';
 import { DUNGEONS, DUNGEON_FLOORS, dungeonReward } from '../data/dungeons';
 import { TOWER_FLOORS, towerReward } from '../data/tower';
@@ -85,7 +85,7 @@ export const ACTIVITIES: Activity[] = [
     current: (_s, now) => specialRewards(activeEvents(now).filter((e) => !e.cycle)) },
   { id: 'dailyLogin', name: 'Connexion quotidienne', hint: 'Courrier · un cadeau par jour', route: { name: 'mail' }, rewards: () => DAILY_REWARDS.map((d) => d.reward) },
   { id: 'wheel', name: 'Roue quotidienne', hint: 'Un tour gratuit par jour', route: { name: 'wheel' }, rewards: () => WHEEL.map((w) => w.reward) },
-  { id: 'market', name: 'Marché', hint: 'Offres du jour, contre de l’or ou des cristaux', route: { name: 'market' }, feature: 'market',
+  { id: 'market', name: 'Marché', hint: 'Offres du jour, contre de l’or', route: { name: 'market' }, feature: 'market',
     rewards: () => MARKET_POOL.filter((o) => o.reward).map((o) => o.reward!) },
   { id: 'camp', name: 'Camp des Héritiers', hint: 'Butin d’absence, même jeu fermé', route: { name: 'camp' }, feature: 'camp',
     rewards: (s) => [Object.fromEntries(Object.keys(campRates(s)).map((k) => [k, 1])) as Reward] },
@@ -101,7 +101,7 @@ function specialRewards(list: GameEvent[]): Reward[] {
   return list.flatMap((e) => [...(e.tasks ?? []).map((t) => t.reward), ...(e.login?.days ?? []).map((d) => d.reward), ...(e.challenge ? [e.challenge.reward] : [])]);
 }
 
-const has = (rs: Reward[], r: ResourceId) => rs.some((x) => (x[r] ?? 0) > 0);
+const has = (rs: Reward[], r: ResourceId) => rs.some((x) => (normalizeReward(x)[r] ?? 0) > 0);
 
 export type SourceStatus = 'open' | 'locked' | 'later';
 export interface Source { activity: Activity; status: SourceStatus; reason?: string; amount?: string | null }

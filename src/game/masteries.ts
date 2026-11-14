@@ -1,4 +1,4 @@
-import { MASTERIES, MASTERY_BY_ID, MASTERY_RESET_CRYSTALS, MASTERY_TIERS, MAX_ULTIMATES, type MasteryDef } from '../data/masteries';
+import { MASTERIES, MASTERY_BY_ID, MASTERY_RESET_GOLD, MASTERY_TIERS, MAX_ULTIMATES, type MasteryDef } from '../data/masteries';
 import type { HeroInstance, SaveData } from '../save/schema';
 import type { GearBonus } from './gear';
 import { track } from './missions';
@@ -36,9 +36,9 @@ export const masteryScrollsSpent = (h: HeroInstance) => heroMasteries(h).reduce(
 export function resetMasteries(s: SaveData, heroUid: string): { ok: boolean; reason?: string; scrolls?: number } {
   const h = s.heroes.find((x) => x.uid === heroUid);
   if (!h || !heroMasteries(h).length) return { ok: false, reason: 'Aucune maîtrise à réinitialiser.' };
-  if (s.resources.crystals < MASTERY_RESET_CRYSTALS) return { ok: false, reason: 'Cristaux insuffisants.' };
+  if (s.resources.gold < MASTERY_RESET_GOLD) return { ok: false, reason: 'Or insuffisant.' };
   const scrolls = masteryScrollsSpent(h);
-  s.resources.crystals -= MASTERY_RESET_CRYSTALS;
+  s.resources.gold -= MASTERY_RESET_GOLD;
   s.resources.masteryScroll += scrolls;
   h.masteries = [];
   return { ok: true, scrolls };

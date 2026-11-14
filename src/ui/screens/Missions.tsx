@@ -7,7 +7,7 @@ import { ACHIEVEMENTS } from '../../data/achievements';
 import { activeMissions, bonusAvailable, claimableByTab, claimAchievement, claimBonus, claimMission, missionState, type MissionKind } from '../../game/missions';
 import { formatDuration, msUntilReset, msUntilWeekReset } from '../../core/time';
 import { play } from '../../audio/sfx';
-import { RESOURCES } from '../../data/resources';
+import { RESOURCES, normalizeReward } from '../../data/resources';
 import { Panel, Screen } from '../components/common';
 import { RewardView, rewardMainIcon } from '../components/RewardView';
 
@@ -21,7 +21,7 @@ export function Row({ title, value, target, reward, claimed, onClaim, goKey }: {
       <div className="grow">
         <div className="m-title">{title}</div>
         <div className="progress" style={{ margin: '5px 0 3px' }}><div style={{ width: `${Math.min(100, (value / target) * 100)}%` }} /></div>
-        <div className="faint">{Object.entries(reward).map(([k, v]) => `+${v} ${k === 'energy' ? 'énergie' : RESOURCES[k as keyof typeof RESOURCES]?.name ?? k}`).join(' · ')}</div>
+        <div className="faint">{Object.entries(normalizeReward(reward)).map(([k, v]) => `+${v} ${k === 'energy' ? 'énergie' : RESOURCES[k as keyof typeof RESOURCES]?.name ?? k}`).join(' · ')}</div>
       </div>
       {claimed ? <span className="m-done">✓</span> : done ? <button className="btn small" onClick={onClaim}>Réclamer</button> 
         : <span className="m-side"><span className="m-count">{Math.min(value, target)}/{target}</span>{go && ('route' in go ? <button className="m-go" onClick={() => useUI.getState().push(go.route)}>Y aller ›</button> : <span className="m-lock" title={go.locked}>{go.locked}</span>)}</span>}

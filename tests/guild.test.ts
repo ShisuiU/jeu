@@ -40,9 +40,9 @@ describe('clans (règles locales)', () => {
     expect(bossTotal(g, T0)).toBe(GUILD_TIERS[1].dmg + 1);
     expect(claimableTiers(s, g, 'z', T0)).toEqual([]); // n'a pas attaqué
     expect(claimableTiers(s, g, 'b', T0)).toEqual([0, 1]);
-    const crystals = s.resources.crystals;
+    const gold = s.resources.gold;
     expect(claimTier(s, g, 'b', 0, T0)).toBeTruthy();
-    expect(s.resources.crystals).toBeGreaterThan(crystals);
+    expect(s.resources.gold).toBeGreaterThan(gold);
     expect(claimTier(s, g, 'b', 0, T0)).toBeNull();
     expect(claimableTiers(s, g, 'b', T0)).toEqual([1]);
     // Semaine suivante : les dégâts de l'ancienne semaine ne comptent plus.

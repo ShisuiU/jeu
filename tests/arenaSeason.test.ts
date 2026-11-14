@@ -1,3 +1,4 @@
+import { normalizeReward } from '../src/data/resources';
 import { describe, expect, it } from 'vitest';
 import { createNewSave } from '../src/save/schema';
 import { applyResets, claimSeasonReward } from '../src/game/missions';
@@ -24,9 +25,10 @@ describe('saisons d’Arène (v1.68.15)', () => {
     expect(s.arena.seasonReward?.tier).toBe('gold');
     expect(s.arena.rating).toBe(1200); // la moitié des points au-dessus de 1000 est gardée
     expect(s.arena.seasonFights).toBe(0);
-    const cr = s.resources.crystals;
+    const ep = s.resources.shardEpic;
     claimSeasonReward(s);
-    expect(s.resources.crystals).toBe(cr + ARENA_TIERS.find((t) => t.id === 'gold')!.season.crystals!);
+    expect(s.resources.shardEpic).toBe(ep + normalizeReward(ARENA_TIERS.find((t) => t.id === 'gold')!.season).shardEpic!);
+    expect(s.resources.crystals).toBe(0); // v1.102.0 : plus de cristaux
     expect(s.arena.seasonReward).toBeNull();
   });
   it('rien sans avoir combattu, et un classement sous 1000 n’est pas baissé', () => {

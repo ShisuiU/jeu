@@ -12,10 +12,10 @@ describe('codes promo', () => {
   });
   it('un code donne sa récompense une seule fois', () => {
     const s = createNewSave(Date.now());
-    const before = s.resources.crystals;
+    const before = s.resources.shardEpic;
     const r = redeemPromo(s, 'aeonfall', Date.now());
     expect(r.ok).toBe(true);
-    expect(s.resources.crystals).toBe(before + 300);
+    expect(s.resources.shardEpic).toBe(before + 1); // 300 cristaux du code → 1 éclat épique (v1.102.0)
     expect(redeemPromo(s, 'AEONFALL', Date.now()).ok).toBe(false);
     expect(redeemPromo(s, 'INCONNU', Date.now()).ok).toBe(false);
   });

@@ -35,3 +35,18 @@ export const RESOURCES: Record<ResourceId, ResourceDef> = {
 export const RESOURCE_LIST = Object.values(RESOURCES);
 
 export type Reward = Partial<Record<ResourceId | 'energy', number>>;
+
+/** Anciennes ressources fusionnées (v1.88.0 : une seule potion d'ascension) : clé → [nouvelle clé, multiplicateur]. */
+const LEGACY_RESOURCES: Record<string, [ResourceId, number]> = { potionGreater: ['potionMinor', 3], potionSupreme: ['potionMinor', 6] };
+/** Nettoie une récompense venue d'une ancienne sauvegarde : convertit les ressources fusionnées, retire les inconnues. */
+export function cleanReward(r: Reward | undefined): Reward {
+  const out: Reward = {};
+  for (const [k, v] of Object.entries(r ?? {})) {
+    if (typeof v !== 'number' || !Number.isFinite(v)) continue;
+    const legacy = LEGACY_RESOURCES[k];
+    const key = (legacy ? legacy[0] : k) as keyof Reward;
+    if (key !== 'energy' && !(key in RESOURCES)) continue;
+    out[key] = (out[key] ?? 0) + v * (legacy ? legacy[1] : 1);
+  }
+  return out;
+}

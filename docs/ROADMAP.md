@@ -558,6 +558,10 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.98.1 — Correctif : écran des Expéditions en erreur
+
+- Les expéditions proposées ou lancées avant la v1.88 gardaient l'ancienne potion (fusionnée depuis) dans leur butin : l'écran plantait en voulant l'afficher. La sauvegarde est réparée au chargement (ancienne potion convertie, ressources inconnues retirées) et les affichages de récompenses ignorent désormais toute ressource inconnue au lieu de planter. Test ajouté.
+
 ## ✅ Version 1.98.0 — Remise en ordre interne (combat et styles)
 
 - **Styles** : 135 règles CSS mortes retirées (classes absentes du code, détectées automatiquement en tenant compte des classes dynamiques) ; feuille compilée 252 → 240 Ko. 33 écrans comparés au pixel près avant/après : identiques.

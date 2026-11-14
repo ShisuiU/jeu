@@ -60,3 +60,18 @@ describe('expéditions', () => {
     expect(m.expeditions).toEqual({ day: '', offers: [], runs: [], done: [] });
   });
 });
+
+describe('expéditions venues d’une ancienne sauvegarde (v1.98.1)', () => {
+  it('l’ancienne potion dans le butin est convertie au chargement, et le retour se récupère', () => {
+    const s = createNewSave(NOW);
+    const ex = refreshExpeditions(s, NOW);
+    ex.offers[0].base = { crystals: 8, potionGreater: 0.25 } as never;
+    ex.runs.push({ offerId: 'old', heroUids: [s.heroes[0].uid], startAt: 0, endsAt: 1, offer: { ...ex.offers[0], id: 'old', base: { potionGreater: 2, gold: 100 } as never } });
+    const m = migrateSave(JSON.parse(JSON.stringify(s)));
+    expect(Object.keys(m.expeditions.offers[0].base)).not.toContain('potionGreater');
+    expect(m.expeditions.runs[0].offer.base).toEqual({ potionMinor: 6, gold: 100 });
+    const r = claimExpedition(m, 'old', NOW);
+    expect(r.ok).toBe(true);
+    expect(Object.keys(r.reward ?? {}).every((k) => k !== 'potionGreater')).toBe(true);
+  });
+});

@@ -2,6 +2,7 @@ import { DUNGEON_BY_ID } from '../data/dungeons';
 import { HERO_BY_ID } from '../data/heroes';
 import { DUPLICATE_FRAGMENTS } from '../data/summons';
 import { createNewSave, SAVE_VERSION, type SaveData } from './schema';
+import { cleanReward } from '../data/resources';
 
 // MIGRATIONS
 // Chaque entrée transforme une sauvegarde de la version N vers N+1. On ne supprime jamais une migration :
@@ -87,6 +88,9 @@ export function migrateSave(raw: unknown): SaveData {
   { const r = merged.resources as Record<string, number>; const g = r.potionGreater ?? 0, sp = r.potionSupreme ?? 0;
     if (g || sp) r.potionMinor = (r.potionMinor ?? 0) + 3 * g + 6 * sp;
     delete r.potionGreater; delete r.potionSupreme; }
+  // v1.98.1 : les expéditions proposées ou lancées avant la v1.88 gardaient l'ancienne potion dans leur butin (écran en erreur).
+  { const ex = merged.expeditions as SaveData['expeditions'] | undefined;
+    if (ex) { for (const o of ex.offers ?? []) o.base = cleanReward(o.base); for (const run of ex.runs ?? []) if (run.offer) run.offer.base = cleanReward(run.offer.base); } }
   // v1.84.0 : les éclats épiques (nouvelle monnaie de l'invocation épique) partent de 0 pour tous les comptes, une fois.
   // (les parties créées depuis portent déjà la marque : on regarde la sauvegarde d'origine, avant les valeurs par défaut)
   if (!s.flags?.epic_shards_v184) { merged.resources.shardEpic = 0; merged.flags.epic_shards_v184 = true; }

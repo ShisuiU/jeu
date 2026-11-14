@@ -29,6 +29,7 @@ function MiniLoot({ reward }: { reward: Reward }) {
     <div className="ex-loot">
       {Object.entries(reward).filter(([, v]) => (v ?? 0) >= 0.5).map(([k, v]) => {
         const d = RESOURCES[k as keyof typeof RESOURCES];
+        if (!d) return null;
         return <span key={k} title={d.name}><ResourceIcon icon={d.icon} color={d.color} size={14} />{fmt(Math.round(v ?? 0))}</span>;
       })}
     </div>

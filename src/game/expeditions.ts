@@ -1,5 +1,5 @@
 import type { SaveData } from '../save/schema';
-import type { Reward } from '../data/resources';
+import { cleanReward, type Reward } from '../data/resources';
 import type { AffinityId, FactionId, RoleId } from '../data/types';
 import { HERO_BY_ID } from '../data/heroes';
 import { AFFINITIES } from '../data/affinities';
@@ -86,7 +86,7 @@ export function expeditionLoot(s: SaveData, o: ExpeditionOffer, heroUids: string
   const bonus = condMet(o.cond, heroUids.map((u) => s.heroes.find((h) => h.uid === u)!.heroId));
   const reward: Reward = {};
   const ev = eventBonus(s.time.highWater, 'expedition');
-  for (const [k, v] of Object.entries(o.base)) {
+  for (const [k, v] of Object.entries(cleanReward(o.base))) {
     const n = (v as number) * ratio * (bonus ? 1.3 : 1) * ev;
     const whole = Math.floor(n);
     // Partie décimale tirée au sort de façon déterministe (les petites ressources rares tombent parfois).

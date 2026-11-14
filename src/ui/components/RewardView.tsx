@@ -26,6 +26,7 @@ export function RewardView({ reward, gear = [], compact }: { reward: Reward; gea
     <div className="reward-compact" style={{ ['--rc-cols' as string]: rcols }}>
       {Object.entries(reward).map(([k, v], i) => {
         const def = k === 'energy' ? null : RESOURCES[k as keyof typeof RESOURCES];
+        if (k !== 'energy' && !def) return null;
         return (
           <div key={k} className="rc-item" style={{ animationDelay: `${i * 0.06}s` }}>
             {def ? <ResourceIcon icon={def.icon} color={def.color} size={30} res={k} /> : <Icon.energy size={28} />}
@@ -54,6 +55,7 @@ export function RewardView({ reward, gear = [], compact }: { reward: Reward; gea
     <div className="reward-list" style={{ ['--n' as string]: Math.max(1, cols) }}>
       {Object.entries(reward).map(([k, v], i) => {
         const def = k === 'energy' ? null : RESOURCES[k as keyof typeof RESOURCES];
+        if (k !== 'energy' && !def) return null;
         return (
           <div key={k} className="reward-item" style={{ animationDelay: `${i * 0.08}s` }}>
             {def ? <ResourceIcon icon={def.icon} color={def.color} size={34} res={k} /> : <Icon.energy size={34} />}
@@ -77,6 +79,7 @@ export function rewardMainIcon(r: Reward, size = 20) {
   const k = Object.keys(r)[0];
   if (!k || k === 'energy') return <Icon.energy size={size} />;
   const def = RESOURCES[k as keyof typeof RESOURCES];
+  if (!def) return <Icon.energy size={size} />;
   return <ResourceIcon icon={def.icon} color={def.color} size={size} />;
 }
 

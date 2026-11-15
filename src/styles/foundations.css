@@ -584,3 +584,32 @@ body:has(.battle-controls) .toast { font-size: var(--fs-sm); padding-top: 7px; p
 .gd-sub .gd-at { font-size: var(--fs-xs); color: var(--text-dim); padding: 1px 7px; border: 1px solid var(--line-1); border-radius: var(--r-pill); }
 .gd-next { margin: 6px 0 0; min-height: 1.4em; }
 .gd-up { min-height: 65px; box-sizing: border-box; } /* = ligne « Améliorer » avec son coût */
+
+/* ─── Retours du test « nouveau joueur sur petit écran » (v1.109.0) ─── */
+/* A. Combat : la 3ᵉ compétence ne sort plus de l'écran (la rangée peut rétrécir ; boutons plus serrés sous 400 px). */
+.skills { min-width: 0; }
+.skill-card .sk-name { overflow-wrap: anywhere; }
+@media (max-width: 400px) {
+  .ctrl-row { gap: 6px !important; }
+  .ctrl-col { width: 48px !important; }
+  .lien-btn { width: 50px !important; height: 50px !important; }
+  .skills { gap: 4px !important; }
+  .theme-v2 .skill-card { border-width: 0 9px !important; padding: 4px 1px !important; }
+  .skill-card .sk-name { font-size: var(--fs-xs); }
+}
+/* H. Compétence choisie bien visible : elle monte, s'éclaire et un trait doré la souligne. */
+.theme-v2 .skill-card.sel { transform: translateY(-5px) scale(1.04); filter: drop-shadow(0 0 10px rgba(255, 210, 120, 0.85)) brightness(1.15); }
+.theme-v2 .skill-card.sel::after { content: ''; position: absolute; left: 10%; right: 10%; bottom: -7px; height: 3px; border-radius: var(--r-pill); background: var(--gold-hi); box-shadow: 0 0 8px var(--gold-hi); }
+/* E. Tutoriel : « Passer le tutoriel » n'est plus collé au bouton OK. */
+.coach-actions { gap: 16px; }
+.coach-actions button { min-height: 36px; padding: 0 4px; }
+.coach-actions .coach-ok { min-width: 88px; min-height: 40px; font-size: var(--fs-md); }
+/* F. Petits boutons : dessin inchangé, zone de toucher agrandie à ≥ 40 px de haut. */
+.btn.small, .ctrl-col .ctrl, .get-btn, .info-btn { position: relative; }
+.btn.small::after, .ctrl-col .ctrl::after, .get-btn::after { content: ''; position: absolute; inset: -6px -3px; }
+.ctrl-col .ctrl::after { inset: -4px -3px; }
+/* I. Légende des effets : affinité et comportements d'ennemis. */
+.fx-legend-more { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line-2); }
+.fxl-ico.fxl-up, .fxl-ico.fxl-down { font-weight: 800; font-size: var(--fs-lg); display: grid; place-items: center; }
+.fxl-ico.fxl-up { color: #7bea8f; } .fxl-ico.fxl-down { color: #ff7a7a; }
+.fxl-ico.fxl-trait::before { content: ''; display: block; width: 12px; height: 12px; margin: auto; border-radius: 50%; background: var(--tc); box-shadow: 0 0 8px var(--tc); }

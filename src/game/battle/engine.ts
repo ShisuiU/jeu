@@ -293,7 +293,7 @@ function dealDamage(s: BattleState, source: Unit, target: Unit, effect: Extract<
       const part = Math.round(dmg * GUARD_SHARE);
       dmg = Math.max(1, dmg - part);
       if (!guard.flags.guardSeen) { guard.flags.guardSeen = 1; s.events.push({ kind: 'trait', trait: 'guard', source: guard.id, target: target.id }); }
-      rawHit(s, source, guard, Math.max(1, Math.round(part * GUARD_TAKES)));
+      rawHit(s, source, guard, Math.max(1, Math.round(part * GUARD_TAKES)), true);
     }
   }
 
@@ -365,7 +365,7 @@ function dealDamage(s: BattleState, source: Unit, target: Unit, effect: Extract<
 }
 
 /** Coup reçu à la place d'un autre (Garde) : bouclier puis PV, sans affinité ni critique. */
-function rawHit(s: BattleState, source: Unit, target: Unit, amount: number) {
+function rawHit(s: BattleState, source: Unit, target: Unit, amount: number, guarded = false) {
   let absorbed = 0;
   for (const sh of target.statuses.filter((x) => x.status === 'shield')) {
     const take = Math.min(sh.value, amount - absorbed); sh.value -= take; absorbed += take;
@@ -375,7 +375,7 @@ function rawHit(s: BattleState, source: Unit, target: Unit, amount: number) {
   const hpDmg = amount - absorbed;
   source.flags.dmgDealt = (source.flags.dmgDealt ?? 0) + absorbed + Math.min(hpDmg, Math.max(0, target.hp));
   target.hp -= hpDmg;
-  s.events.push({ kind: 'damage', source: source.id, target: target.id, amount, crit: false, strong: false, weak: false, absorbed });
+  s.events.push({ kind: 'damage', source: source.id, target: target.id, amount, crit: false, strong: false, weak: false, absorbed, ...(guarded ? { guarded } : {}) });
   if (target.hp <= 0) kill(s, target, source);
 }
 

@@ -68,6 +68,7 @@ export function Team() {
       </Panel>
 
       {picking !== null && (
+        <div ref={(el) => { if (el) requestAnimationFrame(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' })); }} key={picking}>
         <Panel title={`Emplacement ${picking + 1} : choisir un héros`}>
           <ListControls sortOptions={HERO_SORTS} sort={prefs.sort} onSort={(x) => setPrefs({ ...prefs, sort: x })}
             groups={HERO_GROUPS} filters={prefs.filters} onFilters={(f) => setPrefs({ ...prefs, filters: f })}
@@ -85,6 +86,7 @@ export function Team() {
             )}
           </div>
         </Panel>
+        </div>
       )}
 
       <Panel title="Synergies">

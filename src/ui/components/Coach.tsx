@@ -10,8 +10,21 @@ import { play } from '../../audio/sfx';
 
 // Ordre du tutoriel : 1er combat (une seule bulle) → première invocation → 2e combat (affinités, AUTO) → Sanctuaire.
 export const COACH_ORDER = ['home_campaign', 'campaign_stage', 'prep_fight', 'battle_skill',
-  'home_summon', 'summon_call', 'battle_target', 'battle_auto', 'home_sanct', 'sanct_level', 'hero_gear'] as const;
+  'home_summon', 'summon_call', 'battle_target', 'battle_auto', 'battle_lien', 'home_sanct', 'sanct_level', 'hero_gear'] as const;
 export type CoachId = typeof COACH_ORDER[number];
+
+/** v1.109.0 — Le tutoriel n'est plus une seule file : trois fils indépendants après le premier combat
+ *  (combat, invocation, Sanctuaire). Avant, l'étape « invoque » (seulement à l'Accueil) bloquait tout :
+ *  un joueur qui enchaînait « Suivant » ne voyait l'explication des affinités qu'au 1-6 et celle d'AUTO au 7ᵉ combat. */
+const PREREQ: Record<CoachId, CoachId[]> = {
+  home_campaign: [], campaign_stage: ['home_campaign'], prep_fight: ['campaign_stage'], battle_skill: ['prep_fight'],
+  battle_target: ['battle_skill'], battle_auto: ['battle_target'], battle_lien: ['battle_auto'],
+  home_summon: ['battle_skill'], summon_call: ['home_summon'],
+  home_sanct: ['summon_call'], sanct_level: ['home_sanct'], hero_gear: ['sanct_level'],
+};
+/** Étape faite : validée, ou déjà accomplie par le joueur lui-même (il a invoqué avant qu'on le lui montre). */
+const coachDone = (s: SaveData, id: CoachId): boolean =>
+  !!s.flags[`coach_${id}`] || ((id === 'home_summon' || id === 'summon_call') && (s.stats?.summons ?? 0) > 0);
 
 /** Joueur déjà avancé avant l'arrivée du tutoriel : on ne l'embête pas (sauf relance depuis les paramètres). */
 function veteran(s: SaveData): boolean {
@@ -21,15 +34,14 @@ function veteran(s: SaveData): boolean {
 }
 
 export function coachActive(s: SaveData, id: CoachId): boolean {
-  if (s.flags.coach_off || s.flags[`coach_${id}`] || !s.flags.guide_done || veteran(s)) return false;
-  const i = COACH_ORDER.indexOf(id);
-  // Une étape n'apparaît que si TOUTES les précédentes sont faites : jamais deux bulles à la fois.
-  return COACH_ORDER.slice(0, i).every((x) => !!s.flags[`coach_${x}`]);
+  if (s.flags.coach_off || coachDone(s, id) || !s.flags.guide_done || veteran(s)) return false;
+  // Une étape n'apparaît que si ses prérequis sont faits ; sur un même écran, les fils sont ordonnés : jamais deux bulles à la fois.
+  return PREREQ[id].every((x) => coachDone(s, x));
 }
 
 /** Le tutoriel du début est-il encore en cours (pas de message par-dessus) ? */
 export function inTutorial(s: SaveData): boolean {
-  return s.flags.guide_done !== true || (!s.flags.coach_off && !s.flags.coach_home_summon && Object.values(s.progress.campaign).filter((p) => p.clears > 0).length < 3);
+  return s.flags.guide_done !== true || (!s.flags.coach_off && !coachDone(s, 'home_summon') && Object.values(s.progress.campaign).filter((p) => p.clears > 0).length < 3);
 }
 
 export function resetCoach(s: SaveData) {

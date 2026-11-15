@@ -197,7 +197,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
           { const t = s.units.find((u) => u.id === e.target); const big = !!t && e.amount > t.base.hp * 0.25; if (e.crit || big) doShake(e.crit && big ? 'hard' : 'soft'); }
           if (!soundOnce.has('hit:' + e.source)) { soundOnce.add('hit:' + e.source); playImpact(f, { crit: ev.some((x) => x.kind === 'damage' && x.source === e.source && x.crit), many: ev.filter((x) => x.kind === 'damage' && x.source === e.source).length > 1 }); }
           if (f.weapon === 'blunt' || e.crit) { heavy.add(e.target); flashLight(center(e.target), f.color, 0.5, 420); }
-          hit.add(e.target); if (e.combo) addPopup(e.target, 'Combo !', 'buff'); addPopup(e.target, `${e.crit ? 'CRIT ' : ''}-${e.amount}${e.strong ? ' ▲' : e.weak ? ' ▼' : ''}`, `dmg ${e.crit ? 'crit' : ''} ${e.strong ? 'strong' : ''} ${e.weak ? 'weak' : ''}`); pause = true; break;
+          hit.add(e.target); if (e.combo) addPopup(e.target, 'Combo !', 'buff'); if (e.guarded && !soundOnce.has('guard:' + e.target)) { soundOnce.add('guard:' + e.target); addPopup(e.target, 'Garde', 'shieldp'); } addPopup(e.target, `${e.crit ? 'CRIT ' : ''}-${e.amount}${e.strong ? ' ▲' : e.weak ? ' ▼' : ''}`, `dmg ${e.crit ? 'crit' : ''} ${e.strong ? 'strong' : ''} ${e.weak ? 'weak' : ''}`); pause = true; break;
         }
         case 'dot': hit.add(e.target); addPopup(e.target, `-${e.amount}`, e.status === 'poison' ? 'poison' : 'burn'); addVfx(e.target, `impact w-none e-${e.status === 'poison' ? 'poison' : 'fire'} small`, e.status === 'poison' ? '#8be04e' : '#ff8a3a'); if (!soundOnce.has('dot' + e.status)) { soundOnce.add('dot' + e.status); playDot(e.status); } pause = true; break;
         case 'heal': if (e.amount > 0) { addPopup(e.target, `+${e.amount}`, 'heal'); { const p = center(e.target); if (p) stage.current?.motes(p, '#7bea8f', 16, 26, 0.06); } addVfx(e.target, 'healfx', '#7bea8f'); if (!soundOnce.has('heal')) { soundOnce.add('heal'); playHeal(); } } pause = true; break;
@@ -543,6 +543,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
       <canvas ref={stageCanvas} className="stage25-fx" aria-hidden />
       {/* Tutoriel du combat : une seule bulle au premier combat ; AUTO au combat suivant (les affinités sont expliquées à la préparation). Bulles en haut : l'équipe reste visible. */}
       <Coach id="battle_skill" place="top" target=".battle-controls .skills" when={awaiting && !auto && phase === 'fight'} text="C’est ton tour : choisis une compétence en bas, puis touche un ennemi." />
+      <Coach id="battle_lien" place="top" target=".lien-btn.full" when={lienFull && awaiting && !auto && phase === 'fight'} text="Ta jauge du Lien est pleine ! Touche-la pour agir toi-même : soigner l’équipe, frapper ensemble ou la protéger. Ça ne coûte pas le tour du héros, et c’est possible 2 fois par combat." />
       <Coach id="battle_auto" place="top" target=".ctrl-col" when={secondFight && awaiting && !auto && phase === 'fight'} text="AUTO fait jouer l’équipe toute seule (touche un ennemi pour qu’elle le vise en priorité) ; ×1 / ×2 / ×3 accélère le combat." />
 
       <div className="battle-controls">
@@ -631,6 +632,8 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
                   </div>
                 ))}
                 <RewardView reward={{ ...result.reward, ...Object.fromEntries(Object.entries(result.loot).map(([k, v]) => [k, (result.reward[k as keyof typeof result.reward] ?? 0) + (v ?? 0)])) }} gear={result.gear} compact />
+                {/* Le niveau de compte passe avant le détail par héros : il n'est plus caché sous les boutons du bas (petits écrans). */}
+                {result.accountXp ? <AccountXp big level={useGame.getState().save!.profile.level} xp={useGame.getState().save!.profile.xp} gain={result.accountXp} /> : null}
                 <DamageRecap units={s.units} xp={result.heroXp} />
               </>
             ) : (
@@ -648,7 +651,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
               </div>
             )}
             {!result.won && <DamageRecap units={s.units} />}
-            {result.accountXp ? <AccountXp big level={useGame.getState().save!.profile.level} xp={useGame.getState().save!.profile.xp} gain={result.accountXp} /> : null}
+            {!result.won && result.accountXp ? <AccountXp big level={useGame.getState().save!.profile.level} xp={useGame.getState().save!.profile.xp} gain={result.accountXp} /> : null}
             {result.accountLevelsGained > 0 && <div className="chip active" style={{ margin: '10px auto 0', display: 'flex', width: 'fit-content' }}>Niveau de compte {useGame.getState().save!.profile.level} ! +2 000 or, énergie rechargée ({energyMax(useGame.getState().save!.profile.level)} max)</div>}
           </div>
           <div className="result-actions">

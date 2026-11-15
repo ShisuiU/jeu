@@ -61,17 +61,16 @@ export function InfoButton({ title, children }: { title: string; children: React
   return (
     <>
       <button className="info-btn" aria-label={`Aide : ${title}`} onClick={(e) => { e.stopPropagation(); setOpen(true); }}>i</button>
+      {/* v1.109.0 : rendue par Modal (portail dans <body>) — avant, elle restait dans le bloc qui l'appelait et pouvait être rognée. */}
+      {/* Les événements d'un portail remontent quand même l'arbre React : on les arrête ici pour ne pas déclencher le bloc parent. */}
       {open && (
-        <div className="modal-backdrop" onClick={() => setOpen(false)}>
-          <div className="modal-wrap" onClick={(e) => e.stopPropagation()}>
-            <div className="modal info-modal">
-              <h2>{title}</h2>
-              <div className="info-text">{children}</div>
-              <button className="btn secondary block" onClick={() => setOpen(false)}>Compris</button>
-            </div>
-            <ModalX onClose={() => setOpen(false)} />
-          </div>
-        </div>
+        <span onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}>
+        <Modal onClose={() => setOpen(false)} className="info-modal">
+          <h2>{title}</h2>
+          <div className="info-text">{children}</div>
+          <button className="btn secondary block" onClick={() => setOpen(false)}>Compris</button>
+        </Modal>
+        </span>
       )}
     </>
   );
@@ -91,12 +90,12 @@ export function ModalX({ onClose }: { onClose: () => void }) {
   return <button className="modal-x" aria-label="Fermer" onClick={(e) => { e.stopPropagation(); onClose(); }}>✕</button>;
 }
 
-export function Modal({ children, onClose }: { children: ReactNode; onClose?: () => void }) {
+export function Modal({ children, onClose, className = '' }: { children: ReactNode; onClose?: () => void; className?: string }) {
   // Rendue directement dans <body> : rien dans l'écran (défilement, effets) ne peut la rogner ou la recouvrir.
   return createPortal(
     <div className="modal-backdrop" onClick={(e) => { if (e.target === e.currentTarget) onClose?.(); }}>
       <div className="modal-wrap">
-        <div className="modal">{children}</div>
+        <div className={`modal ${className}`}>{children}</div>
         {onClose && <ModalX onClose={onClose} />}
       </div>
     </div>,

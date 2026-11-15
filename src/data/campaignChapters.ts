@@ -26,7 +26,9 @@ function buildStages(c: ChapterCfg): StageDef[] {
     let waves: WaveEnemy[][];
     if (boss) waves = [[W(a, lv, 0), W(b, lv, 1), W(a, lv, 2), W(d, lv, 3)], [W(c.boss, lv + 1, 1, 4 + c.n * 0.1), W(d, lv, 3), W(c.elite, lv, 4)]];
     else if (i <= 3) waves = [[W(a, lv, 0), W(b, lv, 1), W(a, lv, 2)], [W(b, lv, 0), W(d, lv, 3), W(a, lv, 2)]];
-    else if (i <= 6) waves = [[W(a, lv, 0), W(b, lv, 1), W(d, lv, 3)], [W(c.elite, lv, 1), W(a, lv, 0), W(a, lv, 2), W(d, lv, 4)]];
+    // v1.110.0 : au chapitre 2 (premier mur d'un débutant, 4 héros de départ), pas d'élite avant le 2-7 :
+    // avec le Chevalier, le 2-4 demandait le niveau 21 contre 12 pour le 2-3 (simulation) ; avec un Traqueur, 15.
+    else if (i <= 6) waves = [[W(a, lv, 0), W(b, lv, 1), W(d, lv, 3)], [W(c.n === 2 ? b : c.elite, lv, 1), W(a, lv, 0), W(a, lv, 2), W(d, lv, 4)]];
     else waves = [[W(a, lv, 0), W(b, lv, 1), W(a, lv, 2), W(d, lv, 3)], [W(c.elite, lv + 1, 0), W(b, lv, 1), W(c.elite, lv + 1, 2), W(d, lv, 4)]];
     const firstClear: Reward & { heroes?: string[] } = { gold: 4000 + c.n * 1000 + i * 300, crystals: boss ? 200 : 40 };
     if (i % 3 === 0) firstClear.shardDim = 2;

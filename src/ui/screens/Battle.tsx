@@ -114,6 +114,16 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
     await sleep(1900 / Math.sqrt(speedRef.current));
     camTo(null, 1, 600); setBossIntro(null);
   };
+  // v1.110.0 (test « joueur pressé ») : en arrivant depuis la saisie du nom, le clavier avait fait défiler la page ;
+  // tout le combat restait décalé de ~150 px (en-tête hors écran). On retire le focus et on remet tout en place.
+  useLayoutEffect(() => {
+    (document.activeElement as HTMLElement | null)?.blur?.();
+    window.scrollTo(0, 0);
+    const el = battleRef.current; if (el) el.scrollTop = 0;
+    const fix = () => { if (battleRef.current && battleRef.current.scrollTop) battleRef.current.scrollTop = 0; };
+    const el2 = battleRef.current; el2?.addEventListener('scroll', fix);
+    return () => el2?.removeEventListener('scroll', fix);
+  }, []);
   useLayoutEffect(() => {
     if (!banner) return;
     const host = battleRef.current; if (!host) return;

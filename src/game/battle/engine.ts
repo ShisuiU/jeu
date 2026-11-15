@@ -1,4 +1,5 @@
 import { ACT3_BY_AFFINITY, ACT3_HP } from '../../data/bossActs';
+import { GUARD_SHARE, GUARD_TAKES, MENDER_BELOW, MENDER_HEAL, MINION_HP, MINION_STAT, SUMMON_BELOW, SUMMON_GAP, SUMMON_MAX } from '../../data/enemyTraits';
 import { SIGNATURES, type SignatureKind } from '../../data/signatures';
 import { COUTURES, COUTURE_BY_ID } from '../../data/coutures';
 import { affinityModifier } from '../../data/affinities';
@@ -74,6 +75,8 @@ export interface BattleOptions {
   mechanics?: boolean;
   /** Pouvoir du Lien (par défaut : oui). */
   lien?: boolean;
+  /** Comportements d'ennemis ; par défaut : comme les mécaniques de boss. */
+  traits?: boolean;
 }
 
 // ─── Mécaniques de boss ───
@@ -125,6 +128,7 @@ export function createBattle(allies: UnitSetup[], waves: UnitSetup[][], opts: Ba
     lien: opts.lien === false ? -1 : 0,
     lienUsed: 0,
     mechanics: opts.mechanics ?? !opts.turnLimit,
+    traits: opts.traits ?? opts.mechanics ?? !opts.turnLimit,
   };
   spawnWave(s, waves[0]);
   // Petite dispersion initiale des jauges pour éviter les égalités parfaites.
@@ -152,6 +156,7 @@ function spawnWave(s: BattleState, wave: UnitSetup[]) {
     // Fracture (v1.90.0, audit G-2) : jauge des boss, brisée surtout par l'affinité avantagée.
     if (u.isBoss && u.side === 'enemy') { u.flags.fracture = FRACTURE_MAX; u.flags.fractureMax = FRACTURE_MAX; }
     if (s.mechanics && u.isBoss && u.side === 'enemy') u.flags.acts = 3; // dernier acte possible (v1.97.0)
+    if (!s.traits) { delete u.trait; delete u.minion; }
     s.units.push(u);
   });
 }
@@ -281,6 +286,16 @@ function dealDamage(s: BattleState, source: Unit, target: Unit, effect: Extract<
     if (target.flags.carapace === 0) { broke = true; target.flags.carapaceBrokeAt = target.flags.bossTurns ?? 0; }
   }
   dmg = Math.max(1, Math.round(dmg));
+  // Garde (v1.106.0) : un allié « Garde » encaisse une part des coups ciblés (pas des attaques de zone), en l'amortissant.
+  if (single && s.traits && !target.isBoss) {
+    const guard = s.units.find((g) => g.alive && g.trait === 'guard' && g.side === target.side && g.id !== target.id);
+    if (guard) {
+      const part = Math.round(dmg * GUARD_SHARE);
+      dmg = Math.max(1, dmg - part);
+      if (!guard.flags.guardSeen) { guard.flags.guardSeen = 1; s.events.push({ kind: 'trait', trait: 'guard', source: guard.id, target: target.id }); }
+      rawHit(s, source, guard, Math.max(1, Math.round(part * GUARD_TAKES)));
+    }
+  }
 
   // Bouclier
   let absorbed = 0;
@@ -338,10 +353,52 @@ function dealDamage(s: BattleState, source: Unit, target: Unit, effect: Extract<
     else if (power === 'maree') team.forEach((u) => { tryDebuff(s, target, u, 'spdDown', 1, 2, 0.25); applyTm(s, target, u, -0.15); });
     else team.forEach((u) => { tryDebuff(s, target, u, 'atkDown', 1, 2, 0.25); applyTm(s, target, u, -0.15); });
   }
+  // Secours (v1.106.0) : un allié « Secours » soigne une fois la première cible qui passe sous 35 % de PV.
+  if (s.traits && target.hp > 0 && !target.isBoss && hpPct(target) < MENDER_BELOW) {
+    const m = s.units.find((x) => x.alive && x.trait === 'mender' && x.side === target.side && x.id !== target.id && !x.flags.mended);
+    if (m) { m.flags.mended = 1; s.events.push({ kind: 'trait', trait: 'mender', source: m.id, target: target.id }); heal(s, target, target.base.hp * MENDER_HEAL); }
+  }
   if (target.hp <= 0) kill(s, target, source);
   const ls = (effect.lifestealPct ?? 0) + mods.lifesteal + (source.flags.leech ?? 0) / 100;
   if (ls > 0 && source.alive) heal(s, source, hpDmg * ls);
   return hpDmg;
+}
+
+/** Coup reçu à la place d'un autre (Garde) : bouclier puis PV, sans affinité ni critique. */
+function rawHit(s: BattleState, source: Unit, target: Unit, amount: number) {
+  let absorbed = 0;
+  for (const sh of target.statuses.filter((x) => x.status === 'shield')) {
+    const take = Math.min(sh.value, amount - absorbed); sh.value -= take; absorbed += take;
+    if (absorbed >= amount) break;
+  }
+  target.statuses = target.statuses.filter((x) => x.status !== 'shield' || x.value > 0);
+  const hpDmg = amount - absorbed;
+  source.flags.dmgDealt = (source.flags.dmgDealt ?? 0) + absorbed + Math.min(hpDmg, Math.max(0, target.hp));
+  target.hp -= hpDmg;
+  s.events.push({ kind: 'damage', source: source.id, target: target.id, amount, crit: false, strong: false, weak: false, absorbed });
+  if (target.hp <= 0) kill(s, target, source);
+}
+
+/** Appel (v1.106.0) : si son groupe compte moins de 3 combattants, l'ennemi appelle un renfort au début de son tour, puis agit.
+ *  Le renfort prend la place d'un allié tombé (ou une place libre) ; deux appels par combat, espacés de deux tours. */
+function trySummon(s: BattleState, u: Unit): boolean {
+  if (!s.traits || u.trait !== 'summoner' || !u.minion || (u.flags.summons ?? 0) >= SUMMON_MAX) return false;
+  if ((u.flags.summonWait ?? 0) > 0) { u.flags.summonWait -= 1; return false; }
+  const team = s.units.filter((x) => x.side === u.side);
+  if (team.filter((x) => x.alive).length >= SUMMON_BELOW) return false;
+  const deadIdx = s.units.findIndex((x) => x.side === u.side && !x.alive);
+  const used = new Set(team.map((x) => x.slot));
+  const slot = deadIdx >= 0 ? s.units[deadIdx].slot : [0, 1, 2, 3, 4].find((k) => !used.has(k));
+  if (slot == null) return false;
+  u.flags.summons = (u.flags.summons ?? 0) + 1;
+  u.flags.summonWait = SUMMON_GAP;
+  const m = buildUnit({ kind: 'enemy', refId: u.minion, slot, level: u.level, statMult: MINION_STAT, hpMult: MINION_HP }, u.side, 0);
+  m.id = `${u.id}s${u.flags.summons}`;
+  m.summoned = true; delete m.trait; delete m.minion;
+  m.tm = 0.3 * TM_FULL;
+  if (deadIdx >= 0) s.units[deadIdx] = m; else s.units.push(m);
+  s.events.push({ kind: 'trait', trait: 'summoner', source: u.id, target: m.id });
+  return true;
 }
 
 // ─── Ciblage ───
@@ -509,6 +566,7 @@ export function beginTurn(s: BattleState): Unit | null {
       continue;
     }
     if (u.side === 'ally' && triggerCouture(s) && s.outcome !== 'running') return null;
+    if (u.trait === 'summoner') trySummon(s, u);
     s.activeId = u.id;
     return u;
   }

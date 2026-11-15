@@ -33,6 +33,12 @@ function scoreEnemyTarget(s: BattleState, u: Unit, t: Unit, sk: SkillDef): numbe
   const finisher = u.role === 'assassin' || u.role === 'attacker';
   score += (1 - hpPct(t)) * (finisher ? 1.6 : 0.8);
   if (t.role === 'healer') score += 0.35;
+  // Comportements d'ennemis (v1.106.0) : le combat auto apprend à viser l'appeleur, le soigneur prêt et la Garde.
+  if (u.side === 'ally') {
+    if (t.trait === 'summoner' && (t.flags.summons ?? 0) < 2) score += 0.5;
+    if (t.trait === 'mender' && !t.flags.mended) score += 0.3;
+    if (t.trait === 'guard' && targetKind(sk) === 'enemy') score += 0.3;
+  }
   if (t.slot >= 3 && s.units.some((x) => x.side === t.side && x.alive && x.slot < 3)) score -= 0.25;
   const hasDebuff = sk.effects.some((e) => e.kind === 'status' && DEBUFFS.includes(e.status));
   if (hasDebuff && t.isBoss) score += 0.4;

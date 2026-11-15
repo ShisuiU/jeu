@@ -12,6 +12,7 @@ import type { FriendRow } from '../../cloud/friendsCloud';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
 import { ENEMIES } from '../../data/enemies';
+import { ENEMY_TRAITS, TRAITS, type EnemyTrait } from '../../data/enemyTraits';
 import { HERO_BY_ID } from '../../data/heroes';
 import { AFFINITIES } from '../../data/affinities';
 import { STAGE_BY_ID } from '../../data/campaign';
@@ -146,6 +147,17 @@ export function Prep({ spec }: { spec: BattleSpec }) {
                 <li><b>Acte II</b>, sous 50 % de PV : il enrage (+30 % ATQ), se purifie et se protège.</li>
                 {a3 && <li><b style={{ color: a3.color }}>Dernier acte · {a3.name}</b>, sous 25 % : il {a3.text}.</li>}
               </ol>
+            </div>
+          );
+        })()}
+        {/* Comportements d'ennemis (v1.106.0) : annoncés avant le combat, avec la parade. */}
+        {spec.mode !== 'arena' && !info.turnLimit && (() => {
+          const by = new Map<EnemyTrait, string[]>();
+          for (const f of foes) { const tr = !f.isHero && !f.boss ? ENEMY_TRAITS[f.refId] : undefined; if (tr) by.set(tr.trait, [...(by.get(tr.trait) ?? []), ENEMIES[f.refId].name.split(/[ ,]/)[0]]); }
+          if (!by.size) return null;
+          return (
+            <div className="prep-traits">
+              {[...by].map(([k, who]) => <div key={k}><b style={{ color: TRAITS[k].color }}>{TRAITS[k].name}</b> <span className="faint">({who.join(', ')})</span> : {TRAITS[k].counter}</div>)}
             </div>
           );
         })()}

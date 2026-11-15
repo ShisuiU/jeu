@@ -558,6 +558,17 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.108.0 — Phase 3, lot 6 : refonte des styles
+
+- **Méthode** : un agent a photographié et mesuré 24 écrans (tailles de police calculées, éléments dorés, imbrication des blocs, textes coupés) ; les conseils de design (jetons à deux niveaux, échelle de 5 à 7 tailles, 3 arrondis) ont guidé le système ; le même script de mesure a servi avant et après.
+- **Échelle typographique** (`--fs-2xs` à `--fs-4xl` dans `global.css`) : 31 tailles différentes (7 à 46 px) → 7 tailles d'interface (10, 11, 12, 13,5, 15, 18, 21 px) + 2 d'affichage ; 490 déclarations converties ; plus aucun texte sous 11 px (il y en avait 4).
+- **Arrondis** : 12 valeurs → 3 (`--r-sm/md/lg`) + pilule ; 229 déclarations converties.
+- **Trois niveaux de surface** (`--surface-1/2/3`, `--line-1/2/3`) : bloc d'information (verre fumé, filet neutre), élément dans un bloc (aplat clair), fenêtre (seule à garder le filet doré et les angles ornés). Équerres dorées retirées des blocs ; le fil pointillé « cousu » reste.
+- **L'or réservé à l'action** : boutons secondaires neutres, « Y aller » et compteurs de points neutres, cases de la carte de profil sans cadre doré, un seul coffre d'étoiles qui pulse à la fois. Éléments dorés mesurés : Menu 19 → 12, Missions 12 → 5, Événements 23 → 13, Sanctuaire 11 → 9.
+- **Hiérarchie** : le titre d'écran passe à 18 px partout (il était plus petit que les titres de bloc, 15,3 px) ; titres de bloc en capitales espacées, sans filets.
+- **Textes coupés** : onglets qui défilent au lieu de « Niv… R… Asce… », titre long réduit au lieu d'être coupé (« 4-1 · La piste des caravanes »), « Invocations » en entier, « Principale » et sa valeur séparées dans la fiche d'objet.
+- **Police** : essai de passer à deux familles abandonné (les étiquettes des cadres peints débordaient : « AUVEGARE ») ; la troisième police est nommée `--font-label`.
+
 ## ✅ Version 1.107.0 — Phase 3, lot 5 : la cérémonie de progression
 
 - **Constat** : monter de rang, d'ascension ou d'éveil (les moments les plus coûteux du jeu) se résumait à une carte qui s'agrandit et un compteur de puissance qui défile 2 secondes.

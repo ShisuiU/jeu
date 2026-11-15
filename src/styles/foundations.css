@@ -546,3 +546,33 @@ body:has(.battle-controls) .toast { font-size: var(--fs-sm); padding-top: 7px; p
 /* Niveau 3 */
 .theme-v2 .modal, .theme-v2 .sheet { background: var(--surface-3), var(--v2-stone) 0 0 / 256px; border: 1px solid var(--line-3); box-shadow: var(--shadow-3), inset 0 1px 0 rgba(255, 226, 163, 0.08); }
 .theme-v2 .sheet { border-width: 1px 0 0; }
+
+/* ─── Corrections de l'audit visuel (v1.108.0) ─── */
+/* 1. Le titre d'écran redevient le plus grand titre de l'écran : une seule taille, 18 px (16 px si le titre est long). */
+.theme-v2 .screen-header h1 { font-size: var(--fs-xl) !important; letter-spacing: 0.02em; }
+.theme-v2 .screen-header h1.long { font-size: var(--fs-lg) !important; }
+/* 2. Titres de bloc : capitales espacées, couleur de la partie du jeu atténuée, sans filets ; ils annoncent sans crier. */
+.theme-v2 .panel-title { font-size: var(--fs-md) !important; letter-spacing: 0.12em; color: color-mix(in srgb, var(--accent-hi) 80%, var(--text-dim)); gap: 0; margin-left: 0; padding-bottom: 8px; }
+.theme-v2 .panel-title::before, .theme-v2 .panel-title::after { display: none !important; }
+/* 4. Menu : les 6 cases de la carte de profil passent au niveau 2 (plus de cadre doré dans le cadre doré). */
+.pc-stats > div { border: 1px solid var(--line-2) !important; border-image: none !important; background: var(--surface-2) !important; border-radius: var(--r-sm) !important; }
+.pc-stats > div span { white-space: nowrap; overflow: hidden; text-overflow: clip; }
+/* 5. Boutons secondaires neutres : l'or ne marque que l'action principale. */
+.theme-v2 .btn.secondary, .theme-v2 .btn.small.secondary { border: 1px solid rgba(255, 255, 255, 0.14) !important; border-image: none !important; background: rgba(255, 255, 255, 0.06) !important; border-radius: var(--r-pill) !important; color: var(--text) !important; box-shadow: none !important; text-shadow: none !important; }
+.theme-v2 .btn.secondary:active { background: rgba(255, 255, 255, 0.1) !important; }
+.m-go { color: var(--text); border-color: rgba(255, 255, 255, 0.16); background: rgba(255, 255, 255, 0.05); }
+/* 6. Événements : le compteur de points d'un objectif est neutre ; l'or reste pour l'étape prête. */
+.wk-pts { color: var(--text); background: var(--surface-2); border-color: var(--line-1); }
+/* 7. Campagne : un seul coffre d'étoiles pulse à la fois (le premier prêt), les autres restent allumés sans bouger. */
+.sc-chest.ready ~ .sc-chest.ready { animation: none; }
+/* 8. Onglets : ils défilent plutôt que de couper leur libellé (« Niv… R… Asce… »). */
+.theme-v2 .seg { overflow-x: auto; scrollbar-width: none; justify-content: flex-start; }
+.theme-v2 .seg::-webkit-scrollbar { display: none; }
+.theme-v2 .seg button { flex: 1 0 auto; white-space: nowrap; overflow: visible; text-overflow: clip; padding: 0 10px; }
+/* 9. Boutons d'en-tête (Classement, Ligues, Défense) : plus aucun texte sous 11 px. */
+.theme-v2 .screen-header .btn { font-size: var(--fs-xs) !important; }
+/* 10. Fiche d'équipement : la statistique principale ne colle plus à son libellé. */
+.gd-main { gap: 8px; }
+.theme-v2 .seg.compact { overflow: visible; }
+.theme-v2 .seg.compact button { flex: 1 1 0; padding: 0; min-width: 0; }
+.theme-v2 .screen-header h1.long { font-size: var(--fs-md) !important; letter-spacing: 0; }

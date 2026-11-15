@@ -38,7 +38,7 @@ export function Settings() {
       <Panel title="Jeu">
         <div className="setting-row">
           <div className="grow"><b>Vitesse de combat par défaut</b></div>
-          <div className="seg" style={{ width: 140 }}>{([1, 2, 3] as const).map((v) => <button key={v} className={st.battleSpeed === v ? 'on' : ''} onClick={() => update({ battleSpeed: v })}>×{v}</button>)}</div>
+          <div className="seg compact" style={{ width: 140 }}>{([1, 2, 3] as const).map((v) => <button key={v} className={st.battleSpeed === v ? 'on' : ''} onClick={() => update({ battleSpeed: v })}>×{v}</button>)}</div>
         </div>
         <div className="setting-row">
           <div className="grow"><b>Combat automatique par défaut</b></div>

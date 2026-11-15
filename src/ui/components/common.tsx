@@ -22,7 +22,8 @@ export function Screen({ title, children, right, noBack, bg }: { title: string; 
       {bg ?? <div className="bg-ambient" />}
       <header className="screen-header">
         {!noBack && depth > 1 && <button className="back-btn" onClick={back} aria-label="Retour"><Icon.back /></button>}
-        <h1>{title}</h1>
+        {/* Titre long (ex. « 4-1 · La piste des caravanes ») : une taille plus petite plutôt que coupé. */}
+        <h1 className={title.length > 20 ? 'long' : undefined}>{title}</h1>
         {right}
       </header>
       <div className="screen-scroll" ref={scroller} onScroll={(e) => SCROLL.set(routeKey, e.currentTarget.scrollTop)}>{children}</div>

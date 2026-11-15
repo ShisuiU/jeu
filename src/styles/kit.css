@@ -9,7 +9,7 @@
 .theme-v2 .screen-header { background: linear-gradient(180deg, rgba(7,6,11,0.94), rgba(7,6,11,0.55) 75%, transparent); border-bottom: 0; box-shadow: none; justify-content: center; min-height: 58px; }
 .theme-v2 .screen-header::after { display: none; }
 .screen-header .back-btn { position: absolute; left: 10px; bottom: 10px; z-index: 2; }
-.theme-v2 .screen-header h1 { flex: 0 1 auto; margin: 0 auto; min-width: 52%; max-width: calc(100% - 110px); padding: 0 6px; height: 44px; line-height: 44px; text-align: center; font-size: 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+.theme-v2 .screen-header h1 { flex: 0 1 auto; margin: 0 auto; min-width: 52%; max-width: calc(100% - 110px); padding: 0 6px; height: 44px; line-height: 44px; text-align: center; font-size: var(--fs-xl); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   border-style: solid; border-color: transparent; border-width: 0 40px; border-image: url('../assets/kit/title_summon.webp') 0 22% 0 22% fill / 0 40px stretch;
   color: #f4dfa8; text-shadow: 0 1px 2px #000, 0 0 12px rgba(255,210,130,0.25); }
 .app[data-tab='collection'] .screen-header h1 { border-width: 0 34px; border-image: url('../assets/kit/title_heroes.webp') 0 16% 0 16% fill / 0 34px stretch; }
@@ -34,7 +34,7 @@
 /* ── Héros : les quatre lieux en tuiles peintes ── */
 .hp-tile.kit { position: relative; height: auto; aspect-ratio: 1; padding: 0; gap: 0; background: none !important; border: 0 !important; box-shadow: none !important; }
 .hp-tile.kit img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 3px 6px rgba(0,0,0,0.6)); }
-.hp-tile.kit span:not(.badge-dot) { position: absolute; left: 0; right: 0; bottom: 9%; z-index: 1; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 700; font-size: 13px; color: #f4e6c8; text-shadow: 0 1px 3px #000, 0 0 6px #000; }
+.hp-tile.kit span:not(.badge-dot) { position: absolute; left: 0; right: 0; bottom: 9%; z-index: 1; font-family: var(--font-label); font-weight: 700; font-size: var(--fs-md); color: #f4e6c8; text-shadow: 0 1px 3px #000, 0 0 6px #000; }
 .hp-tile.kit .badge-dot { z-index: 2; top: 6%; right: 6%; }
 
 /* ── Combats : cadres dorés peints et médaillons ── */
@@ -43,11 +43,11 @@
 .profile-card { background: none !important; border-style: solid !important; border-color: transparent !important; border-width: 12px 14px !important; border-image: url('../assets/kit/stat.webp') 18% 8% 18% 8% fill / 12px 14px stretch !important; border-radius: 0 !important; box-shadow: none !important; }
 .pc-stats > div { display: grid !important; grid-template-columns: 26px 1fr; grid-template-rows: auto auto; align-items: center; column-gap: 5px; padding: 6px 8px !important; background: none !important; border-style: solid !important; border-color: transparent !important; border-width: 6px 8px !important; border-image: url('../assets/kit/stat.webp') 18% 8% 18% 8% fill / 6px 8px stretch !important; border-radius: 0 !important; text-align: left; }
 .pc-stats > div img { grid-row: 1 / span 2; width: 26px; height: 26px; object-fit: contain; }
-.pc-stats > div span { font-size: 10.5px; line-height: 1.1; }
-.pc-stats > div b { font-size: 13.5px; line-height: 1.1; color: #f4dfa8; }
-.menu-title { display: flex; align-items: center; gap: 10px; justify-content: center; text-align: center; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 17px; font-weight: 700; letter-spacing: 0.02em; text-transform: none; color: #f2ddb0; margin: 12px 2px 8px; }
+.pc-stats > div span { font-size: var(--fs-xs); line-height: 1.1; }
+.pc-stats > div b { font-size: var(--fs-md); line-height: 1.1; color: #f4dfa8; }
+.menu-title { display: flex; align-items: center; gap: 10px; justify-content: center; text-align: center; font-family: var(--font-label); font-size: var(--fs-xl); font-weight: 700; letter-spacing: 0.02em; text-transform: none; color: #f2ddb0; margin: 12px 2px 8px; }
 .menu-title::before, .menu-title::after { content: ''; flex: 1; height: 10px; background: url('../assets/kit/divider.webp') center / 100% 100% no-repeat; opacity: 0.9; }
-.menu-tile.kit { background: none !important; border-style: solid !important; border-color: transparent !important; border-width: 10px !important; border-image: url('../assets/kit/tile.webp') 14% fill / 10px stretch !important; border-radius: 0 !important; box-shadow: none !important; padding: 0 !important; font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 700; font-size: 13px; color: #f1e4c6; }
+.menu-tile.kit { background: none !important; border-style: solid !important; border-color: transparent !important; border-width: 10px !important; border-image: url('../assets/kit/tile.webp') 14% fill / 10px stretch !important; border-radius: 0 !important; box-shadow: none !important; padding: 0 !important; font-family: var(--font-label); font-weight: 700; font-size: var(--fs-md); color: #f1e4c6; }
 .menu-tile.kit .mt-ico { width: 40px; height: 40px; object-fit: contain; filter: drop-shadow(0 2px 3px #000); }
 
 /* ── Invocation : onglets d'éclats, panneau de l'appel, jauge et boutons peints ── */
@@ -72,7 +72,7 @@
 
 /* Onglets (difficultés, etc.) : plaques sombres, l'onglet choisi s'allume en or. */
 .theme-v2 .seg { border-bottom: 0; gap: 4px; }
-.theme-v2 .seg button { height: 38px; border-style: solid; border-color: transparent; border-width: 0 12px; border-image: url('../assets/kit/c_dtab.webp') 0 12% 0 12% fill / 0 12px stretch; color: #b9ad98; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 15px; font-weight: 700; padding: 0 2px; }
+.theme-v2 .seg button { height: 38px; border-style: solid; border-color: transparent; border-width: 0 12px; border-image: url('../assets/kit/c_dtab.webp') 0 12% 0 12% fill / 0 12px stretch; color: #b9ad98; font-family: var(--font-label); font-size: var(--fs-lg); font-weight: 700; padding: 0 2px; }
 .theme-v2 .seg button.on { border-image-source: url('../assets/kit/c_dtab_on.webp'); color: #ffe6a8; }
 .theme-v2 .seg button.on::after { display: none; }
 .theme-v2 .seg button.locked { opacity: 0.55; }
@@ -83,11 +83,11 @@
 .theme-v2 .stage-node { min-height: 58px; padding: 0 30px 0 0 !important; gap: 10px; background: none !important; box-shadow: none !important; border-style: solid !important; border-color: transparent !important; border-width: 0 40px 0 64px !important; border-image: url('../assets/kit/c_row.webp') 0 7% 0 15% fill / 0 40px 0 64px stretch !important; border-radius: 0 !important; opacity: 1; }
 .theme-v2 .stage-node.boss { border-image-source: url('../assets/kit/c_row_boss.webp') !important; }
 .theme-v2 .stage-node.locked { border-image-source: url('../assets/kit/c_row_lock.webp') !important; opacity: 1; }
-.theme-v2 .stage-node .sn-idx { position: absolute; left: -54px; width: 44px; height: 44px; margin: 0; border: 0 !important; background: none !important; box-shadow: none !important; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 22px; color: #f4dfa8; }
+.theme-v2 .stage-node .sn-idx { position: absolute; left: -54px; width: 44px; height: 44px; margin: 0; border: 0 !important; background: none !important; box-shadow: none !important; font-family: var(--font-label); font-size: var(--fs-2xl); color: #f4dfa8; }
 .theme-v2 .stage-node.boss .sn-idx, .theme-v2 .stage-node.locked .sn-idx { visibility: hidden; }
 .theme-v2 .stage-node.locked > svg { display: none; }
 .theme-v2 .stage-node.locked .sn-name, .theme-v2 .stage-node.locked .faint { opacity: 0.55; }
-.theme-v2 .stage-node .sn-name { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 16px; font-weight: 700; color: #f2e6cd; }
+.theme-v2 .stage-node .sn-name { font-family: var(--font-label); font-size: var(--fs-lg); font-weight: 700; color: #f2e6cd; }
 .theme-v2 .stage-node > *:not(.sn-idx) { position: relative; z-index: 1; }
 
 /* Carte du chapitre : cadre doré peint. */
@@ -100,12 +100,12 @@
 .theme-v2 .foe-art { border: 0 !important; border-radius: 0 !important; }
 .theme-v2 .foe-art::after { content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none; background: url('../assets/kit/p_tile_sm.webp') center / 100% 100% no-repeat; }
 .theme-v2 .foe.boss .foe-art { box-shadow: 0 0 12px rgba(255,61,110,0.5); }
-.theme-v2 .btn.fight-btn:not(.secondary) { min-height: 60px; border-width: 0 54px; padding-left: 30px; border-image: url('../assets/kit/p_btn_fight.webp') 0 30% 0 30% fill / 0 54px stretch; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 21px; letter-spacing: 0.06em; font-variant: small-caps; color: #2b1a06; }
+.theme-v2 .btn.fight-btn:not(.secondary) { min-height: 60px; border-width: 0 54px; padding-left: 30px; border-image: url('../assets/kit/p_btn_fight.webp') 0 30% 0 30% fill / 0 54px stretch; font-family: var(--font-label); font-size: var(--fs-2xl); letter-spacing: 0.06em; font-variant: small-caps; color: #2b1a06; }
 .theme-v2 .btn.secondary.prep-sweep { min-height: 60px; border-width: 0 22px; border-image: url('../assets/kit/p_btn_repeat.webp') 0 18% 0 18% fill / 0 22px stretch; padding-left: 26px; }
 .prep-lead.on { display: inline-block; padding: 2px 12px; background: url('../assets/kit/p_chef.webp') center / 100% 100% no-repeat; color: #2b1a06 !important; font-weight: 800; }
 
 /* Combat : commandes et compétences dans des cadres dorés (cartes des héros sans ornement, v1.73.7). */
-.theme-v2 .ctrl { border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: none !important; border-style: solid !important; border-color: transparent !important; border-width: 8px !important; border-image: url('../assets/kit/p_tile_sm.webp') 14% fill / 8px stretch !important; color: #f1e4c6; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 14px; }
+.theme-v2 .ctrl { border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: none !important; border-style: solid !important; border-color: transparent !important; border-width: 8px !important; border-image: url('../assets/kit/p_tile_sm.webp') 14% fill / 8px stretch !important; color: #f1e4c6; font-family: var(--font-label); font-size: var(--fs-md); }
 .theme-v2 .ctrl.on { border-image-source: url('../assets/kit/c_dtab_on.webp') !important; border-image-slice: 22% 12% 22% 12% fill !important; color: #ffe6a8; }
 .theme-v2 .lien-btn { background: url('../assets/kit/b_rbtn.webp') center / 112% 112% no-repeat !important; border: 0 !important; box-shadow: none !important; padding: 7px; }
 .theme-v2 .lien-btn.full { background-image: url('../assets/kit/b_sk_ult.webp') !important; }
@@ -113,12 +113,12 @@
 .theme-v2 .skill-card.ultimate { border-image-source: url('../assets/kit/c_dtab_on.webp') !important; }
 .theme-v2 .skill-card.sel { transform: translateY(-3px); filter: drop-shadow(0 0 8px rgba(255,210,120,0.6)); box-shadow: none !important; }
 /* « Combattre » : moins de bordure peinte, le texte ne passe plus sur les épées ; « Répéter » plus étroit. */
-.theme-v2 .btn.fight-btn:not(.secondary) { border-width: 0 34px 0 46px; border-image-width: 0 34px 0 46px; border-image-slice: 0 22% 0 26% fill; padding: 0 2px; font-size: 18px; }
-.theme-v2 .btn.secondary.prep-sweep { flex: 0 0 auto; padding: 0 2px 0 18px; border-width: 0 14px 0 20px; border-image-width: 0 14px 0 20px; font-size: 13px; }
+.theme-v2 .btn.fight-btn:not(.secondary) { border-width: 0 34px 0 46px; border-image-width: 0 34px 0 46px; border-image-slice: 0 22% 0 26% fill; padding: 0 2px; font-size: var(--fs-xl); }
+.theme-v2 .btn.secondary.prep-sweep { flex: 0 0 auto; padding: 0 2px 0 18px; border-width: 0 14px 0 20px; border-image-width: 0 14px 0 20px; font-size: var(--fs-md); }
 .theme-v2 .btn.fight-btn:not(.secondary) { padding-left: 10px; color: #2b1a06; }
 .theme-v2 .btn.secondary.prep-sweep > svg { display: none; }
 .theme-v2 .btn.secondary.prep-sweep { padding-left: 30px; }
-.prep-lead.on { font-size: 10px; line-height: 14px; }
+.prep-lead.on { font-size: var(--fs-2xs); line-height: 14px; }
 
 /* ═══ v1.73.3 — passe de propreté sur tous les écrans ═══ */
 /* Titre d'écran : toujours centré, jamais sous le bouton retour ; avec des boutons à droite, il prend la place libre. */
@@ -127,13 +127,13 @@
 .theme-v2 .screen-header h1 { min-width: 0; max-width: 100%; flex: 0 1 auto; font-size: clamp(12px, 3.9vw, 17px); letter-spacing: 0.02em; border-width: 0 26px !important; border-image-width: 0 26px !important; }
 .theme-v2 .screen-header:has(> h1 + *) h1 { flex: 1 1 auto; margin: 0; }
 .theme-v2 .screen-header > h1 ~ * { flex-shrink: 0; }
-.theme-v2 .screen-header .btn { min-height: 30px; height: 30px; font-size: 10.5px; letter-spacing: 0.02em; padding: 0 2px; border-width: 0 9px; border-image-width: 0 9px; gap: 3px; }
+.theme-v2 .screen-header .btn { min-height: 30px; height: 30px; font-size: var(--fs-xs); letter-spacing: 0.02em; padding: 0 2px; border-width: 0 9px; border-image-width: 0 9px; gap: 3px; }
 .theme-v2 .screen-header .btn svg { width: 13px; height: 13px; }
 
 /* Boutons : texte plus petit, sur une ou deux lignes nettes, jamais rogné. */
-.theme-v2 .btn { font-size: 13px; letter-spacing: 0.04em; line-height: 1.15; white-space: normal; min-height: 42px; padding-top: 4px; padding-bottom: 4px; }
-.theme-v2 .btn.small { font-size: 11.5px; min-height: 30px; }
-.theme-v2 .btn.block { font-size: 13.5px; }
+.theme-v2 .btn { font-size: var(--fs-md); letter-spacing: 0.04em; line-height: 1.15; white-space: normal; min-height: 42px; padding-top: 4px; padding-bottom: 4px; }
+.theme-v2 .btn.small { font-size: var(--fs-sm); min-height: 30px; }
+.theme-v2 .btn.block { font-size: var(--fs-md); }
 
 /* Panneaux : marges intérieures pour que le texte ne touche ni le cadre ni ses coins ornés. */
 .theme-v2 .panel { padding: 10px 12px 10px 14px; }
@@ -146,8 +146,8 @@
 
 /* Invocation : la description de l'appel reste dans son panneau, au-dessus des boutons. */
 .altar-caption { bottom: 6px; left: 8px; right: 8px; padding: 2px 6px 4px; border-width: 18px 26px 10px; border-image-width: 18px 26px 10px; }
-.altar-caption h2 { font-size: 18px; margin: 0; }
-.altar-caption p { font-size: 12px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.altar-caption h2 { font-size: var(--fs-xl); margin: 0; }
+.altar-caption p { font-size: var(--fs-sm); line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
 /* « Combattre » : texte clair et lisible sur le bouton doré. */
 .theme-v2 .btn.fight-btn:not(.secondary) { color: #fff4d6; text-shadow: 0 1px 2px #000, 0 0 8px rgba(0,0,0,0.6); }
@@ -168,10 +168,10 @@
 .pc-stats > div span, .pc-stats > div b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* Combats : titres des petites cartes sur une ligne. */
 /* Petits sélecteurs (vitesse ×1 ×2 ×3…) : texte lisible. */
-.theme-v2 .seg[style] button { font-size: 13px; font-family: var(--font-body); font-weight: 700; }
+.theme-v2 .seg[style] button { font-size: var(--fs-md); font-family: var(--font-body); font-weight: 700; }
 /* Profil : tuiles de progression assez hautes pour leur texte. */
 .pf-grid > div { min-height: 0; height: auto; }
-.pc-stats > div span { font-size: 9.5px; }
+.pc-stats > div span { font-size: var(--fs-2xs); }
 /* Bouton rond à droite du titre (verrou du héros…) : distinct du bouton retour, icône visible. */
 .hdr-icon-btn { flex: none; width: 40px; height: 40px; display: grid; place-items: center; border-radius: 50%; color: #f0d48f; background: radial-gradient(circle, #1d1724, #0b090f); box-shadow: 0 0 0 1px #8a6a33, inset 0 0 0 2px rgba(233,198,122,0.15); }
 .hdr-icon-btn svg { width: 18px; height: 18px; }
@@ -181,7 +181,7 @@
 /* ═══ v1.73.7 ═══ */
 /* Niveaux de campagne / étages : numéro centré dans le médaillon (chiffres alignés), texte décollé du médaillon. */
 .theme-v2 .stage-node { padding-left: 10px !important; padding-right: 26px !important; gap: 6px; }
-.theme-v2 .stage-node .faint { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.theme-v2 .stage-node .faint { font-size: var(--fs-sm); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .theme-v2 .stage-node .sn-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .theme-v2 .stage-node .sn-stars { flex-shrink: 0; }
 .theme-v2 .stage-node .sn-idx { left: -46px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; justify-content: center; line-height: 1; font-variant-numeric: lining-nums; font-feature-settings: 'lnum' 1; }
@@ -201,16 +201,16 @@
 .pick-wrap { position: relative; display: block; }
 .pick-wrap .gear-card { width: 100%; }
 .pick-wrap.on .gear-card { filter: brightness(0.75); }
-.pick-check { position: absolute; top: 4px; right: 4px; z-index: 3; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: #e2404f; color: #fff; font-weight: 800; font-size: 13px; box-shadow: 0 0 0 2px #0d0a12; pointer-events: none; }
-.pick-bar { position: sticky; bottom: calc(var(--nav-h, 58px) + var(--sab, 0px) + 8px); z-index: 20; display: flex; align-items: center; gap: 8px; margin-top: 12px; padding: 10px 12px; border-radius: 10px; background: rgba(16,12,22,0.96); border: 1px solid rgba(226,64,79,0.55); box-shadow: 0 6px 20px rgba(0,0,0,0.6); }
+.pick-check { position: absolute; top: 4px; right: 4px; z-index: 3; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: #e2404f; color: #fff; font-weight: 800; font-size: var(--fs-md); box-shadow: 0 0 0 2px #0d0a12; pointer-events: none; }
+.pick-bar { position: sticky; bottom: calc(var(--nav-h, 58px) + var(--sab, 0px) + 8px); z-index: 20; display: flex; align-items: center; gap: 8px; margin-top: 12px; padding: 10px 12px; border-radius: var(--r-md); background: rgba(16,12,22,0.96); border: 1px solid rgba(226,64,79,0.55); box-shadow: 0 6px 20px rgba(0,0,0,0.6); }
 .pick-bar .btn.small { min-height: 34px; }
-.gcmp { margin-top: 12px; padding: 10px 12px; border-radius: 10px; background: rgba(0,0,0,0.32); border: 1px solid rgba(232,190,110,0.25); }
-.gcmp-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 6px; font-size: 13px; }
-.gcmp-cur { display: flex; gap: 10px; align-items: center; padding: 6px 0 8px; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 6px; font-size: 12.5px; }
+.gcmp { margin-top: 12px; padding: 10px 12px; border-radius: var(--r-md); background: rgba(0,0,0,0.32); border: 1px solid rgba(232,190,110,0.25); }
+.gcmp-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 6px; font-size: var(--fs-md); }
+.gcmp-cur { display: flex; gap: 10px; align-items: center; padding: 6px 0 8px; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 6px; font-size: var(--fs-sm); }
 .gcmp-mini { width: 44px; flex-shrink: 0; }
 .gcmp-mini .gear-card { width: 44px; pointer-events: none; }
 .gcmp-rows { display: grid; gap: 3px; }
-.gcmp-row { display: grid; grid-template-columns: 1fr auto 18px auto 78px; align-items: center; gap: 6px; font-size: 13px; font-variant-numeric: tabular-nums; }
+.gcmp-row { display: grid; grid-template-columns: 1fr auto 18px auto 78px; align-items: center; gap: 6px; font-size: var(--fs-md); font-variant-numeric: tabular-nums; }
 .gcmp-row.pw { margin-top: 4px; padding-top: 5px; border-top: 1px solid rgba(255,255,255,0.08); }
 .gcmp-k { color: #cfc3a8; }
 .gcmp-v { text-align: right; }
@@ -218,7 +218,7 @@
 .gcmp-d { text-align: right; font-weight: 700; }
 .gcmp-d.up { color: #7bea8f; }
 .gcmp-d.down { color: #ff6b7d; }
-.gd-actions > .btn { flex: 1 1 calc(50% - 4px) !important; min-width: 0; font-size: 12.5px; }
+.gd-actions > .btn { flex: 1 1 calc(50% - 4px) !important; min-width: 0; font-size: var(--fs-sm); }
 
 /* ═══ v1.76.1 — boutons « danger » (Exclure, Abandonner, Démanteler…) peints en rouge, même cadre que le bouton doré ═══ */
 .theme-v2 .btn.danger { background: none !important; box-shadow: none !important; border-style: solid; border-color: transparent; border-width: 0 16px; border-image: url('../assets/kit/btn_red.webp') 0 14% 0 14% fill / 0 16px stretch; border-radius: 0; color: #fff1e6; text-shadow: 0 1px 2px rgba(0,0,0,0.75); }
@@ -229,13 +229,13 @@
 .modal-wrap { position: relative; width: 100%; max-width: 420px; max-height: 100%; min-height: 0; display: flex; flex-direction: column; }
 .modal-wrap > .modal { flex: 0 1 auto; min-height: 0; max-width: none; }
 .modal-x { position: absolute; top: -10px; right: -8px; z-index: 6; width: 34px; height: 34px; padding: 0; border-radius: 50%; display: grid; place-items: center;
-  background: radial-gradient(circle at 50% 35%, #2a2233, #0d0a12); border: 1.5px solid rgba(232,190,110,0.8); color: #f4dfa8; font-size: 15px; font-weight: 700; line-height: 1;
+  background: radial-gradient(circle at 50% 35%, #2a2233, #0d0a12); border: 1.5px solid rgba(232,190,110,0.8); color: #f4dfa8; font-size: var(--fs-lg); font-weight: 700; line-height: 1;
   box-shadow: 0 3px 10px rgba(0,0,0,0.7); cursor: pointer; }
 .modal-x:active { transform: scale(0.92); }
 
 /* ═══ v1.77.0 — code promo ═══ */
-.promo-input { width: 100%; height: 48px; padding: 0 14px; border-radius: 10px; border: 1px solid rgba(232,190,110,0.55); background: rgba(0,0,0,0.45); color: #f4dfa8; font-size: 20px; font-weight: 700; letter-spacing: 0.14em; text-align: center; text-transform: uppercase; font-family: inherit; box-sizing: border-box; }
-.promo-input::placeholder { color: rgba(244,223,168,0.3); letter-spacing: 0.08em; font-weight: 600; font-size: 15px; }
+.promo-input { width: 100%; height: 48px; padding: 0 14px; border-radius: var(--r-md); border: 1px solid rgba(232,190,110,0.55); background: rgba(0,0,0,0.45); color: #f4dfa8; font-size: var(--fs-2xl); font-weight: 700; letter-spacing: 0.14em; text-align: center; text-transform: uppercase; font-family: inherit; box-sizing: border-box; }
+.promo-input::placeholder { color: rgba(244,223,168,0.3); letter-spacing: 0.08em; font-weight: 600; font-size: var(--fs-lg); }
 .promo-input:focus { outline: none; border-color: #ffd98a; box-shadow: 0 0 0 3px rgba(255,210,120,0.18); }
 
 /* ═══ v1.77.2 — fiche d'équipement : statistique principale alignée à gauche comme les secondaires, même taille qu'avant ═══ */
@@ -245,71 +245,71 @@
 .home .pill.k-diamond { height: 29px; margin: -2.5px 0; border-width: 0 27px 0 23px; border-image: url('../assets/home/diamond_slot.webp') 0 77 0 66 fill / 0 27px 0 23px stretch; }
 .diamond-ic { display: inline-block; object-fit: contain; vertical-align: -3px; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.6)); }
 .bld-wallet { display: inline-flex; align-items: center; gap: 4px; font-weight: 800; color: #ffc4dc; font-variant-numeric: tabular-nums; }
-.bld-card { margin-bottom: 14px; border-radius: 12px; overflow: hidden; background: rgba(12,9,18,0.88); border: 1px solid rgba(232,190,110,0.35); box-shadow: 0 8px 22px rgba(0,0,0,0.5); }
+.bld-card { margin-bottom: 14px; border-radius: var(--r-lg); overflow: hidden; background: rgba(12,9,18,0.88); border: 1px solid rgba(232,190,110,0.35); box-shadow: 0 8px 22px rgba(0,0,0,0.5); }
 .bld-art { position: relative; aspect-ratio: 16 / 7; overflow: hidden; }
 .bld-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .bld-art::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 55%, rgba(12,9,18,0.95)); }
-.bld-lvl { position: absolute; z-index: 1; top: 8px; left: 8px; padding: 2px 9px; border-radius: 99px; background: rgba(0,0,0,0.65); border: 1px solid rgba(232,190,110,0.6); color: #f4dfa8; font-size: 12px; font-weight: 800; }
+.bld-lvl { position: absolute; z-index: 1; top: 8px; left: 8px; padding: 2px 9px; border-radius: var(--r-pill); background: rgba(0,0,0,0.65); border: 1px solid rgba(232,190,110,0.6); color: #f4dfa8; font-size: var(--fs-sm); font-weight: 800; }
 .bld-body { padding: 4px 14px 14px; }
 .bld-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 8px; }
-.bld-head b { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 20px; color: #f4dfa8; }
-.bld-head .faint { display: inline-flex; align-items: center; gap: 4px; font-size: 12.5px; }
+.bld-head b { font-family: var(--font-label); font-size: var(--fs-2xl); color: #f4dfa8; }
+.bld-head .faint { display: inline-flex; align-items: center; gap: 4px; font-size: var(--fs-sm); }
 .train-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.train-slot { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px; min-height: 132px; border-radius: 10px; background: rgba(0,0,0,0.35); border: 1px solid rgba(232,190,110,0.35); color: #e8dcc4; font-size: 12px; justify-content: center; text-align: center; }
+.train-slot { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px; min-height: 132px; border-radius: var(--r-md); background: rgba(0,0,0,0.35); border: 1px solid rgba(232,190,110,0.35); color: #e8dcc4; font-size: var(--fs-sm); justify-content: center; text-align: center; }
 .train-slot.empty { border-style: dashed; color: #cfc3a8; }
-.train-slot.empty .plus { font-size: 30px; line-height: 1; color: #f4dfa8; }
+.train-slot.empty .plus { font-size: var(--fs-4xl); line-height: 1; color: #f4dfa8; }
 .train-slot.locked { opacity: 0.85; color: #ffc4dc; }
 .train-slot.locked:disabled { opacity: 0.45; }
 .train-slot.locked span { display: inline-flex; align-items: center; gap: 4px; font-weight: 800; }
-.ts-art { position: relative; width: 64px; height: 64px; border-radius: 8px; overflow: hidden; border: 2px solid var(--rc, #888); flex-shrink: 0; }
+.ts-art { position: relative; width: 64px; height: 64px; border-radius: var(--r-md); overflow: hidden; border: 2px solid var(--rc, #888); flex-shrink: 0; }
 .ts-art > :first-child { width: 100%; height: 100%; }
-.ts-lv { position: absolute; left: 2px; bottom: 2px; padding: 0 4px; border-radius: 4px; background: rgba(0,0,0,0.75); font-size: 11px; font-weight: 800; color: #fff; }
-.ts-name { font-weight: 800; color: #f4dfa8; font-size: 13px; }
-.ts-xp { font-size: 11px; color: #9fdc8f; line-height: 1.25; }
+.ts-lv { position: absolute; left: 2px; bottom: 2px; padding: 0 4px; border-radius: var(--r-sm); background: rgba(0,0,0,0.75); font-size: var(--fs-xs); font-weight: 800; color: #fff; }
+.ts-name { font-weight: 800; color: #f4dfa8; font-size: var(--fs-md); }
+.ts-xp { font-size: var(--fs-xs); color: #9fdc8f; line-height: 1.25; }
 .train-pick { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-height: 52vh; overflow-y: auto; padding: 2px; }
 .tp-hero { display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: 0; padding: 2px; color: #e8dcc4; }
 .tp-hero .ts-art { width: 100%; height: auto; aspect-ratio: 1; }
 .tp-hero.maxed { opacity: 0.45; }
-.tp-name { font-size: 11.5px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tp-name { font-size: var(--fs-sm); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .bld-card .btn { white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; gap: 5px; }
 
 /* ═══ v1.79.0 — Donjon des familles ═══ */
-.fd-banner { display: flex; align-items: center; gap: 14px; padding: 14px; margin-bottom: 10px; border-radius: 12px; background: radial-gradient(120% 140% at 0% 50%, color-mix(in srgb, var(--fp) 55%, transparent), rgba(12,9,18,0.92) 70%); border: 1px solid color-mix(in srgb, var(--fc) 50%, transparent); box-shadow: 0 8px 22px rgba(0,0,0,0.5); }
+.fd-banner { display: flex; align-items: center; gap: 14px; padding: 14px; margin-bottom: 10px; border-radius: var(--r-lg); background: radial-gradient(120% 140% at 0% 50%, color-mix(in srgb, var(--fp) 55%, transparent), rgba(12,9,18,0.92) 70%); border: 1px solid color-mix(in srgb, var(--fc) 50%, transparent); box-shadow: 0 8px 22px rgba(0,0,0,0.5); }
 .fd-banner .fac-emblem { filter: drop-shadow(0 0 12px color-mix(in srgb, var(--fc) 60%, transparent)); }
-.fd-today { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; }
-.fd-name { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 23px; font-weight: 700; color: #f4dfa8; line-height: 1.1; margin: 2px 0 4px; }
-.fd-sub { font-size: 12.5px; color: #d9cdb4; }
+.fd-today { font-size: var(--fs-xs); letter-spacing: 0.12em; text-transform: uppercase; }
+.fd-name { font-family: var(--font-label); font-size: var(--fs-2xl); font-weight: 700; color: #f4dfa8; line-height: 1.1; margin: 2px 0 4px; }
+.fd-sub { font-size: var(--fs-sm); color: #d9cdb4; }
 .fd-rotation { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 8px; }
-.fd-next { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 2px; border-radius: 10px; background: rgba(0,0,0,0.35); border: 1px solid rgba(232,190,110,0.25); font-size: 11.5px; color: #e8dcc4; }
-.fd-next small { color: #a89e8a; font-size: 10.5px; }
+.fd-next { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 2px; border-radius: var(--r-md); background: rgba(0,0,0,0.35); border: 1px solid rgba(232,190,110,0.25); font-size: var(--fs-sm); color: #e8dcc4; }
+.fd-next small { color: #a89e8a; font-size: var(--fs-xs); }
 .tp-hero.picked .ts-art { box-shadow: 0 0 0 3px #ffd98a; }
-.tp-order { position: absolute; top: 2px; right: 2px; min-width: 18px; height: 18px; padding: 0 3px; border-radius: 9px; background: #ffd98a; color: #2b1a06; font-size: 11px; font-weight: 800; display: grid; place-items: center; }
+.tp-order { position: absolute; top: 2px; right: 2px; min-width: 18px; height: 18px; padding: 0 3px; border-radius: var(--r-md); background: #ffd98a; color: #2b1a06; font-size: var(--fs-xs); font-weight: 800; display: grid; place-items: center; }
 
 /* ═══ v1.79.2 — boutons AUTO et vitesse : texte centré dans leur cadre ; jauge du Lien nommée ═══ */
 .theme-v2 .ctrl-col { gap: 6px; }
-.theme-v2 .ctrl-col .ctrl { height: 30px !important; padding: 0 !important; display: grid; place-items: center; line-height: 1; font-size: 14px; font-weight: 700;
+.theme-v2 .ctrl-col .ctrl { height: 30px !important; padding: 0 !important; display: grid; place-items: center; line-height: 1; font-size: var(--fs-md); font-weight: 700;
   border-width: 0 9px !important; border-image-slice: 0 14% fill !important; border-image-width: 0 9px !important; }
 .theme-v2 .ctrl-col .ctrl.on { border-image-slice: 0 12% fill !important; }
 .lien-btn .lien-core { display: flex !important; flex-direction: column; align-items: center; justify-content: center; line-height: 1.05; }
-.lien-btn .lien-core small { font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.75; font-weight: 700; }
+.lien-btn .lien-core small { font-size: var(--fs-2xs); letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.75; font-weight: 700; }
 .lien-btn:not(.full) { cursor: help; }
-.theme-v2 .ctrl-col .ctrl:first-child { font-size: 13px; letter-spacing: 0.04em; }
-.theme-v2 .ctrl-col .ctrl:last-child { font-family: Inter, system-ui, sans-serif; font-size: 13px; font-weight: 800; }
+.theme-v2 .ctrl-col .ctrl:first-child { font-size: var(--fs-md); letter-spacing: 0.04em; }
+.theme-v2 .ctrl-col .ctrl:last-child { font-family: Inter, system-ui, sans-serif; font-size: var(--fs-md); font-weight: 800; }
 
 /* Étoiles des familles (v1.83.0) */
-.fd-stars { position: relative; display: block; width: 100%; text-align: left; padding: 10px 12px; margin: 0 0 12px; border-radius: 12px; background: rgba(18,15,26,0.85); border: 1px solid rgba(255,211,107,0.35); color: inherit; font: inherit; }
+.fd-stars { position: relative; display: block; width: 100%; text-align: left; padding: 10px 12px; margin: 0 0 12px; border-radius: var(--r-lg); background: rgba(18,15,26,0.85); border: 1px solid rgba(255,211,107,0.35); color: inherit; font: inherit; }
 .fd-stars b { display: inline-flex; align-items: center; gap: 6px; }
 .fd-stars.ready { border-color: #ffd36b; box-shadow: 0 0 16px rgba(255,211,107,0.25); }
 .fd-stars .badge-dot { position: absolute; top: -4px; right: -4px; }
 .fd-ms-list { display: flex; flex-direction: column; gap: 8px; max-height: 56vh; overflow-y: auto; }
-.fd-ms { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; background: rgba(255,255,255,0.04); border: 1px solid var(--line); }
+.fd-ms { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--r-md); background: rgba(255,255,255,0.04); border: 1px solid var(--line); }
 .fd-ms.ok { border-color: rgba(255,211,107,0.6); }
 .fd-ms.got { opacity: 0.55; }
 .fd-ms-n { display: inline-flex; align-items: center; gap: 4px; min-width: 52px; font-weight: 800; color: #ffd36b; }
 .fd-ms .btn { flex-shrink: 0; }
-.fd-ms .reward-inline { gap: 4px 10px; } .fd-ms .reward-inline span { font-size: 13px; }
+.fd-ms .reward-inline { gap: 4px 10px; } .fd-ms .reward-inline span { font-size: var(--fs-md); }
 
 /* Échange cristaux → éclats épiques (v1.84.0) */
-.epic-exchange { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; padding: 8px 10px; border-radius: 10px; background: rgba(18,15,26,0.8); border: 1px solid rgba(166,77,255,0.45); text-align: center; font-size: 12.5px; }
+.epic-exchange { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; padding: 8px 10px; border-radius: var(--r-md); background: rgba(18,15,26,0.8); border: 1px solid rgba(166,77,255,0.45); text-align: center; font-size: var(--fs-sm); }
 .epic-exchange .faint { display: inline-flex; align-items: center; justify-content: center; gap: 3px; flex-wrap: wrap; }
 .epic-exchange small { opacity: 0.75; margin-left: 4px; }

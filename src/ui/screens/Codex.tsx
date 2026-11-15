@@ -40,7 +40,7 @@ export function Codex() {
             <div style={{ width: 52, height: 52, borderRadius: 12, display: 'grid', placeItems: 'center', background: `radial-gradient(circle, ${f.colors.primary}, #000)`, border: `1px solid ${f.colors.secondary}66` }}>
               <FactionEmblem id={f.id} size={36} />
             </div>
-            <div className="grow"><h3 style={{ fontSize: 17, color: f.colors.glow }}>{f.name}</h3><div className="faint">{f.motto}</div></div>
+            <div className="grow"><h3 style={{ fontSize: 18, color: f.colors.glow }}>{f.name}</h3><div className="faint">{f.motto}</div></div>
           </div>
           <div className="lore"><p>{f.description}</p><p className="muted"><i>{f.ambiance}</i></p><p><b>Synergie :</b> {f.synergy}</p></div>
           <div className="faint">Héros : {HEROES.filter((h) => h.faction === f.id).map((h) => h.name).join(', ')}</div>

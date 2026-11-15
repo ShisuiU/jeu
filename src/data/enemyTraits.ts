@@ -32,7 +32,8 @@ export const ENEMY_TRAITS: Record<string, { trait: EnemyTrait; minion?: string }
   heart_shard: { trait: 'mender' },
   // Garde : les protecteurs qui ne provoquent pas déjà.
   hollow_shield: { trait: 'guard' },
-  rot_treant: { trait: 'guard' },
+  // rot_treant retiré (v1.110.0) : au début du chapitre 2 (ennemis +60 %), la Garde ajoutait 2 à 3 niveaux requis ;
+  // un testeur « nouveau joueur » s'y est heurté deux fois en 2-4.
   bronze_hoplite: { trait: 'guard' },
   // Appel : les meneurs qui commandent d'autres créatures de leur région.
   data_wraith: { trait: 'summoner', minion: 'rogue_drone' },

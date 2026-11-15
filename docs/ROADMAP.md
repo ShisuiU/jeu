@@ -602,7 +602,7 @@
 - **Constat** : hors boss, les ennemis ne se distinguaient que par leurs chiffres ; le seul choix était « qui a le moins de PV ».
 - **Trois comportements** (`data/enemyTraits.ts`), nommés sur la carte de l'ennemi, expliqués dans sa fiche (avec la parade) et annoncés sur l'écran de préparation :
   - **Secours** (soigneurs : Chantre Muet, Voyante des dunes, Séraphin éteint, Éclat corrompu) : une fois par combat, soigne de 30 % le premier allié qui passe sous 35 % de PV. Parade : l'abattre d'abord, ou achever sa cible d'un coup.
-  - **Garde** (Porte-bouclier, Sylve pourrissante, Hoplite de bronze) : encaisse 30 % des coups portés à une seule cible sur ses alliés (en amortissant 30 % de cette part). Les attaques de zone l'ignorent. Parade : l'abattre d'abord, ou frapper tout le groupe.
+  - **Garde** (Porte-bouclier, Hoplite de bronze ; Sylve pourrissante retirée en v1.110.0) : encaisse 30 % des coups portés à une seule cible sur ses alliés (en amortissant 30 % de cette part). Les attaques de zone l'ignorent. Parade : l'abattre d'abord, ou frapper tout le groupe.
   - **Appel** (Spectre de données → Drone, Prêtre du bûcher → Diablotin, Sirène d'amertume → Pêcheur des abysses) : quand son groupe compte moins de 3 combattants, appelle un renfort plus faible au début de son tour, puis agit (2 fois par combat, espacées). Le renfort prend la place d'un allié tombé. Parade : l'abattre avant ses compagnons.
 - Jamais sur les boss (ils ont leurs actes et leur Fracture), ni pour les boss à score.
 - **Combat automatique** : il vise désormais l'invocateur, le soigneur encore prêt et la Garde.

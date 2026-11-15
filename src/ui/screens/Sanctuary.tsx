@@ -42,6 +42,7 @@ export function Sanctuary({ uid }: { uid?: string }) {
   const all = elixirPreview(save, h, toCap);
 
   // Moments de progression mis en scène (v1.89.0) : niveau, rang, ascension et éveil ont chacun leur animation.
+  const [tapGuard, setTapGuard] = useState(false);
   const [cele, setCele] = useState<{ kind: Celebration; title: string; from: number; to: number; key: number } | null>(null);
   const powerNow = () => powerOf(heroTotalStats(useGame.getState().save!, useGame.getState().save!.heroes.find((x) => x.uid === h.uid)!).total);
   // Cérémonie (v1.107.0) : rang, ascension et éveil ont leur mise en scène complète, avec le bilan avant → après.
@@ -164,7 +165,9 @@ export function Sanctuary({ uid }: { uid?: string }) {
         </>
       )}
       {cer && <Ceremony key={cer.key} kind={cer.kind} heroId={cer.heroId} before={cer.before} after={cer.after} onDone={() => setCer(null)} />}
-      {cele && <CelebrationView key={cele.key} kind={cele.kind} title={cele.title} from={cele.from} to={cele.to} heroId={h.heroId} onDone={() => setCele(null)} />}
+      {cele && <CelebrationView key={cele.key} kind={cele.kind} title={cele.title} from={cele.from} to={cele.to} heroId={h.heroId} onDone={() => { setCele(null); setTapGuard(true); window.setTimeout(() => setTapGuard(false), 450); }} />}
+      {/* v1.110.0 : l'animation se ferme seule ; le toucher qui voulait la fermer ne doit pas tomber sur le bouton dessous. */}
+      {tapGuard && <div className="tap-guard" aria-hidden />}
     </Screen>
   );
 }

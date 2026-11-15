@@ -150,6 +150,20 @@ export function Prep({ spec }: { spec: BattleSpec }) {
             </div>
           );
         })()}
+        {/* v1.110.0 (test « joueur pressé ») : avant un boss, si l'équipe est nettement moins haut niveau, on le dit et on montre où progresser. */}
+        {boss && spec.mode === 'campaign' && (() => {
+          const b = foes.find((f) => f.boss); const hs = members.filter(Boolean) as NonNullable<typeof members[number]>[];
+          if (!b || !hs.length) return null;
+          const avg = Math.round(hs.reduce((a, h) => a + h.level, 0) / hs.length);
+          if (avg >= b.level - 2) return null;
+          const weakest = [...hs].sort((x, y) => x.level - y.level)[0];
+          return (
+            <div className="prep-warn" role="status">
+              <span>Le Gardien est niveau <b>{b.level}</b>, tes héros en moyenne <b>{avg}</b>. Renforce-les avant de l’affronter.</span>
+              <button className="btn small secondary" onClick={() => push({ name: 'sanctuary', uid: weakest.uid })}>Sanctuaire</button>
+            </div>
+          );
+        })()}
         {/* Comportements d'ennemis (v1.106.0) : annoncés avant le combat, avec la parade. */}
         {spec.mode !== 'arena' && !info.turnLimit && (() => {
           const by = new Map<EnemyTrait, string[]>();

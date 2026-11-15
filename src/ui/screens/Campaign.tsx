@@ -1,5 +1,5 @@
 import { Coach } from '../components/Coach';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
 import { CHAPTERS, DIFFICULTIES, DIFFICULTY_ORDER, type DifficultyId } from '../../data/campaign';
@@ -26,6 +26,16 @@ export function Campaign() {
   const bossStage = c.stages[c.stages.length - 1];
   const bossId = bossStage.waves[bossStage.waves.length - 1].find((w) => w.hpMult)?.enemy;
   const reward = bossStage.firstClear.heroes?.[0];
+  // v1.110.0 (test « joueur pressé ») : la liste vient d'elle-même au prochain niveau à jouer s'il est sous le pli.
+  useEffect(() => {
+    const id = requestAnimationFrame(() => {
+      const el = document.querySelector('.stage-node:not(.locked):not(.cleared)');
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      if (r.bottom > window.innerHeight - 150 || r.top < 90) el.scrollIntoView({ block: 'center' });
+    });
+    return () => cancelAnimationFrame(id);
+  }, [chap, diff]);
 
   return (
     <Screen title="Campagne">

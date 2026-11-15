@@ -304,7 +304,16 @@ function dealDamage(s: BattleState, source: Unit, target: Unit, effect: Extract<
   // Fracture : chaque coup use la jauge du boss (beaucoup plus avec l'affinité avantagée) ; à zéro, il est brisé.
   if (target.flags.fractureMax && !target.flags.fractured && target.hp > 0) {
     target.flags.fracture = Math.max(0, target.flags.fracture - (aff > 1 ? FRACTURE_STRONG : FRACTURE_HIT));
-    if (target.flags.fracture === 0) { target.flags.fractured = FRACTURE_TURNS; target.flags.fractureStun = 1; s.events.push({ kind: 'fracture', target: target.id }); }
+    if (target.flags.fracture === 0) {
+      target.flags.fractured = FRACTURE_TURNS; target.flags.fractureStun = 1; s.events.push({ kind: 'fracture', target: target.id });
+      // Interruption (v1.105.0) : briser la Fracture pendant que le boss prépare son ultime (annoncée « ⚠ ») l'annule :
+      // sa recharge repart de zéro. Bien choisir le moment de la briser devient une vraie décision.
+      const ult = target.side === 'enemy' ? target.skills.find((k) => k.slot === 'ultimate') : undefined;
+      if (ult && (target.cooldowns[ult.id] ?? 0) <= 1) {
+        target.cooldowns[ult.id] = effectiveCooldown(ult, target.skillLevels[ult.id] ?? 1) + 1;
+        s.events.push({ kind: 'interrupt', target: target.id, skill: ult.name });
+      }
+    }
   }
   // Boss sous la moitié de ses PV : il enrage (+30 % ATQ), et le joueur le voit.
   if (target.isBoss && !target.flags.enraged && hpPct(target) < 0.5 && target.hp > 0) {

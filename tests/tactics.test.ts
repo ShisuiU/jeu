@@ -116,3 +116,22 @@ describe('Retouche d’équipement (v1.96.0)', () => {
     expect(reforgeSub(s, g.uid, 0, seededRand(9)).ok).toBe(false); // plus assez de ressources
   });
 });
+
+describe('Interruption (v1.105.0)', () => {
+  it('briser la Fracture pendant que le boss prépare son ultime l’annule', async () => {
+    const { performAction, unitById } = await import('../src/game/battle/engine');
+    const team = ['torvald', 'brann', 'corvin', 'elowen', 'aldric'].map((id, i) => unit(id, i));
+    const bossWave = waves(10).filter((w) => w.some((e) => e.refId)).slice(-1);
+    const b = createBattle(team, bossWave, { seed: 3, leaderUid: 'torvald' });
+    const boss = b.units.find((u) => u.isBoss)!;
+    const ult = boss.skills.find((k) => k.slot === 'ultimate')!;
+    boss.flags.fracture = 1; boss.cooldowns[ult.id] = 0;
+    const hero = b.units.find((u) => u.side === 'ally')!;
+    b.activeId = hero.id;
+    const basic = hero.skills.find((k) => k.slot === 'basic')!;
+    performAction(b, { skillId: basic.id, targetId: boss.id });
+    const after = unitById(b, boss.id);
+    expect(after.flags.fractured).toBeGreaterThan(0);
+    expect(after.cooldowns[ult.id]).toBeGreaterThan(1);
+  });
+});

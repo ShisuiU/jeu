@@ -558,6 +558,16 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.110.0 — Test « joueur pressé » : le mur du 2-4, et fin de la refonte
+
+- **Mur du 2-4** (un testeur jouant une partie neuve y a perdu deux fois) : simulé avec les 4 héros de départ, le 2-3 demandait le niveau 12 et le 2-4 le niveau 21. Cause : l'élite (Chevalier) entrait au 4ᵉ niveau du chapitre. Au chapitre 2 seulement, pas d'élite avant le 2-7 : le 2-4 demande le niveau 15. Garde retirée de la Sylve pourrissante (trop tôt pour une nouvelle mécanique). Courbe de la campagne : test existant toujours vert.
+- **Conseils après défaite qui mènent au bon endroit** : sac vide → « Donjons » (avant : « Équiper » répondait « rien de mieux ») ; plus d'élixir → Grotte d'Ambre (avant : Sanctuaire). 2 tests.
+- **Avant un boss** : si l'équipe est nettement moins haut niveau, le jeu le dit et propose le Sanctuaire (comparaison de niveaux, pas un pourcentage de chances).
+- **Campagne** : la liste s'ouvre sur le prochain niveau à jouer.
+- **Premier combat** : il ne reste plus décalé vers le haut après la saisie du nom (clavier).
+- **Sanctuaire** : après l'animation de niveau (qui se ferme seule), le toucher suivant ne déclenche plus la case dessous.
+- **Fin de la refonte** : Arène 16 → 4 éléments dorés (portraits à filet neutre, seuls les « Défier » restent dorés), Équipes 12 → 7 (emplacement occupé sans cadre en double, un niveau d'imbrication en moins).
+
 ## ✅ Version 1.109.0 — Premier test « nouveau joueur » et fiche d'équipement stable
 
 - **Fiche d'équipement** (demande du joueur) : les 4 emplacements de secondaires sont toujours affichés ; ceux qui restent à révéler montrent un cadenas et leur palier (+4, +8, +12, +16) sans dévoiler la statistique. La ligne d'information et la ligne « Améliorer » gardent leur hauteur jusqu'au +16. Mesuré de +0 à +16 : hauteur de la fenêtre et position de « Verrouiller » identiques (avant : +9 px à chaque secondaire, les boutons descendaient sous le doigt). Message juste : « +8 : nouvelle secondaire, VIT ! » au lieu de « renforcée » dans tous les cas.

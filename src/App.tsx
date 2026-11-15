@@ -87,7 +87,7 @@ function renderRoute(r: Route) {
     case 'tower': return <Tower />;
     case 'worldboss': return <WorldBoss />;
     case 'arena': return <Arena />;
-    case 'missions': return <Missions />;
+    case 'missions': return <Missions key={r.tab ?? 'daily'} initialTab={r.tab} />;
     case 'events': return <Events />;
     case 'combats': return <Combats />;
     case 'expeditions': return <Expeditions />;

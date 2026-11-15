@@ -213,7 +213,8 @@ function UpRow({ icon, label, value, sub, dot, children }: { icon: React.ReactNo
 
 function CheckRow({ icon, label, value, check, max, heroId, onGo }: { icon: React.ReactNode; label: string; value: string; check: Check; max: boolean; heroId: string; onGo: () => void }) {
   const save = useGame((s) => s.save)!;
-  const blocked = !check.ok && !!check.reason && !check.reason.includes('insuffisant');
+  // Ressource manquante (« … insuffisant » / « Il manque : … ») : on montre le coût et « Obtenir », pas un cadenas.
+  const blocked = !check.ok && !!check.reason && !/insuffisant|Il manque/.test(check.reason);
   return (
     <UpRow icon={icon} label={label} value={value} dot={check.ok}
       sub={max ? <span>Maximum atteint</span> : blocked ? <span>{check.reason}</span> : <CostView cost={check.cost} save={save} heroId={heroId} />}>

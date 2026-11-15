@@ -35,12 +35,12 @@ export function Row({ title, value, target, reward, claimed, onClaim, goKey }: {
 /** Ordre des succès : à réclamer, puis en cours, puis déjà obtenus (v1.103.0). */
 const achRank = (s: Parameters<typeof achievementDone>[0], id: string) => (s.achievements.includes(id) ? 2 : achievementDone(s, id) ? 0 : 1);
 
-export function Missions() {
+export function Missions({ initialTab = 'daily' }: { initialTab?: 'daily' | 'weekly' | 'progress' } = {}) {
   const save = useGame((s) => s.save)!;
   const now = useGame((s) => s.now);
   const mutate = useGame((s) => s.mutate);
   const toast = useUI((s) => s.toast);
-  const [tab, setTab] = useState<'daily' | 'weekly' | 'progress'>('daily');
+  const [tab, setTab] = useState<'daily' | 'weekly' | 'progress'>(initialTab);
   const claim = (fn: (s: typeof save) => boolean) => { let ok = false; mutate((s) => { ok = fn(s); }); if (ok) { play('claim'); toast('Récompense obtenue !', 'ok'); } };
   const kind = tab as MissionKind;
   const list = activeMissions(save, tab === 'daily' ? 'daily' : 'weekly');

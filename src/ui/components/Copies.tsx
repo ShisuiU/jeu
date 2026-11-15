@@ -79,7 +79,7 @@ function CopiesModal({ h, onClose, onAwaken }: { h: HeroInstance; onClose: () =>
           <b>Éveiller {first}</b> <span className="cp-lv">{h.awaken}/{BALANCE.hero.maxAwaken}</span>
           <div className="cp-sub">+{Math.round(BALANCE.hero.awakenBonus * 100)} % PV, ATQ et DÉF, +2 VIT</div>
           {!awMax && <div className="cp-cost"><CostView cost={aw.cost} save={save} heroId={h.heroId} /></div>}
-          {!awMax && !aw.ok && aw.reason && !/doublon|insuffisant/i.test(aw.reason) && <div className="cp-sub warn">{aw.reason}</div>}
+          {!awMax && !aw.ok && aw.reason && !/doublon|insuffisant|Il manque/i.test(aw.reason) && <div className="cp-sub warn">{aw.reason}</div>}
         </div>
         <button className="btn small" disabled={!aw.ok} onClick={() => { const before = snapHero(useGame.getState().save!, h.uid); let ok = false; mutate((s) => { ok = awaken(s, h.uid).ok; }); const after = snapHero(useGame.getState().save!, h.uid); if (ok && before && after) onAwaken(before, after); }}>{awMax ? 'Max' : 'Éveiller'}</button>
       </div>

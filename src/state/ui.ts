@@ -29,7 +29,7 @@ export type Route =
   | { name: 'tower' }
   | { name: 'worldboss' }
   | { name: 'arena' }
-  | { name: 'missions' }
+  | { name: 'missions'; tab?: 'daily' | 'weekly' | 'progress' }
   | { name: 'events' }
   | { name: 'combats' }
   | { name: 'expeditions' }

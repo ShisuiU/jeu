@@ -12,6 +12,7 @@ import { useState } from 'react';
 import { refillCost, refillEnergy } from '../../game/comfort';
 import { play } from '../../audio/sfx';
 import avatarRing from '../../assets/home/avatar_ring.webp';
+import { GetButton } from './Sources';
 
 export function TopBar() {
   const save = useGame((s) => s.save)!;
@@ -56,6 +57,7 @@ export function TopBar() {
             <button className="btn block" style={{ marginTop: 10 }} disabled={cost === null || (save.resources.diamonds ?? 0) < (cost ?? 0)} onClick={() => { let r = { ok: false } as { ok: boolean; reason?: string }; mutate((d) => { r = refillEnergy(d); }); if (r.ok) { play('claim'); toast(`+${BALANCE.energyRefill.amount} énergie !`, 'ok'); } else toast(r.reason ?? 'Impossible.', 'error'); }}>
               {cost === null ? 'Plus de recharge aujourd’hui' : <>Recharger · <Icon.diamond size={16} /> {cost}</>}
             </button>
+            {cost !== null && (save.resources.diamonds ?? 0) < cost && <div className="row" style={{ justifyContent: 'center', gap: 6, marginTop: 8 }}><span className="faint">Pas assez de diamants</span><GetButton res="diamonds" label /></div>}
           </div>
         </Modal>
       )}

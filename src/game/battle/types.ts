@@ -35,6 +35,12 @@ export interface Unit {
   skillLevels: Record<string, number>;
   alive: boolean;
   flags: Record<string, number>;
+  /** Comportement d'ennemi (v1.106.0) : Secours, Garde ou Appel. */
+  trait?: import('../../data/enemyTraits').EnemyTrait;
+  /** Renfort appelé par un ennemi « Appel ». */
+  minion?: string;
+  /** Unité appelée en renfort (pas de comportement, pas de nouvel appel). */
+  summoned?: boolean;
 }
 
 export type BattleEvent =
@@ -58,6 +64,8 @@ export type BattleEvent =
   | { kind: 'rage'; target: string }
   | { kind: 'fracture'; target: string }
   | { kind: 'interrupt'; target: string; skill: string }
+  /** Comportement d'ennemi déclenché : soin de Secours, première Garde, renfort appelé (target = nouvelle unité). */
+  | { kind: 'trait'; trait: import('../../data/enemyTraits').EnemyTrait; source: string; target: string }
   | { kind: 'phase'; target: string; act?: 3; power?: import('../../data/bossActs').Act3Power }
   | { kind: 'couture'; id: string; a: string; b: string }
   | { kind: 'carapace'; target: string; charges: number; broken?: boolean; reformed?: boolean }
@@ -113,6 +121,8 @@ export interface BattleState {
   lienUsed: number;
   /** Mécaniques de boss (Fureur, Carapace) : campagne, donjons, tour, arène — pas les boss à score (mondial, clan). */
   mechanics: boolean;
+  /** Comportements d'ennemis (Secours, Garde, Appel) : mêmes modes que les mécaniques de boss. */
+  traits: boolean;
 }
 
 export interface Action {

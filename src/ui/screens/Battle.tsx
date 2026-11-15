@@ -32,6 +32,7 @@ import { Icon } from '../art/Icons';
 import { BattleScene } from '../art/BattleBackdrop';
 import { useStageFx } from '../battle/useStageFx';
 import { stagePlace, type Place } from '../battle/layout';
+import { TRAITS } from '../../data/enemyTraits';
 import { previewTargets } from '../battle/targets';
 import { FxLayer, type FxItem } from '../battle/FxLayer';
 import { UnitView, type Popup } from '../battle/UnitView';
@@ -249,6 +250,14 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
             addVfx(e.target, 'cursefx', pw.color); doShake('hard'); play('rare'); pause = true; break;
           }
           setBanner({ text: `Acte II · ${bu?.name ?? 'Le boss'} se déchaîne`, side: 'enemy' }); setAct(2); flashLight(center(e.target), '#ff3d6e', 1, 1200); addVfx(e.target, 'cursefx', '#ff3d6e'); doShake('hard'); play('rare'); pause = true; break; }
+        case 'trait': {
+          const src = s.units.find((x) => x.id === e.source), tg = s.units.find((x) => x.id === e.target);
+          const col = TRAITS[e.trait].color;
+          if (e.trait === 'mender') { setBanner({ text: `Secours ! ${src?.name ?? 'Un soigneur'} sauve ${tg?.name ?? 'un allié'}`, side: 'enemy' }); addPopup(e.source, 'Secours', 'heal'); }
+          else if (e.trait === 'guard') { setBanner({ text: `Garde ! ${src?.name ?? 'Il'} protège ses alliés`, side: 'enemy' }); addPopup(e.source, 'Garde', 'shieldp'); addVfx(e.source, 'shieldfx', col); }
+          else { setBanner({ text: `Appel ! ${src?.name ?? 'Un ennemi'} fait venir ${tg?.name ?? 'un renfort'}`, side: 'enemy' }); addVfx(e.target, 'revivefx', col); { const c = center(e.target); if (c) stage.current?.motes(c, col, 26, 30, 0.07); } play('rare'); }
+          flashLight(center(e.source), col, 0.7, 800); pause = true; break;
+        }
         case 'interrupt': setBanner({ text: `Interrompu ! ${e.skill} est annulée`, side: 'ally' }); addPopup(e.target, 'Ultime annulée', 'debuff'); flashLight(center(e.target), '#7fe7ff', 0.9, 900); play('rare'); pause = true; break;
         case 'fracture': addPopup(e.target, 'Fracture ! Étourdi, +40 % de dégâts subis', 'buff'); flashLight(center(e.target), '#ffffff', 0.9, 800); addVfx(e.target, 'cursefx', '#ffffff'); doShake('hard'); { const c = center(e.target); if (c) stage.current?.burst(c, '#ffffff', 40, 0.5); } play('rare'); pause = true; break;
         case 'carapace':

@@ -6,6 +6,7 @@ import { AFFINITIES } from '../../data/affinities';
 import { AffinityIcon, RoleIcon } from '../art/Identity';
 import { ROLES } from '../../data/roles';
 import type { RoleId } from '../../data/types';
+import { SUMMON_MAX, TRAITS } from '../../data/enemyTraits';
 
 /** Rôles ennemis qui changent le choix des cibles (v1.105.0) : affichés sur la carte. */
 const KEY_ROLES = new Set<RoleId>(['healer', 'defender', 'controller', 'support']);
@@ -29,13 +30,15 @@ export function UnitView({ u, place, order = 0, vfx, focus, active, acting, hit,
   const has = (id: string) => u.alive && u.statuses.some((x) => x.status === id);
   const stCls = [has('freeze') && 'st-freeze', has('burn') && 'st-burn', has('poison') && 'st-poison', has('stun') && 'st-stun', has('taunt') && 'st-taunt', u.alive && sh > 0 && 'st-shield'].filter(Boolean).join(' ');
   return (
-    <button className={`unit ${u.side} ${u.flags.phase2 ? 'phase2' : ''} ${u.alive ? '' : 'dead'} ${active ? 'active' : ''} ${acting ? 'acting' : ''} ${hit ? 'hit' : ''} ${targetable ? 'targetable' : ''} ${u.isBoss ? 'boss' : ''} ${heavy ? 'heavy' : ''} ${focus ? 'focus' : ''} ${stCls}`} data-uid={u.id}
+    <button className={`unit ${u.side} ${u.flags.phase2 ? 'phase2' : ''} ${u.alive ? '' : 'dead'} ${active ? 'active' : ''} ${acting ? 'acting' : ''} ${hit ? 'hit' : ''} ${targetable ? 'targetable' : ''} ${u.isBoss ? 'boss' : ''} ${heavy ? 'heavy' : ''} ${focus ? 'focus' : ''} ${u.summoned ? 'summoned' : ''} ${stCls}`} data-uid={u.id}
       style={place ? { left: `${place.x}%`, top: `${place.y}%`, zIndex: Math.round(place.y * 10), ['--s' as string]: place.s, ['--i' as string]: order, ['--affc' as string]: AFFINITIES[u.affinity].color } : undefined}
       onClick={() => { if (longDone.current) { longDone.current = false; return; } onClick(); }}
       onPointerDown={startPress} onPointerUp={endPress} onPointerLeave={endPress} onPointerCancel={endPress}
       onContextMenu={(e) => { e.preventDefault(); if (e.nativeEvent instanceof MouseEvent && (e.nativeEvent as PointerEvent).pointerType !== 'touch') { window.clearTimeout(timer.current); onInfo(); } }}>
       {/* Intention du boss (v1.90.0) : son ultime part au prochain tour, le joueur peut s'y préparer. */}
       {u.isBoss && u.side === 'enemy' && u.alive && (() => { const ul = u.skills.find((k) => k.slot === 'ultimate'); return ul && (u.cooldowns[ul.id] ?? 0) <= 1 ? <span className="u-intent" title={`Au prochain tour : ${ul.name} — brise sa Fracture avant pour l’annuler`}>⚠ {ul.name}</span> : null; })()}
+      {/* Comportement d'ennemi (v1.106.0) : nommé sur la carte ; grisé une fois épuisé. */}
+      {u.trait && u.alive && <span className={`u-trait t-${u.trait} ${(u.trait === 'mender' && u.flags.mended) || (u.trait === 'summoner' && (u.flags.summons ?? 0) >= SUMMON_MAX) ? 'spent' : ''}`} title={TRAITS[u.trait].text}>{TRAITS[u.trait].name}</span>}
       <div className="u-art">{u.kind === 'hero' ? <HeroArt heroId={u.refId} /> : <EnemyArt enemyId={u.refId} />}<span className="u-lvl">{u.level}</span><span className="u-aff"><AffinityIcon id={u.affinity} size={15} /></span>{u.side === 'enemy' && KEY_ROLES.has(u.role) && <span className={`u-role r-${u.role}`} title={ROLES[u.role].name}><RoleIcon id={u.role} size={12} /></span>}<span className="u-name">{shortName(u.name)}</span>
         {stCls && <span className="u-stfx" aria-hidden><i /><i /><i /></span>}
 

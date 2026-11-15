@@ -1,4 +1,5 @@
 import type { SkillDef } from '../../data/types';
+import { SUMMON_MAX, TRAITS } from '../../data/enemyTraits';
 import { HERO_BY_ID } from '../../data/heroes';
 import { targetKind } from '../../game/battle/engine';
 import { effectiveCooldown } from '../../game/battle/skillMods';
@@ -65,6 +66,8 @@ export function DamageRecap({ units, xp }: { units: Unit[]; xp?: { uid: string; 
 }
 
 /** Fiche d'une unité en combat (appui long) : statistiques, mécaniques du boss, effets en cours. */
+const traitState = (u: Unit) => u.trait === 'mender' ? (u.flags.mended ? ' (déjà utilisé)' : '') : u.trait === 'summoner' ? ` (${Math.max(0, SUMMON_MAX - (u.flags.summons ?? 0))} restant${SUMMON_MAX - (u.flags.summons ?? 0) > 1 ? 's' : ''})` : '';
+
 export function UnitInfo({ u, mechanics, onClose }: { u: Unit; mechanics: boolean; onClose: () => void }) {
   const list = [...u.statuses].sort((a, b) => Number(STATUS_INFO[b.status].debuff) - Number(STATUS_INFO[a.status].debuff));
   return (
@@ -75,6 +78,8 @@ export function UnitInfo({ u, mechanics, onClose }: { u: Unit; mechanics: boolea
         <div className="ui-aff"><AffinityIcon id={u.affinity} size={16} /> {AFFINITIES[u.affinity].name}{AFFINITIES[u.affinity].strongAgainst ? ` · fort contre ${AFFINITIES[AFFINITIES[u.affinity].strongAgainst!].name}` : ' · neutre'}</div>
         <div className="ui-hp"><span>PV</span><b>{Math.max(0, Math.round(u.hp))} / {Math.round(u.base.hp)}</b></div>
         <div className="ui-stats"><span>ATQ <b>{Math.round(u.base.atk)}</b></span><span>DÉF <b>{Math.round(u.base.def)}</b></span><span>VIT <b>{Math.round(u.base.spd)}</b></span></div>
+        {u.trait && <div className="ui-boss ui-trait"><div><b style={{ color: TRAITS[u.trait].color }}>{TRAITS[u.trait].name}</b> : {TRAITS[u.trait].text}{traitState(u)}</div><div className="faint">Parade : {TRAITS[u.trait].counter}</div></div>}
+        {u.summoned && <div className="ui-boss"><div className="faint">Renfort appelé en plein combat : plus faible que l’original.</div></div>}
         {u.isBoss && u.side === 'enemy' && u.flags.fractureMax > 0 && <div className="ui-boss"><div><b>Fracture</b> {u.flags.fractured ? '· brisée' : `· ${u.flags.fracture}/${u.flags.fractureMax}`} : chaque coup use la jauge (beaucoup plus avec l’affinité avantagée ▲). À zéro, le boss perd un tour et subit +40 % de dégâts pendant 2 de ses tours. Brisée pendant qu’il prépare son ultime (⚠), elle l’annule.</div></div>}
         {u.isBoss && (u.flags.carapaceMax > 0 || mechanics) && (
           <div className="ui-boss">

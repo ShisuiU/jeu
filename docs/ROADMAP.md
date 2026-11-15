@@ -558,6 +558,18 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.106.0 — Phase 3, lot 4 : des ennemis qui se comportent différemment
+
+- **Constat** : hors boss, les ennemis ne se distinguaient que par leurs chiffres ; le seul choix était « qui a le moins de PV ».
+- **Trois comportements** (`data/enemyTraits.ts`), nommés sur la carte de l'ennemi, expliqués dans sa fiche (avec la parade) et annoncés sur l'écran de préparation :
+  - **Secours** (soigneurs : Chantre Muet, Voyante des dunes, Séraphin éteint, Éclat corrompu) : une fois par combat, soigne de 30 % le premier allié qui passe sous 35 % de PV. Parade : l'abattre d'abord, ou achever sa cible d'un coup.
+  - **Garde** (Porte-bouclier, Sylve pourrissante, Hoplite de bronze) : encaisse 30 % des coups portés à une seule cible sur ses alliés (en amortissant 30 % de cette part). Les attaques de zone l'ignorent. Parade : l'abattre d'abord, ou frapper tout le groupe.
+  - **Appel** (Spectre de données → Drone, Prêtre du bûcher → Diablotin, Sirène d'amertume → Pêcheur des abysses) : quand son groupe compte moins de 3 combattants, appelle un renfort plus faible au début de son tour, puis agit (2 fois par combat, espacées). Le renfort prend la place d'un allié tombé. Parade : l'abattre avant ses compagnons.
+- Jamais sur les boss (ils ont leurs actes et leur Fracture), ni pour les boss à score.
+- **Combat automatique** : il vise désormais l'invocateur, le soigneur encore prêt et la Garde.
+- **Équilibrage mesuré** (équipe de 5 Rares sans équipement, niveau requis pour gagner 3 fois sur 5, chaque niveau de campagne concerné) : avec l'IA qui ignore les comportements, ils coûtent 0 à +3 niveaux ; avec l'IA qui les vise, 0 à −4, et jusqu'à −11 aux niveaux 6-7 et 6-9 (abattre le Séraphin d'abord). Viser la bonne cible change vraiment l'issue. La courbe de difficulté de la campagne (test existant) reste respectée.
+- 5 tests ajoutés (`tests/traits.test.ts`).
+
 ## ✅ Version 1.105.0 — Phase 3, lot 3 : des décisions qui comptent en combat
 
 - **Interruption** : briser la Fracture d'un boss pendant qu'il prépare son ultime (annoncée « ⚠ ») l'annule — sa recharge repart de zéro, avec un bandeau « Interrompu ! ». Choisir le moment et les héros (affinité avantagée) pour briser la Fracture devient une vraie décision. Expliquée dans l'annonce du boss et sa fiche. Test ajouté.

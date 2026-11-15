@@ -1,6 +1,7 @@
 import { HERO_BY_ID } from '../../data/heroes';
 import { RARITIES } from '../../data/rarities';
 import { ENEMIES, enemyStats } from '../../data/enemies';
+import { ENEMY_TRAITS } from '../../data/enemyTraits';
 import type { SkillDef } from '../../data/types';
 import { computeStats } from '../stats';
 import type { Unit, UnitSetup } from './types';
@@ -32,5 +33,6 @@ export function buildUnit(setup: UnitSetup, side: 'ally' | 'enemy', idx: number)
     affinity: e.affinity, role: e.role, isBoss: !!e.boss, base, hp: base.hp, tm: 0,
     // Boss aux PV gigantesques (boss de clan) : poisons et brûlures plafonnés, sinon un % de ses PV écraserait tout.
     cooldowns: initialCooldowns(e.skills, {}), statuses: [], skills: e.skills, skillLevels: {}, alive: true, flags: (setup.hpMult ?? 0) >= 500 ? { dotCap: 1 } : {},
+    ...(!e.boss && ENEMY_TRAITS[e.id] ? { trait: ENEMY_TRAITS[e.id].trait, minion: ENEMY_TRAITS[e.id].minion } : {}),
   };
 }

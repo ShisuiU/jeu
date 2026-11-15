@@ -413,3 +413,9 @@ body:has(.battle-controls) .toast { font-size: 12.5px; padding-top: 7px; padding
 .pro-dots span.on { background: #e2b866; }
 .pro-skip { position: absolute; right: 16px; top: calc(var(--sat, 0px) + 14px); padding: 6px 12px; border-radius: 14px; font-size: 13px; color: rgba(241,227,196,0.8); border: 1px solid rgba(241,227,196,0.25); background: rgba(0,0,0,0.3); }
 .reduced-motion .pro-art, .reduced-motion .pro-line { animation: none; }
+/* Récupération groupée (v1.103.0) */
+.claim-all { position: relative; margin-bottom: 12px; }
+.ca-n { display: inline-grid; place-items: center; min-width: 20px; height: 20px; margin-left: 8px; padding: 0 5px; border-radius: 10px; font-family: var(--font-body, Inter, sans-serif); font-size: 12px; font-weight: 800; letter-spacing: 0; color: #fff; background: #c22f3c; box-shadow: 0 0 0 2px rgba(0,0,0,0.35); vertical-align: 1px; }
+.ca-row { display: grid; gap: 8px; margin-bottom: 12px; }
+.ca-row .claim-all { margin-bottom: 0; }
+.rm-title { margin-top: 0; }

@@ -1,3 +1,5 @@
+import { ClaimAllButton } from '../components/ClaimAll';
+import { claimAllExpeditions, launchAllExpeditions, launchableExpeditions } from '../../game/quickClaim';
 import { useEffect, useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
@@ -102,6 +104,15 @@ export function Expeditions() {
   return (
     <Screen title="Expéditions" right={<InfoButton title="Expéditions">Envoie des héros à travers les failles. Ils reviennent après le temps indiqué, même jeu fermé, avec du butin. Un héros de l’affinité, du rôle ou de la famille demandés donne +30 % ; une équipe plus puissante rapporte jusqu’à ×1,3. Les héros en expédition peuvent toujours combattre. 4 nouvelles expéditions chaque jour.</InfoButton>}>
       <p className="faint" style={{ marginTop: 0 }}>Nouvelles expéditions dans {formatDuration(msUntilReset(now))}</p>
+      <div className="ca-row">
+        <ClaimAllButton label="Tout récupérer" title="Expéditions de retour" count={ex.runs.filter((r) => now >= r.endsAt).length}
+          onRun={() => { let r = { reward: {}, count: 0 } as ReturnType<typeof claimAllExpeditions>; mutate((s) => { r = claimAllExpeditions(s, now); }); return r; }} />
+        {launchableExpeditions(save) > 0 && (
+          <button className="btn secondary block" onClick={() => { let n = 0; mutate((s) => { n = launchAllExpeditions(s, now); }); if (n) { play('claim'); toast(`${n} expédition${n > 1 ? 's' : ''} lancée${n > 1 ? 's' : ''} avec tes meilleurs héros libres.`, 'ok'); } else toast('Pas assez de héros libres.', 'error'); }}>
+            Tout lancer<span className="ca-n">{launchableExpeditions(save)}</span>
+          </button>
+        )}
+      </div>
       <div className="ex-list">
         {oldRuns.map((r) => card(r.offer))}
         {ex.offers.map(card)}

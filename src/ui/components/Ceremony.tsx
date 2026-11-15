@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useGame } from '../../state/store';
 import { HERO_BY_ID } from '../../data/heroes';
 import { AFFINITIES } from '../../data/affinities';
@@ -51,18 +52,26 @@ export function Ceremony({ kind, heroId, before, after, onDone }: { kind: Ceremo
   if (after.cap !== before.cap) lines.push({ label: 'Niveau maximum', from: String(before.cap), to: String(after.cap), gain: `+${after.cap - before.cap}` });
   for (const [k, label] of [['hp', 'PV'], ['atk', 'ATQ'], ['def', 'DÉF']] as const) if (Math.round(after[k]) !== Math.round(before[k])) lines.push({ label, from: fmt(Math.round(before[k])), to: fmt(Math.round(after[k])), gain: pct(before[k], after[k]) });
   if (Math.round(after.spd) !== Math.round(before.spd)) lines.push({ label: 'VIT', from: String(Math.round(before.spd)), to: String(Math.round(after.spd)), gain: `+${Math.round(after.spd - before.spd)}` });
-  if (Math.round(after.critDmg) !== Math.round(before.critDmg)) lines.push({ label: 'Dégâts critiques', from: `${Math.round(before.critDmg)} %`, to: `${Math.round(after.critDmg)} %`, gain: `+${Math.round(after.critDmg - before.critDmg)}` });
+  for (const [k, label] of [['acc', 'PRÉ'], ['res', 'RÉS']] as const) if (Math.round(after[k]) !== Math.round(before[k])) lines.push({ label, from: String(Math.round(before[k])), to: String(Math.round(after[k])), gain: `+${Math.round(after[k] - before[k])}` });
   lines.push({ label: 'Puissance', from: fmt(before.power), to: fmt(after.power), gain: `+${fmt(after.power - before.power)}` });
   const next = kind === 'rank' ? (after.rank < BALANCE.hero.maxRank ? `Prochain rang au niveau ${after.cap}.` : 'Rang maximum atteint.')
-    : kind === 'ascend' ? (after.ascension < BALANCE.hero.maxAscension ? `L’éveil ${after.awaken + 1} est maintenant possible.` : 'Ascension maximale atteinte.')
+    // L'éveil n+1 demande l'ascension n : l'ascension A débloque l'éveil A+1 (s'il existe).
+    : kind === 'ascend' ? (after.awaken === after.ascension && after.awaken < BALANCE.hero.maxAwaken ? `Éveil ${after.awaken + 1} débloqué (il demande l’ascension ${after.ascension}).`
+      : after.ascension >= BALANCE.hero.maxAscension ? 'Ascension maximale atteinte.' : `Prochaine ascension : ${after.ascension + 1}.`)
     : (after.awaken < BALANCE.hero.maxAwaken ? 'Chaque éveil ajoute aussi +2 de vitesse.' : 'Éveil maximal : le héros a atteint sa pleine puissance.');
+
+  const burstNow = useRef<() => void>(() => {});
+  const skippedAt = useRef(0);
+  const okRef = useRef<HTMLButtonElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
 
   // Déroulé.
   useEffect(() => {
-    if (reduced) return;
+    rootRef.current?.focus();
+    if (reduced) { playCeremonyBurst(kind); return; } // sans animation, le son reste
     const at = (ms: number, f: () => void) => timers.current.push(window.setTimeout(f, ms));
     playCeremonyCharge(kind);
-    at(CHARGE, () => { setPhase(1); playCeremonyBurst(kind); });
+    at(CHARGE, () => { setPhase(1); playCeremonyBurst(kind); burstNow.current(); });
     at(CHARGE + 900, () => setPhase(2));
     lines.forEach((_, i) => at(CHARGE + 1000 + i * 170, () => { setRows(i + 1); playStatTick(i); }));
     at(CHARGE + 1100 + lines.length * 170, () => setPhase(3));
@@ -76,20 +85,46 @@ export function Ceremony({ kind, heroId, before, after, onDone }: { kind: Ceremo
     st.start();
     const c = () => { const r = card.current?.getBoundingClientRect(); return r ? { x: r.left + r.width / 2, y: r.top + r.height * 0.45 } : { x: window.innerWidth / 2, y: window.innerHeight * 0.35 }; };
     const iv = window.setInterval(() => st.vortex(c(), th.color, 9, 190), 90);
-    const t1 = window.setTimeout(() => { clearInterval(iv); const p = c(); st.burst(p, th.color, 70, 0.6); st.burst(p, '#ffffff', 30, 0.45); const r = card.current?.getBoundingClientRect(); st.ring(r ? { x: p.x, y: r.bottom - 6 } : p, th.color, 200, 900); }, CHARGE);
+    let burst = false;
+    burstNow.current = () => {
+      if (burst) return; burst = true; clearInterval(iv);
+      const p = c(); st.burst(p, th.color, 70, 0.6); st.burst(p, '#ffffff', 30, 0.45);
+      const r = card.current?.getBoundingClientRect(); st.ring(r ? { x: p.x, y: r.bottom - 6 } : p, th.color, 200, 900);
+    };
     const t2 = window.setInterval(() => st.embers({ x: c().x, y: c().y + 90 }, th.color, 2, 90, 10), 160);
-    return () => { clearInterval(iv); clearTimeout(t1); clearInterval(t2); st.stop(); };
+    return () => { clearInterval(iv); clearInterval(t2); st.stop(); burstNow.current = () => {}; };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const skip = () => { if (phase < 3) { timers.current.forEach(clearTimeout); setPhase(3); setRows(99); } };
+  // Fin de l'animation : le focus passe sur « Continuer » (clavier, lecteurs d'écran).
+  useEffect(() => { if (phase === 3) okRef.current?.focus(); }, [phase]);
+
+  /** Toucher pendant l'animation : on saute au bilan (l'éclat se joue tout de suite s'il n'a pas eu lieu). */
+  const skip = () => {
+    if (phase >= 3) return;
+    timers.current.forEach(clearTimeout);
+    if (phase === 0) { playCeremonyBurst(kind); burstNow.current(); }
+    skippedAt.current = Date.now(); setPhase(3); setRows(99);
+  };
+  /** Fermer — ignoré juste après un saut (le second toucher d'un double toucher ne doit pas cacher le bilan). */
+  const close = () => { if (phase >= 3 && Date.now() - skippedAt.current > 350) onDone(); };
+  useEffect(() => {
+    const key = (e: KeyboardEvent) => { if (e.key === 'Escape') { e.preventDefault(); if (phase < 3) skip(); else close(); } };
+    window.addEventListener('keydown', key);
+    return () => window.removeEventListener('keydown', key);
+  });
   const pips = kind === 'rank' ? { n: after.rank, max: BALANCE.hero.maxRank } : kind === 'ascend' ? { n: after.ascension, max: BALANCE.hero.maxAscension } : { n: after.awaken, max: BALANCE.hero.maxAwaken };
 
-  return (
-    <div className={`cer cer-${kind} ph${phase}`} style={{ ['--cc' as string]: th.color, ['--cg' as string]: th.glow }} onClick={skip} role="dialog" aria-label={`${th.kicker} : ${d.name}, ${title}`}>
-      <canvas className="cer-fx" ref={canvas} aria-hidden />
-      <div className="cer-rays" aria-hidden />
-      {kind === 'awaken' && <div className="cele-threads" aria-hidden>{Array.from({ length: 12 }, (_, i) => <i key={i} style={{ ['--a' as string]: `${i * 30}deg`, ['--d' as string]: `${0.2 + (i % 4) * 0.1}s` }} />)}</div>}
-      <div className="cer-flash" aria-hidden />
+  // Rendue dans <body> (comme les fenêtres) : rien de l'écran ne peut la rogner ; le focus y est piégé par aria-modal.
+  return createPortal(
+    <div className={`cer cer-${kind} ph${phase} ${reduced ? 'reduced' : ''}`} style={{ ['--cc' as string]: th.color, ['--cg' as string]: th.glow }} onClick={() => (phase < 3 ? skip() : close())}
+      role="dialog" aria-modal="true" aria-label={`${th.kicker} : ${d.name}, ${title}`} tabIndex={-1} ref={rootRef}>
+      {/* Effets dans une couche fixe et rognée : la cérémonie elle-même peut défiler sur un écran peu haut. */}
+      <div className="cer-bg" aria-hidden>
+        <canvas className="cer-fx" ref={canvas} />
+        <div className="cer-rays" />
+        {kind === 'awaken' && !reduced && <div className="cele-threads">{Array.from({ length: 12 }, (_, i) => <i key={i} style={{ ['--a' as string]: `${i * 30}deg`, ['--d' as string]: `${0.2 + (i % 4) * 0.1}s` }} />)}</div>}
+        <div className="cer-flash" />
+      </div>
       <div className="cer-card" ref={card}>
         {phase >= 1
           ? <LivingArt src={heroArtUrl(heroId, 'full')} accent={AFFINITIES[d.affinity].color}><HeroArt heroId={heroId} kind="full" position="center 12%" /></LivingArt>
@@ -110,8 +145,9 @@ export function Ceremony({ kind, heroId, before, after, onDone }: { kind: Ceremo
           </div>
         ))}
         <p className="cer-next">{next}</p>
-        <button className="btn cer-ok" disabled={phase < 3} onClick={(e) => { e.stopPropagation(); onDone(); }}>Continuer</button>
+        <button className="btn cer-ok" ref={okRef} disabled={phase < 3} onClick={(e) => { e.stopPropagation(); close(); }}>Continuer</button>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

@@ -448,9 +448,11 @@ body:has(.battle-controls) .toast { font-size: 12.5px; padding-top: 7px; padding
 
 /* ─── Cérémonie de progression (v1.107.0) : rang, ascension, éveil ─── */
 .cer { position: fixed; inset: 0; z-index: 90; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 10px;
-  padding: calc(var(--sat, 0px) + 28px) 16px calc(var(--sab, 0px) + 16px); overflow: hidden; text-align: center;
+  padding: calc(var(--sat, 0px) + 28px) 16px calc(var(--sab, 0px) + 16px); overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; text-align: center; outline: none;
   background: radial-gradient(circle at 50% 30%, color-mix(in srgb, var(--cg) 26%, transparent), transparent 62%), #050309; animation: fadeIn .3s backwards; }
 .cer-awaken { background: radial-gradient(circle at 50% 30%, rgba(120,60,200,0.42), transparent 60%), #040208; }
+.cer-bg { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+.cer > :not(.cer-bg) { position: relative; z-index: 2; }
 .cer-fx { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3; }
 .cer-rays { position: absolute; left: 50%; top: 27%; width: 150vmax; height: 150vmax; margin: -75vmax 0 0 -75vmax; pointer-events: none; opacity: 0; transition: opacity .8s ease;
   background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--cc) 16%, transparent) 0 6deg, transparent 6deg 18deg);
@@ -494,11 +496,14 @@ body:has(.battle-controls) .toast { font-size: 12.5px; padding-top: 7px; padding
 .cer-next { margin: 8px 0 10px; font-size: 12.5px; color: var(--text-dim); }
 .cer-ok { width: 100%; }
 .cer-ok:disabled { opacity: .35; }
-.reduced-motion .cer *, .reduced-motion .cer { animation: none !important; transition: none !important; }
+.cer.reduced *, .cer.reduced { animation: none !important; transition: none !important; }
 @media (max-height: 700px) { .cer { gap: 6px; padding-top: calc(var(--sat, 0px) + 12px); } .cer-row { padding: 3px 2px; font-size: 13px; } .cer-next { margin: 6px 0 8px; } }
 .cer .cele-threads { top: calc(var(--sat, 0px) + 28px + min(58vw, 250px, 34vh) * 0.62); z-index: 1; }
 /* Sceau peint frappé au bas de la carte au moment de l'éclat. */
-.cer { --cw: min(58vw, 250px, 34vh); }
+.cer { --cw: min(58vw, 250px, 30vh); }
+@supports (height: 1svh) { .cer { --cw: min(58vw, 250px, 30svh); } }
+.cer .cer-card { width: var(--cw); flex: none; }
+.cer .cer-sheet { flex: none; }
 .cer-emblem { position: relative; z-index: 6; width: calc(var(--cw) * 0.42); height: auto; margin-top: calc(var(--cw) * -0.26); margin-bottom: -6px; pointer-events: none;
   filter: drop-shadow(0 4px 10px rgba(0,0,0,.7)) drop-shadow(0 0 14px var(--cg)); opacity: 0; transform: scale(2.6) rotate(-14deg); }
 .cer:not(.ph0) .cer-emblem { opacity: 1; transform: none; animation: cerStamp .55s cubic-bezier(.3,1.5,.5,1) .2s backwards; }

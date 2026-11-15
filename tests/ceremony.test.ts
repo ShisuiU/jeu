@@ -19,7 +19,7 @@ describe('Bilan de la cérémonie', () => {
     expect(after.hp).toBeGreaterThan(before.hp);
     expect(after.power).toBeGreaterThan(before.power);
   });
-  it('éveil : +2 VIT, aucune hausse des dégâts critiques (le texte ne doit pas la promettre)', () => {
+  it('éveil : +2 VIT, ni PRÉ ni RÉS (réservées à l’ascension)', () => {
     const s = createNewSave(Date.now());
     const h = s.heroes[0];
     h.ascension = 3; s.resources.awakenEssence = 999; s.resources.gold = 1e9;
@@ -28,7 +28,7 @@ describe('Bilan de la cérémonie', () => {
     const after = snapHero(s, h.uid)!;
     expect(after.awaken).toBe(before.awaken + 1);
     expect(after.spd - before.spd).toBe(2);
-    expect(after.critDmg).toBe(before.critDmg);
+    expect(after.acc).toBe(before.acc); // seule l'ascension donne de la PRÉ
   });
   it('héros inconnu : pas de bilan', () => {
     expect(snapHero(createNewSave(Date.now()), 'nope')).toBeNull();

@@ -77,7 +77,7 @@ function CopiesModal({ h, onClose, onAwaken }: { h: HeroInstance; onClose: () =>
         <span className="cp-ic"><Icon.essence size={24} /></span>
         <div className="grow">
           <b>Éveiller {first}</b> <span className="cp-lv">{h.awaken}/{BALANCE.hero.maxAwaken}</span>
-          <div className="cp-sub">+{Math.round(BALANCE.hero.awakenBonus * 100)} % à toutes ses stats</div>
+          <div className="cp-sub">+{Math.round(BALANCE.hero.awakenBonus * 100)} % PV, ATQ et DÉF, +2 VIT</div>
           {!awMax && <div className="cp-cost"><CostView cost={aw.cost} save={save} heroId={h.heroId} /></div>}
           {!awMax && !aw.ok && aw.reason && !/doublon|insuffisant/i.test(aw.reason) && <div className="cp-sub warn">{aw.reason}</div>}
         </div>

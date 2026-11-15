@@ -116,7 +116,8 @@ export function Prep({ spec }: { spec: BattleSpec }) {
       <Coach id="prep_fight" target=".fight-btn" text="Voici les ennemis et la récompense. Lance le combat !" />
       <Coach id="battle_target" target=".aff-advice" when={Object.values(save.progress.campaign).some((p) => p.clears > 0)} text="Les affinités comptent : Solaire bat Tellurique, qui bat Lunaire, qui bat Solaire. Un héros avantagé (▲) frappe 30 % plus fort. Regarde ici combien ton équipe en a." />
       <div className="prep-sub"><span className="muted">{info.subtitle}</span></div>
-      {(() => { const fs = new Set(members.filter(Boolean).map((h) => HERO_BY_ID[h!.heroId].faction)); const c = COUTURES.find((x) => fs.has(x.factions[0]) && fs.has(x.factions[1])); return c ? <div className="prep-couture">✦ Couture d’époque possible : <b>{save.flags[`couture_${c.id}`] ? c.name : '???'}</b> <span className="faint">({FACTIONS[c.factions[0]].short} + {FACTIONS[c.factions[1]].short}, au 3ᵉ tour de l’équipe)</span></div> : null; })()}
+      {(() => { const fs = new Set(members.filter(Boolean).map((h) => HERO_BY_ID[h!.heroId].faction)); const c = COUTURES.find((x) => fs.has(x.factions[0]) && fs.has(x.factions[1])); return c ? <div className="prep-couture">✦ Couture d’époque possible : <b>{save.flags[`couture_${c.id}`] ? c.name : '???'}</b> <span className="faint">({FACTIONS[c.factions[0]].short} + {FACTIONS[c.factions[1]].short}, au 3ᵉ tour de l’équipe)</span>
+        <InfoButton title="Couture d’époque">Quand ton équipe réunit deux héros de familles qui se répondent à travers les époques, ils frappent ensemble tous les ennemis au 3ᵉ tour de l’équipe, avec un effet en plus (brûlure, soin, bouclier…). Chaque couture découverte s’inscrit dans le Codex.</InfoButton></div> : null; })()}
       {info.challenge && (
         <div className={`prep-rule ${ruleWhy ? 'bad' : ''}`} role="status">
           <b>Règle du défi · {CHALLENGES[info.challenge].name}</b> : {CHALLENGES[info.challenge].text}
@@ -260,7 +261,7 @@ export function Prep({ spec }: { spec: BattleSpec }) {
         {blocked && <div className="prep-why">{!count ? 'Équipe vide : touche l’équipe pour ajouter des héros.' : !start.ok ? start.reason : ruleWhy ? `Défi : ${ruleWhy}` : `Énergie ${save.energy.current}/${info.cost.amount} · +1 dans ${formatDuration(msToNextEnergy(save.energy, now, energyMax(save.profile.level)))}`}</div>}
         <div className="row" style={{ gap: 8 }}>
           {(spec.mode === 'campaign' || spec.mode === 'dungeon') && (
-            <button className="btn secondary prep-sweep" disabled={!bgOk.ok || !count} onClick={() => setBgOpen(true)} title={bgOk.ok ? 'Combats automatiques pendant que tu joues ailleurs' : bgOk.reason} aria-label="Combats en arrière-plan">
+            <button className={`btn secondary prep-sweep ${bgOk.ok && count ? '' : 'off'}`} aria-disabled={!bgOk.ok || !count} onClick={() => { if (bgOk.ok && count) setBgOpen(true); else { play('error'); toast(!count ? 'Équipe vide.' : bgOk.reason ?? 'Indisponible pour ce niveau.', 'error'); } }} title={bgOk.ok ? 'Combats automatiques pendant que tu joues ailleurs' : bgOk.reason} aria-label="Combats en arrière-plan">
               <Icon.loop size={16} /> <span className="lbl">Répéter</span>
             </button>
           )}

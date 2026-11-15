@@ -558,6 +558,12 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## 🌙 Mission nocturne (15-16 novembre 2026) — journal de travail
+
+Travail sur la branche `claude/keen-faraday-bcryji`, **sans fusion sur `main`** (pas de mise en production sans autorisation). Cycles : audit → corrections → tests → nouvel audit, jusqu'à 07:00 UTC.
+
+- Cycle 1 (22:00 UTC) : retours du testeur « joueur curieux » ; 4 audits en parallèle (ressources « Obtenir », mobile 3 tailles, technique, boutons sans effet).
+
 ## ✅ Version 1.110.0 — Test « joueur pressé » : le mur du 2-4, et fin de la refonte
 
 - **Mur du 2-4** (un testeur jouant une partie neuve y a perdu deux fois) : simulé avec les 4 héros de départ, le 2-3 demandait le niveau 12 et le 2-4 le niveau 21. Cause : l'élite (Chevalier) entrait au 4ᵉ niveau du chapitre. Au chapitre 2 seulement, pas d'élite avant le 2-7 : le 2-4 demande le niveau 15. Garde retirée de la Sylve pourrissante (trop tôt pour une nouvelle mécanique). Courbe de la campagne : test existant toujours vert.

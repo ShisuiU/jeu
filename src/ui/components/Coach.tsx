@@ -67,7 +67,8 @@ export function Coach({ id, target, text, when = true, place = 'auto' }: { id: C
       const el = document.querySelector(target);
       let r = el?.getBoundingClientRect();
       // Élément hors de l'écran (bas de page) : on le fait venir au centre, une fois.
-      if (el && r && r.width && !scrolled && (r.bottom > window.innerHeight - 70 || r.top < 0)) {
+      // Jamais dans un combat : l'écran de combat ne défile pas (sinon tout restait décalé de ~150 px, test « joueur curieux »).
+      if (el && r && r.width && !scrolled && !el.closest('.battle') && (r.bottom > window.innerHeight - 70 || r.top < 0)) {
         scrolled = true;
         el.scrollIntoView({ block: 'center', behavior: 'auto' });
         r = el.getBoundingClientRect();

@@ -111,7 +111,7 @@ export function Home() {
       </div>
 
       <Coach id="home_campaign" target=".campaign-cta" text="Ton aventure commence ici : touche Campagne." />
-      <Coach id="home_summon" target=".nav-item:nth-child(3)" text="Agrandis ton équipe : appelle de nouveaux Héritiers à l’Autel des Failles." />
+      <Coach id="home_summon" target=".nav-item:nth-child(3)" text="Agrandis ton équipe : appelle de nouveaux Héritiers dans l’onglet Invocation." />
       <Coach id="home_sanct" target=".nav-item:nth-child(2)" text="Fais progresser tes héros : ouvre Héros, puis le Sanctuaire." />
     </div>
   );

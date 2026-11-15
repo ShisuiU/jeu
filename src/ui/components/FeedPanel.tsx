@@ -4,7 +4,7 @@ import { useUI } from '../../state/ui';
 import { HERO_BY_ID } from '../../data/heroes';
 import { FEED_MAX, copyCandidates, copyHeroId, copyKey, copyXp, feedBlock, feedCandidates, feedHeroes, feedPreview, feedXp, isCopyKey, validFeed } from '../../game/feed';
 import { play } from '../../audio/sfx';
-import { Modal, Panel, fmt } from './common';
+import { Modal, Panel, fmt, plural } from './common';
 import { Sheet } from './ListControls';
 import { HeroCard } from './HeroCard';
 
@@ -68,7 +68,7 @@ export function FeedPanel({ targetUid }: { targetUid: string }) {
             <span>+{fmt(p.xp)} XP · Niv. <b>{p.from}</b> → <b className={p.to > p.from ? 'up' : ''}>{p.to}</b>{p.capped ? ` (max du rang ${p.cap})` : ''}</span>
             <span className={save.resources.gold < p.gold ? 'lack' : 'faint'}>{fmt(p.gold)} or</span>
           </>
-        ) : <span className="faint">{copies.length ? `${copies.reduce((a, c) => a + c.count, 0)} doublon(s) · ` : ''}{cands.length ? `${cands.length} héros disponibles` : 'Aucun héros disponible'}{blocked ? ` · ${blocked} protégé(s) (équipe, verrou, expédition, avatar)` : ''}</span>}
+        ) : <span className="faint">{copies.length ? `${plural(copies.reduce((a, c) => a + c.count, 0), 'doublon')} · ` : ''}{cands.length ? `${plural(cands.length, 'héros disponible', 'héros disponibles')}` : 'Aucun héros disponible'}{blocked ? ` · ${plural(blocked, 'protégé')} (équipe, verrou, expédition, avatar)` : ''}</span>}
       </div>
       <div className="row" style={{ gap: 8, marginTop: 10 }}>
         <button className="btn secondary grow" disabled={!cands.length && !copies.length} onClick={() => setChoosing(true)}>Choisir</button>

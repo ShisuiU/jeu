@@ -39,7 +39,7 @@ export function IdentityStrip({ rarity, affinity, role, faction }: { rarity: Rar
   const [open, setOpen] = useState<null | 'rarity' | 'affinity' | 'role' | 'faction'>(null);
   const r = RARITIES[rarity], a = AFFINITIES[affinity], ro = ROLES[role], f = FACTIONS[faction];
   const items = [
-    { k: 'rarity' as const, icon: <span className="id-stars" style={{ color: r.color }}>{'★'.repeat(r.order)}</span>, label: r.name, color: r.color, title: `Rareté : ${r.name}`, text: `${r.order} étoile(s). Plus la rareté est haute, plus les statistiques de base sont fortes.` },
+    { k: 'rarity' as const, icon: <span className="id-stars" style={{ color: r.color }}>{'★'.repeat(r.order)}</span>, label: r.name, color: r.color, title: `Rareté : ${r.name}`, text: `${r.order} étoile${r.order > 1 ? 's' : ''}. Plus la rareté est haute, plus les statistiques de base sont fortes.` },
     { k: 'affinity' as const, icon: <AffinityIcon id={affinity} size={22} />, label: a.name, color: a.color, title: `Affinité : ${a.name}`, text: `${a.description} ${AFF_TEXT(affinity)}` },
     { k: 'role' as const, icon: <RoleIcon id={role} size={22} />, label: ro.name, color: '#d9cdb4', title: `Rôle : ${ro.name}`, text: ro.description },
     { k: 'faction' as const, icon: <FactionEmblem id={faction} size={26} />, label: f.short, color: f.colors.glow, title: f.name, text: f.synergy },

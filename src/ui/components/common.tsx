@@ -103,6 +103,9 @@ export function Modal({ children, onClose, className = '' }: { children: ReactNo
   );
 }
 
+/** Accord en nombre : plural(3, 'élixir') → « 3 élixirs » ; plural(1, 'héros', 'héros') → « 1 héros ». */
+export function plural(n: number, one: string, many = `${one}s`): string { return `${fmt(n)} ${n > 1 ? many : one}`; }
+
 export function fmt(n: number): string {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(n >= 10_000_000 ? 0 : 1).replace('.', ',') + ' M';
   if (n >= 100_000) return Math.floor(n / 1000) + ' k';

@@ -31,7 +31,7 @@ export function HeroUpgrade({ h, section }: { h: HeroInstance; section?: Upgrade
   const elixir = (n: number) => {
     let r: ReturnType<typeof applyElixirs> = { used: 0, levels: 0 };
     mutate((s) => { r = applyElixirs(s, h.uid, n); });
-    if (r.used) { play('claim'); toast(`${r.used} élixir(s) utilisé(s)${r.levels ? ` · +${r.levels} niveau(x)` : ''}.`, 'ok'); } else toast(r.reason ?? 'Impossible.', 'error');
+    if (r.used) { play('claim'); toast(`${r.used} élixir${r.used > 1 ? 's utilisés' : ' utilisé'}${r.levels ? ` · +${r.levels} niveau${r.levels > 1 ? 'x' : ''}` : ''}.`, 'ok'); } else toast(r.reason ?? 'Impossible.', 'error');
   };
 
   const rank = rankUpCheck(save, h);

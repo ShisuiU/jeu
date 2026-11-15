@@ -45,7 +45,8 @@ export function DamageRecap({ units, xp }: { units: Unit[]; xp?: { uid: string; 
   const fmt = (n: number) => (n >= 10000 ? `${Math.round(n / 1000)} k` : Math.round(n).toLocaleString('fr-FR'));
   return (
     <div className="dmg-recap">
-      <div className="dr-title">{xp ? 'Tes héros' : 'Dégâts infligés'}</div>
+      {/* v1.111.0 : légende des colonnes (le testeur prenait la barre de dégâts pour une barre d'XP). */}
+      <div className="dr-title row between"><span>{xp ? 'Tes héros' : 'Dégâts infligés'}</span>{xp && <span className="dr-legend">part des dégâts · total</span>}</div>
       {rows.map((u, i) => {
         const d = u.flags.dmgDealt ?? 0;
         const pct = total ? Math.round((d / total) * 100) : 0;

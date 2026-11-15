@@ -16,9 +16,9 @@ export const MYTHIC_HEROES: HeroDef[] = [
         effects: [{ kind: 'dispel', target: 'enemy' }, { kind: 'damage', target: 'enemy', mult: 5.5, ignoreDefPct: 0.4, bonusVs: ['defDown'], executeBelow: 0.35 }], upgrades: up('+10 % dégâts', '+10 % dégâts', 'Recharge -1') },
     ],
     leaderSkill: { description: '+13 % de taux critique pour l’équipe', stat: 'critRate', pct: 0.13, scope: 'all' },
-    lore: "Nyxa était le prototype zéro du Prisme : une lame vivante, conçue pour plier la lumière jusqu'à la rendre invisible. Le jour de la Fracture, le Néant s'est engouffré dans les fissures de son armure, et l'Ordre l'a déclarée perdue. Elle est revenue seule, une nuit, au pied de la tour où elle était née. Elle ne sert plus personne, mais elle se bat toujours aux côtés des Héritiers : elle dit que le Néant lui a appris où frapper.",
+    lore: "Nyxa était le prototype zéro du Prisme : une lame vivante, conçue pour plier la lumière jusqu’à la rendre invisible. Le jour de la Fracture, le Néant s’est engouffré dans les fissures de son armure, et l’Ordre l’a déclarée perdue. Elle est revenue seule, une nuit, au pied de la tour où elle était née. Elle ne sert plus personne, mais elle se bat toujours aux côtés des Héritiers : elle dit que le Néant lui a appris où frapper.",
     quote: '« Tu m’as vue ? Alors c’est déjà fini. »',
-    look: "Femme d'une trentaine d'années, visage pâle et marqué de fines cicatrices, cheveux noirs courts avec une mèche argentée, yeux violets luisants sous une capuche sombre. Exo-armure de plaques de céramique blanche fissurées d'où s'échappe une lumière violette du Néant, lignes cyan, longue cape violet sombre, dague de cristal réfracté violet et cyan, éclats de prisme qui tournent autour de sa main.",
+    look: "Femme d’une trentaine d’années, visage pâle et marqué de fines cicatrices, cheveux noirs courts avec une mèche argentée, yeux violets luisants sous une capuche sombre. Exo-armure de plaques de céramique blanche fissurées d’où s’échappe une lumière violette du Néant, lignes cyan, longue cape violet sombre, dague de cristal réfracté violet et cyan, éclats de prisme qui tournent autour de sa main.",
     palette: ['#e9f3f7', '#7fe7ff', '#9a6bff'],
   },
 ];

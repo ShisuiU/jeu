@@ -58,7 +58,7 @@ export function Sanctuary({ uid }: { uid?: string }) {
     const before = powerNow();
     let r: ReturnType<typeof applyElixirs> = { used: 0, levels: 0 };
     mutate((s) => { r = applyElixirs(s, h.uid, n); });
-    if (r.used) { play('claim'); if (r.levels) setCele({ kind: 'level', title: `Niveau ${useGame.getState().save!.heroes.find((x) => x.uid === h.uid)!.level}`, from: before, to: powerNow(), key: Date.now() }); else toast(`+${r.used} élixir(s)`, 'ok'); } else toast(r.reason ?? 'Impossible.', 'error');
+    if (r.used) { play('claim'); if (r.levels) setCele({ kind: 'level', title: `Niveau ${useGame.getState().save!.heroes.find((x) => x.uid === h.uid)!.level}`, from: before, to: powerNow(), key: Date.now() }); else toast(`+${r.used} élixir${r.used > 1 ? 's' : ''}`, 'ok'); } else toast(r.reason ?? 'Impossible.', 'error');
   };
   const skillMax = d.skills.reduce((a, s) => a + s.upgrades.length + 1, 0);
   const skillNow = d.skills.reduce((a, s) => a + (h.skillLevels[s.id] ?? 1), 0);
@@ -96,8 +96,8 @@ export function Sanctuary({ uid }: { uid?: string }) {
         <>
           <Wallet ids={['xpElixir', 'gold']} cols={2} />
           <div className="upg-list">
-            <UpRow icon={<ResourceIcon icon="flask" color="#9bdc6a" size={20} />} label="Élixirs" value={`${h.level}/${cap}`}
-              sub={h.level < cap ? <span>{save.resources.xpElixir} élixir(s) · +1 : {fmt(BALANCE.upgrades.elixirGoldPerLevel * h.level)} or</span> : <span>Niveau maximum du rang : monte de rang</span>}>
+            <UpRow icon={<ResourceIcon icon="flask" color="#9bdc6a" size={20} />} label="Niveau" value={`${h.level}/${cap}`}
+              sub={h.level < cap ? <span>{save.resources.xpElixir} élixir{save.resources.xpElixir > 1 ? 's' : ''} · +1 : {fmt(BALANCE.upgrades.elixirGoldPerLevel * h.level)} or</span> : <span>Niveau maximum du rang : monte de rang</span>}>
               <button className="btn secondary small" disabled={!one.used} onClick={() => elixir(1)}>+1</button>
               <button className="btn small" disabled={!all.used} onClick={() => setMaxAsk(true)}>Max</button>
             </UpRow>

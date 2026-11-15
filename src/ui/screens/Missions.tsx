@@ -1,3 +1,4 @@
+import { isUnlocked } from '../../game/unlocks';
 import { ClaimAllButton } from '../components/ClaimAll';
 import { claimAllMissions, claimableIn } from '../../game/quickClaim';
 import { useState } from 'react';
@@ -63,13 +64,14 @@ export function Missions() {
           </Panel>
           <Panel title={tab === 'daily' ? 'Coffre du jour' : 'Coffre de la semaine'}>
             <RewardView reward={tab === 'daily' ? DAILY_BONUS : WEEKLY_BONUS} />
+            {!save.missions[kind].bonus && !bonusAvailable(save, kind) && <p className="faint" style={{ margin: '8px 0 0', textAlign: 'center' }}>S’ouvre quand toutes les missions {tab === 'daily' ? 'du jour' : 'de la semaine'} sont réclamées.</p>}
             <button className="btn block" style={{ marginTop: 10 }} disabled={!bonusAvailable(save, kind)} onClick={() => claim((s) => claimBonus(s, kind))}>{save.missions[kind].bonus ? 'Déjà ouvert' : 'Ouvrir le coffre'}</button>
           </Panel>
         </>
       )}
       {tab === 'progress' && (
         <Panel>
-          {[...ACHIEVEMENTS].sort((x, y) => achRank(save, x.id) - achRank(save, y.id)).map((a) => { const [v, t] = a.progress(save); return <Row key={a.id} title={a.title} value={v} target={t} reward={a.reward} claimed={save.achievements.includes(a.id)} onClaim={() => claim((s) => claimAchievement(s, a.id))} />; })}
+          {[...ACHIEVEMENTS].filter((a) => !a.feature || isUnlocked(save, a.feature)).sort((x, y) => achRank(save, x.id) - achRank(save, y.id)).map((a) => { const [v, t] = a.progress(save); return <Row key={a.id} title={a.title} value={v} target={t} reward={a.reward} claimed={save.achievements.includes(a.id)} onClaim={() => claim((s) => claimAchievement(s, a.id))} />; })}
         </Panel>
       )}
     </Screen>

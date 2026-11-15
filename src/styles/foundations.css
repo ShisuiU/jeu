@@ -419,3 +419,9 @@ body:has(.battle-controls) .toast { font-size: 12.5px; padding-top: 7px; padding
 .ca-row { display: grid; gap: 8px; margin-bottom: 12px; }
 .ca-row .claim-all { margin-bottom: 0; }
 .rm-title { margin-top: 0; }
+/* Héros vivants (v1.104.0) : le canevas animé couvre l'illustration fixe dès qu'il est prêt (fondu). */
+.living-art { position: absolute; inset: 0; overflow: hidden; touch-action: pan-y; }
+.living-art .la-still { position: absolute; inset: 0; }
+.living-art .la-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity 0.6s ease; pointer-events: none; }
+.living-art.live .la-canvas { opacity: 1; }
+.living-art.live .la-still .sc-breathe { animation: none !important; }

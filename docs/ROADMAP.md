@@ -558,6 +558,14 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.104.0 — Phase 3, lot 2 : héros vivants
+
+- **Constat** : les personnages étaient des illustrations fixes qui « respiraient » en CSS — l'écart le plus visible avec AFK Journey, Epic Seven ou Star Rail.
+- **Illustration animée sur la carte graphique** (`ui/art/LivingArt.tsx`, WebGL, un quadrilatère et un shader) : respiration (la poitrine se soulève), vent (cape, cheveux, barbe ondulent, davantage vers le bas et sur les bords), parallaxe (le personnage bouge plus que le décor ; dérive lente et suit le doigt), reflet de lumière qui balaie les parties claires (métal, bijoux), teinté de l'affinité.
+- **Où** : la fiche du héros (vitrine) et la révélation d'un Légendaire ou d'un Mythique à l'invocation.
+- **Sobriété** : 30 images/s (mouvement lent), définition ≤ 1,5×, arrêt quand la vue est hors écran ou l'app en arrière-plan, contexte graphique libéré en quittant l'écran ; « Animations réduites », pas de WebGL ou erreur → l'illustration fixe reste affichée (elle est toujours dessous).
+- **Mesures** (processeur ralenti ×4, rendu logiciel du navigateur de test, donc pire que sur un iPhone) : fiche héros 60 images/s, aucune image lente ; révélation légendaire 38-40 images/s contre 44-50 sans l'animation.
+
 ## ✅ Version 1.103.0 — Phase 3, lot 1 : la routine quotidienne sans corvée
 
 - **Constat** : aucune récupération groupée dans le jeu ; la routine du jour demandait de réclamer chaque mission une à une, de récupérer puis relancer chaque expédition à la main (choisir les héros à chaque fois), de passer au Camp puis à la Mine.

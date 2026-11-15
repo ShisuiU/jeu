@@ -141,6 +141,11 @@ export function upgradeSkill(s: SaveData, heroUid: string, skillId: string): Che
 }
 
 /** Une amélioration « marquante » (rang, ascension, éveil, compétence) est-elle possible tout de suite ? */
+/** Étape majeure possible (rang, ascension, éveil) : seule celle-ci allume la pastille de l'onglet Héros (v1.111.0) ;
+ *  une compétence améliorable l'allumait presque en permanence, la pastille ne disait plus rien. */
+export function canImproveMajor(s: SaveData, h: HeroInstance): boolean {
+  return rankUpCheck(s, h).ok || ascendCheck(s, h).ok || awakenCheck(s, h).ok;
+}
 export function canImprove(s: SaveData, h: HeroInstance): boolean {
   if (rankUpCheck(s, h).ok || ascendCheck(s, h).ok || awakenCheck(s, h).ok) return true;
   const d = HERO_BY_ID[h.heroId];

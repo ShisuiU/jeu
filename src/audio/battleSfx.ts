@@ -232,3 +232,32 @@ export function playFlip(order: number) {
   if (order >= 4) chimes(order >= 5 ? [1175, 1568, 2093] : [988, 1319], 0.05, 0.5, 0.07);
   if (order >= 5) gong(0.05, 0.18);
 }
+
+// ─── Cérémonies de progression (v1.107.0) : rang, ascension, éveil ───
+export type CeremonySound = 'rank' | 'ascend' | 'awaken';
+/** La lumière se rassemble : grondement et scintillements qui montent. */
+export function playCeremonyCharge(kind: CeremonySound) {
+  if (!out()) return;
+  const d = kind === 'awaken' ? 1.5 : 0.9;
+  osc('sine', 55, kind === 'awaken' ? 110 : 88, { dur: d, gain: 0.3, attack: d * 0.85 });
+  noise('lowpass', 150, 1800, { dur: d, gain: 0.22, attack: d * 0.9 });
+  osc('triangle', kind === 'ascend' ? 523 : 440, kind === 'ascend' ? 1046 : 880, { dur: d, gain: 0.04, attack: d * 0.8 }, 6);
+  for (let i = 0; i < (kind === 'awaken' ? 9 : 5); i++) noise('highpass', rnd(3500, 7000), null, { at: d * (0.3 + i * 0.07), dur: 0.04, gain: 0.18 });
+}
+/** L'éclat : gong et accord (or pour le rang, cristallin pour l'ascension, grave et large pour l'éveil). */
+export function playCeremonyBurst(kind: CeremonySound) {
+  if (!out()) return;
+  noise('highpass', 2000, 9000, { dur: 0.4, gain: 0.3 });
+  osc('sine', 110, 40, { dur: 0.7, gain: 0.5 });
+  gong(0.02, kind === 'awaken' ? 0.32 : 0.24);
+  const chord = kind === 'awaken' ? [196, 247, 294, 392, 494, 587] : kind === 'ascend' ? [523, 659, 784, 1046, 1318] : [392, 494, 587, 784, 988];
+  chord.forEach((f, i) => osc('sine', f, null, { at: 0.08 + i * 0.06, dur: 1.6, gain: 0.07, attack: 0.04 }));
+  sparkle(kind === 'awaken' ? 12 : 7, 0.25);
+}
+/** Une ligne de statistique se pose ; la note monte de ligne en ligne. */
+export function playStatTick(i: number) {
+  if (!out()) return;
+  const f = [659, 740, 831, 880, 988, 1109, 1175][Math.min(6, i)];
+  osc('sine', f, null, { dur: 0.25, gain: 0.08 });
+  noise('bandpass', 2400, 4200, { dur: 0.05, gain: 0.1 }, 2);
+}

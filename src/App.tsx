@@ -226,7 +226,7 @@ export default function App() {
   };
   const onTouchEnd = (e: React.TouchEvent) => {
     const st = swipe.current; swipe.current = null;
-    if (!st || document.querySelector('.modal-backdrop, .sheet-backdrop')) return;
+    if (!st || document.querySelector('.modal-backdrop, .sheet-backdrop, .cer')) return;
     const t = e.changedTouches[0];
     if (t.clientX - st.x > 70 && Math.abs(t.clientY - st.y) < 60) useUI.getState().back();
   };

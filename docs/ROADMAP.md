@@ -558,6 +558,20 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.107.0 — Phase 3, lot 5 : la cérémonie de progression
+
+- **Constat** : monter de rang, d'ascension ou d'éveil (les moments les plus coûteux du jeu) se résumait à une carte qui s'agrandit et un compteur de puissance qui défile 2 secondes.
+- **Cérémonie en trois temps** (`ui/components/Ceremony.tsx`), comme dans AFK Journey ou Epic Seven :
+  1. **la charge** : écran noir, le héros en silhouette, la lumière converge en spirale vers lui, grondement qui monte ;
+  2. **l'éclat** : flash, onde à ses pieds, gerbe de particules, le héros apparaît **vivant** (respiration, vent, reflet), le titre (« Rang 5 », « Ascension IV », « Éveil III ») et la nouvelle étoile se posent, et un **sceau peint** se frappe au bas de la carte ;
+  3. **le bilan** : chaque statistique avant → après, ligne par ligne (niveau maximum, PV, ATQ, DÉF, VIT, puissance), avec une note qui monte à chaque ligne, puis ce qui vient ensuite et « Continuer ».
+- Une couleur et un son par cérémonie : or (rang), cristal bleu (ascension), violet et fils de lumière (éveil).
+- Toucher pendant l'animation la termine ; « Animations réduites » montre directement le bilan. Aussi déclenchée par l'éveil depuis la fenêtre des doublons.
+- **Emblèmes peints** générés avec SpriteCook (une seule planche pour un style commun) : étoile du rang, cristal de l'ascension, œil de l'éveil, lauriers de la montée de niveau (aussi sur l'animation de niveau).
+- **Texte corrigé** : la fiche de l'éveil promettait « +5 % de dégâts critiques par niveau », que le jeu n'a jamais appliqués ; le bilan, calculé sur les vraies règles, l'a révélé. Test ajouté pour que le texte ne le promette plus.
+- **Relecture par un agent indépendant**, corrigée avant publication : sur un écran peu haut (iPhone SE dans Safari, 320×568, ordinateur 1280×720) le bouton « Continuer » sortait de l'écran et bloquait le jeu → la cérémonie défile, les effets sont dans une couche à part, Échap et toucher le fond la ferment ; texte « éveil débloqué » après une ascension aligné sur la vraie règle ; fils de l'éveil masqués en « Animations réduites » (et le son reste) ; focus clavier sur « Continuer », `aria-modal` ; un double toucher ne saute plus le bilan ; glisser depuis le bord ne la quitte plus ; PRÉ et RÉS ajoutées au bilan de l'ascension ; textes faux corrigés (« +1 % critique » par ascension, « +5 % à toutes ses stats » par éveil).
+- 3 tests ajoutés (`tests/ceremony.test.ts`).
+
 ## ✅ Version 1.106.0 — Phase 3, lot 4 : des ennemis qui se comportent différemment
 
 - **Constat** : hors boss, les ennemis ne se distinguaient que par leurs chiffres ; le seul choix était « qui a le moins de PV ».

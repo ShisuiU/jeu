@@ -289,8 +289,8 @@ export function Arena() {
     </span>}>
       <Panel>
         <div className="row between">
-          <div><div className="faint">LIGUE</div><b style={{ fontSize: 20, color: tier.color }}>{tier.name}</b></div>
-          <div style={{ textAlign: 'right' }}><div className="faint">CLASSEMENT</div><b style={{ fontSize: 20 }}>{save.arena.rating}</b></div>
+          <div><div className="faint">LIGUE</div><b style={{ fontSize: 21, color: tier.color }}>{tier.name}</b></div>
+          <div style={{ textAlign: 'right' }}><div className="faint">CLASSEMENT</div><b style={{ fontSize: 21 }}>{save.arena.rating}</b></div>
         </div>
         <div className="row between" style={{ marginTop: 8 }}>
           <span className="faint">{save.arena.wins} victoires · {save.arena.losses} défaites</span>

@@ -48,7 +48,7 @@ export function TopBar() {
       {open && (
         <Modal onClose={() => setOpen(false)}>
           <h2>Énergie</h2>
-          <div style={{ textAlign: 'center', fontSize: 30, fontWeight: 800 }}><Icon.energy size={30} /> {e.current}<span className="faint" style={{ fontSize: 16 }}> / {eMax}</span></div>
+          <div style={{ textAlign: 'center', fontSize: 30, fontWeight: 800 }}><Icon.energy size={30} /> {e.current}<span className="faint" style={{ fontSize: 15 }}> / {eMax}</span></div>
           <p className="faint" style={{ textAlign: 'center' }}>{e.current > eMax ? 'Au-delà du maximum : la recharge reprend en dessous.' : e.current >= eMax ? 'Énergie au maximum.' : `+1 dans ${formatDuration(next)} · 1 toutes les ${BALANCE.energy.regenMs / 60000} min, même jeu fermé`}</p>
           <p className="faint" style={{ textAlign: 'center', marginTop: 0 }}>Maximum +{BALANCE.energy.perLevel} par niveau de compte (jusqu’à {BALANCE.energy.maxCap}) ; chaque niveau recharge tout.</p>
           <div className="panel" style={{ marginTop: 8 }}>

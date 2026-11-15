@@ -20,7 +20,7 @@ export class ErrorBoundary extends Component<{ children: ReactNode; resetKey: st
       <div className="screen" style={{ padding: 'calc(var(--sat) + 40px) 20px', alignItems: 'stretch', justifyContent: 'center' }}>
         <div className="bg-ambient" />
         <div className="panel">
-          <h2 style={{ color: 'var(--gold-hi)', fontSize: 20 }}>Un imprévu dans la Fracture…</h2>
+          <h2 style={{ color: 'var(--gold-hi)', fontSize: 21 }}>Un imprévu dans la Fracture…</h2>
           <p className="muted">Cet écran a rencontré une erreur. Ta progression est sauvegardée.</p>
           <p className="faint" style={{ wordBreak: 'break-word' }}>{this.state.error.message}</p>
           <div className="stack" style={{ marginTop: 12 }}>

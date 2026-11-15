@@ -98,7 +98,7 @@ export function FactionDungeon() {
       {showMs && (
         <Modal onClose={() => setShowMs(false)}>
           <h2>Étoiles des familles</h2>
-          <p className="faint" style={{ marginTop: 0, fontSize: 13 }}>Chaque étage gagné rapporte jusqu’à 3 étoiles : 3 si aucun héros n’est KO, 2 avec un KO, 1 sinon. Rejoue un étage pour améliorer ses étoiles. Les étoiles des 6 familles s’additionnent : {total}/{FACTION_MAX_STARS}.</p>
+          <p className="faint" style={{ marginTop: 0, fontSize: 13.5 }}>Chaque étage gagné rapporte jusqu’à 3 étoiles : 3 si aucun héros n’est KO, 2 avec un KO, 1 sinon. Rejoue un étage pour améliorer ses étoiles. Les étoiles des 6 familles s’additionnent : {total}/{FACTION_MAX_STARS}.</p>
           <div className="fd-ms-list">
             {FACTION_STAR_MILESTONES.map((m, i) => {
               const got = milestoneClaimed(save, i);

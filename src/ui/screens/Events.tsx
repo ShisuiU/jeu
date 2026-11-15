@@ -160,8 +160,8 @@ function Special({ e }: { e: GameEvent }) {
     <>
       <div className="event-card" style={{ ['--mc' as string]: e.color ?? '#b98cff' }}>
         <div className="faint">Fin dans {left(Date.parse(e.end) - now)}</div>
-        <h2 style={{ fontSize: 22, color: e.color }}>{e.name}</h2>
-        <p className="muted" style={{ fontSize: 13 }}>{e.description}</p>
+        <h2 style={{ fontSize: 21, color: e.color }}>{e.name}</h2>
+        <p className="muted" style={{ fontSize: 13.5 }}>{e.description}</p>
         <div className="row wrap" style={{ gap: 6 }}>
           {e.dungeonBonus && e.dungeonBonus > 1 && <span className="chip active">Donjons {fmtMult(e.dungeonBonus)}</span>}
           {e.banners?.filter((b) => bannerAvailable(b, now)).map((b) => <button key={b} className="chip active" onClick={() => push({ name: 'summon' })}>Invocation spéciale ›</button>)}

@@ -6,7 +6,7 @@
 
 /* v1.72.3 — accueil en pièces séparées (maquette SpriteCook) : décor plein écran, cadres sous la barre du haut,
    panneau Campagne au-dessus de la barre du bas. Le texte suit la taille de chaque pièce (unités cqw). */
-.home { --serif-ui: 'Cormorant Garamond', Georgia, serif; font-variant-numeric: lining-nums; }
+.home { --serif-ui: var(--font-label); font-variant-numeric: lining-nums; }
 .bottom-nav, .home .topbar { font-variant-numeric: lining-nums tabular-nums; }
 .home-bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 62%; }
 .home .home-shade { background: linear-gradient(180deg, rgba(5,4,8,0.75) 0%, rgba(5,4,8,0.2) 12%, transparent 22%, transparent 70%, rgba(5,4,8,0.35) 85%, rgba(5,4,8,0.7) 100%); }
@@ -23,7 +23,7 @@
 .hs-label { position: absolute; left: 0; right: 0; top: 78.5%; transform: translateY(-50%); text-align: center; font-family: var(--serif-ui); font-weight: 700; font-size: 21cqw; line-height: 1; color: #f3e7cc; text-shadow: 0 1px 2px #000; white-space: nowrap; }
 .hs-label.long { font-size: 17cqw; }
 .hs-btn .badge-dot { top: 7%; right: 9%; left: auto; width: 10px; height: 10px; }
-.hs-btn.locked::before { content: ''; position: absolute; z-index: 1; left: 13%; top: 9%; width: 74%; height: 56%; background: rgba(5,4,8,0.62); border-radius: 3px; }
+.hs-btn.locked::before { content: ''; position: absolute; z-index: 1; left: 13%; top: 9%; width: 74%; height: 56%; background: rgba(5,4,8,0.62); border-radius: var(--r-sm); }
 .hs-lock { position: absolute; z-index: 2; left: 50%; top: 37%; transform: translate(-50%, -50%); color: #d9b36a; filter: drop-shadow(0 1px 3px #000); }
 .hs-btn.locked .hs-label { color: #a59b8a; }
 
@@ -43,21 +43,21 @@
    compteurs à bord doré avec icônes peintes et « + ». */
 .home .topbar { position: relative; z-index: 5; }
 .home .avatar { width: 46px; height: 46px; border-radius: 50%; border: 2px solid #c99d4f; box-shadow: 0 0 0 1px #000, 0 0 0 3px rgba(201,157,79,0.35), 0 0 14px rgba(0,0,0,0.6); }
-.home .avatar-lvl { left: -4px; right: auto; bottom: -4px; min-width: 22px; height: 22px; padding: 0; border-radius: 50%; background: radial-gradient(circle, #2a2232, #0e0b12); color: #f0dcae; border: 1.5px solid #c99d4f; font-family: var(--serif-ui); font-size: 13px; font-weight: 700; }
-.home .player-name { font-family: var(--serif-ui); font-size: 17px; font-weight: 700; color: #f2e6cd; letter-spacing: 0; }
+.home .avatar-lvl { left: -4px; right: auto; bottom: -4px; min-width: 22px; height: 22px; padding: 0; border-radius: 50%; background: radial-gradient(circle, #2a2232, #0e0b12); color: #f0dcae; border: 1.5px solid #c99d4f; font-family: var(--serif-ui); font-size: var(--fs-md); font-weight: 700; }
+.home .player-name { font-family: var(--serif-ui); font-size: var(--fs-xl); font-weight: 700; color: #f2e6cd; letter-spacing: 0; }
 .home .topbar { gap: 5px; }
-.home .pill { height: 28px; gap: 2px; padding: 0 5px 0 3px; border-radius: 4px; background: linear-gradient(180deg, rgba(20,17,26,0.92), rgba(8,7,11,0.92)); border: 1px solid rgba(201,157,79,0.75); font-family: var(--serif-ui); font-size: 14.5px; font-weight: 700; color: #f1e6cf; }
-.home .pill small { font-size: 11px; }
+.home .pill { height: 28px; gap: 2px; padding: 0 5px 0 3px; border-radius: var(--r-sm); background: linear-gradient(180deg, rgba(20,17,26,0.92), rgba(8,7,11,0.92)); border: 1px solid rgba(201,157,79,0.75); font-family: var(--serif-ui); font-size: var(--fs-lg); font-weight: 700; color: #f1e6cf; }
+.home .pill small { font-size: var(--fs-xs); }
 .home .avatar-btn { min-width: 0; flex: 1 1 auto; }
 .home .avatar-btn > div:last-child { min-width: 64px; }
-.home .pill .pill-plus { display: grid; place-items: center; width: 16px; height: 16px; margin-left: 2px; border-radius: 50%; border: 1px solid #c99d4f; color: #f0dcae; font-size: 13px; line-height: 1; font-family: var(--font-body, sans-serif); }
+.home .pill .pill-plus { display: grid; place-items: center; width: 16px; height: 16px; margin-left: 2px; border-radius: 50%; border: 1px solid #c99d4f; color: #f0dcae; font-size: var(--fs-md); line-height: 1; font-family: var(--font-body, sans-serif); }
 .pill-wrap { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
-.pill-timer { font-family: var(--serif-ui); font-size: 11.5px; color: #a99e8e; margin-top: 1px; line-height: 1; font-variant-numeric: tabular-nums; }
+.pill-timer { font-family: var(--serif-ui); font-size: var(--fs-sm); color: #a99e8e; margin-top: 1px; line-height: 1; font-variant-numeric: tabular-nums; }
 
 /* Barre du bas : icônes peintes, filet doré, cristal d'invocation qui dépasse au centre. */
 .bottom-nav { background: linear-gradient(180deg, #13101b, #08070c) !important; border-top: 1px solid #6e5528 !important; }
 .bottom-nav::before { display: block !important; left: 0 !important; right: 0 !important; top: -1px !important; height: 1px !important; background: linear-gradient(90deg, transparent, #e9c67a 20%, #e9c67a 80%, transparent) !important; }
-.nav-item { gap: 1px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 14.5px; font-weight: 700; color: #b7ab98; letter-spacing: 0; }
+.nav-item { gap: 1px; font-family: var(--font-label); font-size: var(--fs-lg); font-weight: 700; color: #b7ab98; letter-spacing: 0; }
 .nav-item + .nav-item { border-left: 1px solid rgba(255,255,255,0.04); }
 .nav-ico { width: 30px; height: 30px; object-fit: contain; opacity: 0.8; filter: drop-shadow(0 1px 2px #000); transition: filter 0.2s, opacity 0.2s; }
 .nav-item.active { color: #ffcf73 !important; }
@@ -69,7 +69,7 @@
 /* Barre d'expérience violette sous le nom, comme la maquette. */
 .home .topbar .ax-bar { height: 7px; border-radius: 1px; background: #15111c; box-shadow: inset 0 0 0 1px rgba(201,157,79,0.55); }
 .home .topbar .ax-bar i { border-radius: 0; background: linear-gradient(90deg, #6d3fd6, #a97bff); box-shadow: 0 0 6px rgba(150,100,255,0.6); }
-.home .topbar .ax-num { font-family: var(--serif-ui); font-size: 12px; color: #a99e8e; }
+.home .topbar .ax-num { font-family: var(--serif-ui); font-size: var(--fs-sm); color: #a99e8e; }
 .home .topbar .ax-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
 
 /* ═══ v1.72.4 — kit SpriteCook complet ═══ */
@@ -78,15 +78,15 @@
 .home .topbar { gap: 3px; padding-left: 6px; padding-right: 6px; }
 .home .avatar-btn { gap: 4px; }
 .home .avatar-btn > div:last-child { min-width: 54px; flex: 1; }
-.home .player-name { font-size: 15px; }
+.home .player-name { font-size: var(--fs-lg); }
 .home .avatar-wrap.kit .avatar { position: absolute; left: 50%; top: 50%; width: 69%; height: 69%; transform: translate(-50%, -50%); border: 0; border-radius: 50%; box-shadow: none; }
 .home .avatar-wrap.kit .avatar-ring { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.home .avatar-wrap.kit .avatar-lvl { left: 21%; top: 80%; right: auto; bottom: auto; transform: translate(-50%, -50%); min-width: 0; width: 26%; height: 26%; padding: 0; border: 0; background: none; box-shadow: none; font-size: 11.5px; color: #f0dcae; }
+.home .avatar-wrap.kit .avatar-lvl { left: 21%; top: 80%; right: auto; bottom: auto; transform: translate(-50%, -50%); min-width: 0; width: 26%; height: 26%; padding: 0; border: 0; background: none; box-shadow: none; font-size: var(--fs-sm); color: #f0dcae; }
 /* Barre d'expérience : cadre et remplissage violets peints. */
 .home .topbar .ax-bar { height: 8px; border-radius: 0; background: url('../assets/home/xp_track.webp') center / 100% 100% no-repeat; box-shadow: none; overflow: visible; }
 .home .topbar .ax-bar i { inset: 18% auto 18% 2%; max-width: 96%; border-radius: 0; background: url('../assets/home/xp_fill.webp') left center / 100% 100% no-repeat; box-shadow: 0 0 5px rgba(150,100,255,0.5); }
 /* Compteurs : cadre peint en 9 tranches (icône à gauche, « + » à droite gardés intacts). */
-.home .pill.kit { position: relative; height: 24px; padding: 0 1px; gap: 1px; border-radius: 0; background: none; border-style: solid; border-color: transparent; font-size: 13px; }
+.home .pill.kit { position: relative; height: 24px; padding: 0 1px; gap: 1px; border-radius: 0; background: none; border-style: solid; border-color: transparent; font-size: var(--fs-md); }
 .home .pill.k-energy { border-width: 0 26px 0 23px; border-image: url('../assets/home/energy_slot.webp') 0 75 0 66 fill / 0 26px 0 23px stretch; }
 .home .pill.k-gold { border-width: 0 26px 0 23px; border-image: url('../assets/home/coin_slot.webp') 0 77 0 70 fill / 0 26px 0 23px stretch; }
 .home .pill.k-crystal { height: 29px; margin: -2.5px 0; border-width: 0 27px 0 23px; border-image: url('../assets/home/crystal_slot.webp') 0 77 0 66 fill / 0 27px 0 23px stretch; }
@@ -105,14 +105,14 @@
 .nav-item.summon .nav-crystal { margin-top: 0; margin-bottom: 0; position: relative; top: -2px; }
 /* v1.73.0 — compteurs du haut : chiffres en police nette (Inter), énergie alignée avec l'or et les cristaux
    (le minuteur passe sous le compteur sans le décaler). */
-.home .pill.kit { font-family: var(--font-body); font-weight: 700; font-size: 12.5px; letter-spacing: 0; font-variant-numeric: tabular-nums lining-nums; color: #f6ecd6; text-shadow: 0 1px 2px #000; }
-.home .pill.kit small { font-family: var(--font-body); font-size: 10px; font-weight: 600; color: #b9ad98; }
+.home .pill.kit { font-family: var(--font-body); font-weight: 700; font-size: var(--fs-sm); letter-spacing: 0; font-variant-numeric: tabular-nums lining-nums; color: #f6ecd6; text-shadow: 0 1px 2px #000; }
+.home .pill.kit small { font-family: var(--font-body); font-size: var(--fs-2xs); font-weight: 600; color: #b9ad98; }
 .home .pill-wrap { position: relative; display: block; }
-.home .pill-timer { position: absolute; left: 0; right: 0; top: 100%; margin-top: 1px; text-align: center; font-family: var(--font-body); font-size: 10px; font-weight: 600; color: #a99e8e; pointer-events: none; }
+.home .pill-timer { position: absolute; left: 0; right: 0; top: 100%; margin-top: 1px; text-align: center; font-family: var(--font-body); font-size: var(--fs-2xs); font-weight: 600; color: #a99e8e; pointer-events: none; }
 .home .topbar { align-items: center; }
 /* Compteurs plus compacts pour laisser la place au nom et à l'expérience. */
-.home .pill.kit { font-size: 11.5px; padding: 0; }
-.home .pill.kit small { font-size: 9px; }
+.home .pill.kit { font-size: var(--fs-sm); padding: 0; }
+.home .pill.kit small { font-size: var(--fs-2xs); }
 .home .topbar { gap: 2px; }
 .home .avatar-btn > div:last-child { min-width: 70px; }
 

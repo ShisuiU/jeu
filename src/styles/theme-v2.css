@@ -59,7 +59,7 @@
 /* Titres de bloc : capitales gravées encadrées de deux filets qui s'estompent. */
 .theme-v2 .panel-title {
   display: flex; align-items: center; gap: 10px; border-bottom: 0; padding-bottom: 4px;
-  font-size: 14px; letter-spacing: 0.08em; color: #f1d79c; text-shadow: 0 1px 0 #000;
+  font-size: var(--fs-md); letter-spacing: 0.08em; color: #f1d79c; text-shadow: 0 1px 0 #000;
 }
 .theme-v2 .panel-title::before, .theme-v2 .panel-title::after {
   display: block; content: ''; height: 1px; flex: 1; background: linear-gradient(90deg, var(--v2-gold-line), transparent);
@@ -160,9 +160,9 @@
 
 /* Hiérarchie : ce qui attend le joueur ressort (récompense à réclamer, objectif accompli). */
 .theme-v2 .mission:has(> .btn) {
-  margin: 0 -10px; padding: 10px; border-radius: 4px;
+  margin: 0 -10px; padding: 10px; border-radius: var(--r-sm);
   background: linear-gradient(90deg, rgba(255, 210, 130, 0.14), rgba(255, 210, 130, 0.03));
   box-shadow: inset 3px 0 0 var(--accent-hi);
 }
 .theme-v2 .mission.claimed { opacity: 0.45; }
-.theme-v2 .panel-title { font-size: 15px; }
+.theme-v2 .panel-title { font-size: var(--fs-lg); }

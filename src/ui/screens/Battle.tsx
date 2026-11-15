@@ -627,7 +627,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
                 {result.newHeroes.map((id) => (
                   <div key={id} className="new-hero">
                     <div style={{ width: 110 }}><HeroCard heroId={id} level={1} /></div>
-                    <div><div className="faint">NOUVEL HÉRITIER</div><b style={{ fontSize: 17 }}>{HERO_BY_ID[id].name}</b><div className="muted">rejoint ta collection ! Ajoute-le à une équipe dans l’écran Équipe.</div></div>
+                    <div><div className="faint">NOUVEL HÉRITIER</div><b style={{ fontSize: 18 }}>{HERO_BY_ID[id].name}</b><div className="muted">rejoint ta collection ! Ajoute-le à une équipe dans l’écran Équipe.</div></div>
                   </div>
                 ))}
                 <RewardView reward={{ ...result.reward, ...Object.fromEntries(Object.entries(result.loot).map(([k, v]) => [k, (result.reward[k as keyof typeof result.reward] ?? 0) + (v ?? 0)])) }} gear={result.gear} compact />

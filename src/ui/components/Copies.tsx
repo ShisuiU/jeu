@@ -17,12 +17,14 @@ import { AffinityIcon } from '../art/Identity';
 import { FactionEmblem } from '../art/FactionEmblem';
 import { Icon } from '../art/Icons';
 import { inTutorial } from './Coach';
+import { Ceremony, snapHero, type HeroSnap } from './Ceremony';
 
 // DOUBLONS — encart de la fiche héros et fenêtre « Utiliser un doublon » (3 choix clairs).
 
 export function CopiesCard({ h }: { h: HeroInstance }) {
   const save = useGame((s) => s.save)!;
   const [open, setOpen] = useState(false);
+  const [cer, setCer] = useState<{ before: HeroSnap; after: HeroSnap } | null>(null);
   const n = copiesOf(save, h.heroId);
   // Sans doublon, l'encart est masqué ; la fenêtre reste ouverte même après avoir utilisé le dernier.
   return (
@@ -33,12 +35,13 @@ export function CopiesCard({ h }: { h: HeroInstance }) {
         <span className="cc-act">{n ? 'Utiliser' : 'À quoi ça sert ?'}</span>
         {n > 0 && <span className="badge-dot" style={{ top: 8, right: 8 }} />}
       </button>}
-      {open && <CopiesModal h={h} onClose={() => setOpen(false)} />}
+      {open && <CopiesModal h={h} onClose={() => setOpen(false)} onAwaken={(before, after) => { setOpen(false); setCer({ before, after }); }} />}
+      {cer && <Ceremony kind="awaken" heroId={h.heroId} before={cer.before} after={cer.after} onDone={() => setCer(null)} />}
     </>
   );
 }
 
-function CopiesModal({ h, onClose }: { h: HeroInstance; onClose: () => void }) {
+function CopiesModal({ h, onClose, onAwaken }: { h: HeroInstance; onClose: () => void; onAwaken: (before: HeroSnap, after: HeroSnap) => void }) {
   const save = useGame((s) => s.save)!;
   const mutate = useGame((s) => s.mutate);
   const toast = useUI((s) => s.toast);
@@ -78,7 +81,7 @@ function CopiesModal({ h, onClose }: { h: HeroInstance; onClose: () => void }) {
           {!awMax && <div className="cp-cost"><CostView cost={aw.cost} save={save} heroId={h.heroId} /></div>}
           {!awMax && !aw.ok && aw.reason && !/doublon|insuffisant/i.test(aw.reason) && <div className="cp-sub warn">{aw.reason}</div>}
         </div>
-        <button className="btn small" disabled={!aw.ok} onClick={() => { let ok = false; mutate((s) => { ok = awaken(s, h.uid).ok; }); if (ok) done(`${first} : éveil ${h.awaken + 1} !`); }}>{awMax ? 'Max' : 'Éveiller'}</button>
+        <button className="btn small" disabled={!aw.ok} onClick={() => { const before = snapHero(useGame.getState().save!, h.uid); let ok = false; mutate((s) => { ok = awaken(s, h.uid).ok; }); const after = snapHero(useGame.getState().save!, h.uid); if (ok && before && after) onAwaken(before, after); }}>{awMax ? 'Max' : 'Éveiller'}</button>
       </div>
       {bond('faction')}
       {bond('affinity')}

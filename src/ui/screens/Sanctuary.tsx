@@ -21,6 +21,8 @@ import { FeedPanel } from '../components/FeedPanel';
 import { MasteryPanel } from '../components/MasteryPanel';
 import { canLearnAny } from '../../game/masteries';
 import { MASTERY_TIERS } from '../../data/masteries';
+import emblemLevel from '../../assets/kit/emblem_level.webp';
+import { Ceremony, snapHero, type CeremonyKind, type HeroSnap } from '../components/Ceremony';
 
 // SANCTUAIRE — un héros à la fois, une ligne par amélioration.
 export function Sanctuary({ uid }: { uid?: string }) {
@@ -42,11 +44,14 @@ export function Sanctuary({ uid }: { uid?: string }) {
   // Moments de progression mis en scène (v1.89.0) : niveau, rang, ascension et éveil ont chacun leur animation.
   const [cele, setCele] = useState<{ kind: Celebration; title: string; from: number; to: number; key: number } | null>(null);
   const powerNow = () => powerOf(heroTotalStats(useGame.getState().save!, useGame.getState().save!.heroes.find((x) => x.uid === h.uid)!).total);
-  const run = (fn: (s: typeof save) => Check, okMsg: string, kind: Celebration) => {
-    const before = powerNow();
+  // Cérémonie (v1.107.0) : rang, ascension et éveil ont leur mise en scène complète, avec le bilan avant → après.
+  const [cer, setCer] = useState<{ kind: CeremonyKind; heroId: string; before: HeroSnap; after: HeroSnap; key: number } | null>(null);
+  const run = (fn: (s: typeof save) => Check, _okMsg: string, kind: CeremonyKind) => {
+    const before = snapHero(useGame.getState().save!, h.uid);
     let c: Check = { ok: false, cost: {} };
     mutate((s) => { c = fn(s); });
-    if (c.ok) { play('rare'); setCele({ kind, title: okMsg, from: before, to: powerNow(), key: Date.now() }); } else toast(c.reason ?? 'Impossible.', 'error');
+    const after = snapHero(useGame.getState().save!, h.uid);
+    if (c.ok && before && after) setCer({ kind, heroId: h.heroId, before, after, key: Date.now() }); else if (!c.ok) toast(c.reason ?? 'Impossible.', 'error');
   };
   const elixir = (n: number) => {
     const before = powerNow();
@@ -158,6 +163,7 @@ export function Sanctuary({ uid }: { uid?: string }) {
           <HeroUpgrade h={h} section="skills" />
         </>
       )}
+      {cer && <Ceremony key={cer.key} kind={cer.kind} heroId={cer.heroId} before={cer.before} after={cer.after} onDone={() => setCer(null)} />}
       {cele && <CelebrationView key={cele.key} kind={cele.kind} title={cele.title} from={cele.from} to={cele.to} heroId={h.heroId} onDone={() => setCele(null)} />}
     </Screen>
   );
@@ -181,7 +187,7 @@ function CelebrationView({ kind, title, from, to, heroId, onDone }: { kind: Cele
   return (
     <div className={`cele cele-${kind}`} onClick={onDone} role="status" aria-label={`${CELE_LABEL[kind]} : ${title}`}>
       {kind === 'awaken' && <div className="cele-threads" aria-hidden>{Array.from({ length: 12 }, (_, i) => <i key={i} style={{ ['--a' as string]: `${i * 30}deg`, ['--d' as string]: `${0.15 + (i % 4) * 0.08}s` }} />)}</div>}
-      <div className="cele-card"><HeroArt heroId={heroId} kind="full" />{kind === 'rank' && <span className="cele-star">★</span>}<span className="cele-ring" /></div>
+      <div className="cele-card"><HeroArt heroId={heroId} kind="full" />{kind === 'rank' && <span className="cele-star">★</span>}<span className="cele-ring" />{kind === 'level' && <img className="cele-emblem" src={emblemLevel} alt="" aria-hidden />}</div>
       <div className="cele-kicker">{CELE_LABEL[kind]}</div>
       <div className="cele-title">{title}</div>
       <div className="cele-power">Puissance <b>{fmt(shown)}</b>{to > from && <span> +{fmt(to - from)}</span>}</div>

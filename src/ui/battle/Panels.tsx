@@ -41,7 +41,7 @@ export function DamageRecap({ units, xp }: { units: Unit[]; xp?: { uid: string; 
   if (!total && !xp?.length) return null;
   const rows = [...heroes].sort((a, b) => (b.flags.dmgDealt ?? 0) - (a.flags.dmgDealt ?? 0));
   const top = rows[0].flags.dmgDealt ?? 0;
-  const fmt = (n: number) => (n >= 10000 ? `${Math.round(n / 1000)} k` : n.toLocaleString('fr-FR'));
+  const fmt = (n: number) => (n >= 10000 ? `${Math.round(n / 1000)} k` : Math.round(n).toLocaleString('fr-FR'));
   return (
     <div className="dmg-recap">
       <div className="dr-title">{xp ? 'Tes héros' : 'Dégâts infligés'}</div>
@@ -55,7 +55,7 @@ export function DamageRecap({ units, xp }: { units: Unit[]; xp?: { uid: string; 
             <div className="grow">
               <div className="row between"><b>{HERO_BY_ID[u.refId]?.name.split(/[ ,]/)[0] ?? u.name}{i === 0 && <span className="dr-mvp">Meilleur</span>}</b><span className="dr-pct">{pct} %</span></div>
               <div className="dr-bar"><div style={{ width: `${top ? (d / top) * 100 : 0}%`, animationDelay: `${0.15 + i * 0.12}s` }} /></div>
-              {x && <div className="dr-xp"><span className={x.levelsGained ? 'lvlup' : ''}>{x.levelsGained ? `Niv. ${x.level} ▲` : x.capped ? 'Niveau max' : `Niv. ${x.level}`}</span><span>+{x.xp} XP</span></div>}
+              {x && <div className="dr-xp"><span className={x.levelsGained ? 'lvlup' : ''}>{x.levelsGained ? `Niv. ${x.level} ▲` : x.capped ? 'Niveau max' : `Niv. ${x.level}`}</span>{x.capped && !x.levelsGained ? null : <span>+{x.xp} XP</span>}</div>}
             </div>
             <span className="faint dr-val">{fmt(d)}</span>
           </div>
@@ -117,6 +117,13 @@ export function EffectsLegend({ onClose }: { onClose: () => void }) {
             <span className="fxl-ico"><StatusIcon id={id} size={22} /></span>
             <span>{text}</span>
           </div>
+        ))}
+      </div>
+      <div className="fx-legend fx-legend-more">
+        <div className="fxl-row"><span className="fxl-ico fxl-up">▲</span><span>Affinité avantagée : ton héros frappe <b>+30 %</b> sur cet ennemi.</span></div>
+        <div className="fxl-row"><span className="fxl-ico fxl-down">▼</span><span>Affinité désavantagée : <b>−20 %</b> de dégâts.</span></div>
+        {(Object.keys(TRAITS) as (keyof typeof TRAITS)[]).map((k) => (
+          <div key={k} className="fxl-row"><span className="fxl-ico fxl-trait" style={{ ['--tc' as string]: TRAITS[k].color }} /><span><b style={{ color: TRAITS[k].color }}>{TRAITS[k].name}</b> : {TRAITS[k].text}</span></div>
         ))}
       </div>
       <button className="btn grow" style={{ width: '100%', marginTop: 10 }} onClick={() => onClose()}>Compris</button>

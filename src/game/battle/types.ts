@@ -46,7 +46,7 @@ export interface Unit {
 export type BattleEvent =
   | { kind: 'turn'; source: string }
   | { kind: 'skill'; source: string; skillId: string; name: string; targets: string[] }
-  | { kind: 'damage'; source: string; target: string; amount: number; crit: boolean; strong: boolean; weak: boolean; absorbed: number; combo?: boolean }
+  | { kind: 'damage'; source: string; target: string; amount: number; crit: boolean; strong: boolean; weak: boolean; absorbed: number; combo?: boolean; guarded?: boolean }
   | { kind: 'dot'; target: string; amount: number; status: StatusId }
   | { kind: 'heal'; target: string; amount: number }
   | { kind: 'shield'; target: string; amount: number }

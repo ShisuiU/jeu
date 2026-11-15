@@ -1,6 +1,7 @@
+import { Icon } from '../art/Icons';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
-import { GEAR_MAX_LEVEL, GEAR_MAX_STARS, GEAR_RARITIES, SETS, SLOT_BY_ID, gearDismantleValue, gearUpgradeCost } from '../../data/equipment';
+import { GEAR_MAX_LEVEL, GEAR_MAX_STARS, GEAR_RARITIES, SETS, SLOT_BY_ID, STAT_NAMES, gearDismantleValue, gearUpgradeCost } from '../../data/equipment';
 import { GearStars, SetEmblem } from '../art/SetEmblem';
 import { HERO_BY_ID } from '../../data/heroes';
 import { defaultStars, dismantleGear, mainValue, upgradeGear, unequipGear, equipGear, reforgeSub, REFORGE_COST } from '../../game/gear';
@@ -80,7 +81,8 @@ export function GearDetail({ gearUid, onClose, equipTo, place = 'hero', onReplac
     mutate((s) => { res = upgradeGear(s, g.uid, Math.random); });
     if (!res.ok) { toast(res.reason ?? 'Impossible.', 'error'); return; }
     play(res.boosted ? 'rare' : 'claim');
-    if (res.boosted) toast(`Niveau ${g.level + 1} : statistique secondaire renforcée !`, 'ok');
+    // Nouvelle secondaire révélée (moins de 4 avant) ou secondaire existante renforcée : le message dit laquelle.
+    if (res.boosted) toast(g.subs.length < 4 ? `+${g.level + 1} : nouvelle secondaire, ${STAT_NAMES[res.boosted]} !` : `+${g.level + 1} : ${STAT_NAMES[res.boosted]} renforcée !`, 'ok');
   };
 
   // Ensemble porté par le héros (pièces de cet ensemble sur lui) et prochain palier d'amélioration.
@@ -121,18 +123,30 @@ export function GearDetail({ gearUid, onClose, equipTo, place = 'hero', onReplac
             onClick={() => { let res = { ok: false } as ReturnType<typeof reforgeSub>; mutate((st) => { res = reforgeSub(st, g.uid, i, Math.random); }); if (res.ok) { play('claim'); useUI.getState().toast('Statistique retouchée.', 'ok'); } else useUI.getState().toast(res.reason ?? 'Impossible.', 'error'); }}>↻</button>
         </div>
       ))}
-      {g.subs.length < 4 && <div className="gd-sub empty">{4 - g.subs.length} secondaire{g.subs.length < 3 ? 's' : ''} à débloquer{nextMilestone ? ` · prochaine au +${nextMilestone}` : ''}</div>}
-      {nextMilestone && g.subs.length >= 4 && <p className="faint" style={{ margin: '8px 0 0' }}>Au +{nextMilestone} : une secondaire renforcée.</p>}
+      {/* v1.109.0 : les 4 emplacements sont toujours là ; ceux qui restent à révéler gardent leur place (cadenas + palier),
+          pour que la fenêtre ne grandisse pas à chaque amélioration et que les boutons du bas ne bougent pas sous le doigt. */}
+      {Array.from({ length: Math.max(0, 4 - g.subs.length) }, (_, j) => {
+        const at = [4, 8, 12, 16].filter((m) => m > g.level)[j];
+        return (
+          <div key={`locked${j}`} className="gd-sub locked" aria-label={at ? `Secondaire cachée, révélée au +${at}` : 'Emplacement vide'}>
+            <span><Icon.lock size={12} /> {at ? <>Secondaire cachée</> : 'Emplacement vide'}</span>
+            {at && <span className="gd-at">au +{at}</span>}
+          </div>
+        );
+      })}
+      <p className="faint gd-next">{g.level >= GEAR_MAX_LEVEL ? 'Niveau maximum atteint.' : g.subs.length < 4 ? `Au +${nextMilestone} : une secondaire révélée.` : `Au +${nextMilestone} : une secondaire renforcée.`}</p>
       <p className="faint" style={{ margin: '4px 0 0' }}>{owner ? `Équipé sur ${HERO_BY_ID[owner.heroId].name}` : 'Non équipé'}</p>
 
       {equipTo && g.heroUid !== equipTo && <GearCompare save={save} g={g} heroUid={equipTo} />}
 
-      {place === 'forge' && g.level < GEAR_MAX_LEVEL && (
-        <div className="upg-row">
+      {place === 'forge' && (g.level < GEAR_MAX_LEVEL ? (
+        <div className="upg-row gd-up">
           <div className="grow"><b>Améliorer</b> → +{g.level + 1}<div><CostView cost={up} save={save} /></div></div>
           <button className="btn small" onClick={doUpgrade}>Forger</button>
         </div>
-      )}
+      ) : (
+        <div className="upg-row gd-up done"><div className="grow"><b>Amélioration terminée</b><div className="faint">+{GEAR_MAX_LEVEL} atteint</div></div></div>
+      ))}
       {place === 'hero' && g.level < GEAR_MAX_LEVEL && (
         <button className="btn block" style={{ marginTop: 12 }} onClick={() => { onClose(); push({ name: 'gear', gearUid: g.uid }); }}>Renforcer à la Forge</button>
       )}

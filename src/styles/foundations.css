@@ -576,3 +576,11 @@ body:has(.battle-controls) .toast { font-size: var(--fs-sm); padding-top: 7px; p
 .theme-v2 .seg.compact { overflow: visible; }
 .theme-v2 .seg.compact button { flex: 1 1 0; padding: 0; min-width: 0; }
 .theme-v2 .screen-header h1.long { font-size: var(--fs-md) !important; letter-spacing: 0; }
+
+/* Fiche d'équipement (v1.109.0) : hauteur stable pendant les améliorations. */
+.gd-sub { min-height: 43px; box-sizing: border-box; } /* = ligne révélée (bouton de retouche de 30 px + marges) */
+.gd-sub.locked { color: var(--text-faint); font-size: var(--fs-sm); border-bottom-style: dashed; }
+.gd-sub.locked > span:first-child { display: inline-flex; align-items: center; gap: 6px; opacity: 0.8; }
+.gd-sub .gd-at { font-size: var(--fs-xs); color: var(--text-dim); padding: 1px 7px; border: 1px solid var(--line-1); border-radius: var(--r-pill); }
+.gd-next { margin: 6px 0 0; min-height: 1.4em; }
+.gd-up { min-height: 65px; box-sizing: border-box; } /* = ligne « Améliorer » avec son coût */

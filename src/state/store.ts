@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { collectTraining, trainDue } from '../game/buildings';
-import { applyResonance } from '../game/resonance';
 import { stepBackground } from '../game/background';
 import { produce } from 'immer';
 import { observeTime } from '../core/time';
@@ -41,12 +40,12 @@ export const useGame = create<GameState>((set, get) => ({
   now: Date.now(),
   clockRollback: false,
 
-  setSave: (s) => set({ save: produce(s, (d) => { applyResonance(d); }) }),
+  setSave: (s) => set({ save: s }), // v1.102.3 : plus de Résonance (chaque héros se monte à la main)
 
   mutate: (fn) => {
     const { save, now } = get();
     if (!save) return;
-    set({ save: produce(save, (d) => { fn(d); applyResonance(d); bump(d, now); }) });
+    set({ save: produce(save, (d) => { fn(d); bump(d, now); }) });
   },
 
   tick: () => {

@@ -249,6 +249,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
             addVfx(e.target, 'cursefx', pw.color); doShake('hard'); play('rare'); pause = true; break;
           }
           setBanner({ text: `Acte II · ${bu?.name ?? 'Le boss'} se déchaîne`, side: 'enemy' }); setAct(2); flashLight(center(e.target), '#ff3d6e', 1, 1200); addVfx(e.target, 'cursefx', '#ff3d6e'); doShake('hard'); play('rare'); pause = true; break; }
+        case 'interrupt': setBanner({ text: `Interrompu ! ${e.skill} est annulée`, side: 'ally' }); addPopup(e.target, 'Ultime annulée', 'debuff'); flashLight(center(e.target), '#7fe7ff', 0.9, 900); play('rare'); pause = true; break;
         case 'fracture': addPopup(e.target, 'Fracture ! Étourdi, +40 % de dégâts subis', 'buff'); flashLight(center(e.target), '#ffffff', 0.9, 800); addVfx(e.target, 'cursefx', '#ffffff'); doShake('hard'); { const c = center(e.target); if (c) stage.current?.burst(c, '#ffffff', 40, 0.5); } play('rare'); pause = true; break;
         case 'carapace':
           if (e.broken) { addPopup(e.target, 'Carapace brisée !', 'buff'); addVfx(e.target, 'cursefx', '#ffd36b'); pause = true; }

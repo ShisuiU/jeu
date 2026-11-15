@@ -558,6 +558,12 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.105.0 — Phase 3, lot 3 : des décisions qui comptent en combat
+
+- **Interruption** : briser la Fracture d'un boss pendant qu'il prépare son ultime (annoncée « ⚠ ») l'annule — sa recharge repart de zéro, avec un bandeau « Interrompu ! ». Choisir le moment et les héros (affinité avantagée) pour briser la Fracture devient une vraie décision. Expliquée dans l'annonce du boss et sa fiche. Test ajouté.
+- **Rôle des ennemis sur leur carte** (soigneur, défenseur, contrôleur, soutien) : les cibles prioritaires se lisent d'un coup d'œil.
+- **Équilibrage mesuré** (combat automatique) : boss de campagne 158 → 161 victoires sur 270, boss de la Tour inchangés (34/48). L'avantage revient au joueur qui joue le bon moment, sans rendre l'automatique plus facile.
+
 ## ✅ Version 1.104.0 — Phase 3, lot 2 : héros vivants
 
 - **Constat** : les personnages étaient des illustrations fixes qui « respiraient » en CSS — l'écart le plus visible avec AFK Journey, Epic Seven ou Star Rail.

@@ -5,7 +5,7 @@ import { DAILY_REWARDS, type DailyRewardDef } from '../../data/dailyRewards';
 import { canClaimDaily } from '../../game/daily';
 import { formatDuration, msUntilReset } from '../../core/time';
 import { play } from '../../audio/sfx';
-import { Modal, Panel } from '../components/common';
+import { Modal, Panel, fmt } from '../components/common';
 import { RewardView, rewardMainIcon } from '../components/RewardView';
 
 /** Contenu de l'onglet « Connexion » du Courrier. */
@@ -38,7 +38,7 @@ export function DailyBody() {
             <div key={d.day} className={`daily-cell ${i < idx ? 'claimed' : ''} ${i === current ? 'current' : ''} ${d.major ? 'major' : ''}`}>
               <span className="d">J{d.day}</span>
               {rewardMainIcon(d.reward)}
-              <span>{Object.values(d.reward)[0]}</span>
+              <span>{fmt(Object.values(d.reward)[0] ?? 0)}{Object.keys(d.reward).length > 1 && <small className="d-more"> +{Object.keys(d.reward).length - 1}</small>}</span>
             </div>
           ))}
         </div>

@@ -625,3 +625,4 @@ body:has(.battle-controls) .toast { font-size: var(--fs-sm); padding-top: 7px; p
 .formation .slot.picking { border-color: var(--gold-hi); }
 /* Portraits ronds (adversaires d'Arène, récapitulatifs) : filet neutre ; l'or reste au meilleur héros du combat. */
 .xp-ava { border-color: var(--line-1); }
+.daily-cell .d-more { font-size: var(--fs-2xs); color: var(--text-dim); }

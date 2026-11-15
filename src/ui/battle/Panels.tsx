@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import type { SkillDef } from '../../data/types';
 import { SUMMON_MAX, TRAITS } from '../../data/enemyTraits';
 import { HERO_BY_ID } from '../../data/heroes';
@@ -70,8 +71,10 @@ const traitState = (u: Unit) => u.trait === 'mender' ? (u.flags.mended ? ' (déj
 
 export function UnitInfo({ u, mechanics, onClose }: { u: Unit; mechanics: boolean; onClose: () => void }) {
   const list = [...u.statuses].sort((a, b) => Number(STATUS_INFO[b.status].debuff) - Number(STATUS_INFO[a.status].debuff));
+  // v1.111.0 : ouverte par un appui long, elle se refermait aussitôt (le doigt levé comptait comme « touche pour fermer »).
+  const openedAt = useRef(performance.now());
   return (
-    <div className="unit-info-backdrop" onClick={() => onClose()}>
+    <div className="unit-info-backdrop" onClick={() => { if (performance.now() - openedAt.current > 450) onClose(); }}>
       <div className={`unit-info ${u.side}`} role="dialog" aria-label={u.name}>
         <div className="ui-head"><b>{u.name}</b><span className="faint">Niv. {u.level}</span></div>
         {u.kind === 'hero' && SIGNATURES[u.refId] && <div className="ui-sig"><b>★ {SIGNATURES[u.refId].name}</b> : {SIGNATURES[u.refId].text}</div>}

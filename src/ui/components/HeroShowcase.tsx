@@ -1,3 +1,5 @@
+import { LivingArt } from '../art/LivingArt';
+import { AFFINITIES } from '../../data/affinities';
 import { Coach } from './Coach';
 import { useState, type ReactNode } from 'react';
 import { useGame } from '../../state/store';
@@ -8,7 +10,7 @@ import type { HeroInstance } from '../../save/schema';
 import { heroGear } from '../../game/heroStats';
 import { gearBonus } from '../../game/gear';
 import { autoEquip } from '../../game/comfort';
-import { HeroArt } from '../art/HeroArt';
+import { HeroArt, heroArtUrl } from '../art/HeroArt';
 import { Icon } from '../art/Icons';
 import { Modal } from './common';
 import { GearBySet, GearCard, SLOT_ICON } from './GearCard';
@@ -60,7 +62,8 @@ export function HeroShowcase({ heroId, h, below }: { heroId: string; h?: HeroIns
   return (
     <>
       <div className="showcase">
-        <div className="sc-art"><div className="sc-breathe"><HeroArt heroId={heroId} kind="full" position="center 12%" /></div></div>
+        {/* v1.104.0 : héros vivant (respiration, vent, parallaxe, reflet) ; l'illustration fixe reste dessous en secours. */}
+        <div className="sc-art"><LivingArt src={heroArtUrl(heroId, 'full')} accent={AFFINITIES[def.affinity].color}><div className="sc-breathe"><HeroArt heroId={heroId} kind="full" position="center 12%" /></div></LivingArt></div>
         <div className={`sc-motes ${def.affinity}`} aria-hidden>{Array.from({ length: 12 }, (_, i) => <i key={i} style={{ ['--i' as string]: i }} />)}</div>
         <div className="sc-shade" />
         {h && (

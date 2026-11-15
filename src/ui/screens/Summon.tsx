@@ -1,3 +1,4 @@
+import { LivingArt } from '../art/LivingArt';
 import { trackStat } from '../../state/stats';
 import { GetButton } from '../components/Sources';
 import shCommon from '../../assets/kit/shard_common.webp';
@@ -24,7 +25,7 @@ import { Stage25 } from '../fx/stage25';
 import { HERO_LINES } from '../../data/heroLines';
 import { Modal, Screen, fmt } from '../components/common';
 import { HeroCard } from '../components/HeroCard';
-import { HeroArt } from '../art/HeroArt';
+import { HeroArt, heroArtUrl } from '../art/HeroArt';
 import { ResourceIcon } from '../art/Icons';
 import { Crystal } from '../art/Crystal';
 import { placeArt } from '../art/PlaceScene';
@@ -270,7 +271,9 @@ function RiftReveal({ results, bannerColor, bannerGlow, altar, onClose, again, c
           {count === 1 ? (
             <div className="rr-single">
               {order >= 4 && <div className="rr-halo" aria-hidden />}
-              <div className="rr-hero" ref={cardRef} style={{ borderColor: rc }}><HeroArt heroId={best.heroId} kind="full" /><span className="rr-shine" /></div>
+              <div className="rr-hero" ref={cardRef} style={{ borderColor: rc }}>{order >= 4
+                ? <LivingArt src={heroArtUrl(best.heroId, 'full')} accent={rc} anchorY={0.15}><HeroArt heroId={best.heroId} kind="full" /></LivingArt>
+                : <HeroArt heroId={best.heroId} kind="full" />}<span className="rr-shine" /></div>
               <div className="rr-rar" style={{ color: rc }}>
                 {Array.from({ length: order }, (_, i) => <span key={i} className="rr-star" style={{ animationDelay: `${0.75 + i * 0.12}s` }}>★</span>)}
                 <span className="rr-rarname" style={{ animationDelay: `${0.8 + order * 0.12}s` }}> {RARITIES[best.rarity].name.toUpperCase()}</span>

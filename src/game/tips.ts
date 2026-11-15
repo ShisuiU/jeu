@@ -8,7 +8,6 @@ import { SLOTS } from '../data/equipment';
 import type { AffinityId } from '../data/types';
 import { maxLevelForRank } from './stats';
 import { rankUpCheck } from './upgrade';
-import { resonanceLevel } from './resonance';
 
 // CONSEILS APRÈS UNE DÉFAITE (v1.90.0, audit UX-6) — trois pistes concrètes, chacune avec un bouton qui y mène.
 export interface Tip { text: string; route: Route; label: string }
@@ -30,7 +29,7 @@ export function defeatTips(s: SaveData, team: TeamPreset, waves: UnitSetup[][]):
   // 3. Niveau : le héros le plus faible est loin de son maximum.
   const weakest = [...heroes].sort((a, b) => a.level - b.level)[0];
   const cap = maxLevelForRank(weakest.rank);
-  if (weakest.level < cap) tips.push({ text: `${HERO_BY_ID[weakest.heroId].name.split(' ')[0]} est niveau ${weakest.level}/${cap}${resonanceLevel(s) > weakest.level ? '' : ' : monte tes 5 meilleurs héros, la Résonance entraîne les autres'}.`, route: { name: 'sanctuary', uid: weakest.uid }, label: 'Sanctuaire' });
+  if (weakest.level < cap) tips.push({ text: `${HERO_BY_ID[weakest.heroId].name.split(' ')[0]} est niveau ${weakest.level}/${cap}.`, route: { name: 'sanctuary', uid: weakest.uid }, label: 'Sanctuaire' });
   // 4. Équipement : emplacements vides.
   const empty = heroes.reduce((a, h) => a + SLOTS.length - s.equipment.filter((g) => g.heroUid === h.uid).length, 0);
   if (empty > 0) tips.push({ text: `${empty} emplacement${empty > 1 ? 's' : ''} d’équipement vide${empty > 1 ? 's' : ''} dans ton équipe.`, route: { name: 'hero', heroId: weakest.heroId, uid: weakest.uid }, label: 'Équiper' });

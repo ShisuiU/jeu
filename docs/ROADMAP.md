@@ -558,6 +558,11 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.102.3 — Résonance retirée
+
+- **Plus de Résonance** (v1.87.0) : un héros gagné ou invoqué arrive au niveau 1 et se monte à la main (élixirs, or), au lieu de prendre automatiquement le niveau du 5ᵉ meilleur héros. Les héros déjà relevés gardent leur niveau.
+- Retirée du jeu (état central), de la Collection et des conseils après une défaite. Test : un nouveau héros reste au niveau 1 même avec 5 héros niveau 41.
+
 ## ✅ Version 1.102.2 — Objectif 10/10, lot 2 : première impression
 
 - **Prologue cinématique** au tout premier lancement (nouveau joueur) : trois phrases courtes en fondu sur l'illustration du Monde Cousu, avec un lent travelling ; toucher passe à la suivante, « Passer » va au nom. Remplace l'ancien paragraphe de 7 lignes dans une fenêtre.

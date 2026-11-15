@@ -558,6 +558,20 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.109.0 — Premier test « nouveau joueur » et fiche d'équipement stable
+
+- **Fiche d'équipement** (demande du joueur) : les 4 emplacements de secondaires sont toujours affichés ; ceux qui restent à révéler montrent un cadenas et leur palier (+4, +8, +12, +16) sans dévoiler la statistique. La ligne d'information et la ligne « Améliorer » gardent leur hauteur jusqu'au +16. Mesuré de +0 à +16 : hauteur de la fenêtre et position de « Verrouiller » identiques (avant : +9 px à chaque secondaire, les boutons descendaient sous le doigt). Message juste : « +8 : nouvelle secondaire, VIT ! » au lieu de « renforcée » dans tous les cas.
+- **Test par des agents jouant une partie neuve** (petit écran 375×667, combat manuel, 7 combats) :
+  - 3ᵉ compétence qui sortait de l'écran (bord à 390 px) : rangée qui rétrécit, boutons resserrés sous 400 px (bord à 363 px, vérifié) ;
+  - compétence choisie bien visible (monte, s'éclaire, trait doré) ;
+  - bulle d'explication du Lien à la première jauge pleine (la jauge pouvait rester pleine sans que le joueur sache quoi faire) ;
+  - fin de combat : niveau de compte avant le détail des héros (il était caché sous les boutons) ; dégâts arrondis ; plus de « +160 XP » pour un héros au maximum ;
+  - sélecteur de héros de l'équipe amené à l'écran (il s'ouvrait sous la barre du bas) ;
+  - petits boutons : zone de toucher agrandie à 40 px sans changer leur dessin ; « Passer le tutoriel » séparé du OK ;
+  - mention « Garde » sur le protecteur quand il intercepte un coup ; légende des effets complétée (affinités ▲/▼, Secours, Garde, Appel).
+- **Tutoriel en trois fils indépendants** (combat, invocation, Sanctuaire) : l'étape « invoque » (seulement à l'Accueil) bloquait toute la suite ; un joueur qui enchaînait « Suivant » voyait les affinités au 1-6 et AUTO au 7ᵉ combat. Une étape déjà faite par le joueur (il a invoqué seul) n'est plus demandée. 3 tests.
+- **Fenêtres d'aide « i »** rendues comme les autres fenêtres (portail) : elles ne peuvent plus être rognées par leur bloc.
+
 ## ✅ Version 1.108.0 — Phase 3, lot 6 : refonte des styles
 
 - **Méthode** : un agent a photographié et mesuré 24 écrans (tailles de police calculées, éléments dorés, imbrication des blocs, textes coupés) ; les conseils de design (jetons à deux niveaux, échelle de 5 à 7 tailles, 3 arrondis) ont guidé le système ; le même script de mesure a servi avant et après.

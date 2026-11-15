@@ -1,3 +1,5 @@
+import { ClaimAllButton } from '../components/ClaimAll';
+import { harvestAll, harvestReady } from '../../game/quickClaim';
 import { useState } from 'react';
 import mineArt from '../../assets/buildings/mine.webp';
 import trainArt from '../../assets/buildings/training.webp';
@@ -48,6 +50,9 @@ export function Buildings() {
   return (
     <Screen title="Bâtiments" right={<span className="bld-wallet"><D /> {fmt(diamonds)}</span>}>
       {/* v1.88.0 : le Camp et les Expéditions rejoignent les Bâtiments (tout ce qui travaille pour toi, même jeu fermé). */}
+      {/* v1.103.0 : Camp + Mine en un geste. */}
+      <ClaimAllButton label="Tout récolter" title="Récolte" count={harvestReady(save, now)}
+        onRun={() => { let r = { reward: {}, count: 0 } as ReturnType<typeof harvestAll>; mutate((s) => { r = harvestAll(s, now); }); return r; }} />
       <div className="bld-links">
         {([
           { id: 'camp', title: 'Camp des Héritiers', feature: 'camp' as const, art: <img src={campArt} alt="" draggable={false} />,

@@ -558,6 +558,15 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## ✅ Version 1.103.0 — Phase 3, lot 1 : la routine quotidienne sans corvée
+
+- **Constat** : aucune récupération groupée dans le jeu ; la routine du jour demandait de réclamer chaque mission une à une, de récupérer puis relancer chaque expédition à la main (choisir les héros à chaque fois), de passer au Camp puis à la Mine.
+- **« Tout réclamer »** (Missions, chaque onglet) : toutes les missions terminées et le coffre en un geste, avec une fenêtre qui récapitule le butin.
+- **Expéditions** : « Tout récupérer » et « Tout lancer » (équipe proposée automatiquement : le meilleur héros libre qui remplit la condition, pour le bonus +30 %, puis les plus forts ; aucun héros envoyé deux fois).
+- **Bâtiments** : « Tout récolter » (Camp + Mine).
+- **Progression** : les succès à réclamer passent en tête de liste, les obtenus à la fin.
+- Fonctions communes (`game/quickClaim.ts`) qui réutilisent les règles unitaires existantes ; 3 tests ; vérifié dans le navigateur.
+
 ## ✅ Version 1.102.3 — Résonance retirée
 
 - **Plus de Résonance** (v1.87.0) : un héros gagné ou invoqué arrive au niveau 1 et se monte à la main (élixirs, or), au lieu de prendre automatiquement le niveau du 5ᵉ meilleur héros. Les héros déjà relevés gardent leur niveau.

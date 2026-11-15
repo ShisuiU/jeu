@@ -1,10 +1,12 @@
+import { ClaimAllButton } from '../components/ClaimAll';
+import { claimAllMissions, claimableIn } from '../../game/quickClaim';
 import { useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
 import { DAILY_BONUS, WEEKLY_BONUS, type TrackKey } from '../../data/missions';
 import { goFor } from '../../game/goTo';
 import { ACHIEVEMENTS } from '../../data/achievements';
-import { activeMissions, bonusAvailable, claimableByTab, claimAchievement, claimBonus, claimMission, missionState, type MissionKind } from '../../game/missions';
+import { achievementDone, activeMissions, bonusAvailable, claimableByTab, claimAchievement, claimBonus, claimMission, missionState, type MissionKind } from '../../game/missions';
 import { formatDuration, msUntilReset, msUntilWeekReset } from '../../core/time';
 import { play } from '../../audio/sfx';
 import { RESOURCES, normalizeReward } from '../../data/resources';
@@ -29,6 +31,9 @@ export function Row({ title, value, target, reward, claimed, onClaim, goKey }: {
   );
 }
 
+/** Ordre des succès : à réclamer, puis en cours, puis déjà obtenus (v1.103.0). */
+const achRank = (s: Parameters<typeof achievementDone>[0], id: string) => (s.achievements.includes(id) ? 2 : achievementDone(s, id) ? 0 : 1);
+
 export function Missions() {
   const save = useGame((s) => s.save)!;
   const now = useGame((s) => s.now);
@@ -48,6 +53,8 @@ export function Missions() {
           </button>
         ))}
       </div>
+      <ClaimAllButton key={tab} label="Tout réclamer" title="Récompenses réclamées" count={claimableIn(save, tab) + (tab !== 'progress' && bonusAvailable(save, kind) ? 1 : 0)}
+        onRun={() => { let r = { reward: {}, count: 0 } as ReturnType<typeof claimAllMissions>; mutate((s) => { r = claimAllMissions(s, tab); }); return r; }} />
       {tab !== 'progress' && (
         <>
           <p className="faint" style={{ marginTop: 0 }}>Renouvellement dans {formatDuration(tab === 'daily' ? msUntilReset(now) : msUntilWeekReset(now))}</p>
@@ -62,7 +69,7 @@ export function Missions() {
       )}
       {tab === 'progress' && (
         <Panel>
-          {ACHIEVEMENTS.map((a) => { const [v, t] = a.progress(save); return <Row key={a.id} title={a.title} value={v} target={t} reward={a.reward} claimed={save.achievements.includes(a.id)} onClaim={() => claim((s) => claimAchievement(s, a.id))} />; })}
+          {[...ACHIEVEMENTS].sort((x, y) => achRank(save, x.id) - achRank(save, y.id)).map((a) => { const [v, t] = a.progress(save); return <Row key={a.id} title={a.title} value={v} target={t} reward={a.reward} claimed={save.achievements.includes(a.id)} onClaim={() => claim((s) => claimAchievement(s, a.id))} />; })}
         </Panel>
       )}
     </Screen>

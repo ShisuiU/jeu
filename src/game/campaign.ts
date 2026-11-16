@@ -44,6 +44,27 @@ export function isStageUnlocked(s: SaveData, diff: DifficultyId, stage: StageDef
   return !!prev && stageProgress(s, diff, prev.stages[prev.stages.length - 1].id).clears > 0;
 }
 
+/** Pourquoi un niveau est verrouillé, en clair (null s'il est ouvert). Le message disait toujours « bats le boss du chapitre
+ *  précédent », même quand il manquait le même chapitre dans la difficulté inférieure (retour d'un joueur bloqué au 3-1 Expert). */
+export function stageLockReason(s: SaveData, diff: DifficultyId, stage: StageDef): string | null {
+  if (isStageUnlocked(s, diff, stage)) return null;
+  if (!DIFFICULTIES[diff].available) return `${DIFFICULTIES[diff].name} n’est pas encore disponible.`;
+  const chapter = CHAPTERS.find((c) => c.n === stage.chapter)!;
+  const i = chapter.stages.indexOf(stage);
+  if (i > 0) return 'Termine d’abord le niveau précédent.';
+  const di = DIFFICULTY_ORDER.indexOf(diff);
+  const missing: string[] = [];
+  if (stage.chapter > 1) {
+    const prev = CHAPTERS.find((c) => c.n === stage.chapter - 1)!;
+    if (stageProgress(s, diff, prev.stages[prev.stages.length - 1].id).clears === 0) missing.push(`battre le boss du chapitre ${prev.n} en ${DIFFICULTIES[diff].name}`);
+  }
+  if (di > 0) {
+    const prevDiff = DIFFICULTY_ORDER[di - 1];
+    if (stageProgress(s, prevDiff, chapter.stages[chapter.stages.length - 1].id).clears === 0) missing.push(`terminer le chapitre ${chapter.n} en ${DIFFICULTIES[prevDiff].name}`);
+  }
+  return missing.length ? `Chapitre ${chapter.n} en ${DIFFICULTIES[diff].name} : il faut ${missing.join(' et ')}.` : 'Verrouillé.';
+}
+
 export function chapterStars(s: SaveData, diff: DifficultyId, chapter: number): { stars: number; max: number } {
   const c = CHAPTERS.find((x) => x.n === chapter)!;
   return { stars: c.stages.reduce((a, st) => a + stageProgress(s, diff, st.id).stars, 0), max: c.stages.length * 3 };

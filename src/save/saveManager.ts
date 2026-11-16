@@ -72,7 +72,9 @@ export async function flushSave(): Promise<void> {
     saveStatus.error = null;
     if (Date.now() - lastBackupAt > BALANCE.autosave.backupEveryMs) {
       lastBackupAt = Date.now();
-      await writeBackup(s, 'auto', BALANCE.autosave.maxBackups);
+      // Copie de secours à part : un échec (stockage plein) ne doit ni annoncer un échec de sauvegarde
+      // (la partie principale est écrite) ni empêcher l'envoi en ligne.
+      try { await writeBackup(s, 'auto', BALANCE.autosave.maxBackups); } catch { /* */ }
     }
     provider.push(s).catch(() => {});
   } catch (e) {
@@ -111,8 +113,7 @@ export async function initSaveSystem(): Promise<string> {
   // Fermeture / arrière-plan : miroir synchrone d'abord (il survit à une fermeture brutale), puis IndexedDB.
   const flushNow = () => { if (readOnly) return; const s = useGame.getState().save; if (s && s.revision !== lastWritten) writeMirrorSync(s); void flushSave(); };
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushNow(); else useGame.getState().tick(); });
-  window.addEventListener('pagehide', flushNow);
-  window.addEventListener('beforeunload', flushNow);
+  window.addEventListener('pagehide', flushNow); // suffit (beforeunload empêchait le retour instantané sous Firefox)
   return source;
 }
 

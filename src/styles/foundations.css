@@ -664,7 +664,8 @@ body:has(.battle-controls) .toast { font-size: var(--fs-sm); padding-top: 7px; p
 select.prep-team { min-height: 40px; }
 /* 9-15. Zones de toucher ≥ 40 px (dessin inchangé, zone agrandie par un pseudo-élément). */
 .setting-row input[type='range'] { height: 40px; }
-.hs-upgrade, .forge-res button, .wallet > .wallet-item, .wk-node, .modal-x, .lc-btn { position: relative; }
+/* .wk-node et .modal-x restent en position absolue (leur ::before agrandit la zone de toucher quand même). */
+.hs-upgrade, .forge-res button, .wallet > .wallet-item, .lc-btn { position: relative; }
 .hs-upgrade::before { content: ''; position: absolute; inset: -8px -4px; }
 .forge-res button::before { content: ''; position: absolute; inset: -7px -4px; }
 .wallet > .wallet-item::before { content: ''; position: absolute; inset: -6px 0; }
@@ -682,3 +683,30 @@ select.prep-team { min-height: 40px; }
 @media (max-width: 360px) { .screen-header .btn .hb-lbl { display: none; } .screen-header .btn.small { min-width: 40px; } }
 .feed-slot.off { opacity: 0.45; }
 .btn.off { opacity: 0.55; filter: grayscale(0.5); }
+
+/* ─── Critique « finition commerciale » (v1.111.0, mission nocturne) ─── */
+/* Panneaux : le liseré pointillé (effet maquette) devient un filet intérieur à peine visible. */
+.theme-v2 .panel::before { border: 1px solid rgba(217, 192, 138, 0.07) !important; inset: 4px !important; }
+/* Bouton désactivé : clairement éteint (il se confondait avec un bouton secondaire « argent »). */
+.theme-v2 .btn:disabled { filter: grayscale(1) brightness(0.45) !important; opacity: 0.6; }
+/* Chiffres de dégâts : plus grands, détourés, lisibles sur les visages. */
+.popup.dmg { font-size: 20px; -webkit-text-stroke: 0.8px rgba(0, 0, 0, 0.85); paint-order: stroke fill; }
+.popup.dmg.crit { font-size: 25px; }
+.u-fx, .u-effects, .eff-chips { flex-wrap: wrap; gap: 3px; }
+/* Notifications : liseré et pastille de couleur selon le type. */
+.theme-v2 .toast { border-left: 3px solid var(--gold); border-radius: var(--r-md); padding-left: 10px; }
+.theme-v2 .toast.ok { border-left-color: #6fe39a; }
+.theme-v2 .toast.error { border-left-color: #e05a4a; }
+.toast-ic { flex: none; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; font-size: 12px; background: rgba(217, 179, 106, 0.18); color: var(--gold-hi); }
+.toast.ok .toast-ic { background: rgba(111, 227, 154, 0.18); color: #6fe39a; }
+.toast.error .toast-ic { background: rgba(224, 90, 74, 0.2); color: #ff8a7a; }
+/* Campagne : l'illustration du chapitre reste dans son cadre doré. */
+.theme-v2 .chapter-card .battle-bg, .theme-v2 .chapter-card .chapter-boss { clip-path: inset(0 round 6px); }
+/* Préparation : la barre d'action ne laisse plus voir les cartes en transparence ; « Répéter » indisponible reste lisible. */
+.theme-v2 .prep-bar { background: linear-gradient(180deg, rgba(10, 8, 14, 0) 0, rgba(10, 8, 14, 0.97) 12px, rgba(9, 7, 13, 0.99)) !important; }
+.prep-sweep.off { opacity: 1; filter: none; color: #8a8072; }
+/* Accueil : toutes les étiquettes à la même taille ; pastille secondaire en or vif (elle passait pour un rivet). */
+.hs-label.long { font-size: 17cqw; }
+.badge-dot.soft { background: #ffcf6a !important; box-shadow: 0 0 6px rgba(255, 207, 106, 0.7) !important; }
+/* Tuiles du Menu : centrées (plus de trous à droite). */
+.menu-grid, .menu-tiles { justify-content: center; }

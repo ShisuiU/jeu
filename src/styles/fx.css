@@ -174,4 +174,5 @@
 .btn:not(.secondary):not(.danger):not(:disabled):active { filter: brightness(1.12); }
 .btn .tap-ripple { background: radial-gradient(circle, rgba(255,255,240,0.7) 0%, rgba(255,226,163,0.25) 40%, transparent 70%); }
 .btn.secondary .tap-ripple, .menu-tile .tap-ripple, .hp-tile .tap-ripple { background: radial-gradient(circle, rgba(217,179,106,0.45) 0%, rgba(217,179,106,0.12) 45%, transparent 70%); }
-.res-art { display: block; border-radius: 22%; object-fit: cover; box-shadow: 0 2px 6px rgba(0,0,0,0.5); }
+.art-img.res-art, .art-img.res-shard { background: none; animation: none; }
+.res-art { display: block; object-fit: contain; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.6)); } /* fond transparent : plus de carré ni d'ombre carrée */

@@ -12,8 +12,9 @@ import icTower from '../../assets/kit/ic_tower.webp';
 import icLaurel from '../../assets/kit/ic_laurel.webp';
 import icSwords from '../../assets/kit/ic_swords.webp';
 import icCrystal from '../../assets/kit/ic_crystal.webp';
+import icGift from '../../assets/kit/ic_gift.webp';
 // Icônes peintes du kit SpriteCook (v1.73.0).
-const TILE_ICON: Record<string, string> = { 'Sac': icBag, 'Codex': icCodex, 'Amis': icHand, 'Clan': icBanner, 'Classements': icTrophy, 'Sauvegarde': icSave, 'Paramètres': icGear, 'Modération': icHelp };
+const TILE_ICON: Record<string, string> = { 'Sac': icBag, 'Codex': icCodex, 'Amis': icHand, 'Clan': icBanner, 'Classements': icTrophy, 'Sauvegarde': icSave, 'Paramètres': icGear, 'Modération': icHelp, 'Code promo': icGift };
 const STAT_ICON: Record<string, string> = { 'Héros': icHero, 'Campagne': icBook, 'Tour': icTower, 'Arène': icLaurel, 'Victoires': icSwords, 'Invocations': icCrystal };
 import { cloudWanted, useAccount } from '../../cloud/account';
 import { isUnlocked } from '../../game/unlocks';

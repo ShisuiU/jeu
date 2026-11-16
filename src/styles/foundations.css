@@ -715,3 +715,4 @@ select.prep-team { min-height: 40px; }
 @keyframes armedPulse { 50% { filter: brightness(1.5) saturate(1.3); } }
 .reduced-motion .btn.danger.armed { animation: none; }
 .dr-xp .dr-cap { font-style: normal; font-size: var(--fs-2xs); color: var(--text-faint); letter-spacing: 0.06em; text-transform: uppercase; }
+.menu-tile.kit > span:not(.badge-dot) { white-space: nowrap; }

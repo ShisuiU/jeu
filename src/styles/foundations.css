@@ -776,3 +776,7 @@ select.prep-team { min-height: 40px; }
 .coach.nudge .coach-bubble { animation: coachNudgeB 0.4s ease-out; }
 @keyframes coachNudge { 0% { box-shadow: 0 0 0 2px var(--gold-hi), 0 0 0 0 rgba(255, 211, 107, 0.9); } 100% { box-shadow: 0 0 0 2px var(--gold-hi), 0 0 0 18px rgba(255, 211, 107, 0); } }
 @keyframes coachNudgeB { 30% { transform: translateX(-5px); } 60% { transform: translateX(5px); } 100% { transform: none; } }
+.wheel-odds { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 14px; }
+.wo-row { display: flex; align-items: center; gap: 8px; font-size: var(--fs-sm); padding: 3px 0; border-bottom: 1px solid var(--line-1); }
+.wo-row b { font-variant-numeric: tabular-nums; color: var(--text-dim); font-weight: 700; }
+.wo-row.rare span, .wo-row.rare b { color: #ff7f9b; }

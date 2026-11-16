@@ -133,6 +133,14 @@ export function Wheel() {
         </Panel>
       )}
       <p className="faint" style={{ textAlign: 'center' }}>Un tour gratuit par jour · case rare : <b style={{ color: '#ff3d6e' }}>Éclat de faille</b></p>
+      {/* Les chances de chaque case (affichées, comme les taux d'invocation) : remplit l'écran avec une information utile. */}
+      <Panel title="Gains possibles">
+        <div className="wheel-odds">
+          {(() => { const tot = WHEEL.reduce((a, w) => a + w.weight, 0); return [...WHEEL].sort((a, b) => b.weight - a.weight).map((w) => (
+            <div key={w.id} className={`wo-row ${w.id === 'faille' ? 'rare' : ''}`}><SlotIcon id={w.id} size={18} /><span className="grow">{w.label}</span><b>{Math.round((w.weight / tot) * 100)} %</b></div>
+          )); })()}
+        </div>
+      </Panel>
     </Screen>
   );
 }

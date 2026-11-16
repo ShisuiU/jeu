@@ -60,5 +60,7 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['tests/**/*.test.ts'],
+    // Simulations longues (parties jouées au hasard, équilibrage) : 5 s par défaut ne suffisent pas sur une machine chargée.
+    testTimeout: 60_000,
   },
 });

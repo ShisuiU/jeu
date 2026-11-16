@@ -22,7 +22,7 @@ import { canClaimDaily } from '../../game/daily';
 import { Particles } from '../art/Scene';
 import { Icon } from '../art/Icons';
 import { TopBar } from '../components/TopBar';
-import { unreadMail } from './Mail';
+import { unreadMail } from '../../data/mail';
 import { campElapsed } from '../../game/camp';
 import { useGifts } from '../../state/gifts';
 

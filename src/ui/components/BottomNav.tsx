@@ -10,7 +10,7 @@ import navHomeOn from '../../assets/home/nav_home_on.webp';
 import navHeroesOn from '../../assets/home/nav_heroes_on.webp';
 import navBattleOn from '../../assets/home/nav_battle_on.webp';
 import navMenuOn from '../../assets/home/nav_menu_on.webp';
-import { unreadMail } from '../screens/Mail';
+import { unreadMail } from '../../data/mail';
 import { claimableCount, eventsDot } from '../../game/missions';
 import { isUnlocked } from '../../game/unlocks';
 import { canImproveMajor } from '../../game/upgrade';

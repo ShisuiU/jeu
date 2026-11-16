@@ -3,7 +3,7 @@ import { useGame } from '../../state/store';
 import { canClaimDaily } from '../../game/daily';
 import { DailyBody } from './Daily';
 import { useUI } from '../../state/ui';
-import { MAIL, mailFlag } from '../../data/mail';
+import { MAIL, mailFlag, unreadMail } from '../../data/mail';
 import { applyReward } from '../../game/rewards';
 import { play } from '../../audio/sfx';
 import { Panel, Screen } from '../components/common';
@@ -54,7 +54,7 @@ export function Mail({ tab: initial }: { tab?: MailTab }) {
   );
 }
 
-export const unreadMail = (flags: Record<string, boolean>) => MAIL.some((m) => !flags[mailFlag(m.id)]);
+export { unreadMail };
 
 /** CADEAUX — l'énergie envoyée par les amis, à récupérer (et à leur rendre) sans passer par l'écran Amis. */
 function GiftInbox({ uid }: { uid: string }) {

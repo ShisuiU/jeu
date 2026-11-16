@@ -567,6 +567,10 @@ Travail sur la branche `claude/keen-faraday-bcryji`, **sans fusion sur `main`** 
 - Cycle 2, suite (03:00 → 03:25 UTC) : icônes de ressources détourées (15 images), croix des fenêtres et paliers d'Événements remis en place (régression du cycle 1), toasts avec icône, boutons inactifs lisibles ; **Démanteler demande une confirmation** ; nom des équipements au Marché ; décimales à la française ; icône peinte « Code promo » (SpriteCook) ; état vide de la Forge avec action ; boutons Fermer en double retirés (7 fenêtres) ; cases d'équipement vides d'un seul style.
 - Arrêt forcé de 03:25 à 07:30 UTC (limite d'utilisation) : le second test « nouveau joueur » et la seconde critique artistique n'ont pas pu aboutir.
 
+## 🔧 Version 1.112.0 (en cours, branche) — suite de la reprise
+
+- **Fin du chapitre 6 adoucie (simulation sur toute la campagne, 5 Rares)** : les 6-7 à 6-9 demandaient le niveau 50 à 56, plus que le boss 6-10 (42), tout le chapitre 7 et le début du chapitre 8 (41). Une seule élite au niveau de la vague, comme au chapitre 2 : 44 à 46 désormais. Courbe générale (test d'équilibrage) respectée.
+
 ## ✅ Version 1.111.0 — Mission nocturne : fiabilité, « Obtenir » partout, finition
 
 - **Sauvegarde fiable** : une victoire n'est plus perdue si l'app est fermée brutalement (copie immédiate), une sauvegarde illisible est mise de côté au lieu d'être écrasée, une seconde fenêtre ouverte passe en lecture seule.

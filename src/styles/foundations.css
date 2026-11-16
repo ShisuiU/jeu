@@ -737,3 +737,28 @@ select.prep-team { min-height: 40px; }
 .toast { width: min(340px, 88vw); box-sizing: border-box; }
 .wl-in { display: flex; flex-direction: column; align-items: center; gap: 2px; }
 .wl-in.flip { transform: rotate(180deg); }
+/* Combat : pastilles d'effets deux par ligne (l'écart de 3 px les forçait une par ligne, empilées sur les noms). */
+.stage25 .unit .u-fx { gap: 2px; }
+.stage25 .unit .u-fx .fx-chip { flex: 0 1 calc(50% - 1px); }
+.stage25 .unit .u-fx .fx-chip:only-child { flex: 0 1 auto; }
+/* Ennemis lisibles sur les décors clairs (désert) : ombre portée sous la silhouette. */
+.stage25 .unit.enemy .u-art { background: radial-gradient(ellipse 52% 56% at 50% 50%, rgba(8, 5, 10, 0.55), rgba(8, 5, 10, 0.25) 60%, transparent 75%) !important; } /* halo sombre (pas de filtre : léger pour le téléphone) */
+/* Écran de résultat (recritique DA) : plus de grande bande vide ; le bloc entier est centré et les boutons suivent le récapitulatif.
+   Victoire : halo chaud et rayons de lumière lents derrière le titre (fixes avec « Animations réduites »). */
+.result-overlay .result-body { flex: 0 0 auto; }
+.result-overlay > .result-title { margin-top: auto; }
+.result-overlay::after { content: ''; margin-top: auto; }
+.theme-v2 .result-actions .btn.secondary { border: solid transparent !important; border-width: 0 13px !important; border-image: url('../assets/kit/pill_dark.webp') 0 10% 0 10% fill / 0 13px stretch !important; background: none !important; border-radius: 0 !important; color: #f1e4c6 !important; min-height: 48px; }
+.result-overlay.won { background: radial-gradient(120% 60% at 50% 0%, rgba(120, 78, 22, 0.55), rgba(5, 4, 8, 0) 60%), rgba(5, 4, 8, 0.97); }
+.result-overlay.won .result-title::before { content: ''; position: absolute; left: 50%; top: 50%; width: 560px; height: 560px; margin: -280px 0 0 -280px; pointer-events: none; z-index: -1;
+  background: repeating-conic-gradient(from 0deg, rgba(255, 214, 140, 0.13) 0deg 7deg, transparent 7deg 22deg);
+  -webkit-mask-image: radial-gradient(circle, #000 0%, rgba(0,0,0,0.6) 30%, transparent 62%); mask-image: radial-gradient(circle, #000 0%, rgba(0,0,0,0.6) 30%, transparent 62%);
+  animation: resRays 40s linear infinite; }
+.result-overlay.won > * { position: relative; }
+.result-overlay.won > .result-actions { position: sticky; }
+@keyframes resRays { to { transform: rotate(360deg); } }
+.reduced-motion .result-overlay.won .result-title::before { animation: none; }
+@media (prefers-reduced-motion: reduce) { .result-overlay.won .result-title::before { animation: none; } }
+.result-actions .btn svg { flex-shrink: 0; }
+.theme-v2 .result-actions .btn.secondary { padding: 0 2px !important; gap: 3px; }
+.result-actions .btn.secondary:first-child { flex: 0.8 1 0; }

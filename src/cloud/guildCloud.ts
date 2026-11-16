@@ -136,7 +136,11 @@ export async function syncMe(gid: string): Promise<GuildWithId | null> {
       if (!mine) return null;
       const entry = memberEntry(s, mine.role, mine.joinedAt);
       const week = guildWeek(now);
-      const boss = g.boss.week === week ? { week, dmg: { ...g.boss.dmg, [uid]: (g.boss.dmg[uid] ?? 0) + pending } } : g.boss.week < week ? { week, dmg: { [uid]: pending } } : g.boss;
+      // Un membre en avance d'une semaine (fuseau horaire) a déjà ouvert la nouvelle : les dégâts en attente y sont
+      // comptés au lieu d'être perdus (avant : retirés de la sauvegarde puis ignorés ; audit technique I2).
+      const boss = g.boss.week === week ? { week, dmg: { ...g.boss.dmg, [uid]: (g.boss.dmg[uid] ?? 0) + pending } }
+        : g.boss.week < week ? { week, dmg: { [uid]: pending } }
+        : { week: g.boss.week, dmg: { ...g.boss.dmg, [uid]: (g.boss.dmg[uid] ?? 0) + pending } };
       const same = JSON.stringify(entry) === JSON.stringify(mine) && pending === 0 && boss.week === g.boss.week;
       if (!same) tx.update(gref(gid), { [`members.${uid}`]: entry, boss });
       return { ...g, members: { ...g.members, [uid]: entry }, boss, id: gid };

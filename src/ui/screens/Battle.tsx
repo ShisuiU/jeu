@@ -429,8 +429,10 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
 
   const onUnit = (u: Unit) => {
     if (targetable.has(u.id)) { void act(u.id); return; }
+    // Toucher un de ses héros (hors ciblage) : sa fiche s'ouvre (avant : rien ; seul l'appui long marchait).
+    if (u.side === 'ally') { play('tap'); setInfoId(u.id); return; }
     // Hors ciblage manuel : toucher un ennemi en fait la cible prioritaire (re-toucher l'annule).
-    if (u.side !== 'enemy' || !u.alive || s.outcome !== 'running') return;
+    if (!u.alive || s.outcome !== 'running') return;
     play('tap');
     if (focusId === u.id) { setFocusId(null); toast('Cible prioritaire annulée.'); return; }
     setFocusId(u.id);

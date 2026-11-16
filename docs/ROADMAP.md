@@ -562,7 +562,8 @@
 
 Travail sur la branche `claude/keen-faraday-bcryji`, **sans fusion sur `main`** (pas de mise en production sans autorisation). Cycles : audit → corrections → tests → nouvel audit, jusqu'à 07:00 UTC.
 
-- Cycle 1 (22:00 UTC) : retours du testeur « joueur curieux » ; 4 audits en parallèle (ressources « Obtenir », mobile 3 tailles, technique, boutons sans effet).
+- Cycle 1 (22:00 UTC → 02:45 UTC, dont ~4 h d'arrêt forcé par la limite d'utilisation) : retours du testeur « joueur curieux » ; 4 audits en parallèle (ressources « Obtenir », mobile 3 tailles, technique, boutons sans effet) et leurs corrections : sauvegarde fiable (victoire conservée après fermeture brutale, vérifié), sauvegarde illisible jamais écrasée, deux fenêtres, « Obtenir » sur chaque coût manquant, 15 corrections mobiles, 6 boutons trompeurs.
+- Cycle 2 (02:45 UTC) : critique « finition commerciale » de tous les écrans ; second test « nouveau joueur » sur la version corrigée ; boss de clan (fuseaux horaires).
 
 ## ✅ Version 1.110.0 — Test « joueur pressé » : le mur du 2-4, et fin de la refonte
 

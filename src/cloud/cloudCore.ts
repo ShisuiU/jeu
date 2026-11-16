@@ -244,10 +244,13 @@ export async function syncNow(reason: 'login' | 'online' | 'manual'): Promise<vo
       return;
     }
     const remoteChanged = data.revision !== last.revision;
-    const localChanged = local.revision !== last.revision;
-    if (remoteChanged && localChanged) { useAccount.getState().set({ conflict: { local, remote, remoteAt: data.updatedAt }, status: 'idle' }); return; }
-    if (remoteChanged) { await adopt(u.uid, remote); return done('Partie mise à jour depuis un autre appareil.'); }
-    if (localChanged) await upload(u.uid, local);
+    // v1.111.0 (audit technique I6) : une copie locale PLUS ANCIENNE que le dernier envoi (écriture locale perdue)
+    // n'est plus téléversée par-dessus le cloud : c'est le cloud qui est à jour.
+    const localNewer = local.revision > last.revision;
+    const localOlder = local.revision < last.revision;
+    if (remoteChanged && localNewer) { useAccount.getState().set({ conflict: { local, remote, remoteAt: data.updatedAt }, status: 'idle' }); return; }
+    if (remoteChanged || localOlder) { await adopt(u.uid, remote); return done('Partie mise à jour depuis un autre appareil.'); }
+    if (localNewer) await upload(u.uid, local);
     return done();
   } catch (e) {
     useAccount.getState().set({ status: navigator.onLine ? 'error' : 'offline', error: errText(e) });

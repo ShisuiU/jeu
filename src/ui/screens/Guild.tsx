@@ -214,7 +214,7 @@ function Chat({ gid, uid, leader }: { gid: string; uid: string; leader: boolean 
   const blocked = useGame((s) => s.save?.blocked);
   const endRef = useRef<HTMLDivElement>(null);
   const load = useCallback(async () => { try { setMsgs(await (await gapi()).listChat(gid)); } catch (e) { toast(errMsg(e), 'error'); } }, [gid, toast]);
-  useEffect(() => { void load(); const t = setInterval(() => { if (document.visibilityState === 'visible') void load(); }, 8000); return () => clearInterval(t); }, [load]);
+  useEffect(() => { void load(); const t = setInterval(() => { if (document.visibilityState === 'visible') void load(); }, 20000); return () => clearInterval(t); }, [load]);
   useEffect(() => { endRef.current?.scrollIntoView({ block: 'nearest' }); }, [msgs?.length]);
   const send = async () => {
     if (!text.trim()) return;

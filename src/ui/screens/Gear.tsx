@@ -45,13 +45,13 @@ const GEAR_SORT_FN: Record<string, (a: GearItem, b: GearItem) => number> = {
 
 // FORGE — on choisit un héros (ou le sac), puis on touche un objet pour le renforcer.
 // Onglet Démanteler : uniquement les objets libres.
-export function Gear({ gearUid }: { gearUid?: string }) {
+export function Gear({ gearUid, initialTab = 'upgrade' }: { gearUid?: string; initialTab?: 'upgrade' | 'dismantle' }) {
   const save = useGame((s) => s.save)!;
   const mutate = useGame((s) => s.mutate);
   const toast = useUI((s) => s.toast);
   const { defaultUid } = useHeroOrder();
   const focus = gearUid ? save.equipment.find((g) => g.uid === gearUid) : undefined;
-  const [tab, setTab] = useState<'upgrade' | 'dismantle'>('upgrade');
+  const [tab, setTab] = useState<'upgrade' | 'dismantle'>(initialTab);
   const [who, setWho] = useState<string>(focus ? focus.heroUid ?? BAG : defaultUid ?? BAG);
   const [prefs, setPrefs] = usePersisted<{ sort: string; filters: Filters }>('gear', { sort: 'rarity', filters: {} });
   const [open, setOpen] = useState<string | null>(gearUid ?? null);

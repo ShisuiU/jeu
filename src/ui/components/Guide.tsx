@@ -40,7 +40,8 @@ export function Guide() {
   const current = useGame((s) => s.save?.profile.name ?? '');
   const [named, setNamed] = useState(false); // prologue vu
   // Premier écran : nouveau joueur (l'histoire commence) ou ancien joueur (retrouver sa partie).
-  const [who, setWho] = useState<'ask' | 'new' | 'old'>('ask');
+  // Joueur déjà nommé qui demande « Revoir le guide » (Réglages) : directement le guide, sans la question d'accueil.
+  const [who, setWho] = useState<'ask' | 'new' | 'old'>(() => (useGame.getState().save?.flags.name_chosen ? 'new' : 'ask'));
   const push = useUI((s) => s.push);
   // Nom du joueur : obligatoire (il apparaît dans l'histoire et chez les autres joueurs).
   const [name, setName] = useState(nameError(current) ? '' : current);

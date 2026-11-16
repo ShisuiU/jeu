@@ -32,21 +32,23 @@ export function Sanctuary({ uid }: { uid?: string }) {
   const toast = useUI((s) => s.toast);
   const { defaultUid } = useHeroOrder();
   const [sel, setSel] = useState<string | undefined>(uid && save.heroes.some((h) => h.uid === uid) ? uid : defaultUid);
+  // Tous les hooks avant le retour anticipé « aucun héros » (règle des hooks React ; audit technique I4).
+  const [maxAsk, setMaxAsk] = useState(false);
+  const [tapGuard, setTapGuard] = useState(false);
+  const [cele, setCele] = useState<{ kind: Celebration; title: string; from: number; to: number; key: number } | null>(null);
+  const [cer, setCer] = useState<{ kind: CeremonyKind; heroId: string; before: HeroSnap; after: HeroSnap; key: number } | null>(null);
+  const [tab, setTab] = useState<'level' | 'rank' | 'ascend' | 'skills' | 'mastery'>('level');
   const h = save.heroes.find((x) => x.uid === sel) ?? save.heroes[0];
   if (!h) return <Screen title="Sanctuaire"><p className="muted">Aucun héros.</p></Screen>;
   const d = HERO_BY_ID[h.heroId];
   const cap = maxLevelForRank(h.rank);
   const toCap = elixirsToCap(h);
-  const [maxAsk, setMaxAsk] = useState(false);
   const one = elixirPreview(save, h, 1);
   const all = elixirPreview(save, h, toCap);
 
   // Moments de progression mis en scène (v1.89.0) : niveau, rang, ascension et éveil ont chacun leur animation.
-  const [tapGuard, setTapGuard] = useState(false);
-  const [cele, setCele] = useState<{ kind: Celebration; title: string; from: number; to: number; key: number } | null>(null);
   const powerNow = () => powerOf(heroTotalStats(useGame.getState().save!, useGame.getState().save!.heroes.find((x) => x.uid === h.uid)!).total);
   // Cérémonie (v1.107.0) : rang, ascension et éveil ont leur mise en scène complète, avec le bilan avant → après.
-  const [cer, setCer] = useState<{ kind: CeremonyKind; heroId: string; before: HeroSnap; after: HeroSnap; key: number } | null>(null);
   const run = (fn: (s: typeof save) => Check, _okMsg: string, kind: CeremonyKind) => {
     const before = snapHero(useGame.getState().save!, h.uid);
     let c: Check = { ok: false, cost: {} };
@@ -64,7 +66,6 @@ export function Sanctuary({ uid }: { uid?: string }) {
   const skillNow = d.skills.reduce((a, s) => a + (h.skillLevels[s.id] ?? 1), 0);
   const skillReady = d.skills.some((s) => skillCheck(save, h, s.id).ok);
 
-  const [tab, setTab] = useState<'level' | 'rank' | 'ascend' | 'skills' | 'mastery'>('level');
   const TABS = [
     { id: 'level', label: 'Niveau', dot: !!toCap && save.resources.xpElixir > 0 },
     { id: 'rank', label: 'Rang', dot: rankUpCheck(save, h).ok },

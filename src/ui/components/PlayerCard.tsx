@@ -66,7 +66,7 @@ export function PlayerCard({ uid, entry, ghost, signedIn, self, canReport, onRep
           {team === 'loading' ? <p className="faint" style={{ margin: '4px 0' }}>Chargement…</p>
             : team ? (
               <div className="pc-team">
-                {[...team.team].sort((a, b) => a.slot - b.slot).map((h) => (
+                {[...team.team].filter((h) => !!HERO_BY_ID[h.refId]).sort((a, b) => a.slot - b.slot).map((h) => (
                   <div key={h.slot} className="pc-hero" style={{ ['--rc' as string]: RARITIES[HERO_BY_ID[h.refId].rarity].color }} title={HERO_BY_ID[h.refId].name}>
                     <HeroArt heroId={h.refId} /><span>{h.level}</span>
                   </div>

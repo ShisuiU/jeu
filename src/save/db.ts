@@ -32,7 +32,10 @@ function db() {
         const b = d.createObjectStore('backups', { keyPath: 'key' });
         b.createIndex('bySavedAt', 'savedAt');
       },
+      // Connexion perdue (bug connu de WebKit) : la prochaine écriture rouvre la base.
+      terminated() { dbPromise = null; },
     });
+    dbPromise.catch(() => { dbPromise = null; });
   }
   return dbPromise;
 }
@@ -46,6 +49,13 @@ export function unpack(rec: StoredSave | undefined | null): unknown | null {
   if (!rec || typeof rec.json !== 'string') return null;
   if (fnv1a(rec.json) !== rec.checksum) return null; // corrompue
   try { return JSON.parse(rec.json); } catch { return null; }
+}
+
+/** Copie de secours SYNCHRONE (v1.111.0) : écrite tout de suite quand l'app passe en arrière-plan ou se ferme.
+ *  L'écriture IndexedDB est asynchrone et peut ne jamais aboutir si la page se ferme pendant l'attente ;
+ *  au chargement, la sauvegarde la plus récente (révision) entre IndexedDB et ce miroir est retenue. */
+export function writeMirrorSync(save: SaveData): void {
+  try { localStorage.setItem(LS_MIRROR, JSON.stringify(pack('main', save))); } catch { /* quota / mode privé */ }
 }
 
 export async function writeMain(save: SaveData): Promise<void> {

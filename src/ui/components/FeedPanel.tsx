@@ -58,7 +58,8 @@ export function FeedPanel({ targetUid }: { targetUid: string }) {
               <span className="feed-x">✕</span>
             </button>
           ) : (
-            <button key={i} className="feed-slot" onClick={() => setChoosing(true)} aria-label="Ajouter un héros">+</button>
+            // Rien à absorber : la case explique pourquoi au lieu d'ouvrir une liste vide (audit des boutons).
+            <button key={i} className={`feed-slot ${cands.length || copies.length ? '' : 'off'}`} onClick={() => { if (cands.length || copies.length) setChoosing(true); else useUI.getState().toast(blocked ? `Aucun héros à absorber : ${plural(blocked, 'héros protégé', 'héros protégés')} (équipe, verrou, expédition, avatar).` : 'Aucun héros à absorber pour l’instant.'); }} aria-label="Ajouter un héros">+</button>
           );
         })}
       </div>

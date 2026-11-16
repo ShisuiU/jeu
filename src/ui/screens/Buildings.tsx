@@ -88,7 +88,7 @@ export function Buildings() {
               Récolter{ready > 0 ? ` ${ready}` : ''}
             </button>
             {upCost !== null
-              ? <button className="btn secondary grow" disabled={diamonds + ready < upCost} onClick={() => act((s) => upgradeMine(s, now), `Mine niveau ${b.mineLevel + 1} : ${MINE.rate[b.mineLevel + 1]} diamants par heure.`)}>Niv. {b.mineLevel + 1} <D size={15} /> {upCost}</button>
+              ? <button className={`btn secondary grow ${diamonds + ready < upCost ? 'off' : ''}`} onClick={() => diamonds + ready < upCost ? toast(`Diamants insuffisants : il en faut ${upCost} (tu en as ${diamonds + ready}).`, 'error') : act((s) => upgradeMine(s, now), `Mine niveau ${b.mineLevel + 1} : ${MINE.rate[b.mineLevel + 1]} diamants par heure.`)}>Niv. {b.mineLevel + 1} <D size={15} /> {upCost}</button>
               : <span className="faint grow" style={{ textAlign: 'center', alignSelf: 'center' }}>Niveau maximum</span>}
           </div>
         </div>

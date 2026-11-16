@@ -1,7 +1,7 @@
 import { BALANCE } from '../data/balance';
 import { useGame } from '../state/store';
 import { useUI } from '../state/ui';
-import { listBackups, readMain, requestPersistence, unpack, wipeMain, writeBackup, writeMain, type StoredSave } from './db';
+import { listBackups, readMain, requestPersistence, unpack, wipeMain, writeBackup, writeMain, writeMirrorSync, type StoredSave } from './db';
 import { migrateSave } from './migrations';
 import { createNewSave, type SaveData } from './schema';
 import { LocalOnlyProvider, type SyncProvider } from './sync';
@@ -39,13 +39,30 @@ export async function loadBestSave(): Promise<{ save: SaveData; source: string }
       }
     } catch { /* */ }
   }
-  if (candidates.length === 0) return { save: createNewSave(), source: 'nouvelle' };
+  if (candidates.length === 0) {
+    // v1.111.0 (audit technique C2) : des données existent mais aucune n'est lisible (version plus récente du jeu,
+    // corruption) : on les met de côté AVANT d'écrire quoi que ce soit, au lieu de les écraser par une partie neuve.
+    const raws = [idb, mirror].filter((r): r is StoredSave => !!r && typeof r.json === 'string');
+    if (raws.length) {
+      try { localStorage.setItem(`aeonfall-quarantine-${Date.now()}`, raws[0].json); } catch { /* quota */ }
+      return { save: createNewSave(), source: 'illisible' };
+    }
+    return { save: createNewSave(), source: 'nouvelle' };
+  }
   candidates.sort((x, y) => y.save.revision - x.save.revision || y.save.updatedAt - x.save.updatedAt);
   return candidates[0];
 }
 
+/** Sauvegarde immédiate (après un moment important : fin de combat, achat…), sans attendre le délai habituel. */
+export function saveNow(): void { if (readOnly) return; const s = useGame.getState().save; if (s && s.revision !== lastWritten) writeMirrorSync(s); void flushSave(); }
+
+/** Deux onglets ouverts (audit technique C3) : seul celui qui tient le verrou écrit ; l'autre ne sauvegarde pas. */
+let readOnly = false;
+export const isReadOnly = () => readOnly;
+
 export async function flushSave(): Promise<void> {
   if (timer) { clearTimeout(timer); timer = null; }
+  if (readOnly) return;
   const s = useGame.getState().save;
   if (!s || s.revision === lastWritten) return;
   try {
@@ -66,11 +83,21 @@ export async function flushSave(): Promise<void> {
 }
 
 export async function initSaveSystem(): Promise<string> {
+  // Verrou tenu pendant toute la vie de la page ; s'il est déjà pris, cette fenêtre ne sauvegarde pas.
+  try {
+    const locks = (navigator as Navigator & { locks?: { request: (n: string, o: { ifAvailable: boolean }, cb: (l: unknown) => Promise<void> | void) => Promise<unknown> } }).locks;
+    if (locks) {
+      await new Promise<void>((resolve) => {
+        void locks.request('aeonfall-save', { ifAvailable: true }, (lock) => { if (!lock) { readOnly = true; resolve(); return; } resolve(); return new Promise<void>(() => {}); });
+      });
+    }
+  } catch { /* navigateur sans Web Locks : comportement d'avant */ }
   const { save, source } = await loadBestSave();
+  if (source === 'illisible') readOnly = true; // ne rien écrire par-dessus des données qu'on ne sait pas lire
   useGame.getState().setSave(save);
   useGame.getState().tick();
   lastBackupAt = Date.now();
-  try { await writeBackup(save, 'demarrage', BALANCE.autosave.maxBackups); } catch { /* */ }
+  if (!readOnly) { try { await writeBackup(save, 'demarrage', BALANCE.autosave.maxBackups); } catch { /* */ } }
   lastWritten = -1;
   await flushSave();
   saveStatus.persisted = await requestPersistence();
@@ -81,7 +108,8 @@ export async function initSaveSystem(): Promise<string> {
       timer = setTimeout(flushSave, BALANCE.autosave.debounceMs);
     }
   });
-  const flushNow = () => { void flushSave(); };
+  // Fermeture / arrière-plan : miroir synchrone d'abord (il survit à une fermeture brutale), puis IndexedDB.
+  const flushNow = () => { if (readOnly) return; const s = useGame.getState().save; if (s && s.revision !== lastWritten) writeMirrorSync(s); void flushSave(); };
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushNow(); else useGame.getState().tick(); });
   window.addEventListener('pagehide', flushNow);
   window.addEventListener('beforeunload', flushNow);

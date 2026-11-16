@@ -7,7 +7,7 @@ import { needsName } from './game/profile';
 import { useGame } from './state/store';
 import { heroArtUrl } from './ui/art/HeroArt';
 import { useUI, type Route } from './state/ui';
-import { initSaveSystem } from './save/saveManager';
+import { initSaveSystem, isReadOnly } from './save/saveManager';
 import { loadEvents } from './game/events';
 import { configureAudio, play, unlockAudio } from './audio/sfx';
 import { type MusicMode, configureMusic, playMusic, resumeMusic, stopMusic } from './audio/music';
@@ -79,7 +79,7 @@ function renderRoute(r: Route) {
     case 'codex': return <Codex />;
     case 'campaign': return <Campaign />;
     case 'summon': return <Summon />;
-    case 'gear': return <Gear gearUid={r.gearUid} />;
+    case 'gear': return <Gear key={r.tab ?? 'upgrade'} gearUid={r.gearUid} initialTab={r.tab} />;
     case 'sanctuary': return <Sanctuary uid={r.uid} />;
     case 'mail': return <Mail />;
     case 'dungeons': return <Dungeons />;
@@ -123,7 +123,12 @@ export default function App() {
     if (booted.current) return;
     booted.current = true;
     initSaveSystem()
-      .then(() => { setReady(true); startStats(); })
+      .then((source) => {
+        setReady(true); startStats();
+        // v1.111.0 : prévenir plutôt que d'écraser en silence.
+        if (source === 'illisible') setTimeout(() => useUI.getState().toast('Ta sauvegarde n’a pas pu être lue (version plus récente du jeu ?). Elle est conservée intacte ; cette session ne sauvegarde rien pour ne pas l’écraser. Mets le jeu à jour puis recharge.', 'error'), 800);
+        else if (isReadOnly()) setTimeout(() => useUI.getState().toast('Aeonfall est déjà ouvert dans une autre fenêtre : celle-ci ne sauvegarde pas. Ferme l’autre puis recharge.', 'error'), 800);
+      })
       .then(() => loadEvents(import.meta.env.BASE_URL))
       .catch((e) => setError(`Impossible d’accéder au stockage : ${e instanceof Error ? e.message : e}. Désactive la navigation privée.`));
   }, []);

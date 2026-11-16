@@ -38,7 +38,9 @@ export function defeatTips(s: SaveData, team: TeamPreset, waves: UnitSetup[][]):
   }
   // 4. Équipement : emplacements vides. Si le sac n'a rien pour les remplir, le bouton mène aux Donjons (source d'équipement).
   const empty = heroes.reduce((a, h) => a + SLOTS.length - s.equipment.filter((g) => g.heroUid === h.uid).length, 0);
-  const spare = s.equipment.some((g) => !g.heroUid);
+  // Un objet libre ne compte que s'il va dans un emplacement vide d'un héros de l'équipe.
+  const emptySlots = new Set(heroes.flatMap((h) => SLOTS.filter((sl) => !s.equipment.some((g) => g.heroUid === h.uid && g.slot === sl.id)).map((sl) => sl.id)));
+  const spare = s.equipment.some((g) => !g.heroUid && emptySlots.has(g.slot));
   if (empty > 0 && spare) tips.push({ text: `${empty} emplacement${empty > 1 ? 's' : ''} d’équipement vide${empty > 1 ? 's' : ''} dans ton équipe.`, route: { name: 'hero', heroId: weakest.heroId, uid: weakest.uid }, label: 'Équiper' });
   else if (empty > 0 && dungeons) tips.push({ text: `${empty} emplacement${empty > 1 ? 's' : ''} d’équipement vide${empty > 1 ? 's' : ''} et rien dans le sac : les Donjons d’équipement en donnent à chaque victoire.`, route: { name: 'dungeons' }, label: 'Donjons' });
   return tips.slice(0, 3);

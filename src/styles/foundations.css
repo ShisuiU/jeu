@@ -680,3 +680,5 @@ select.prep-team { min-height: 40px; }
 .wheel-halo { max-width: 100%; }
 /* Arène 320 px : les boutons d'en-tête passent en icône seule (libellé lu par aria-label) pour laisser le titre lisible. */
 @media (max-width: 360px) { .screen-header .btn .hb-lbl { display: none; } .screen-header .btn.small { min-width: 40px; } }
+.feed-slot.off { opacity: 0.45; }
+.btn.off { opacity: 0.55; filter: grayscale(0.5); }

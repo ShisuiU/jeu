@@ -93,7 +93,7 @@ export const ACTIVITIES: Activity[] = [
   { id: 'mine', name: 'Mine de diamants', hint: 'Bâtiments · même jeu fermé', route: { name: 'buildings' }, rewards: () => [{ diamonds: 1 }], main: ['diamonds'],
     amount: (s) => { const lv = s.buildings?.mineLevel ?? 1; return `${MINE.rate[lv] ?? 1} par heure`; } },
   { id: 'collection', name: 'Paliers de collection', hint: 'Héros ▸ Collection', route: { name: 'collection' }, rewards: () => COLLECTION_STEPS.map(collectionReward) },
-  { id: 'dismantle', name: 'Démanteler un équipement', hint: 'Forge ▸ Démanteler', route: { name: 'gear' }, rewards: () => [{ gold: 1, forgeOre: 1 }] },
+  { id: 'dismantle', name: 'Démanteler un équipement', hint: 'Forge ▸ Démanteler', route: { name: 'gear', tab: 'dismantle' }, rewards: () => [{ gold: 1, forgeOre: 1 }] },
 ];
 
 /** Récompenses des événements spéciaux (hors semaine) : objectifs, jours de connexion, épreuve. */

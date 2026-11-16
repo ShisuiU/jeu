@@ -311,7 +311,6 @@ function Members({ g, uid, now, act, confirm, leave }: {
             {r.kick && <button className="btn danger" onClick={() => { setSel(null); confirm({ text: `Exclure ${m.name} du clan ?`, run: () => act((a) => a.kickMember(g.id, sel), `${m.name} a été exclu.`) }); }}>Exclure</button>}
             {!r.officer && !r.leader && !r.kick && <p className="faint" style={{ margin: 0, textAlign: 'center' }}>{sel === uid ? 'C’est toi !' : 'Seuls le chef et les adjoints gèrent les membres.'}</p>}
           </div>
-          <button className="btn secondary block" style={{ marginTop: 10 }} onClick={() => setSel(null)}>Fermer</button>
         </Modal>
       )}
       {report && <ReportSheet target={report} onClose={() => setReport(null)} />}

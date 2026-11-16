@@ -85,7 +85,6 @@ function CopiesModal({ h, onClose, onAwaken }: { h: HeroInstance; onClose: () =>
       </div>
       {bond('faction')}
       {bond('affinity')}
-      <button className="btn secondary block" style={{ marginTop: 12 }} onClick={onClose}>Fermer</button>
     </Modal>
   );
 }

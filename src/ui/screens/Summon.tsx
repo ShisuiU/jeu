@@ -131,7 +131,6 @@ export function Summon() {
           {b.pity && <p className="faint">Garantie : un héros {RARITIES[b.pity.rarity].name.toLowerCase()} ou mieux au plus tard tous les {b.pity.every} appels (compteur : {pity}).</p>}
           {b.multiGuarantee && <p className="faint">Appel ×10 : au moins un héros {RARITIES[b.multiGuarantee].name.toLowerCase()} ou mieux.</p>}
           <p className="faint">Héros déjà possédé → 1 doublon : il sert à l’éveiller ou à renforcer sa famille ou son affinité (fiche du héros).</p>
-          <button className="btn block" onClick={() => setSheet(null)}>Fermer</button>
         </Modal>
       )}
       {sheet === 'history' && (
@@ -147,7 +146,6 @@ export function Summon() {
             ))}
           </div>
           <p className="faint">Total : {save.summons.total} appel(s).</p>
-          <button className="btn block" onClick={() => setSheet(null)}>Fermer</button>
         </Modal>
       )}
 

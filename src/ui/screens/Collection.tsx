@@ -41,7 +41,7 @@ export function Collection() {
         <button className="hp-tile kit" onClick={() => push({ name: 'sanctuary' })}><img src={kSanct} alt="" /><span>Sanctuaire</span>{improvable && <span className="badge-dot" />}</button>
         <button className="hp-tile kit" onClick={() => push({ name: 'gear' })}><img src={kForge} alt="" /><span>Forge</span></button>
         <button className="hp-tile kit" onClick={() => push({ name: 'team' })}><img src={kTeams} alt="" /><span>Équipes</span></button>
-        <button className="hp-tile kit" onClick={() => setBonds(true)}><img src={kBonds} alt="" /><span>Liens</span></button>
+        <button className="hp-tile kit" onClick={() => setBonds(true)}><img src={kBonds} alt="" /><span>Alliances</span></button>
       </div>
       <CollectionBar />
       {bonds && <BondsSheet onClose={() => setBonds(false)} />}

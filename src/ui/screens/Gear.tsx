@@ -16,6 +16,7 @@ import type { GearItem } from '../../save/schema';
 import { PlaceAmbient } from '../art/PlaceScene';
 import { SetEmblem } from '../art/SetEmblem';
 import { defaultStars } from '../../game/gear';
+import { isUnlocked, unlockText } from '../../game/unlocks';
 
 const BAG = 'bag';
 
@@ -49,6 +50,7 @@ export function Gear({ gearUid, initialTab = 'upgrade' }: { gearUid?: string; in
   const save = useGame((s) => s.save)!;
   const mutate = useGame((s) => s.mutate);
   const toast = useUI((s) => s.toast);
+  const push = useUI((s) => s.push);
   const { defaultUid } = useHeroOrder();
   const focus = gearUid ? save.equipment.find((g) => g.uid === gearUid) : undefined;
   const [tab, setTab] = useState<'upgrade' | 'dismantle'>(initialTab);
@@ -97,14 +99,18 @@ export function Gear({ gearUid, initialTab = 'upgrade' }: { gearUid?: string; in
             {SLOTS.map((s) => {
               const g = items.find((x) => x.slot === s.id);
               return g ? <GearCard key={s.id} g={g} onClick={() => setOpen(g.uid)} />
-                : <GearSlotEmpty key={s.id} slot={s.id} onClick={() => toast('Emplacement vide : équipe un objet depuis la fiche du héros.')} />;
+                : <GearSlotEmpty key={s.id} slot={s.id} onClick={() => { const h = save.heroes.find((x) => x.uid === who)!; if (save.equipment.some((x) => !x.heroUid && x.slot === s.id)) push({ name: 'hero', uid: h.uid, heroId: h.heroId }); else toast('Aucun objet libre pour cet emplacement.'); }} />;
             })}
           </div>
-          {items.length === 0 && (
-            <p className="hint" style={{ marginTop: 10 }}>{save.equipment.length === 0
-              ? 'Pas encore d’équipement : il se gagne dans les 4 donjons d’équipement (ouverts après le niveau 2-2), un objet garanti à chaque victoire, chaque donjon ayant ses propres ensembles. Équipe-le ensuite depuis la fiche du héros.'
-              : 'Aucun objet équipé.'}</p>
-          )}
+          {items.length === 0 && (() => {
+            // État vide (mission nocturne) : une phrase et une action, au lieu d'un paragraphe.
+            const hero = save.heroes.find((h) => h.uid === who)!;
+            const toHero = () => push({ name: 'hero', uid: hero.uid, heroId: hero.heroId });
+            if (save.equipment.length > 0) return <div className="forge-empty"><span>Aucun objet équipé sur ce héros.</span><button className="btn small" onClick={toHero}>Équiper</button></div>;
+            return isUnlocked(save, 'dungeons')
+              ? <div className="forge-empty"><span>L’équipement se gagne dans les donjons : un objet à chaque victoire.</span><button className="btn small" onClick={() => push({ name: 'dungeons' })}>Donjons</button></div>
+              : <div className="forge-empty"><span>L’équipement se gagne dans les donjons, {unlockText('dungeons').toLowerCase()}.</span></div>;
+          })()}
         </>
       )}
 

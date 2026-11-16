@@ -716,3 +716,5 @@ select.prep-team { min-height: 40px; }
 .reduced-motion .btn.danger.armed { animation: none; }
 .dr-xp .dr-cap { font-style: normal; font-size: var(--fs-2xs); color: var(--text-faint); letter-spacing: 0.06em; text-transform: uppercase; }
 .menu-tile.kit > span:not(.badge-dot) { white-space: nowrap; }
+.forge-empty { display: flex; align-items: center; gap: 10px; margin-top: 10px; padding: 10px 12px; border-radius: var(--r-md); background: var(--surface-1); border: 1px solid var(--line-1); font-size: var(--fs-sm); color: var(--text-dim); }
+.forge-empty span { flex: 1; }

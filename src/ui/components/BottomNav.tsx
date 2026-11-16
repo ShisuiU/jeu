@@ -33,6 +33,7 @@ const teamCanImprove = (s: SaveData) => { const t = s.teams.find((x) => x.id ===
 
 export function BottomNav() {
   const root = useUI((s) => s.stack[0].name);
+  const atRoot = useUI((s) => s.stack.length === 1);
   // L'onglet reste allumé quand on navigue dans ses sous-écrans.
   const tab = useUI((s) => s.tab);
   // Un sélecteur par pastille : chacun renvoie un booléen stable (sinon React redessine en boucle).
@@ -58,7 +59,7 @@ export function BottomNav() {
           <button key={it.tab} className={`nav-item ${it.tab === 'summon' ? 'summon' : ''} ${root === it.tab ? 'active' : ''}`} onClick={() => tab(it.tab)}>
             <img className={it.tab === 'summon' ? 'nav-crystal' : 'nav-ico'} src={root === it.tab && it.on ? it.on : it.img} alt="" draggable={false} />
             {it.label}
-            {dots[it.tab] && <span className="badge-dot" />}
+            {dots[it.tab] && !(atRoot && root === it.tab) && <span className="badge-dot" />}{/* pas de pastille sur l'onglet de l'écran affiché */}
           </button>
         );
       })}

@@ -114,6 +114,12 @@ export function Prep({ spec }: { spec: BattleSpec }) {
   return (
     <Screen title={info.title}>
       <Coach id="prep_fight" target=".fight-btn" text="Voici les ennemis et la récompense. Lance le combat !" />
+      {/* Test « nouveau joueur » : « Suivant » enchaîne les niveaux sans repasser par l'Accueil ; ces deux bulles (Invocation, puis Sanctuaire)
+          viennent donc aussi ici, après le 1-3 et le 1-4, avant le premier niveau difficile (1-6). Jamais en même temps que celle des affinités. */}
+      {(() => { const clears = Object.values(save.progress.campaign).filter((p) => p.clears > 0).length; return <>
+        <Coach id="home_summon" target=".nav-item:nth-child(3)" when={clears >= 3 && !!save.flags.coach_battle_target} text="Agrandis ton équipe : appelle de nouveaux Héritiers dans l’onglet Invocation." />
+        <Coach id="home_sanct" target=".nav-item:nth-child(2)" when={clears >= 4} text="Tes héros peuvent monter de niveau : ouvre Héros, puis le Sanctuaire." />
+      </>; })()}
       <Coach id="battle_target" target=".aff-advice" when={Object.values(save.progress.campaign).some((p) => p.clears > 0)} text="Les affinités comptent : Solaire bat Tellurique, qui bat Lunaire, qui bat Solaire. Un héros avantagé (▲) frappe 30 % plus fort. Regarde ici combien ton équipe en a." />
       <div className="prep-sub"><span className="muted">{info.subtitle}</span></div>
       {(() => { const fs = new Set(members.filter(Boolean).map((h) => HERO_BY_ID[h!.heroId].faction)); const c = COUTURES.find((x) => fs.has(x.factions[0]) && fs.has(x.factions[1])); return c ? <div className="prep-couture">✦ Couture d’époque possible : <b>{save.flags[`couture_${c.id}`] ? c.name : '???'}</b> <span className="faint">({FACTIONS[c.factions[0]].short} + {FACTIONS[c.factions[1]].short}, au 3ᵉ tour de l’équipe)</span>

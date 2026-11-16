@@ -766,3 +766,5 @@ select.prep-team { min-height: 40px; }
 .gear-card.empty, .sc-slot.empty { box-shadow: inset 0 2px 8px rgba(0,0,0,0.75), inset 0 0 0 1px rgba(217,192,138,0.06) !important; background: linear-gradient(180deg, rgba(8,6,12,0.85), rgba(20,16,26,0.8)) !important; }
 .sc-slot.empty { border: 1px solid #3a3242 !important; }
 .gear-card.empty svg, .sc-slot.empty svg { opacity: 0.45; }
+.gd-equip-top { margin-top: 12px; }
+.gd-pick { margin-top: 12px; padding: 10px; border-radius: var(--r-md); background: var(--surface-1); border: 1px solid var(--line-1); }

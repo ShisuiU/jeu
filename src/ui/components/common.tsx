@@ -90,10 +90,10 @@ export function ModalX({ onClose }: { onClose: () => void }) {
   return <button className="modal-x" aria-label="Fermer" onClick={(e) => { e.stopPropagation(); onClose(); }}>✕</button>;
 }
 
-export function Modal({ children, onClose, className = '' }: { children: ReactNode; onClose?: () => void; className?: string }) {
+export function Modal({ children, onClose, className = '', backdropClose = true }: { children: ReactNode; onClose?: () => void; className?: string; backdropClose?: boolean }) {
   // Rendue directement dans <body> : rien dans l'écran (défilement, effets) ne peut la rogner ou la recouvrir.
   return createPortal(
-    <div className="modal-backdrop" onClick={(e) => { if (e.target === e.currentTarget) onClose?.(); }}>
+    <div className="modal-backdrop" onClick={(e) => { if (backdropClose && e.target === e.currentTarget) onClose?.(); }}>
       <div className="modal-wrap">
         <div className={`modal ${className}`}>{children}</div>
         {onClose && <ModalX onClose={onClose} />}

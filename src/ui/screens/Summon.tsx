@@ -151,7 +151,7 @@ export function Summon() {
 
       {reveal && <RiftReveal key={reveal.key} results={reveal.results} bannerColor={BANNER_BY_ID[reveal.banner].color} bannerGlow={BANNER_BY_ID[reveal.banner].glow}
         altar={altar} onClose={() => setReveal(null)}
-        again={canAfford(save, reveal.banner, reveal.count) ? () => doSummon(reveal.count, reveal.banner) : undefined} count={reveal.count} />}
+        again={canAfford(save, reveal.banner, reveal.count) ? () => doSummon(reveal.count, reveal.banner) : undefined} count={reveal.count} banner={reveal.banner} />}
     </Screen>
   );
 }
@@ -164,7 +164,7 @@ type Stage = 'charge' | 'shatter' | 'rift' | 'hush' | 'flash' | 'emerge';
 // 4. Légendaire/Mythique : silence tendu, tout s'assombrit ; 5. éclair blanc (Épique et mieux) ;
 // 6. le héros sort : silhouette puis lumière, reflet sur la carte, étoiles une à une, nom lettre par lettre.
 // Appel ×10 : les cartes arrivent face cachée (leur dos brille déjà à la couleur de leur rareté) et se retournent une à une.
-function RiftReveal({ results, bannerColor, bannerGlow, altar, onClose, again, count }: { results: SummonResult[]; bannerColor: string; bannerGlow: string; altar?: string; onClose: () => void; again?: () => void; count: number }) {
+function RiftReveal({ results, bannerColor, bannerGlow, altar, onClose, again, count, banner }: { results: SummonResult[]; bannerColor: string; bannerGlow: string; altar?: string; onClose: () => void; again?: () => void; count: number; banner?: string }) {
   const best = results.reduce((a, r) => (RARITIES[r.rarity].order > RARITIES[a.rarity].order ? r : a), results[0]);
   const order = RARITIES[best.rarity].order;
   const rc = RARITIES[best.rarity].color;
@@ -305,7 +305,7 @@ function RiftReveal({ results, bannerColor, bannerGlow, altar, onClose, again, c
             : (
               <div className="row" style={{ gap: 8, marginTop: 18 }}>
                 <button className="btn secondary grow" onClick={onClose}>Continuer</button>
-                {again && <button className="btn grow" onClick={again}>Encore ×{count}</button>}
+                {again && <button className="btn grow" onClick={again}>Encore ×{count}{banner && BANNER_BY_ID[banner] && (() => { const c = BANNER_BY_ID[banner].cost; const r = RESOURCES[c.resource]; return <span className="again-cost"><ResourceIcon icon={r.icon} color={r.color} size={16} res={r.id} />{c.amount * count}</span>; })()}</button>}
               </div>
             )}
         </div>

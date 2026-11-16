@@ -399,7 +399,7 @@
 @keyframes bannerIn2 { from { opacity: 0; transform: translateY(-50%) scaleX(0.4); } }
 .skill-banner.ult { font-size: var(--fs-2xl); }
 /* En combat, les messages passent tout en haut (sur le titre de l'étape) : ni le nom des compétences ni les ennemis ne sont couverts. */
-body:has(.battle-controls) .toasts { top: calc(var(--sat, 0px) + 4px) !important; bottom: auto !important; }
+body:has(.battle-controls) .toasts { top: calc(var(--sat, 0px) + 96px) !important; bottom: auto !important; }
 body:has(.battle-controls) .toast { font-size: var(--fs-sm); padding-top: 7px; padding-bottom: 7px; }
 /* Prologue (v1.102.2) : trois phrases en fondu sur le Monde Cousu, au tout premier lancement. */
 .prologue { position: fixed; inset: 0; z-index: 56; display: grid; place-items: center; background: #050408; overflow: hidden; cursor: pointer; }
@@ -794,3 +794,21 @@ select.prep-team { min-height: 40px; }
 .coach-bubble { padding: 9px 12px 8px !important; }
 .coach-bubble p { font-size: var(--fs-md) !important; margin-bottom: 6px !important; }
 .coach-actions .coach-ok { min-height: 34px !important; min-width: 72px !important; }
+/* 3e critique : pastilles d'effets sur UNE ligne, sans déborder sur l'unité voisine. */
+.stage25 .unit .u-fx { flex-wrap: nowrap !important; justify-content: center; overflow: hidden; left: -4% !important; right: -4% !important; }
+.stage25 .unit .u-fx .fx-chip { flex: 0 1 auto !important; min-width: 0; }
+/* 3e critique : les cases vides de la fiche héros cachaient ~40 % du portrait ; plus petites et discrètes (les cases pleines gardent leur taille). */
+.sc-slot.empty { width: 50px !important; height: 50px !important; opacity: 0.62; }
+.sc-slot.empty:active { opacity: 1; }
+/* Marché : la vignette d'un équipement montre l'objet (la stat principale et « +0 » sont déjà dans le détail). */
+.mk-art .gear-card .gc-main, .mk-art .gear-card .gc-lvl { display: none !important; }
+.again-cost { display: inline-flex; align-items: center; gap: 3px; margin-left: 8px; font-size: var(--fs-sm); }
+/* 3e critique : les onglets débordaient de 10 à 17 px (le fondu mangeait « Sept Aubes », « Cauchemar ») : un peu plus serrés, ils tiennent. */
+.theme-v2 .seg button { padding: 0 7px !important; letter-spacing: 0 !important; }
+.theme-v2 .seg { gap: 4px !important; }
+/* Récap de fin de combat : choix de la statistique (dégâts infligés, subis, soins). */
+.dr-tabs { display: flex; gap: 4px; margin: 2px 0 8px; padding: 3px; border-radius: var(--r-pill); background: rgba(0, 0, 0, 0.35); border: 1px solid var(--line-1); }
+.dr-tabs button { flex: 1; height: 28px; border-radius: var(--r-pill); font-size: var(--fs-sm); font-weight: 700; color: var(--text-dim); background: none; border: 0; }
+.dr-tabs button.on { color: #1d1408; background: linear-gradient(180deg, #e9cd88, #b8904a); }
+.dr-bar.dmgTaken > div { background: linear-gradient(90deg, #b8423f, #e07a5f) !important; }
+.dr-bar.healDone > div { background: linear-gradient(90deg, #3e9b63, #7be0a0) !important; }

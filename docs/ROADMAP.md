@@ -571,6 +571,8 @@ Travail sur la branche `claude/keen-faraday-bcryji`, **sans fusion sur `main`** 
 
 - **Fin du chapitre 6 adoucie (simulation sur toute la campagne, 5 Rares)** : les 6-7 à 6-9 demandaient le niveau 50 à 56, plus que le boss 6-10 (42), tout le chapitre 7 et le début du chapitre 8 (41). Une seule élite au niveau de la vague, comme au chapitre 2 : 44 à 46 désormais. Courbe générale (test d'équilibrage) respectée.
 - **Milieu du chapitre 3 lissé** : l'élite arrivait dès le 3-4 (niveau requis 9 au 3-3, 19 au 3-5) ; elle n'arrive plus qu'au 3-7, comme au chapitre 2 : 9, 10, 13, 12, 17, puis 20 au boss.
+- **Récap de fin de combat au choix (demande du joueur)** : « Dégâts » (infligés), « Subis » ou « Soins » (rendus), avec la part de chaque héros, son total, une couleur par statistique (or, rouge, vert) et un titre pour le premier (Meilleur, Rempart, Soigneur). Le choix est retenu d'un combat à l'autre. Le moteur compte désormais les dégâts subis et les soins de chaque héros (y compris vol de vie, régénération et bonus d'ensemble).
+- **Troisième critique artistique (7,5/10) traitée** : pastilles d'effets sur une seule ligne en combat, chiffres de dégâts simultanés décalés, astuces de combat sous le bandeau (plus sur le titre ni l'ordre des tours), cases vides de la fiche héros plus discrètes (portrait dégagé), vignette du Marché sans texte par-dessus l'objet, coût affiché sur « Encore » à l'Invocation, onglets resserrés (Événements et Campagne tiennent en entier).
 
 ## ✅ Version 1.111.0 — Mission nocturne : fiabilité, « Obtenir » partout, finition
 

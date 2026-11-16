@@ -202,12 +202,14 @@ function cleanse(s: BattleState, u: Unit) {
 }
 
 // ─── Dégâts, soins, mort ───
-function heal(s: BattleState, target: Unit, amount: number) {
+function heal(s: BattleState, target: Unit, amount: number, by?: Unit | null) {
   if (!target.alive || amount <= 0) return;
   let a = amount;
   if (s.synergy.sylvaran && target.side === 'ally') a *= 1.15;
   const real = Math.min(target.base.hp - target.hp, Math.round(a));
   target.hp += real;
+  // Récap de fin de combat : soins réellement rendus (sans l'excédent), attribués au soigneur quand il est connu.
+  if (by && real > 0) by.flags.healDone = (by.flags.healDone ?? 0) + real;
   s.events.push({ kind: 'heal', target: target.id, amount: real });
 }
 
@@ -309,6 +311,7 @@ function dealDamage(s: BattleState, source: Unit, target: Unit, effect: Extract<
   const hpDmg = dmg - absorbed;
   // Récap de fin de combat : dégâts réellement encaissés (bouclier compris, sans l'excédent au-delà des PV restants).
   source.flags.dmgDealt = (source.flags.dmgDealt ?? 0) + absorbed + Math.min(hpDmg, Math.max(0, target.hp));
+  target.flags.dmgTaken = (target.flags.dmgTaken ?? 0) + absorbed + Math.min(hpDmg, Math.max(0, target.hp));
   target.hp -= hpDmg;
   s.events.push({ kind: 'damage', source: source.id, target: target.id, amount: dmg, crit, strong: aff > 1, weak: aff < 1, absorbed, ...(combo ? { combo } : {}) });
   if (target.flags.carapaceMax && !broke && target.flags.carapace > 0) s.events.push({ kind: 'carapace', target: target.id, charges: target.flags.carapace });
@@ -360,7 +363,7 @@ function dealDamage(s: BattleState, source: Unit, target: Unit, effect: Extract<
   }
   if (target.hp <= 0) kill(s, target, source);
   const ls = (effect.lifestealPct ?? 0) + mods.lifesteal + (source.flags.leech ?? 0) / 100;
-  if (ls > 0 && source.alive) heal(s, source, hpDmg * ls);
+  if (ls > 0 && source.alive) heal(s, source, hpDmg * ls, source);
   return hpDmg;
 }
 
@@ -374,6 +377,7 @@ function rawHit(s: BattleState, source: Unit, target: Unit, amount: number, guar
   target.statuses = target.statuses.filter((x) => x.status !== 'shield' || x.value > 0);
   const hpDmg = amount - absorbed;
   source.flags.dmgDealt = (source.flags.dmgDealt ?? 0) + absorbed + Math.min(hpDmg, Math.max(0, target.hp));
+  target.flags.dmgTaken = (target.flags.dmgTaken ?? 0) + absorbed + Math.min(hpDmg, Math.max(0, target.hp));
   target.hp -= hpDmg;
   s.events.push({ kind: 'damage', source: source.id, target: target.id, amount, crit: false, strong: false, weak: false, absorbed, ...(guarded ? { guarded } : {}) });
   if (target.hp <= 0) kill(s, target, source);
@@ -525,11 +529,12 @@ export function beginTurn(s: BattleState): Unit | null {
         let amount = Math.max(1, Math.round(u.base.hp * pct * (u.isBoss ? 0.5 : 1)));
         if (u.flags.dotCap) amount = Math.min(amount, Math.round((src ? eff(s, src, 'atk') : 1000) * 1.5));
         if (src) src.flags.dmgDealt = (src.flags.dmgDealt ?? 0) + Math.min(amount, Math.max(0, u.hp));
+        u.flags.dmgTaken = (u.flags.dmgTaken ?? 0) + Math.min(amount, Math.max(0, u.hp));
         u.hp -= amount;
         s.events.push({ kind: 'dot', target: u.id, amount, status: st.status });
         if (u.hp <= 0) kill(s, u, src ?? null);
       } else if (st.status === 'regen') {
-        heal(s, u, u.base.hp * st.value);
+        heal(s, u, u.base.hp * st.value, s.units.find((x) => x.id === st.sourceId) ?? null);
       }
     }
     if (u.alive && u.isBoss && u.side === 'enemy') {
@@ -546,7 +551,7 @@ export function beginTurn(s: BattleState): Unit | null {
       }
     }
     // Ensemble Pérennité : soin au début de chaque tour.
-    if (u.alive && u.flags.setRegen && u.hp < u.base.hp) heal(s, u, (u.base.hp * u.flags.setRegen) / 100);
+    if (u.alive && u.flags.setRegen && u.hp < u.base.hp) heal(s, u, (u.base.hp * u.flags.setRegen) / 100, u);
     // Passif d'Hesper : perturbe la jauge d'un ennemi.
     if (u.alive && hasSkill(u, 'hesper_3')) {
       const sk = u.skills.find((x) => x.id === 'hesper_3')!;
@@ -622,7 +627,7 @@ export function performAction(s: BattleState, action: Action): void {
         }
         break;
       case 'heal':
-        for (const t of targets) heal(s, t, t.base.hp * e.pctMaxHp * (1 + mods.heal));
+        for (const t of targets) heal(s, t, t.base.hp * e.pctMaxHp * (1 + mods.heal), actor);
         break;
       case 'shield':
         for (const t of targets) addStatus(s, t, 'shield', e.turns, actor.base.hp * (e.pctMaxHp + mods.shield), actor);

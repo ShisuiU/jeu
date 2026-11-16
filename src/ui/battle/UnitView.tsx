@@ -58,7 +58,8 @@ export function UnitView({ u, place, order = 0, vfx, focus, active, acting, hit,
       {edge === 1 && <span className="u-edge up">▲ +30 %</span>}
       {edge === -1 && <span className="u-edge down">▼ −20 %</span>}
       {vfx && <span key={vfx.id} className={`vfx ${vfx.cls}`} style={{ ['--vc' as string]: vfx.color }}><i /><i /><i /></span>}
-      {popups.map((p) => <span key={p.id} className={`popup ${p.cls}`}>{p.text}</span>)}
+      {/* Plusieurs chiffres en même temps (3e critique) : chacun décalé vers le haut et en alternance gauche / droite, plus de superposition. */}
+      {popups.map((p, i) => <span key={p.id} className={`popup ${p.cls}`} style={i ? { marginTop: `${-20 * i}px`, marginLeft: `${i % 2 ? 14 : -14}px` } : undefined}>{p.text}</span>)}
     </button>
   );
 }
@@ -66,7 +67,9 @@ export function UnitView({ u, place, order = 0, vfx, focus, active, acting, hit,
 function EffectChips({ u }: { u: Unit }) {
   if (!u.alive || !u.statuses.length) return <div className="u-fx" aria-hidden />;
   const list = groupStatuses(u.statuses).sort((a, b) => Number(STATUS_INFO[b.id].debuff) - Number(STATUS_INFO[a.id].debuff));
-  const shown = list.slice(0, 4);
+  // Une seule ligne (3e critique artistique) : 3 pastilles au plus ; à partir de 3 effets, icône + tours seulement (le détail reste au toucher).
+  const shown = list.slice(0, 3);
+  const compact = list.length > 2;
   return (
     <div className="u-fx" aria-label={list.map((g) => `${STATUS_INFO[g.id].name} ${statusValueText(g, u.isBoss)}, ${g.turns} tour${g.turns > 1 ? 's' : ''}`).join(' ; ')}>
       {shown.map((g) => {
@@ -74,7 +77,7 @@ function EffectChips({ u }: { u: Unit }) {
         const v = statusValueText(g, u.isBoss).replace(/^[+−]/, '').replace(' %', '%');
         return (
           <span key={g.id} className={`fx-chip ${STATUS_INFO[g.id].debuff ? 'neg' : 'pos'}`} style={{ ['--fc' as string]: STATUS_INFO[g.id].color }} title={`${STATUS_INFO[g.id].name} · ${statusDescription(g, u.isBoss)} · ${g.turns} tour${g.turns > 1 ? 's' : ''}`}>
-            <StatusIcon id={g.id} size={10} />{v && <i>{v}</i>}<b>{g.turns}</b>
+            <StatusIcon id={g.id} size={10} />{v && !compact && <i>{v}</i>}<b>{g.turns}</b>
           </span>
         );
       })}

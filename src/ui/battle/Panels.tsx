@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import type { SkillDef } from '../../data/types';
 import { SUMMON_MAX, TRAITS } from '../../data/enemyTraits';
 import { HERO_BY_ID } from '../../data/heroes';
@@ -36,32 +36,42 @@ export function SkillInfoBody({ unit, sk, onLaunch }: { unit: Unit; sk: SkillDef
 }
 
 /** Effets en cours, listés sous la carte avec leur valeur : néfastes d'abord (rouge), puis bénéfiques (vert), et les tours restants. */
+type StatKey = 'dmgDealt' | 'dmgTaken' | 'healDone';
+const STAT_LABEL: Record<StatKey, string> = { dmgDealt: 'Dégâts infligés', dmgTaken: 'Dégâts subis', healDone: 'Soins rendus' };
+const STAT_SHORT: Record<StatKey, string> = { dmgDealt: 'Dégâts', dmgTaken: 'Subis', healDone: 'Soins' };
 /** Récap de fin de combat : part des dégâts infligés par chaque héros (du plus gros au plus petit). */
 /** Héros du combat : part des dégâts (et, après une victoire, niveau et expérience gagnée) en une seule liste. */
 export function DamageRecap({ units, xp }: { units: Unit[]; xp?: { uid: string; heroId: string; xp: number; levelsGained: number; capped: boolean; level: number }[] }) {
   const save = useGame((st) => st.save);
   // Héros bloqué au plafond de son rang (test « nouveau joueur ») : on dit que le rang peut monter, au lieu d'un simple « max ».
   const canRank = (uid: string) => { const h = save?.heroes.find((y) => y.uid === uid); return !!(save && h && rankUpCheck(save, h).ok); };
+  // Statistique affichée (demande du joueur) : dégâts infligés, dégâts subis ou soins rendus. Le choix est retenu d'un combat à l'autre.
+  const [stat, setStat] = useState<StatKey>(() => { try { const v = localStorage.getItem('aeon-recap-stat'); return v === 'dmgTaken' || v === 'healDone' ? v : 'dmgDealt'; } catch { return 'dmgDealt'; } });
+  const pick = (k: StatKey) => { setStat(k); try { localStorage.setItem('aeon-recap-stat', k); } catch { /* */ } };
   const heroes = units.filter((u) => u.side === 'ally' && u.kind === 'hero');
-  const total = heroes.reduce((n, u) => n + (u.flags.dmgDealt ?? 0), 0);
-  if (!total && !xp?.length) return null;
-  const rows = [...heroes].sort((a, b) => (b.flags.dmgDealt ?? 0) - (a.flags.dmgDealt ?? 0));
-  const top = rows[0].flags.dmgDealt ?? 0;
+  const val = (u: Unit) => u.flags[stat] ?? 0;
+  const total = heroes.reduce((n, u) => n + val(u), 0);
+  if (!heroes.length || (!xp?.length && !heroes.some((u) => (u.flags.dmgDealt ?? 0) > 0))) return null;
+  const rows = [...heroes].sort((a, b) => val(b) - val(a));
+  const top = val(rows[0]);
   const fmt = (n: number) => (n >= 10000 ? `${Math.round(n / 1000)} k` : Math.round(n).toLocaleString('fr-FR'));
   return (
     <div className="dmg-recap">
       {/* v1.111.0 : légende des colonnes (le testeur prenait la barre de dégâts pour une barre d'XP). */}
-      <div className="dr-title row between"><span>{xp ? 'Tes héros' : 'Dégâts infligés'}</span>{xp && <span className="dr-legend">part des dégâts · total</span>}</div>
+      <div className="dr-title row between"><span>{xp ? 'Tes héros' : STAT_LABEL[stat]}</span><span className="dr-legend">part · total</span></div>
+      <div className="dr-tabs" role="tablist" aria-label="Statistique affichée">
+        {(Object.keys(STAT_LABEL) as StatKey[]).map((k) => <button key={k} role="tab" aria-selected={stat === k} className={stat === k ? 'on' : ''} onClick={() => pick(k)}>{STAT_SHORT[k]}</button>)}
+      </div>
       {rows.map((u, i) => {
-        const d = u.flags.dmgDealt ?? 0;
+        const d = val(u);
         const pct = total ? Math.round((d / total) * 100) : 0;
         const x = xp?.find((h) => h.uid === u.heroUid);
         return (
           <div key={u.id} className={`dr-row ${i === 0 ? 'mvp' : ''}`}>
             <div className="xp-ava"><HeroArt heroId={u.refId} /></div>
             <div className="grow">
-              <div className="row between"><b>{HERO_BY_ID[u.refId]?.name.split(/[ ,]/)[0] ?? u.name}{i === 0 && <span className="dr-mvp">Meilleur</span>}</b><span className="dr-pct">{pct} %</span></div>
-              <div className="dr-bar"><div style={{ width: `${top ? (d / top) * 100 : 0}%`, animationDelay: `${0.15 + i * 0.12}s` }} /></div>
+              <div className="row between"><b>{HERO_BY_ID[u.refId]?.name.split(/[ ,]/)[0] ?? u.name}{i === 0 && d > 0 && <span className="dr-mvp">{stat === 'dmgTaken' ? 'Rempart' : stat === 'healDone' ? 'Soigneur' : 'Meilleur'}</span>}</b><span className="dr-pct">{pct} %</span></div>
+              <div className={`dr-bar ${stat}`}><div style={{ width: `${top ? (d / top) * 100 : 0}%`, animationDelay: `${0.15 + i * 0.12}s` }} /></div>
               {x && <div className="dr-xp"><span className={x.levelsGained ? 'lvlup' : ''}>{x.levelsGained ? `Niv. ${x.level} ▲` : x.capped ? <>Niv. {x.level} {canRank(x.uid) ? <i className="dr-cap rank">max · rang possible ▲</i> : <i className="dr-cap">max</i>}</> : `Niv. ${x.level}`}</span>{x.capped && !x.levelsGained ? null : <span>+{x.xp} XP</span>}</div>}
             </div>
             <span className="faint dr-val">{fmt(d)}</span>

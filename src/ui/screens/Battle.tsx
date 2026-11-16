@@ -15,7 +15,7 @@ import { LIEN_MAX, LIEN_USES, type LienPower } from '../../game/battle/types';
 import { chooseAction } from '../../game/battle/ai';
 import { StatusIcon } from '../art/StatusIcon';
 import { STATUS_INFO, type Action, type BattleState, type Unit, type UnitSetup } from '../../game/battle/types';
-import { teamSetups } from '../../game/campaign';
+import { stageLockReason, teamSetups } from '../../game/campaign';
 import { CHAPTERS, STAGE_BY_ID } from '../../data/campaign';
 import { applyMode, nextSpec, payMode, resolveMode, type BattleSpec, type ModeResult } from '../../game/modes';
 import { play } from '../../audio/sfx';
@@ -474,7 +474,10 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
   };
   const next = result?.won ? nextSpec(useGame.getState().save!, spec) : null;
   // Fin de chapitre (test « nouveau joueur ») : pas de niveau suivant dans ce chapitre, on propose d'ouvrir le chapitre suivant.
-  const nextChapter = result?.won && !next && spec.mode === 'campaign' ? CHAPTERS.find((c) => c.n === (STAGE_BY_ID[spec.stageId]?.chapter ?? 0) + 1) : undefined;
+  const nextChapterDef = result?.won && !next && spec.mode === 'campaign' ? CHAPTERS.find((c) => c.n === (STAGE_BY_ID[spec.stageId]?.chapter ?? 0) + 1) : undefined;
+  // Seulement s'il est vraiment ouvert dans cette difficulté (sinon le bouton menait à un chapitre verrouillé) ; sinon on dit ce qui manque.
+  const nextChapterLock = nextChapterDef && spec.mode === 'campaign' ? stageLockReason(useGame.getState().save!, spec.difficulty, nextChapterDef.stages[0]) : null;
+  const nextChapter = nextChapterDef && !nextChapterLock ? nextChapterDef : undefined;
   const backTo = (): Route['name'] => ({ campaign: 'campaign', dungeon: 'dungeons', tower: 'tower', worldboss: 'worldboss', arena: 'arena', guildboss: 'guild', challenge: 'events', faction: 'factionDungeon', rift: 'rifts' } as const)[spec.mode];
   const cost = initial.info.cost;
 
@@ -677,6 +680,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
             {!result.won && result.accountXp ? <AccountXp big level={useGame.getState().save!.profile.level} xp={useGame.getState().save!.profile.xp} gain={result.accountXp} /> : null}
             {result.accountLevelsGained > 0 && <div className="chip active" style={{ margin: '10px auto 0', display: 'flex', width: 'fit-content' }}>Niveau de compte {useGame.getState().save!.profile.level} ! +2 000 or, énergie rechargée ({energyMax(useGame.getState().save!.profile.level)} max)</div>}
           </div>
+          {nextChapterLock && <p className="faint result-why" style={{ textAlign: 'center', margin: '10px 0 0' }}>{nextChapterLock}</p>}
           <div className="result-actions">
             <button className="btn secondary grow" onClick={() => popTo(backTo())}>Retour</button>
             {spec.mode !== 'tower' && spec.mode !== 'challenge' && spec.mode !== 'rift' && (

@@ -4,7 +4,7 @@ import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
 import { CHAPTERS, DIFFICULTIES, DIFFICULTY_ORDER, type DifficultyId } from '../../data/campaign';
 import { HERO_BY_ID } from '../../data/heroes';
-import { chapterStars, isStageUnlocked, stageEnergy, stageProgress } from '../../game/campaign';
+import { chapterStars, isStageUnlocked, stageEnergy, stageLockReason, stageProgress } from '../../game/campaign';
 import { InfoButton, Screen } from '../components/common';
 import { Icon } from '../art/Icons';
 import { BattleBackdrop } from '../art/BattleBackdrop';
@@ -87,7 +87,7 @@ export function Campaign() {
           const done = stageProgress(save, diff, x.stages[9].id).clears > 0;
           return (
             <button key={x.n} className={`chip ${chap === x.n ? 'active' : ''}`} style={open ? undefined : { opacity: 0.45 }}
-              onClick={() => (open ? setChap(x.n) : toast(`Chapitre ${x.n} : bats d’abord le boss du chapitre ${x.n - 1}.`))}>
+              onClick={() => (open ? setChap(x.n) : toast(stageLockReason(save, diff, x.stages[0]) ?? ''))}>
               {!open && <Icon.lock size={12} />}Ch. {x.n}{done && ' ✓'}
             </button>
           );
@@ -114,7 +114,7 @@ export function Campaign() {
           const p = stageProgress(save, diff, stage.id);
           return (
             <button key={stage.id} className={`stage-node ${unlocked ? '' : 'locked'} ${p.clears ? 'cleared' : ''} ${stage.boss ? 'boss' : ''}`}
-              onClick={() => unlocked ? push({ name: 'prep', spec: { mode: 'campaign', stageId: stage.id, difficulty: diff } }) : toast('Termine d’abord le niveau précédent.')}>
+              onClick={() => unlocked ? push({ name: 'prep', spec: { mode: 'campaign', stageId: stage.id, difficulty: diff } }) : toast(stageLockReason(save, diff, stage) ?? '')}>
               <span className="sn-idx">{stage.boss ? <Icon.skull size={20} /> : stage.index}</span>
               <div className="grow" style={{ textAlign: 'left', minWidth: 0 }}>
                 <div className="sn-name">{stage.name}</div>

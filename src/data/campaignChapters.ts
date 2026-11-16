@@ -11,6 +11,8 @@ interface ChapterCfg {
 /** Puissance des ennemis par chapitre (calibrée par simulation, voir tests/balance.chapters.test.ts). */
 const POWER: Record<number, number> = { 2: 1.6, 3: 1.85, 4: 2.55, 5: 2.45, 6: 2.72, 7: 2.7, 8: 3.15, 9: 3.3 };
 /** Ajustement du boss (certains kits sont plus redoutables que d'autres). */
+/** Chapitres dont l'élite est assez forte pour qu'une seule suffise en fin de chapitre (simulation : sinon plus dur que le chapitre suivant). */
+const ONE_ELITE = new Set([2, 6]);
 const BOSS_ADJ: Record<number, number> = { 2: 0.8, 3: 0.8, 4: 0.62, 5: 0.75, 6: 0.74, 7: 0.84, 8: 0.72, 9: 0.78 };
 export const CHAPTER_POWER = (n: number, i: number) => Math.round(POWER[n] * (1 + (i - 1) * 0.01) * (i === 10 ? BOSS_ADJ[n] : 1) * 100) / 100;
 
@@ -26,12 +28,13 @@ function buildStages(c: ChapterCfg): StageDef[] {
     let waves: WaveEnemy[][];
     if (boss) waves = [[W(a, lv, 0), W(b, lv, 1), W(a, lv, 2), W(d, lv, 3)], [W(c.boss, lv + 1, 1, 4 + c.n * 0.1), W(d, lv, 3), W(c.elite, lv, 4)]];
     else if (i <= 3) waves = [[W(a, lv, 0), W(b, lv, 1), W(a, lv, 2)], [W(b, lv, 0), W(d, lv, 3), W(a, lv, 2)]];
-    // v1.110.0 : au chapitre 2 (premier mur d'un débutant, 4 héros de départ), pas d'élite avant le 2-7 :
+    // v1.110.0 : au chapitre 2 (premier mur d'un débutant, 4 héros de départ), pas d'élite avant le 2-7 (v1.112.0 : chapitre 3 aussi,
+    // son élite faisait passer le niveau requis de 9 au 3-3 à 19 au 3-5) :
     // avec le Chevalier, le 2-4 demandait le niveau 21 contre 12 pour le 2-3 (simulation) ; avec un Traqueur, 15.
-    else if (i <= 6) waves = [[W(a, lv, 0), W(b, lv, 1), W(d, lv, 3)], [W(c.n === 2 ? b : c.elite, lv, 1), W(a, lv, 0), W(a, lv, 2), W(d, lv, 4)]];
-    // Mission « nouveau joueur » (simulation, 4 héros de départ) : au chapitre 2, deux élites rendaient les 2-7 à 2-9 plus durs
-    // que le début du chapitre 3 (niveau 27-28 requis contre 20 au 3-1) ; une seule élite, au niveau de la vague.
-    else if (c.n === 2) waves = [[W(a, lv, 0), W(b, lv, 1), W(a, lv, 2), W(d, lv, 3)], [W(c.elite, lv, 0), W(b, lv, 1), W(a, lv, 2), W(d, lv, 4)]];
+    else if (i <= 6) waves = [[W(a, lv, 0), W(b, lv, 1), W(d, lv, 3)], [W(c.n <= 3 ? b : c.elite, lv, 1), W(a, lv, 0), W(a, lv, 2), W(d, lv, 4)]];
+    // Simulation (v1.111/v1.112) : aux chapitres 2 et 6, deux élites rendaient les niveaux 7 à 9 plus durs que le chapitre suivant
+    // (2-9 : niveau 28 contre 20 au 3-1 ; 6-9 : 56 contre 41 au 8-1) ; une seule élite, au niveau de la vague.
+    else if (ONE_ELITE.has(c.n)) waves = [[W(a, lv, 0), W(b, lv, 1), W(a, lv, 2), W(d, lv, 3)], [W(c.elite, lv, 0), W(b, lv, 1), W(a, lv, 2), W(d, lv, 4)]];
     else waves = [[W(a, lv, 0), W(b, lv, 1), W(a, lv, 2), W(d, lv, 3)], [W(c.elite, lv + 1, 0), W(b, lv, 1), W(c.elite, lv + 1, 2), W(d, lv, 4)]];
     const firstClear: Reward & { heroes?: string[] } = { gold: 4000 + c.n * 1000 + i * 300, crystals: boss ? 200 : 40 };
     if (i % 3 === 0) firstClear.shardDim = 2;

@@ -57,7 +57,7 @@ export function DamageRecap({ units, xp }: { units: Unit[]; xp?: { uid: string; 
             <div className="grow">
               <div className="row between"><b>{HERO_BY_ID[u.refId]?.name.split(/[ ,]/)[0] ?? u.name}{i === 0 && <span className="dr-mvp">Meilleur</span>}</b><span className="dr-pct">{pct} %</span></div>
               <div className="dr-bar"><div style={{ width: `${top ? (d / top) * 100 : 0}%`, animationDelay: `${0.15 + i * 0.12}s` }} /></div>
-              {x && <div className="dr-xp"><span className={x.levelsGained ? 'lvlup' : ''}>{x.levelsGained ? `Niv. ${x.level} ▲` : x.capped ? 'Niveau max' : `Niv. ${x.level}`}</span>{x.capped && !x.levelsGained ? null : <span>+{x.xp} XP</span>}</div>}
+              {x && <div className="dr-xp"><span className={x.levelsGained ? 'lvlup' : ''}>{x.levelsGained ? `Niv. ${x.level} ▲` : x.capped ? <>Niv. {x.level} <i className="dr-cap">max</i></> : `Niv. ${x.level}`}</span>{x.capped && !x.levelsGained ? null : <span>+{x.xp} XP</span>}</div>}
             </div>
             <span className="faint dr-val">{fmt(d)}</span>
           </div>

@@ -710,3 +710,8 @@ select.prep-team { min-height: 40px; }
 .badge-dot.soft { background: #ffcf6a !important; box-shadow: 0 0 6px rgba(255, 207, 106, 0.7) !important; }
 /* Tuiles du Menu : centrées (plus de trous à droite). */
 .menu-grid, .menu-tiles { justify-content: center; }
+/* Démanteler armé (mission nocturne) : le second toucher confirme. */
+.btn.danger.armed { filter: brightness(1.25) saturate(1.2); animation: armedPulse 0.9s ease-in-out infinite; }
+@keyframes armedPulse { 50% { filter: brightness(1.5) saturate(1.3); } }
+.reduced-motion .btn.danger.armed { animation: none; }
+.dr-xp .dr-cap { font-style: normal; font-size: var(--fs-2xs); color: var(--text-faint); letter-spacing: 0.06em; text-transform: uppercase; }

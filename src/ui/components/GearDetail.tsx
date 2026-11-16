@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Icon } from '../art/Icons';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
@@ -68,6 +69,9 @@ export function GearDetail({ gearUid, onClose, equipTo, place = 'hero', onReplac
   const save = useGame((s) => s.save)!;
   const mutate = useGame((s) => s.mutate);
   const toast = useUI((s) => s.toast);
+  // Démanteler est définitif : un premier toucher arme le bouton, un second (dans les 3 s) confirme.
+  const [armed, setArmed] = useState(false);
+  useEffect(() => { if (!armed) return; const t = setTimeout(() => setArmed(false), 3000); return () => clearTimeout(t); }, [armed]);
   const g = save.equipment.find((x) => x.uid === gearUid);
   if (!g) return null;
   const r = GEAR_RARITIES[g.rarity];
@@ -158,7 +162,7 @@ export function GearDetail({ gearUid, onClose, equipTo, place = 'hero', onReplac
         {owner && <button className="btn secondary grow" onClick={() => { mutate((s) => unequipGear(s, g.uid)); onClose(); }}>Retirer</button>}
         <button className="btn secondary grow" onClick={() => mutate((s) => { const x = s.equipment.find((y) => y.uid === g.uid); if (x) x.locked = !x.locked; })}>{g.locked ? 'Déverrouiller' : 'Verrouiller'}</button>
         {place === 'forge' && !owner && !g.locked && (
-          <button className="btn danger grow" onClick={() => { mutate((s) => { dismantleGear(s, g.uid); }); toast(`Démantelé : +${dis.gold} or, +${dis.forgeOre} minerai.`, 'ok'); onClose(); }}>Démanteler</button>
+          <button className={`btn danger grow ${armed ? 'armed' : ''}`} onClick={() => { if (!armed) { setArmed(true); return; } mutate((s) => { dismantleGear(s, g.uid); }); toast(`Démantelé : +${dis.gold} or, +${dis.forgeOre} minerai.`, 'ok'); onClose(); }}>{armed ? 'Confirmer ?' : 'Démanteler'}</button>
         )}
       </div>
     </Modal>

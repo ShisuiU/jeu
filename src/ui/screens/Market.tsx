@@ -66,7 +66,7 @@ export function Market() {
               <div className="mk-art">
                 {x.gear ? <GearCard g={x.gear} /> : def && <><ResourceIcon icon={def.icon} color={def.color} size={40} res={def.id} /><b className="mk-qty">×{res![1]}</b></>}
               </div>
-              <div className="mk-name">{x.gear ? GEAR_RARITIES[x.gear.rarity].name : def?.name}</div>
+              <div className="mk-name" style={x.gear ? { color: GEAR_RARITIES[x.gear.rarity].color } : undefined}>{x.gear ? SLOT_BY_ID[x.gear.slot].name : def?.name}</div>
               {x.bought ? <span className="mk-sold">Acheté</span> : <PriceTag o={x} enough={has(x)} />}
             </button>
           );

@@ -151,7 +151,7 @@ export function GearDetail({ gearUid, onClose, equipTo, place = 'hero', onReplac
         <div className="gd-pick">
           <div className="faint" style={{ marginBottom: 6 }}>Équiper sur :</div>
           <div className="row wrap" style={{ gap: 6 }}>
-            {[...save.heroes].sort((a, b) => b.level - a.level).slice(0, 8).map((h) => {
+            {(() => { const team = new Set((save.teams.find((t) => t.id === save.activeTeamId) ?? save.teams[0])?.slots ?? []); return [...save.heroes].sort((a, b) => Number(team.has(b.uid)) - Number(team.has(a.uid)) || b.level - a.level); })().slice(0, 8).map((h) => {
               const cur = save.equipment.find((x) => x.heroUid === h.uid && x.slot === g.slot);
               return <button key={h.uid} className="chip" onClick={() => { mutate((s) => { equipGear(s, g.uid, h.uid); }); play('claim'); toast(`Équipé sur ${HERO_BY_ID[h.heroId].name.split(/[ ,]/)[0]}${cur ? ' (l’ancien objet retourne au sac)' : ''}.`, 'ok'); onClose(); }}>{HERO_BY_ID[h.heroId].name.split(/[ ,]/)[0]} · Nv {h.level}{cur ? '' : ' · vide'}</button>;
             })}

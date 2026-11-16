@@ -476,7 +476,7 @@ body:has(.battle-controls) .toast { font-size: var(--fs-sm); padding-top: 7px; p
 .cer:not(.ph0) .cer-title { animation: celeTitle .6s cubic-bezier(.2,1.3,.4,1) .1s backwards; }
 .cer-pips { display: flex; justify-content: center; gap: 7px; margin-top: 6px; }
 .cer-pips i { width: 14px; height: 14px; transform: rotate(45deg); border: 1.5px solid color-mix(in srgb, var(--cc) 55%, transparent); background: rgba(0,0,0,.4); border-radius: var(--r-sm); }
-.cer-pips.p-rank i { clip-path: polygon(50% 0, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); transform: none; width: 18px; height: 18px; border: 0; background: rgba(255,255,255,.18); border-radius: 0; }
+/* Rang : losanges (les étoiles sont réservées à la rareté et à la campagne ; v1.111.0). */
 .cer-pips i.on { background: var(--cc); border-color: var(--cc); box-shadow: 0 0 8px var(--cg); }
 .cer-pips i.new { animation: cerPip .7s cubic-bezier(.2,1.6,.4,1) .45s backwards; }
 @keyframes cerPip { from { scale: 3; opacity: 0; filter: brightness(3); } }
@@ -558,8 +558,8 @@ body:has(.battle-controls) .toast { font-size: var(--fs-sm); padding-top: 7px; p
 .pc-stats > div { border: 1px solid var(--line-2) !important; border-image: none !important; background: var(--surface-2) !important; border-radius: var(--r-sm) !important; }
 .pc-stats > div span { white-space: nowrap; overflow: hidden; text-overflow: clip; }
 /* 5. Boutons secondaires neutres : l'or ne marque que l'action principale. */
-.theme-v2 .btn.secondary, .theme-v2 .btn.small.secondary { border: 1px solid rgba(255, 255, 255, 0.14) !important; border-image: none !important; background: rgba(255, 255, 255, 0.06) !important; border-radius: var(--r-pill) !important; color: var(--text) !important; box-shadow: none !important; text-shadow: none !important; }
-.theme-v2 .btn.secondary:active { background: rgba(255, 255, 255, 0.1) !important; }
+.theme-v2 .btn.secondary, .theme-v2 .btn.small.secondary { border: 1px solid rgba(217, 192, 138, 0.30) !important; border-image: none !important; background: linear-gradient(180deg, #2b2331, #17121d) !important; border-radius: var(--r-pill) !important; color: #efe3c8 !important; box-shadow: inset 0 1px 0 rgba(255, 236, 200, 0.10), 0 2px 6px rgba(0, 0, 0, 0.45) !important; text-shadow: 0 1px 1px rgba(0, 0, 0, 0.6) !important; }
+.theme-v2 .btn.secondary:active { background: linear-gradient(180deg, #342a3b, #1d1724) !important; border-color: rgba(217, 192, 138, 0.5) !important; }
 .m-go { color: var(--text); border-color: rgba(255, 255, 255, 0.16); background: rgba(255, 255, 255, 0.05); }
 /* 6. Événements : le compteur de points d'un objectif est neutre ; l'or reste pour l'étape prête. */
 .wk-pts { color: var(--text); background: var(--surface-2); border-color: var(--line-1); }
@@ -625,3 +625,172 @@ body:has(.battle-controls) .toast { font-size: var(--fs-sm); padding-top: 7px; p
 .formation .slot.picking { border-color: var(--gold-hi); }
 /* Portraits ronds (adversaires d'Arène, récapitulatifs) : filet neutre ; l'or reste au meilleur héros du combat. */
 .xp-ava { border-color: var(--line-1); }
+.daily-cell .d-more { font-size: var(--fs-2xs); color: var(--text-dim); }
+.prep-sweep.off { opacity: 0.5; filter: grayscale(0.6); }
+.dr-legend { font-size: var(--fs-2xs); font-weight: 600; letter-spacing: 0.04em; text-transform: none; color: var(--text-faint); }
+.cc-stars .cc-next { color: #fff3d6; font-weight: 800; letter-spacing: 0.02em; }
+.cc-stars .cc-sep { display: inline-block; width: 1px; height: 0.9em; margin: 0 8px; vertical-align: -1px; background: currentColor; opacity: 0.4; }
+
+/* ─── Audit mobile 3 tailles (v1.111.0, mission nocturne) ─── */
+/* 1. Accueil 320 px : le nom du joueur et son XP ne sont plus écrasés par les compteurs. */
+@media (max-width: 360px) {
+  .home .topbar .pill small { display: none; }
+  .home .topbar .avatar-btn { flex: 1 0 104px; min-width: 104px; }
+}
+/* 2. Préparation 320 px : « Répéter » garde son icône (il était vide). */
+@media (max-width: 360px) {
+  .theme-v2 .btn.secondary.prep-sweep > svg { display: inline-block !important; }
+  .theme-v2 .btn.secondary.prep-sweep { min-width: 48px; }
+}
+/* 3. Combat sur écran peu haut : la scène descend sous l'ordre des tours, le titre tient sur une ligne. */
+.battle .battle-stage { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 62vw; }
+@media (max-height: 600px) { .battle .cam25 { margin-top: 26px; } }
+/* 4. Forge 320 px : la grille d'équipement ne déborde plus (« Gants » coupé, défilement horizontal). */
+.gear-slots { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+/* 5. Titres d'écran sur petit écran : cadre peint plus étroit, taille réduite. */
+@media (max-width: 360px) {
+  .theme-v2 .screen-header h1 { border-width: 0 22px !important; border-image-width: 0 22px !important; font-size: var(--fs-lg) !important; }
+  .theme-v2 .screen-header h1.long { font-size: var(--fs-sm) !important; }
+}
+/* 6. Fin de combat : « Rejouer ⚡2 » tient dans son bouton ; fond des boutons opaque. */
+.result-actions .btn { padding: 0 4px; letter-spacing: 0; white-space: nowrap; }
+@media (max-width: 400px) { .result-actions .btn { font-size: var(--fs-sm); } }
+.result-actions { background: linear-gradient(180deg, rgba(5, 4, 8, 0.6), #050408 16px) !important; }
+/* 7. Préparation 320 px : les trois règles d'étoiles passent à la ligne au lieu d'être coupées. */
+@media (max-width: 360px) { .star-rules { flex-wrap: wrap !important; overflow: visible !important; } }
+/* 8. Bande d'équipe de la préparation : noms coupés proprement ; sélecteur d'équipe à 40 px. */
+.prep-team-strip .hero-card .name .n-short { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: 0; }
+@media (max-width: 400px) { .prep-team-strip .hero-card .name .n-short { font-size: var(--fs-2xs); } }
+select.prep-team { min-height: 40px; }
+/* 9-15. Zones de toucher ≥ 40 px (dessin inchangé, zone agrandie par un pseudo-élément). */
+.setting-row input[type='range'] { height: 40px; }
+/* .wk-node et .modal-x restent en position absolue (leur ::before agrandit la zone de toucher quand même). */
+.hs-upgrade, .forge-res button, .wallet > .wallet-item, .lc-btn { position: relative; }
+.hs-upgrade::before { content: ''; position: absolute; inset: -8px -4px; }
+.forge-res button::before { content: ''; position: absolute; inset: -7px -4px; }
+.wallet > .wallet-item::before { content: ''; position: absolute; inset: -6px 0; }
+.wk-node::before { content: ''; position: absolute; inset: -6px; border-radius: 50%; }
+.modal-x::before { content: ''; position: absolute; inset: -6px; }
+.ul-act .btn { min-height: 40px; }
+.theme-v2 .ctrl-col { gap: 2px; }
+.theme-v2 .ctrl-col .ctrl { height: 33px !important; }
+.theme-v2 .seg button { height: 40px; }
+.lc-btn { min-height: 40px; }
+/* Invocation 320 px : le texte de garantie ne se lit plus à travers la barre d'appel. */
+.theme-v2 .summon-bar { background: linear-gradient(180deg, rgba(10, 8, 14, 0.75) 0, rgba(10, 8, 14, 0.96) 12px, rgba(9, 7, 13, 0.98)); }
+.wheel-halo { max-width: 100%; }
+/* Arène 320 px : les boutons d'en-tête passent en icône seule (libellé lu par aria-label) pour laisser le titre lisible. */
+@media (max-width: 360px) { .screen-header .btn .hb-lbl { display: none; } .screen-header .btn.small { min-width: 40px; } }
+.feed-slot.off { opacity: 0.45; }
+.btn.off { opacity: 0.55; filter: grayscale(0.5); }
+
+/* ─── Critique « finition commerciale » (v1.111.0, mission nocturne) ─── */
+/* Panneaux : le liseré pointillé (effet maquette) devient un filet intérieur à peine visible. */
+.theme-v2 .panel::before { border: 1px solid rgba(217, 192, 138, 0.07) !important; inset: 4px !important; }
+/* Bouton désactivé : clairement éteint (il se confondait avec un bouton secondaire « argent »). */
+.theme-v2 .btn:disabled { filter: saturate(0.15) brightness(0.78) !important; opacity: 0.85; color: #e2d9c8 !important; text-shadow: 0 1px 2px rgba(0,0,0,0.9) !important; }
+.theme-v2 .btn:disabled svg, .theme-v2 .btn:disabled img { opacity: 0.85; }
+/* Chiffres de dégâts : plus grands, détourés, lisibles sur les visages. */
+.popup.dmg { font-size: 20px; -webkit-text-stroke: 0.8px rgba(0, 0, 0, 0.85); paint-order: stroke fill; }
+.popup.dmg.crit { font-size: 25px; }
+.u-fx, .u-effects, .eff-chips { flex-wrap: wrap; gap: 3px; }
+/* Notifications : liseré et pastille de couleur selon le type. */
+.theme-v2 .toast { border-left: 3px solid var(--gold); border-radius: var(--r-md); padding-left: 10px; }
+.theme-v2 .toast.ok { border-left-color: #6fe39a; }
+.theme-v2 .toast.error { border-left-color: #e05a4a; }
+.toast-ic { flex: none; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-weight: 900; font-size: 12px; background: rgba(217, 179, 106, 0.18); color: var(--gold-hi); }
+.toast.ok .toast-ic { background: rgba(111, 227, 154, 0.18); color: #6fe39a; }
+.toast.error .toast-ic { background: rgba(224, 90, 74, 0.2); color: #ff8a7a; }
+/* Campagne : l'illustration du chapitre reste dans son cadre doré. */
+.theme-v2 .chapter-card .battle-bg, .theme-v2 .chapter-card .chapter-boss { clip-path: inset(0 round 6px); }
+/* Préparation : la barre d'action ne laisse plus voir les cartes en transparence ; « Répéter » indisponible reste lisible. */
+.theme-v2 .prep-bar { background: linear-gradient(180deg, rgba(10, 8, 14, 0) 0, rgba(10, 8, 14, 0.97) 12px, rgba(9, 7, 13, 0.99)) !important; }
+.prep-sweep.off { opacity: 1; filter: none; color: #8a8072; }
+/* Accueil : toutes les étiquettes à la même taille ; pastille secondaire en or vif (elle passait pour un rivet). */
+.hs-label.long { font-size: 17cqw; }
+.badge-dot.soft { background: #ffcf6a !important; box-shadow: 0 0 6px rgba(255, 207, 106, 0.7) !important; }
+/* Tuiles du Menu : centrées (plus de trous à droite). */
+.menu-grid, .menu-tiles { justify-content: center; }
+/* Démanteler armé (mission nocturne) : le second toucher confirme. */
+.btn.danger.armed { filter: brightness(1.25) saturate(1.2); animation: armedPulse 0.9s ease-in-out infinite; }
+@keyframes armedPulse { 50% { filter: brightness(1.5) saturate(1.3); } }
+.reduced-motion .btn.danger.armed { animation: none; }
+.dr-xp .dr-cap { font-style: normal; font-size: var(--fs-2xs); color: var(--text-faint); letter-spacing: 0.06em; text-transform: uppercase; }
+.menu-tile.kit > span:not(.badge-dot) { white-space: nowrap; }
+.forge-empty { display: flex; align-items: center; gap: 10px; margin-top: 10px; padding: 10px 12px; border-radius: var(--r-md); background: var(--surface-1); border: 1px solid var(--line-1); font-size: var(--fs-sm); color: var(--text-dim); }
+.forge-empty span { flex: 1; }
+/* Cases vides : un seul style partout (fiche héros = Forge) : pointillé gris sur fond sombre, icône du type d'objet. */
+.gear-card.empty { border: 1px solid #3a3242 !important; border-image: none !important; background: rgba(10,9,14,0.72) !important; box-shadow: none !important; color: #6f6878; border-radius: var(--r-lg); }
+
+/* Recritique DA (v1.111.1) */
+/* Ruban « Chef » : une seule ligne, texte lisible sur le ruban. */
+.prep-lead.on { white-space: nowrap; height: 18px; line-height: 18px !important; min-width: 70px; text-align: center; padding: 0 8px !important; overflow: visible; }
+/* Répéter : même famille que Combattre (bouton peint), pas une pilule grise. */
+.theme-v2 .btn.secondary.prep-sweep { border: solid transparent !important; border-width: 0 22px !important; border-image: url('../assets/kit/p_btn_repeat.webp') 0 18% 0 18% fill / 0 22px stretch !important; background: none !important; border-radius: 0 !important; color: #f1e4c6 !important; text-shadow: 0 1px 2px rgba(0,0,0,0.85) !important; padding-left: 8px !important; padding-right: 8px !important; }
+/* Barre de préparation : fond opaque, le panneau Récompenses ne transparaît plus. */
+.theme-v2 .prep-bar { background: linear-gradient(180deg, rgba(10, 8, 14, 0) 0, rgb(10, 8, 14) 14px, rgb(9, 7, 13)) !important; }
+.mk-name .mk-set { display: block; font-size: var(--fs-2xs); font-weight: 600; color: var(--text-dim); letter-spacing: 0.02em; }
+/* Onglets qui défilent : fondu sur le bord droit pour montrer qu'il y en a d'autres, au lieu d'un mot coupé net. */
+/* (classe .ovf posée par ui/segOverflow.ts) */
+.seg.ovf { -webkit-mask-image: linear-gradient(90deg, #000 78%, transparent); mask-image: linear-gradient(90deg, #000 78%, transparent); scroll-padding-inline: 16px; }
+/* Toasts : une largeur commune, pile alignée. */
+.toast { width: min(340px, 88vw); box-sizing: border-box; }
+.wl-in { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.wl-in.flip { transform: rotate(180deg); }
+/* Combat : pastilles d'effets deux par ligne (l'écart de 3 px les forçait une par ligne, empilées sur les noms). */
+.stage25 .unit .u-fx { gap: 2px; }
+.stage25 .unit .u-fx .fx-chip { flex: 0 1 calc(50% - 1px); }
+.stage25 .unit .u-fx .fx-chip:only-child { flex: 0 1 auto; }
+/* Ennemis lisibles sur les décors clairs (désert) : ombre portée sous la silhouette. */
+.stage25 .unit.enemy .u-art { background: radial-gradient(ellipse 52% 56% at 50% 50%, rgba(8, 5, 10, 0.55), rgba(8, 5, 10, 0.25) 60%, transparent 75%) !important; } /* halo sombre (pas de filtre : léger pour le téléphone) */
+/* Écran de résultat (recritique DA) : plus de grande bande vide ; le bloc entier est centré et les boutons suivent le récapitulatif.
+   Victoire : halo chaud et rayons de lumière lents derrière le titre (fixes avec « Animations réduites »). */
+.result-overlay .result-body { flex: 0 0 auto; }
+.result-overlay > .result-title { margin-top: auto; }
+.result-overlay::after { content: ''; margin-top: auto; }
+.theme-v2 .result-actions .btn.secondary { border: solid transparent !important; border-width: 0 13px !important; border-image: url('../assets/kit/pill_dark.webp') 0 10% 0 10% fill / 0 13px stretch !important; background: none !important; border-radius: 0 !important; color: #f1e4c6 !important; min-height: 48px; }
+.result-overlay.won { background: radial-gradient(120% 60% at 50% 0%, rgba(120, 78, 22, 0.55), rgba(5, 4, 8, 0) 60%), rgba(5, 4, 8, 0.97); }
+.result-overlay.won .result-title::before { content: ''; position: absolute; left: 50%; top: 50%; width: 560px; height: 560px; margin: -280px 0 0 -280px; pointer-events: none; z-index: -1;
+  background: repeating-conic-gradient(from 0deg, rgba(255, 214, 140, 0.13) 0deg 7deg, transparent 7deg 22deg);
+  -webkit-mask-image: radial-gradient(circle, #000 0%, rgba(0,0,0,0.6) 30%, transparent 62%); mask-image: radial-gradient(circle, #000 0%, rgba(0,0,0,0.6) 30%, transparent 62%);
+  animation: resRays 40s linear infinite; }
+.result-overlay.won > * { position: relative; }
+.result-overlay.won > .result-actions { position: sticky; }
+@keyframes resRays { to { transform: rotate(360deg); } }
+.reduced-motion .result-overlay.won .result-title::before { animation: none; }
+@media (prefers-reduced-motion: reduce) { .result-overlay.won .result-title::before { animation: none; } }
+.result-actions .btn svg { flex-shrink: 0; }
+.theme-v2 .result-actions .btn.secondary { padding: 0 2px !important; gap: 3px; }
+.result-actions .btn.secondary:first-child { flex: 0.8 1 0; }
+/* Cases vides (recritique DA) : creusées dans le cadre plutôt qu'en pointillé de maquette. */
+.gear-card.empty, .sc-slot.empty { box-shadow: inset 0 2px 8px rgba(0,0,0,0.75), inset 0 0 0 1px rgba(217,192,138,0.06) !important; background: linear-gradient(180deg, rgba(8,6,12,0.85), rgba(20,16,26,0.8)) !important; }
+.sc-slot.empty { border: 1px solid #3a3242 !important; }
+.gear-card.empty svg, .sc-slot.empty svg { opacity: 0.45; }
+.gd-equip-top { margin-top: 12px; }
+.gd-pick { margin-top: 12px; padding: 10px; border-radius: var(--r-md); background: var(--surface-1); border: 1px solid var(--line-1); }
+/* Une seule famille de boutons secondaires : « Y aller », « Améliorer » (fiche héros) reprennent le style des boutons secondaires. */
+.theme-v2 .m-go, .theme-v2 .hs-upgrade { border: 1px solid rgba(217, 192, 138, 0.30) !important; background: linear-gradient(180deg, #2b2331, #17121d) !important; border-radius: var(--r-pill) !important; color: #efe3c8 !important; box-shadow: inset 0 1px 0 rgba(255, 236, 200, 0.10), 0 2px 6px rgba(0, 0, 0, 0.45); }
+.theme-v2 .coach-actions .coach-ok { border-radius: var(--r-pill); }
+/* Bulle d'aide : un toucher sur le voile fait pulser la cible et la bulle (le jeu répond, il montre où toucher). */
+.coach.nudge .coach-ring { animation: coachNudge 0.5s ease-out; }
+.coach.nudge .coach-bubble { animation: coachNudgeB 0.4s ease-out; }
+@keyframes coachNudge { 0% { box-shadow: 0 0 0 2px var(--gold-hi), 0 0 0 0 rgba(255, 211, 107, 0.9); } 100% { box-shadow: 0 0 0 2px var(--gold-hi), 0 0 0 18px rgba(255, 211, 107, 0); } }
+@keyframes coachNudgeB { 30% { transform: translateX(-5px); } 60% { transform: translateX(5px); } 100% { transform: none; } }
+.wheel-odds { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 14px; }
+.wo-row { display: flex; align-items: center; gap: 8px; font-size: var(--fs-sm); padding: 3px 0; border-bottom: 1px solid var(--line-1); }
+.wo-row b { font-variant-numeric: tabular-nums; color: var(--text-dim); font-weight: 700; }
+.wo-row.rare span, .wo-row.rare b { color: #ff7f9b; }
+/* Petits écrans (iPhone SE, 320 px) : titres d'écran et boutons du résultat sans coupure. */
+@media (max-width: 345px) {
+  .theme-v2 .screen-header h1:not(.long) { font-size: var(--fs-md) !important; letter-spacing: 0.02em; }
+  .theme-v2 .result-actions .btn { font-size: var(--fs-xs) !important; }
+  .theme-v2 .result-actions .btn.secondary { border-width: 0 9px !important; }
+  .result-actions { gap: 5px; }
+}
+.dr-xp .dr-cap.rank { color: var(--gold-hi); }
+/* Bulles d'aide (troisième test « nouveau joueur ») : voile plus léger, l'écran reste lisible (ennemis, récompenses dont la bulle parle) ;
+   bulle plus compacte pour cacher moins de contenu. */
+.coach-veil { background: rgba(3, 2, 6, 0.48) !important; }
+.coach-bubble { padding: 9px 12px 8px !important; }
+.coach-bubble p { font-size: var(--fs-md) !important; margin-bottom: 6px !important; }
+.coach-actions .coach-ok { min-height: 34px !important; min-width: 72px !important; }

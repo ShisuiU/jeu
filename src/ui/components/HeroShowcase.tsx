@@ -117,7 +117,6 @@ export function HeroShowcase({ heroId, h, below }: { heroId: string; h?: HeroIns
               );
             })}
           </div>
-          <button className="btn secondary block" style={{ marginTop: 12 }} onClick={() => setSetsOpen(false)}>Fermer</button>
         </Modal>
       )}
 
@@ -126,7 +125,6 @@ export function HeroShowcase({ heroId, h, below }: { heroId: string; h?: HeroIns
           <h2>{SLOTS.find((s) => s.id === pick)!.name}</h2>
           {candidates.length === 0 && <p className="muted" style={{ textAlign: 'center' }}>Aucun objet de ce type pour l’instant.</p>}
           <GearBySet items={candidates} render={(g) => <GearCard key={g.uid} g={g} owner={g.heroUid ? owners[g.heroUid] : undefined} onClick={() => { setOpen(g.uid); setPick(null); }} />} />
-          <button className="btn secondary block" style={{ marginTop: 12 }} onClick={() => setPick(null)}>Fermer</button>
         </Modal>
       )}
       {open && h && <GearDetail gearUid={open} equipTo={h.uid} onClose={() => setOpen(null)}

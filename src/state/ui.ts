@@ -17,8 +17,8 @@ export type Route =
   | { name: 'campaign' }
   | { name: 'summon' }
   | { name: 'mail' }
-  | { name: 'gear'; gearUid?: string }
-  | { name: 'sanctuary'; uid?: string }
+  | { name: 'gear'; gearUid?: string; tab?: 'upgrade' | 'dismantle' }
+  | { name: 'sanctuary'; uid?: string; tab?: 'level' | 'rank' | 'ascend' | 'skills' | 'mastery' }
   | { name: 'stage'; stageId: string }
   | { name: 'prep'; spec: BattleSpec }
   | { name: 'battle'; spec: BattleSpec; teamId: string; seed: number; guest?: import('../game/battle/types').UnitSetup }
@@ -29,8 +29,8 @@ export type Route =
   | { name: 'tower' }
   | { name: 'worldboss' }
   | { name: 'arena' }
-  | { name: 'missions' }
-  | { name: 'events' }
+  | { name: 'missions'; tab?: 'daily' | 'weekly' | 'progress' }
+  | { name: 'events'; eventId?: string }
   | { name: 'combats' }
   | { name: 'expeditions' }
   | { name: 'market' }

@@ -13,3 +13,7 @@ export const MAIL: MailDef[] = [
 ];
 
 export const mailFlag = (id: string) => `mail_${id}`;
+
+/** Courrier non lu (ici plutôt que dans l'écran Courrier : la barre du bas et l'Accueil n'importent plus cet écran,
+ *  qui peut ainsi se charger à la demande, avec l'écran Amis qu'il utilise). */
+export const unreadMail = (flags: Record<string, boolean>) => MAIL.some((m) => !flags[mailFlag(m.id)]);

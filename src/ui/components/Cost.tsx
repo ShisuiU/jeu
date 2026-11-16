@@ -3,6 +3,7 @@ import type { Cost } from '../../game/upgrade';
 import type { SaveData } from '../../save/schema';
 import { ResourceIcon, Icon } from '../art/Icons';
 import { fmt } from './common';
+import { GetButton } from './Sources';
 
 /** Affiche un coût ; en rouge ce que le joueur ne possède pas en quantité suffisante. */
 export function CostView({ cost, save, heroId }: { cost: Cost; save: SaveData; heroId?: string }) {
@@ -16,7 +17,8 @@ export function CostView({ cost, save, heroId }: { cost: Cost; save: SaveData; h
         }
         const def = RESOURCES[k as keyof typeof RESOURCES];
         const have = save.resources[k as keyof typeof save.resources] ?? 0;
-        return <span key={k} className={have < v ? 'lack' : ''} title={def.name}><ResourceIcon icon={def.icon} color={def.color} size={15} /> {fmt(v)}</span>;
+        // v1.111.0 : ce qui manque se trouve d'un toucher (« + » ouvre « Obtenir »), partout où un coût est affiché.
+        return <span key={k} className={have < v ? 'lack' : ''} title={def.name}><ResourceIcon icon={def.icon} color={def.color} size={15} /> {fmt(v)}{have < v && <GetButton res={k as keyof typeof RESOURCES} />}</span>;
       })}
     </span>
   );

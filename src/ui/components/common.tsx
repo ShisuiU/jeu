@@ -23,7 +23,7 @@ export function Screen({ title, children, right, noBack, bg }: { title: string; 
       <header className="screen-header">
         {!noBack && depth > 1 && <button className="back-btn" onClick={back} aria-label="Retour"><Icon.back /></button>}
         {/* Titre long (ex. « 4-1 · La piste des caravanes ») : une taille plus petite plutôt que coupé. */}
-        <h1 className={title.length > 20 ? 'long' : undefined}>{title}</h1>
+        <h1 className={title.length > 17 ? 'long' : undefined}>{title}</h1>
         {right}
       </header>
       <div className="screen-scroll" ref={scroller} onScroll={(e) => SCROLL.set(routeKey, e.currentTarget.scrollTop)}>{children}</div>
@@ -90,10 +90,10 @@ export function ModalX({ onClose }: { onClose: () => void }) {
   return <button className="modal-x" aria-label="Fermer" onClick={(e) => { e.stopPropagation(); onClose(); }}>✕</button>;
 }
 
-export function Modal({ children, onClose, className = '' }: { children: ReactNode; onClose?: () => void; className?: string }) {
+export function Modal({ children, onClose, className = '', backdropClose = true }: { children: ReactNode; onClose?: () => void; className?: string; backdropClose?: boolean }) {
   // Rendue directement dans <body> : rien dans l'écran (défilement, effets) ne peut la rogner ou la recouvrir.
   return createPortal(
-    <div className="modal-backdrop" onClick={(e) => { if (e.target === e.currentTarget) onClose?.(); }}>
+    <div className="modal-backdrop" onClick={(e) => { if (backdropClose && e.target === e.currentTarget) onClose?.(); }}>
       <div className="modal-wrap">
         <div className={`modal ${className}`}>{children}</div>
         {onClose && <ModalX onClose={onClose} />}
@@ -102,6 +102,9 @@ export function Modal({ children, onClose, className = '' }: { children: ReactNo
     document.querySelector('.app') ?? document.body,
   );
 }
+
+/** Accord en nombre : plural(3, 'élixir') → « 3 élixirs » ; plural(1, 'héros', 'héros') → « 1 héros ». */
+export function plural(n: number, one: string, many = `${one}s`): string { return `${fmt(n)} ${n > 1 ? many : one}`; }
 
 export function fmt(n: number): string {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(n >= 10_000_000 ? 0 : 1).replace('.', ',') + ' M';

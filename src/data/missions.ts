@@ -13,7 +13,7 @@ export const KEY_FEATURE: Partial<Record<TrackKey, 'dungeons' | 'arena' | 'exped
 };
 
 export const DAILY_MISSIONS: MissionDef[] = [
-  { id: 'd_login', key: 'login', target: 1, title: 'Récupérer la récompense du jour (Courrier)', reward: { gold: 3000 } },
+  { id: 'd_login', key: 'login', target: 1, title: 'Récupérer la récompense du jour', reward: { gold: 3000 } },
   { id: 'd_win5', key: 'battleWin', target: 5, title: 'Remporter 5 combats', reward: { xpElixir: 3, gold: 3000 } },
   { id: 'd_energy', key: 'energySpent', target: 60, title: 'Dépenser 60 énergie', reward: { crystals: 50 } },
   { id: 'd_dungeon', key: 'dungeonWin', target: 2, title: 'Vaincre 2 étages de donjon', reward: { forgeOre: 20, potionMinor: 2 } },

@@ -64,7 +64,7 @@ function CopiesModal({ h, onClose, onAwaken }: { h: HeroInstance; onClose: () =>
           <b>{kind === 'faction' ? `Famille ${name}` : `Affinité ${name}`}</b> <span className="cp-lv">{lv}/{BOND_MAX}</span>
           <div className="cp-sub">+{BOND_PCT} % PV, ATQ et DÉF à tous les héros {kind === 'faction' ? name : `d’affinité ${name}`}</div>
         </div>
-        <button className="btn small" disabled={!chk.ok} onClick={() => { let ok = false; mutate((s) => { ok = giveCopy(s, h.heroId, kind); }); if (ok) done(`Lien ${name} : niveau ${lv + 1} !`); }}>{lv >= BOND_MAX ? 'Max' : 'Offrir'}</button>
+        <button className="btn small" disabled={!chk.ok} onClick={() => { let ok = false; mutate((s) => { ok = giveCopy(s, h.heroId, kind); }); if (ok) done(`Alliance ${name} : niveau ${lv + 1} !`); }}>{lv >= BOND_MAX ? 'Max' : 'Offrir'}</button>
       </div>
     );
   };
@@ -79,18 +79,17 @@ function CopiesModal({ h, onClose, onAwaken }: { h: HeroInstance; onClose: () =>
           <b>Éveiller {first}</b> <span className="cp-lv">{h.awaken}/{BALANCE.hero.maxAwaken}</span>
           <div className="cp-sub">+{Math.round(BALANCE.hero.awakenBonus * 100)} % PV, ATQ et DÉF, +2 VIT</div>
           {!awMax && <div className="cp-cost"><CostView cost={aw.cost} save={save} heroId={h.heroId} /></div>}
-          {!awMax && !aw.ok && aw.reason && !/doublon|insuffisant/i.test(aw.reason) && <div className="cp-sub warn">{aw.reason}</div>}
+          {!awMax && !aw.ok && aw.reason && !/doublon|insuffisant|Il manque/i.test(aw.reason) && <div className="cp-sub warn">{aw.reason}</div>}
         </div>
         <button className="btn small" disabled={!aw.ok} onClick={() => { const before = snapHero(useGame.getState().save!, h.uid); let ok = false; mutate((s) => { ok = awaken(s, h.uid).ok; }); const after = snapHero(useGame.getState().save!, h.uid); if (ok && before && after) onAwaken(before, after); }}>{awMax ? 'Max' : 'Éveiller'}</button>
       </div>
       {bond('faction')}
       {bond('affinity')}
-      <button className="btn secondary block" style={{ marginTop: 12 }} onClick={onClose}>Fermer</button>
     </Modal>
   );
 }
 
-/** Vue d'ensemble des liens (écran Héros). */
+/** Vue d'ensemble des alliances (écran Héros). « Lien » est réservé au joueur et à son pouvoir en combat (v1.111.0). */
 export function BondsSheet({ onClose }: { onClose: () => void }) {
   const save = useGame((s) => s.save)!;
   const row = (kind: BondKind, key: string, name: string, icon: React.ReactNode) => {
@@ -108,7 +107,7 @@ export function BondsSheet({ onClose }: { onClose: () => void }) {
     );
   };
   return (
-    <Sheet title="Liens" onClose={onClose}>
+    <Sheet title="Alliances" onClose={onClose}>
       <p className="faint" style={{ marginTop: 0 }}>Offre des doublons depuis la fiche d’un héros pour renforcer sa famille ou son affinité.</p>
       <div className="sheet-gtitle">Familles</div>
       {(Object.keys(FACTIONS) as FactionId[]).map((f) => row('faction', f, FACTIONS[f].short, <FactionEmblem id={f} size={22} />))}
@@ -139,10 +138,10 @@ export function BondsIntro() {
     <>
       {open && (
         <Modal onClose={() => close(false)}>
-          <div className="unl-tag">Les Liens</div>
+          <div className="unl-tag">Les Alliances</div>
           <h2>Ton premier doublon !</h2>
           <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>
-            Dans le Monde Cousu, les Héritiers sont liés. Un héros en double peut renforcer <b>toute sa famille</b> (Valcrest, Prisme…) ou <b>toute son affinité</b> (Solaire, Lunaire…) :
+            Dans le Monde Cousu, les Héritiers forment des alliances. Un héros en double peut renforcer <b>toute sa famille</b> (Valcrest, Prisme…) ou <b>toute son affinité</b> (Solaire, Lunaire…) :
             +{BOND_PCT} % de PV, ATQ et DÉF pour chacun d’eux, jusqu’à +{BOND_MAX * BOND_PCT} %.
             {' '}Il peut aussi éveiller ce héros, ou être absorbé au Sanctuaire pour donner beaucoup d’expérience à un autre héros.
           </p>
@@ -153,7 +152,7 @@ export function BondsIntro() {
             <AffinityIcon id="solar" size={22} />
           </div>
           <p className="faint" style={{ textAlign: 'center', marginTop: 0 }}>Et en combat : Solaire bat Tellurique, qui bat Lunaire, qui bat Solaire. Le Néant n’a ni avantage ni faiblesse.</p>
-          <button className="btn block" onClick={() => close(true)}>Voir les Liens</button>
+          <button className="btn block" onClick={() => close(true)}>Voir les Alliances</button>
           <button className="btn secondary block" style={{ marginTop: 8 }} onClick={() => close(false)}>Plus tard</button>
         </Modal>
       )}

@@ -16,6 +16,7 @@ import { chooseAction } from '../../game/battle/ai';
 import { StatusIcon } from '../art/StatusIcon';
 import { STATUS_INFO, type Action, type BattleState, type Unit, type UnitSetup } from '../../game/battle/types';
 import { teamSetups } from '../../game/campaign';
+import { CHAPTERS, STAGE_BY_ID } from '../../data/campaign';
 import { applyMode, nextSpec, payMode, resolveMode, type BattleSpec, type ModeResult } from '../../game/modes';
 import { play } from '../../audio/sfx';
 import { playMusic } from '../../audio/music';
@@ -33,6 +34,7 @@ import { BattleScene } from '../art/BattleBackdrop';
 import { useStageFx } from '../battle/useStageFx';
 import { stagePlace, type Place } from '../battle/layout';
 import { TRAITS } from '../../data/enemyTraits';
+import { saveNow } from '../../save/saveManager';
 import { previewTargets } from '../battle/targets';
 import { FxLayer, type FxItem } from '../battle/FxLayer';
 import { UnitView, type Popup } from '../battle/UnitView';
@@ -376,6 +378,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
       res = applyMode(d, spec, { won, alliesDead: dead, participants: initial.allies.map((a) => a.heroUid).filter((u): u is string => !!u), allyHp: Object.fromEntries(s.units.filter((u) => u.side === 'ally' && u.heroUid).map((u) => [u.heroUid!, u.alive ? Math.max(0, u.hp) / u.base.hp : 0])), bossDamage: boss ? { dealt: boss.base.hp - Math.max(0, boss.hp), max: boss.base.hp } : undefined }, Date.now());
     });
     setResult(res);
+    saveNow(); // la victoire et ses récompenses sont écrites tout de suite (fermer le jeu sur l'écran de résultat ne les perd plus)
     trackStat({ kind: 'battle', mode: spec.mode, won, stage: spec.mode === 'campaign' && spec.difficulty === 'normal' ? spec.stageId : undefined, floor: spec.mode === 'tower' && !spec.challenge ? spec.floor : undefined });
     const ok = (res as ModeResult | null)?.won;
     play(ok ? 'claim' : 'error');
@@ -396,7 +399,13 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
         // Combat auto : le Lien agit de lui-même quand sa jauge est pleine.
         if (actor.side === 'ally' && autoRef.current) {
           const lp = autoLien(s);
-          if (lp) { castLien(s, lp); await playEvents(); setBanner(null); if (s.outcome !== 'running' || !s.activeId) continue; }
+          if (lp) {
+            castLien(s, lp); await playEvents(); setBanner(null);
+            // Test « nouveau joueur » : en AUTO, la bulle du Lien n'apparaissait jamais. Une seule fois, on dit ce qui vient de se passer.
+            const sv = useGame.getState().save;
+            if (sv && !sv.flags.coach_battle_lien && !sv.flags.lien_auto_told) { mutate((d) => { d.flags.lien_auto_told = true; }); useUI.getState().toast('AUTO a utilisé ton pouvoir du Lien. Coupe AUTO quand la jauge est pleine pour choisir toi-même : soin, frappe ou protection.'); }
+            if (s.outcome !== 'running' || !s.activeId) continue;
+          }
         }
         if (actor.side === 'ally' && !autoRef.current) {
           const first = availableSkills(actor)[0];
@@ -427,8 +436,10 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
 
   const onUnit = (u: Unit) => {
     if (targetable.has(u.id)) { void act(u.id); return; }
+    // Toucher un de ses héros (hors ciblage) : sa fiche s'ouvre (avant : rien ; seul l'appui long marchait).
+    if (u.side === 'ally') { play('tap'); setInfoId(u.id); return; }
     // Hors ciblage manuel : toucher un ennemi en fait la cible prioritaire (re-toucher l'annule).
-    if (u.side !== 'enemy' || !u.alive || s.outcome !== 'running') return;
+    if (!u.alive || s.outcome !== 'running') return;
     play('tap');
     if (focusId === u.id) { setFocusId(null); toast('Cible prioritaire annulée.'); return; }
     setFocusId(u.id);
@@ -462,6 +473,8 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
     replace({ name: 'battle', spec, teamId, seed: Date.now() }); // le renfort d'un ami ne vaut que pour un combat
   };
   const next = result?.won ? nextSpec(useGame.getState().save!, spec) : null;
+  // Fin de chapitre (test « nouveau joueur ») : pas de niveau suivant dans ce chapitre, on propose d'ouvrir le chapitre suivant.
+  const nextChapter = result?.won && !next && spec.mode === 'campaign' ? CHAPTERS.find((c) => c.n === (STAGE_BY_ID[spec.stageId]?.chapter ?? 0) + 1) : undefined;
   const backTo = (): Route['name'] => ({ campaign: 'campaign', dungeon: 'dungeons', tower: 'tower', worldboss: 'worldboss', arena: 'arena', guildboss: 'guild', challenge: 'events', faction: 'factionDungeon', rift: 'rifts' } as const)[spec.mode];
   const cost = initial.info.cost;
 
@@ -669,8 +682,9 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
             {spec.mode !== 'tower' && spec.mode !== 'challenge' && spec.mode !== 'rift' && (
               <button className="btn secondary grow" onClick={retry}>{result.won ? 'Rejouer' : 'Réessayer'} {cost.kind === 'energy' && <><Icon.energy size={16} />{cost.amount}</>}{cost.kind === 'key' && ' (1 clé)'}{cost.kind === 'ticket' && ' (1 ticket)'}{cost.kind === 'try' && ' (1 essai)'}</button>
             )}
-            {(spec.mode === 'tower' || spec.mode === 'faction' || (spec.mode === 'challenge' && spec.trial != null)) && !result.won && <button className="btn secondary grow" onClick={retry}>Réessayer</button>}
+            {(spec.mode === 'tower' || (spec.mode === 'challenge' && spec.trial != null)) && !result.won && <button className="btn secondary grow" onClick={retry}>Réessayer</button>}
             {next && <button className="btn grow" onClick={() => replace({ name: 'prep', spec: next })}>Suivant</button>}
+            {nextChapter && <button className="btn grow" onClick={() => popTo('campaign')}>Chapitre {nextChapter.n}</button>}
           </div>
         </div>
       )}

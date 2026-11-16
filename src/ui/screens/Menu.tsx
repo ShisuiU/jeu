@@ -12,9 +12,10 @@ import icTower from '../../assets/kit/ic_tower.webp';
 import icLaurel from '../../assets/kit/ic_laurel.webp';
 import icSwords from '../../assets/kit/ic_swords.webp';
 import icCrystal from '../../assets/kit/ic_crystal.webp';
+import icGift from '../../assets/kit/ic_gift.webp';
 // Icônes peintes du kit SpriteCook (v1.73.0).
-const TILE_ICON: Record<string, string> = { 'Sac': icBag, 'Codex': icCodex, 'Amis': icHand, 'Clan': icBanner, 'Classements': icTrophy, 'Sauvegarde': icSave, 'Paramètres': icGear, 'Modération': icHelp };
-const STAT_ICON: Record<string, string> = { 'Héros': icHero, 'Histoire': icBook, 'Tour': icTower, 'Arène': icLaurel, 'Victoires': icSwords, 'Invocations': icCrystal };
+const TILE_ICON: Record<string, string> = { 'Sac': icBag, 'Codex': icCodex, 'Amis': icHand, 'Clan': icBanner, 'Classements': icTrophy, 'Sauvegarde': icSave, 'Paramètres': icGear, 'Modération': icHelp, 'Code promo': icGift };
+const STAT_ICON: Record<string, string> = { 'Héros': icHero, 'Campagne': icBook, 'Tour': icTower, 'Arène': icLaurel, 'Victoires': icSwords, 'Invocations': icCrystal };
 import { cloudWanted, useAccount } from '../../cloud/account';
 import { isUnlocked } from '../../game/unlocks';
 import { useGame } from '../../state/store';
@@ -97,9 +98,9 @@ function Profile() {
   const owned = new Set(save.heroes.map((h) => h.heroId)).size;
   const stats: [string, string][] = [
     ['Héros', `${owned}/${HEROES.length}`],
-    ['Histoire', `${campProgress(save)}/90`],
-    ['Tour', `${save.progress.tower.floor}/${TOWER_FLOORS}`],
-    ['Arène', arenaTier(save.arena.rating).name],
+    ['Campagne', `${campProgress(save)}/90`],
+    ['Tour', isUnlocked(save, 'tower') ? `${save.progress.tower.floor}/${TOWER_FLOORS}` : '—'],
+    ['Arène', isUnlocked(save, 'arena') ? arenaTier(save.arena.rating).name : '—'],
     ['Victoires', fmt(save.stats.battlesWon)],
     ['Invocations', fmt(save.stats.summons)],
   ];

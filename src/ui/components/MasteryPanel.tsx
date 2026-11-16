@@ -8,6 +8,7 @@ import { play } from '../../audio/sfx';
 import { Modal, fmt } from './common';
 import { Icon, ResourceIcon } from '../art/Icons';
 import type { HeroInstance } from '../../save/schema';
+import { GetButton } from './Sources';
 
 // MAÎTRISES — 3 colonnes (Offensive, Défensive, Soutien), 4 paliers chacune, du bas vers le haut de la puissance.
 export function MasteryPanel({ h }: { h: HeroInstance }) {
@@ -70,8 +71,8 @@ export function MasteryPanel({ h }: { h: HeroInstance }) {
               <div className="mk-cost">
                 <span className="muted">Coût · niveau {MASTERY_TIERS[sel.tier].minLevel} requis</span>
                 <span className="row" style={{ gap: 10 }}>
-                  <span className={`mk-price ${save.resources.masteryScroll < MASTERY_TIERS[sel.tier].scrolls ? 'lack' : ''}`}><ResourceIcon icon={scroll.icon} color={scroll.color} size={16} />{MASTERY_TIERS[sel.tier].scrolls}</span>
-                  <span className={`mk-price ${save.resources.gold < MASTERY_TIERS[sel.tier].gold ? 'lack' : ''}`}><Icon.coin size={15} />{fmt(MASTERY_TIERS[sel.tier].gold)}</span>
+                  <span className={`mk-price ${save.resources.masteryScroll < MASTERY_TIERS[sel.tier].scrolls ? 'lack' : ''}`}><ResourceIcon icon={scroll.icon} color={scroll.color} size={16} />{MASTERY_TIERS[sel.tier].scrolls}{save.resources.masteryScroll < MASTERY_TIERS[sel.tier].scrolls && <GetButton res="masteryScroll" />}</span>
+                  <span className={`mk-price ${save.resources.gold < MASTERY_TIERS[sel.tier].gold ? 'lack' : ''}`}><Icon.coin size={15} />{fmt(MASTERY_TIERS[sel.tier].gold)}{save.resources.gold < MASTERY_TIERS[sel.tier].gold && <GetButton res="gold" />}</span>
                 </span>
               </div>
               {masteryBlock(save, h, sel) && <p className="faint" style={{ textAlign: 'center', marginBottom: 0 }}>{masteryBlock(save, h, sel)}</p>}
@@ -91,6 +92,7 @@ export function MasteryPanel({ h }: { h: HeroInstance }) {
             <button className="btn secondary grow" onClick={() => setReset(false)}>Annuler</button>
             <button className="btn grow" disabled={save.resources.gold < MASTERY_RESET_GOLD} onClick={doReset}>Réinitialiser</button>
           </div>
+          {save.resources.gold < MASTERY_RESET_GOLD && <div className="row" style={{ justifyContent: 'center', gap: 6, marginTop: 8 }}><span className="faint">Or insuffisant</span><GetButton res="gold" label /></div>}
         </Modal>
       )}
     </>

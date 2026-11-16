@@ -51,7 +51,7 @@ export function Buildings() {
     <Screen title="Bâtiments" right={<span className="bld-wallet"><D /> {fmt(diamonds)}</span>}>
       {/* v1.88.0 : le Camp et les Expéditions rejoignent les Bâtiments (tout ce qui travaille pour toi, même jeu fermé). */}
       {/* v1.103.0 : Camp + Mine en un geste. */}
-      <ClaimAllButton label="Tout récolter" title="Récolte" count={harvestReady(save, now)}
+      <ClaimAllButton label="Tout récolter" title="Récolte" count={harvestReady(save, now)} unit={(n) => `${n} lieu${n > 1 ? 'x' : ''} prêt${n > 1 ? 's' : ''}`}
         onRun={() => { let r = { reward: {}, count: 0 } as ReturnType<typeof harvestAll>; mutate((s) => { r = harvestAll(s, now); }); return r; }} />
       <div className="bld-links">
         {([
@@ -88,7 +88,7 @@ export function Buildings() {
               Récolter{ready > 0 ? ` ${ready}` : ''}
             </button>
             {upCost !== null
-              ? <button className="btn secondary grow" disabled={diamonds + ready < upCost} onClick={() => act((s) => upgradeMine(s, now), `Mine niveau ${b.mineLevel + 1} : ${MINE.rate[b.mineLevel + 1]} diamants par heure.`)}>Niv. {b.mineLevel + 1} <D size={15} /> {upCost}</button>
+              ? <button className={`btn secondary grow ${diamonds + ready < upCost ? 'off' : ''}`} onClick={() => diamonds + ready < upCost ? toast(`Diamants insuffisants : il en faut ${upCost} (tu en as ${diamonds + ready}).`, 'error') : act((s) => upgradeMine(s, now), `Mine niveau ${b.mineLevel + 1} : ${MINE.rate[b.mineLevel + 1]} diamants par heure.`)}>Niv. {b.mineLevel + 1} <D size={15} /> {upCost}</button>
               : <span className="faint grow" style={{ textAlign: 'center', alignSelf: 'center' }}>Niveau maximum</span>}
           </div>
         </div>

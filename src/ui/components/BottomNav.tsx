@@ -10,10 +10,10 @@ import navHomeOn from '../../assets/home/nav_home_on.webp';
 import navHeroesOn from '../../assets/home/nav_heroes_on.webp';
 import navBattleOn from '../../assets/home/nav_battle_on.webp';
 import navMenuOn from '../../assets/home/nav_menu_on.webp';
-import { unreadMail } from '../screens/Mail';
+import { unreadMail } from '../../data/mail';
 import { claimableCount, eventsDot } from '../../game/missions';
 import { isUnlocked } from '../../game/unlocks';
-import { canImprove } from '../../game/upgrade';
+import { canImproveMajor } from '../../game/upgrade';
 import { useGifts } from '../../state/gifts';
 import { collectionClaimable } from '../../game/collection';
 import type { SaveData } from '../../save/schema';
@@ -29,7 +29,7 @@ const ITEMS: { tab: Tab; label: string; img: string; on?: string }[] = [
   { tab: 'menu', label: 'Menu', img: navMenu, on: navMenuOn },
 ];
 
-const teamCanImprove = (s: SaveData) => { const t = s.teams.find((x) => x.id === s.activeTeamId) ?? s.teams[0]; return t.slots.some((u) => { const h = s.heroes.find((x) => x.uid === u); return !!h && canImprove(s, h); }); };
+const teamCanImprove = (s: SaveData) => { const t = s.teams.find((x) => x.id === s.activeTeamId) ?? s.teams[0]; return t.slots.some((u) => { const h = s.heroes.find((x) => x.uid === u); return !!h && canImproveMajor(s, h); }); };
 
 export function BottomNav() {
   const root = useUI((s) => s.stack[0].name);
@@ -43,8 +43,10 @@ export function BottomNav() {
   const combatsDot = useGame((s) => !!s.save && (s.save.expeditions?.runs ?? []).some((r) => s.now >= r.endsAt));
   const gifts = useGifts((g) => g.waiting > 0);
   const homeDotGame = useGame((s) => !!s.save && (canClaimDaily(s.save, s.now) || unreadMail(s.save.flags) || claimableCount(s.save) > 0 || (isUnlocked(s.save, 'events') && eventsDot(s.save, s.now))));
-  const homeDot = gifts || homeDotGame;
-  // Héros : nouveaux doublons, ou un héros de l'équipe peut progresser au Sanctuaire.
+  // Comme sur l'Accueil : aucune pastille avant la première victoire (le joueur suit d'abord le tutoriel).
+  const firstWin = useGame((s) => !!s.save && Object.values(s.save.progress.campaign).some((p) => p.clears > 0));
+  const homeDot = (gifts || homeDotGame) && firstWin;
+  // Héros : nouveaux doublons, palier de collection, ou un héros de l'équipe peut franchir une étape majeure (rang, ascension, éveil).
   const heroesDot = useGame((s) => !!s.save && (newCopies(s.save) || teamCanImprove(s.save) || collectionClaimable(s.save).length > 0));
   // Menu : invitation à protéger sa partie, jusqu'à la première visite de l'écran Sauvegarde.
   const menuDot = useGame((s) => !!s.save && !s.save.flags.saves_seen && !useAccount.getState().user && !cloudWanted() && s.save.stats.battlesWon >= 3);
@@ -56,7 +58,7 @@ export function BottomNav() {
           <button key={it.tab} className={`nav-item ${it.tab === 'summon' ? 'summon' : ''} ${root === it.tab ? 'active' : ''}`} onClick={() => tab(it.tab)}>
             <img className={it.tab === 'summon' ? 'nav-crystal' : 'nav-ico'} src={root === it.tab && it.on ? it.on : it.img} alt="" draggable={false} />
             {it.label}
-            {dots[it.tab] && <span className="badge-dot" />}
+            {dots[it.tab] && root !== it.tab && <span className="badge-dot" />}{/* pas de pastille sur l'onglet de l'écran affiché */}
           </button>
         );
       })}

@@ -75,15 +75,15 @@ export const ACTIVITIES: Activity[] = [
   { id: 'guild', name: 'Boss de clan', hint: 'Paliers atteints par le clan', route: { name: 'guild' }, feature: 'guild', rewards: () => GUILD_TIERS.map((t) => t.reward),
     gate: (s) => (s.guild?.id ? null : 'Rejoins un clan (compte requis)') },
   { id: 'dailyMissions', name: 'Missions du jour', route: { name: 'missions' }, rewards: () => [...DAILY_MISSIONS.map((m) => m.reward), DAILY_BONUS] },
-  { id: 'weeklyMissions', name: 'Missions de la semaine', route: { name: 'missions' }, rewards: () => [...WEEKLY_MISSIONS.map((m) => m.reward), WEEKLY_BONUS] },
-  { id: 'achievements', name: 'Progression', hint: 'Missions · objectifs à long terme', route: { name: 'missions' }, rewards: () => ACHIEVEMENTS.map((a) => a.reward) },
+  { id: 'weeklyMissions', name: 'Missions de la semaine', route: { name: 'missions', tab: 'weekly' }, rewards: () => [...WEEKLY_MISSIONS.map((m) => m.reward), WEEKLY_BONUS] },
+  { id: 'achievements', name: 'Progression', hint: 'Missions · objectifs à long terme', route: { name: 'missions', tab: 'progress' }, rewards: () => ACHIEVEMENTS.map((a) => a.reward) },
   { id: 'weeklyEvent', name: 'Événement de la semaine', hint: 'Objectifs, épreuves, paliers', route: { name: 'events' }, feature: 'events',
     rewards: () => [...CYCLE_THEMES.flatMap((t) => [...t.tasks.map((x) => x.reward), ...cycleMilestones(t).map((m) => m.reward)]), ...TRIAL_REWARDS],
     current: (_s, now) => activeEvents(now).filter((e) => e.cycle).flatMap((e) => [...(e.tasks ?? []).map((t) => t.reward), ...(e.cycle?.trials ?? []).map((t) => t.reward), ...(e.cycle?.milestones ?? []).map((m) => m.reward)]) },
   { id: 'specialEvents', name: 'Événements spéciaux', hint: 'Connexion, objectifs, épreuve', route: { name: 'events' }, feature: 'events',
     rewards: () => specialRewards(BUNDLED_EVENTS.filter((e) => !e.cycle && Date.parse(e.end) > Date.now())),
     current: (_s, now) => specialRewards(activeEvents(now).filter((e) => !e.cycle)) },
-  { id: 'dailyLogin', name: 'Connexion quotidienne', hint: 'Courrier · un cadeau par jour', route: { name: 'mail' }, rewards: () => DAILY_REWARDS.map((d) => d.reward) },
+  { id: 'dailyLogin', name: 'Connexion quotidienne', hint: 'Un cadeau par jour', route: { name: 'daily' }, rewards: () => DAILY_REWARDS.map((d) => d.reward) },
   { id: 'wheel', name: 'Roue quotidienne', hint: 'Un tour gratuit par jour', route: { name: 'wheel' }, rewards: () => WHEEL.map((w) => w.reward) },
   { id: 'market', name: 'Marché', hint: 'Offres du jour, contre de l’or', route: { name: 'market' }, feature: 'market',
     rewards: () => MARKET_POOL.filter((o) => o.reward).map((o) => o.reward!) },
@@ -93,7 +93,7 @@ export const ACTIVITIES: Activity[] = [
   { id: 'mine', name: 'Mine de diamants', hint: 'Bâtiments · même jeu fermé', route: { name: 'buildings' }, rewards: () => [{ diamonds: 1 }], main: ['diamonds'],
     amount: (s) => { const lv = s.buildings?.mineLevel ?? 1; return `${MINE.rate[lv] ?? 1} par heure`; } },
   { id: 'collection', name: 'Paliers de collection', hint: 'Héros ▸ Collection', route: { name: 'collection' }, rewards: () => COLLECTION_STEPS.map(collectionReward) },
-  { id: 'dismantle', name: 'Démanteler un équipement', hint: 'Forge ▸ Démanteler', route: { name: 'gear' }, rewards: () => [{ gold: 1, forgeOre: 1 }] },
+  { id: 'dismantle', name: 'Démanteler un équipement', hint: 'Forge ▸ Démanteler', route: { name: 'gear', tab: 'dismantle' }, rewards: () => [{ gold: 1, forgeOre: 1 }] },
 ];
 
 /** Récompenses des événements spéciaux (hors semaine) : objectifs, jours de connexion, épreuve. */

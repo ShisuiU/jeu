@@ -3,7 +3,9 @@ import type { SaveData } from '../save/schema';
 import { CHAPTERS, progressKey } from './campaign';
 
 // RÉCOMPENSES DE PROGRESSION — objectifs à long terme, une seule fois chacun.
-export interface AchievementDef { id: string; title: string; reward: Reward; progress: (s: SaveData) => [number, number] }
+export interface AchievementDef { id: string; title: string; reward: Reward; progress: (s: SaveData) => [number, number];
+  /** Mode lié : l'objectif reste caché tant que ce mode n'est pas débloqué (v1.111.0). */
+  feature?: import('../game/unlocks').Feature }
 
 const chapterClears = (s: SaveData, diff: string, n = 1) => CHAPTERS[n - 1].stages.filter((st) => (s.progress.campaign[progressKey(diff as 'normal', st.id)]?.clears ?? 0) > 0).length;
 const chapterStars = (s: SaveData) => CHAPTERS[0].stages.reduce((a, st) => a + (s.progress.campaign[progressKey('normal', st.id)]?.stars ?? 0), 0);
@@ -23,7 +25,7 @@ export const ACHIEVEMENTS: AchievementDef[] = [
   { id: 'a_heroes32', title: 'Posséder 32 héros', reward: { crystals: 1200, shardAeon: 3 }, progress: (s) => [s.heroes.length, 32] },
   { id: 'a_heroes50', title: 'Posséder 50 héros', reward: { crystals: 800, shardAeon: 3, awakenEssence: 2 }, progress: (s) => [new Set(s.heroes.map((h) => h.heroId)).size, 50] },
   { id: 'a_heroes75', title: 'Posséder 75 héros', reward: { crystals: 1000, shardAeon: 4, awakenEssence: 3 }, progress: (s) => [new Set(s.heroes.map((h) => h.heroId)).size, 75] },
-  { id: 'a_heroes100', title: 'Posséder 100 héros', reward: { crystals: 1500, shardAeon: 5, awakenEssence: 5 }, progress: (s) => [new Set(s.heroes.map((h) => h.heroId)).size, 100] },
+  { id: 'a_heroes100', title: 'Posséder 85 héros', reward: { crystals: 1500, shardAeon: 5, awakenEssence: 5 }, progress: (s) => [new Set(s.heroes.map((h) => h.heroId)).size, 85] },
   ...[2, 3, 4, 5, 6, 7, 8, 9].map((n): AchievementDef => ({
     id: `a_ch${n}`, title: `Terminer le chapitre ${n} (Normal)`,
     reward: n >= 7 ? { crystals: 1100 } : { crystals: 200 + n * 50, shardAeon: 1 },
@@ -32,15 +34,15 @@ export const ACHIEVEMENTS: AchievementDef[] = [
   { id: 'a_lvl5', title: 'Niveau de compte 5', reward: { gold: 20000 }, progress: (s) => [s.profile.level, 5] },
   { id: 'a_lvl10', title: 'Niveau de compte 10', reward: { crystals: 250 }, progress: (s) => [s.profile.level, 10] },
   { id: 'a_lvl20', title: 'Niveau de compte 20', reward: { shardAeon: 2 }, progress: (s) => [s.profile.level, 20] },
-  { id: 'a_tower10', title: 'Tour des Âges : étage 10', reward: { crystals: 200 }, progress: (s) => [s.progress.tower.floor, 10] },
-  { id: 'a_tower25', title: 'Tour des Âges : étage 25', reward: { shardAeon: 2 }, progress: (s) => [s.progress.tower.floor, 25] },
-  { id: 'a_tower50', title: 'Tour des Âges : étage 50', reward: { crystals: 300 }, progress: (s) => [s.progress.tower.floor, 50] },
-  { id: 'a_tower75', title: 'Tour des Âges : étage 75', reward: { crystals: 500, masteryScroll: 4 }, progress: (s) => [s.progress.tower.floor, 75] },
-  { id: 'a_tower100', title: 'Tour des Âges : sommet', reward: { crystals: 1000, shardAeon: 5 }, progress: (s) => [s.progress.tower.floor, 100] },
-  { id: 'a_dungeon5', title: 'Étage 5 d’un donjon', reward: { potionMinor: 9 }, progress: (s) => [bestDungeon(s), 5] },
-  { id: 'a_dungeon10', title: 'Étage 10 d’un donjon', reward: { potionMinor: 18 }, progress: (s) => [bestDungeon(s), 10] },
-  { id: 'a_dungeon15', title: 'Étage 15 d’un donjon', reward: { potionMinor: 30, awakenEssence: 1 }, progress: (s) => [bestDungeon(s), 15] },
+  { id: 'a_tower10', title: 'Tour des Âges : étage 10', reward: { crystals: 200 }, progress: (s) => [s.progress.tower.floor, 10], feature: 'tower' },
+  { id: 'a_tower25', title: 'Tour des Âges : étage 25', reward: { shardAeon: 2 }, progress: (s) => [s.progress.tower.floor, 25], feature: 'tower' },
+  { id: 'a_tower50', title: 'Tour des Âges : étage 50', reward: { crystals: 300 }, progress: (s) => [s.progress.tower.floor, 50], feature: 'tower' },
+  { id: 'a_tower75', title: 'Tour des Âges : étage 75', reward: { crystals: 500, masteryScroll: 4 }, progress: (s) => [s.progress.tower.floor, 75], feature: 'tower' },
+  { id: 'a_tower100', title: 'Tour des Âges : sommet', reward: { crystals: 1000, shardAeon: 5 }, progress: (s) => [s.progress.tower.floor, 100], feature: 'tower' },
+  { id: 'a_dungeon5', title: 'Étage 5 d’un donjon', reward: { potionMinor: 9 }, progress: (s) => [bestDungeon(s), 5], feature: 'dungeons' },
+  { id: 'a_dungeon10', title: 'Étage 10 d’un donjon', reward: { potionMinor: 18 }, progress: (s) => [bestDungeon(s), 10], feature: 'dungeons' },
+  { id: 'a_dungeon15', title: 'Étage 15 d’un donjon', reward: { potionMinor: 30, awakenEssence: 1 }, progress: (s) => [bestDungeon(s), 15], feature: 'dungeons' },
   { id: 'a_summon50', title: '50 invocations', reward: { crystals: 300 }, progress: (s) => [s.summons.total, 50] },
   { id: 'a_gear10', title: 'Un équipement +10', reward: { forgeOre: 150 }, progress: (s) => [Math.max(0, ...s.equipment.map((g) => g.level)), 10] },
-  { id: 'a_arena_gold', title: 'Atteindre la ligue Or de l’arène', reward: { crystals: 250 }, progress: (s) => [s.arena.rating, 1350] },
+  { id: 'a_arena_gold', title: 'Atteindre la ligue Or de l’arène', reward: { crystals: 250 }, progress: (s) => [s.arena.rating, 1350], feature: 'arena' },
 ];

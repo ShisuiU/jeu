@@ -87,7 +87,7 @@ service cloud.firestore {
     function me() { return request.auth.uid; }
     function validMember(m) {
       return m.keys().hasOnly(['name', 'avatar', 'power', 'role', 'joinedAt'])
-        && shortText(m.name, 18) && shortText(m.avatar, 40) && m.power is number && m.joinedAt is number
+        && shortText(m.name, 18) && shortText(m.avatar, 40) && m.power is number && m.power >= 0 && m.power <= 150000 && m.joinedAt is number
         && (m.role == 'leader' || m.role == 'member');
     }
     function validGuild(g) {
@@ -96,7 +96,7 @@ service cloud.firestore {
         && shortText(g.description, 120) && shortText(g.emblem, 40) && g.open is bool
         && g.members is map && g.count == g.members.size() && g.count <= 30
         && g.leader in g.members && g.members[g.leader].role == 'leader'
-        && g.boss.keys().hasOnly(['week', 'dmg']) && g.boss.week is string && g.boss.dmg is map
+        && g.boss.keys().hasOnly(['week', 'dmg']) && g.boss.week is string && g.boss.week.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$') && g.boss.dmg is map
         // Adjoints : 5 au plus, tous membres, jamais le chef.
         && (!('officers' in g) || (g.officers is list && g.officers.size() <= 5
           && g.members.keys().hasAll(g.officers) && !(g.leader in g.officers)));
@@ -173,7 +173,16 @@ service cloud.firestore {
       return d.keys().hasOnly(['name', 'avatar', 'level', 'power', 'code', 'lend', 'updatedAt'])
         && shortText(d.name, 18) && shortText(d.avatar, 40) && d.level is number && d.power is number
         && d.code is string && d.code.size() >= 6 && d.code.size() <= 8
-        && (d.lend == null || d.lend is map) && d.updatedAt is number;
+        && (d.lend == null || validLend(d.lend)) && d.updatedAt is number;
+    }
+    // Héros prêté à ses amis (v1.111.0) : forme et bornes, comme une défense d'Arène.
+    function validLend(h) {
+      return h is map && h.keys().hasOnly(['refId', 'slot', 'level', 'rank', 'ascension', 'awaken', 'skillLevels', 'gear', 'name'])
+        && shortText(h.refId, 40) && h.level is number && h.level >= 1 && h.level <= 60
+        && (!('rank' in h) || (h.rank is number && h.rank >= 1 && h.rank <= 6))
+        && (!('ascension' in h) || (h.ascension is number && h.ascension >= 0 && h.ascension <= 6))
+        && (!('awaken' in h) || (h.awaken is number && h.awaken >= 0 && h.awaken <= 5))
+        && (!('name' in h) || shortText(h.name, 40));
     }
     match /profiles/{uid} {
       allow read: if signedIn();

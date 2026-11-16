@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { useGame } from '../../state/store';
 import { HERO_BY_ID } from '../../data/heroes';
 import { RARITIES } from '../../data/rarities';
@@ -13,10 +13,19 @@ export function useHeroOrder(): { order: string[]; teamUids: string[]; defaultUi
   const save = useGame((s) => s.save)!;
   const team = save.teams.find((t) => t.id === save.activeTeamId) ?? save.teams[0];
   const teamUids = team.slots.filter(Boolean) as string[];
+  // Ordre figé pendant la visite (test « nouveau joueur ») : après une montée de niveau, les portraits ne changent plus de place
+  // sous le doigt. Les héros arrivés pendant la visite s'ajoutent à la fin ; ceux qui disparaissent (absorbés) sont retirés.
+  const first = useRef<string[] | null>(null);
   const order = useMemo(() => {
+    const uids = new Set(save.heroes.map((h) => h.uid));
+    if (first.current) {
+      const kept = first.current.filter((u) => uids.has(u));
+      const added = save.heroes.map((h) => h.uid).filter((u) => !first.current!.includes(u));
+      return (first.current = [...kept, ...added]);
+    }
     const pw = new Map(save.heroes.map((h) => [h.uid, powerOf(heroTotalStats(save, h).total)]));
-    return save.heroes.map((h) => h.uid).sort((a, b) => (teamUids.includes(b) ? 1 : 0) - (teamUids.includes(a) ? 1 : 0) || pw.get(b)! - pw.get(a)!);
-  }, [save, teamUids.join()]);
+    return (first.current = save.heroes.map((h) => h.uid).sort((a, b) => (teamUids.includes(b) ? 1 : 0) - (teamUids.includes(a) ? 1 : 0) || pw.get(b)! - pw.get(a)!));
+  }, [save, teamUids.join()]); // eslint-disable-line react-hooks/exhaustive-deps
   return { order, teamUids, defaultUid: team.leader ?? order[0] };
 }
 

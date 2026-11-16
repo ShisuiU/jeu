@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import worldArt from '../../assets/title/world.webp';
 import { useUI } from '../../state/ui';
 import { useGame } from '../../state/store';
@@ -15,17 +15,21 @@ const PROLOGUE = [
   'Toutes les époques ont été recousues en un seul monde.',
   'Le Néant l’efface. Toi seul peux appeler ses Héritiers.',
 ];
-const LINE_MS = 2600;
+const LINE_MS = 3600; // le temps de lire (test « nouveau joueur » : 2,6 s faisait défiler les phrases avant qu'on les lise)
 
 function Prologue({ onDone }: { onDone: () => void }) {
   const [k, setK] = useState(0);
+  const shownAt = useRef(Date.now());
+  useEffect(() => { shownAt.current = Date.now(); }, [k]);
+  // Un toucher = une phrase ; un double toucher rapide ne saute pas la suivante.
+  const nextLine = () => { if (Date.now() - shownAt.current > 450) setK((x) => x + 1); };
   useEffect(() => {
     if (k >= PROLOGUE.length) { onDone(); return; }
     const t = setTimeout(() => setK((x) => x + 1), LINE_MS);
     return () => clearTimeout(t);
   }, [k]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
-    <div className="prologue" role="dialog" aria-label="Prologue" onClick={() => setK((x) => x + 1)}>
+    <div className="prologue" role="dialog" aria-label="Prologue" onClick={nextLine}>
       <img className="pro-art" src={worldArt} alt="" draggable={false} />
       <div className="pro-shade" />
       {k < PROLOGUE.length && <p className="pro-line" key={k}>{PROLOGUE[k]}</p>}
@@ -40,7 +44,8 @@ export function Guide() {
   const current = useGame((s) => s.save?.profile.name ?? '');
   const [named, setNamed] = useState(false); // prologue vu
   // Premier écran : nouveau joueur (l'histoire commence) ou ancien joueur (retrouver sa partie).
-  const [who, setWho] = useState<'ask' | 'new' | 'old'>('ask');
+  // Joueur déjà nommé qui demande « Revoir le guide » (Réglages) : directement le guide, sans la question d'accueil.
+  const [who, setWho] = useState<'ask' | 'new' | 'old'>(() => (useGame.getState().save?.flags.name_chosen ? 'new' : 'ask'));
   const push = useUI((s) => s.push);
   // Nom du joueur : obligatoire (il apparaît dans l'histoire et chez les autres joueurs).
   const [name, setName] = useState(nameError(current) ? '' : current);

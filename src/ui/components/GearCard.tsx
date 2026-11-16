@@ -10,7 +10,7 @@ export const SLOT_ICON: Record<GearSlot, keyof typeof Icon> = {
   weapon: 'sword', helmet: 'helmet', armor: 'armor', gloves: 'gloves', boots: 'boots', accessory: 'ring', artifact: 'gem',
 };
 
-export const statText = (stat: GearStat, v: number) => `${STAT_NAMES[stat].replace(' %', '')} +${v}${PCT_STATS.includes(stat) || stat.endsWith('Pct') ? ' %' : ''}`;
+export const statText = (stat: GearStat, v: number) => `${STAT_NAMES[stat].replace(' %', '')} +${v.toLocaleString('fr-FR', { maximumFractionDigits: 1 })}${PCT_STATS.includes(stat) || stat.endsWith('Pct') ? ' %' : ''}`;
 
 export function GearCard({ g, onClick, owner, selected, hideMain }: { g: GearItem; onClick?: () => void; owner?: string; selected?: boolean; hideMain?: boolean }) {
   const r = GEAR_RARITIES[g.rarity];

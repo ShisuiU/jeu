@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import type { SkillDef } from '../../data/types';
 import { SUMMON_MAX, TRAITS } from '../../data/enemyTraits';
 import { HERO_BY_ID } from '../../data/heroes';
@@ -13,6 +14,8 @@ import { StatusIcon } from '../art/StatusIcon';
 import { Modal } from '../components/common';
 import { HeroArt } from '../art/HeroArt';
 import { shortName } from './UnitView';
+import { useGame } from '../../state/store';
+import { rankUpCheck } from '../../game/upgrade';
 
 // Extrait de Battle.tsx (v1.98.0).
 export const SLOT_TAG = { basic: 'Base', special: 'Spéciale', ultimate: 'Ultime', passive: 'Passif' } as const;
@@ -36,6 +39,9 @@ export function SkillInfoBody({ unit, sk, onLaunch }: { unit: Unit; sk: SkillDef
 /** Récap de fin de combat : part des dégâts infligés par chaque héros (du plus gros au plus petit). */
 /** Héros du combat : part des dégâts (et, après une victoire, niveau et expérience gagnée) en une seule liste. */
 export function DamageRecap({ units, xp }: { units: Unit[]; xp?: { uid: string; heroId: string; xp: number; levelsGained: number; capped: boolean; level: number }[] }) {
+  const save = useGame((st) => st.save);
+  // Héros bloqué au plafond de son rang (test « nouveau joueur ») : on dit que le rang peut monter, au lieu d'un simple « max ».
+  const canRank = (uid: string) => { const h = save?.heroes.find((y) => y.uid === uid); return !!(save && h && rankUpCheck(save, h).ok); };
   const heroes = units.filter((u) => u.side === 'ally' && u.kind === 'hero');
   const total = heroes.reduce((n, u) => n + (u.flags.dmgDealt ?? 0), 0);
   if (!total && !xp?.length) return null;
@@ -44,7 +50,8 @@ export function DamageRecap({ units, xp }: { units: Unit[]; xp?: { uid: string; 
   const fmt = (n: number) => (n >= 10000 ? `${Math.round(n / 1000)} k` : Math.round(n).toLocaleString('fr-FR'));
   return (
     <div className="dmg-recap">
-      <div className="dr-title">{xp ? 'Tes héros' : 'Dégâts infligés'}</div>
+      {/* v1.111.0 : légende des colonnes (le testeur prenait la barre de dégâts pour une barre d'XP). */}
+      <div className="dr-title row between"><span>{xp ? 'Tes héros' : 'Dégâts infligés'}</span>{xp && <span className="dr-legend">part des dégâts · total</span>}</div>
       {rows.map((u, i) => {
         const d = u.flags.dmgDealt ?? 0;
         const pct = total ? Math.round((d / total) * 100) : 0;
@@ -55,7 +62,7 @@ export function DamageRecap({ units, xp }: { units: Unit[]; xp?: { uid: string; 
             <div className="grow">
               <div className="row between"><b>{HERO_BY_ID[u.refId]?.name.split(/[ ,]/)[0] ?? u.name}{i === 0 && <span className="dr-mvp">Meilleur</span>}</b><span className="dr-pct">{pct} %</span></div>
               <div className="dr-bar"><div style={{ width: `${top ? (d / top) * 100 : 0}%`, animationDelay: `${0.15 + i * 0.12}s` }} /></div>
-              {x && <div className="dr-xp"><span className={x.levelsGained ? 'lvlup' : ''}>{x.levelsGained ? `Niv. ${x.level} ▲` : x.capped ? 'Niveau max' : `Niv. ${x.level}`}</span>{x.capped && !x.levelsGained ? null : <span>+{x.xp} XP</span>}</div>}
+              {x && <div className="dr-xp"><span className={x.levelsGained ? 'lvlup' : ''}>{x.levelsGained ? `Niv. ${x.level} ▲` : x.capped ? <>Niv. {x.level} {canRank(x.uid) ? <i className="dr-cap rank">max · rang possible ▲</i> : <i className="dr-cap">max</i>}</> : `Niv. ${x.level}`}</span>{x.capped && !x.levelsGained ? null : <span>+{x.xp} XP</span>}</div>}
             </div>
             <span className="faint dr-val">{fmt(d)}</span>
           </div>
@@ -70,8 +77,10 @@ const traitState = (u: Unit) => u.trait === 'mender' ? (u.flags.mended ? ' (déj
 
 export function UnitInfo({ u, mechanics, onClose }: { u: Unit; mechanics: boolean; onClose: () => void }) {
   const list = [...u.statuses].sort((a, b) => Number(STATUS_INFO[b.status].debuff) - Number(STATUS_INFO[a.status].debuff));
+  // v1.111.0 : ouverte par un appui long, elle se refermait aussitôt (le doigt levé comptait comme « touche pour fermer »).
+  const openedAt = useRef(performance.now());
   return (
-    <div className="unit-info-backdrop" onClick={() => onClose()}>
+    <div className="unit-info-backdrop" onClick={() => { if (performance.now() - openedAt.current > 450) onClose(); }}>
       <div className={`unit-info ${u.side}`} role="dialog" aria-label={u.name}>
         <div className="ui-head"><b>{u.name}</b><span className="faint">Niv. {u.level}</span></div>
         {u.kind === 'hero' && SIGNATURES[u.refId] && <div className="ui-sig"><b>★ {SIGNATURES[u.refId].name}</b> : {SIGNATURES[u.refId].text}</div>}
@@ -126,6 +135,7 @@ export function EffectsLegend({ onClose }: { onClose: () => void }) {
           <div key={k} className="fxl-row"><span className="fxl-ico fxl-trait" style={{ ['--tc' as string]: TRAITS[k].color }} /><span><b style={{ color: TRAITS[k].color }}>{TRAITS[k].name}</b> : {TRAITS[k].text}</span></div>
         ))}
       </div>
+      <p className="faint" style={{ textAlign: 'center', margin: '10px 0 0' }}>Toutes les règles (Lien, Coutures, boss…) : Menu ▸ Codex ▸ Règles.</p>
       <button className="btn grow" style={{ width: '100%', marginTop: 10 }} onClick={() => onClose()}>Compris</button>
     </Modal>
   );

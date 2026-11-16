@@ -67,7 +67,8 @@ export function Coach({ id, target, text, when = true, place = 'auto' }: { id: C
       const el = document.querySelector(target);
       let r = el?.getBoundingClientRect();
       // Élément hors de l'écran (bas de page) : on le fait venir au centre, une fois.
-      if (el && r && r.width && !scrolled && (r.bottom > window.innerHeight - 70 || r.top < 0)) {
+      // Jamais dans un combat : l'écran de combat ne défile pas (sinon tout restait décalé de ~150 px, test « joueur curieux »).
+      if (el && r && r.width && !scrolled && !el.closest('.battle') && (r.bottom > window.innerHeight - 70 || r.top < 0)) {
         scrolled = true;
         el.scrollIntoView({ block: 'center', behavior: 'auto' });
         r = el.getBoundingClientRect();
@@ -98,6 +99,8 @@ export function Coach({ id, target, text, when = true, place = 'auto' }: { id: C
   useEffect(() => { if (active && rect) play('open'); }, [active, !!rect]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!active || !rect) return null;
+  // Toucher à côté (test « nouveau joueur ») : le voile bloque, mais le dit : l'anneau et la bulle pulsent.
+  const nudge = () => { const c = document.querySelector('.coach'); if (!c) return; c.classList.remove('nudge'); void (c as HTMLElement).offsetWidth; c.classList.add('nudge'); play('tap'); };
   const vw = window.innerWidth, vh = window.innerHeight;
   // « top » (combat) : la bulle se met en haut de l'écran, pour ne jamais cacher l'équipe.
   const top = place === 'top';
@@ -108,10 +111,10 @@ export function Coach({ id, target, text, when = true, place = 'auto' }: { id: C
   return createPortal(
     <div className="coach" aria-live="polite">
       {/* quatre voiles autour du trou : l'élément éclairé reste touchable */}
-      <div className="coach-veil" style={{ left: 0, top: 0, width: vw, height: Math.max(0, rect.y) }} />
-      <div className="coach-veil" style={{ left: 0, top: rect.y + rect.h, width: vw, height: Math.max(0, vh - rect.y - rect.h) }} />
-      <div className="coach-veil" style={{ left: 0, top: rect.y, width: Math.max(0, rect.x), height: rect.h }} />
-      <div className="coach-veil" style={{ left: rect.x + rect.w, top: rect.y, width: Math.max(0, vw - rect.x - rect.w), height: rect.h }} />
+      <div className="coach-veil" onClick={nudge} style={{ left: 0, top: 0, width: vw, height: Math.max(0, rect.y) }} />
+      <div className="coach-veil" onClick={nudge} style={{ left: 0, top: rect.y + rect.h, width: vw, height: Math.max(0, vh - rect.y - rect.h) }} />
+      <div className="coach-veil" onClick={nudge} style={{ left: 0, top: rect.y, width: Math.max(0, rect.x), height: rect.h }} />
+      <div className="coach-veil" onClick={nudge} style={{ left: rect.x + rect.w, top: rect.y, width: Math.max(0, vw - rect.x - rect.w), height: rect.h }} />
       <div className="coach-ring" style={{ left: rect.x, top: rect.y, width: rect.w, height: rect.h }} />
       <div className={`coach-bubble ${top ? 'top' : below ? 'below' : 'above'}`} style={{ top: bubbleTop, bottom: bubbleBottom, ['--ax' as string]: `${arrowX}px` }}>
         <p>{text}</p>

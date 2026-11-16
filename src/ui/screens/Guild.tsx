@@ -214,7 +214,7 @@ function Chat({ gid, uid, leader }: { gid: string; uid: string; leader: boolean 
   const blocked = useGame((s) => s.save?.blocked);
   const endRef = useRef<HTMLDivElement>(null);
   const load = useCallback(async () => { try { setMsgs(await (await gapi()).listChat(gid)); } catch (e) { toast(errMsg(e), 'error'); } }, [gid, toast]);
-  useEffect(() => { void load(); const t = setInterval(() => { if (document.visibilityState === 'visible') void load(); }, 8000); return () => clearInterval(t); }, [load]);
+  useEffect(() => { void load(); const t = setInterval(() => { if (document.visibilityState === 'visible') void load(); }, 20000); return () => clearInterval(t); }, [load]);
   useEffect(() => { endRef.current?.scrollIntoView({ block: 'nearest' }); }, [msgs?.length]);
   const send = async () => {
     if (!text.trim()) return;
@@ -311,7 +311,6 @@ function Members({ g, uid, now, act, confirm, leave }: {
             {r.kick && <button className="btn danger" onClick={() => { setSel(null); confirm({ text: `Exclure ${m.name} du clan ?`, run: () => act((a) => a.kickMember(g.id, sel), `${m.name} a été exclu.`) }); }}>Exclure</button>}
             {!r.officer && !r.leader && !r.kick && <p className="faint" style={{ margin: 0, textAlign: 'center' }}>{sel === uid ? 'C’est toi !' : 'Seuls le chef et les adjoints gèrent les membres.'}</p>}
           </div>
-          <button className="btn secondary block" style={{ marginTop: 10 }} onClick={() => setSel(null)}>Fermer</button>
         </Modal>
       )}
       {report && <ReportSheet target={report} onClose={() => setReport(null)} />}

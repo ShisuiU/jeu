@@ -82,7 +82,7 @@ export function Combats() {
           </button>
         ))}
       </div>
-      {later > 0 && <p className="faint" style={{ textAlign: 'center', marginTop: 12 }}>Encore {later} mode{later > 1 ? 's' : ''} à découvrir en avançant dans la campagne.</p>}
+      {later > 0 && <p className="faint" style={{ textAlign: 'center', marginTop: 12 }}>Encore {later} mode{later > 1 ? "s" : ""} de combat à découvrir en avançant dans la campagne.</p>}
     </Screen>
   );
 }

@@ -126,7 +126,6 @@ export function Profile() {
               </button>
             ))}
           </div>
-          <button className="btn secondary block" style={{ marginTop: 12 }} onClick={() => setPickAva(false)}>Fermer</button>
         </Modal>
       )}
       {edit != null && (

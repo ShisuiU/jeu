@@ -107,8 +107,11 @@ export function Wheel() {
           <div className="wheel-labels">
             {WHEEL.map((w, i) => (
               <div key={w.id} className={`wl ${w.id === 'faille' ? 'rare' : ''} ${!spinning && lastIdx === i && !ready ? 'won' : ''}`} style={{ transform: `rotate(${i * SEG + SEG / 2}deg)` }}>
-                <SlotIcon id={w.id} size={22} />
-                <span>{w.short}</span>
+                {/* Moitié basse : contenu retourné pour se lire à l'endroit quand la roue est au repos. */}
+                <div className={`wl-in ${((i * SEG + SEG / 2) % 360) > 90 && ((i * SEG + SEG / 2) % 360) < 270 ? 'flip' : ''}`}>
+                  <SlotIcon id={w.id} size={22} />
+                  <span>{w.short}</span>
+                </div>
               </div>
             ))}
           </div>
@@ -130,6 +133,14 @@ export function Wheel() {
         </Panel>
       )}
       <p className="faint" style={{ textAlign: 'center' }}>Un tour gratuit par jour · case rare : <b style={{ color: '#ff3d6e' }}>Éclat de faille</b></p>
+      {/* Les chances de chaque case (affichées, comme les taux d'invocation) : remplit l'écran avec une information utile. */}
+      <Panel title="Gains possibles">
+        <div className="wheel-odds">
+          {(() => { const tot = WHEEL.reduce((a, w) => a + w.weight, 0); return [...WHEEL].sort((a, b) => b.weight - a.weight).map((w) => (
+            <div key={w.id} className={`wo-row ${w.id === 'faille' ? 'rare' : ''}`}><SlotIcon id={w.id} size={18} /><span className="grow">{w.label}</span><b>{Math.round((w.weight / tot) * 100)} %</b></div>
+          )); })()}
+        </div>
+      </Panel>
     </Screen>
   );
 }

@@ -16,9 +16,9 @@ import { play } from '../../audio/sfx';
 
 const INFO: Record<Feature, { title: string; text: string; art: string; hero?: boolean; route: Route }> = {
   guild: { title: 'Clans', text: 'Rejoins d’autres joueurs : une discussion, et un boss de clan chaque semaine dont les dégâts s’additionnent. Il faut un compte.', art: 'dead_constellation', route: { name: 'guild' } },
-  camp: { title: 'Camp des Héritiers', text: 'Pendant ton absence, tes héros rapportent de l’or, des élixirs et du minerai. Jusqu’à 12 h de butin, même jeu fermé.', art: 'torvald', hero: true, route: { name: 'camp' } },
+  camp: { title: 'Camp des Héritiers', text: 'Pendant ton absence, tes héros rapportent de l’or, des élixirs et du minerai. Jusqu’à 12 h de butin, même jeu fermé. À retrouver à l’Accueil, dans Bâtiments.', art: 'torvald', hero: true, route: { name: 'camp' } },
   market: { title: 'Marché', text: 'Chaque jour, 6 offres à acheter avec ton or : éclats, élixirs, potions et équipements.', art: 'lio', hero: true, route: { name: 'market' } },
-  expeditions: { title: 'Expéditions', text: 'Envoie des héros en mission : ils reviennent avec du butin, même jeu fermé.', art: 'seam_stalker', route: { name: 'expeditions' } },
+  expeditions: { title: 'Expéditions', text: 'Envoie des héros en mission : ils reviennent avec du butin, même jeu fermé. À retrouver à l’Accueil, dans Bâtiments.', art: 'seam_stalker', route: { name: 'expeditions' } },
   events: { title: 'Événements', text: 'Chaque semaine, un nouvel événement : objectifs, épreuve et récompenses.', art: 'hollow_knight', route: { name: 'events' } },
   dungeons: { title: 'Donjons', text: 'Équipement et matériaux d’amélioration, étage après étage.', art: 'forge_golem', route: { name: 'dungeons' } },
   worldboss: { title: 'Boss mondial', text: 'Frappe le plus fort possible : 3 essais par jour, des coffres selon les dégâts.', art: WORLD_BOSS.enemy, route: { name: 'worldboss' } },
@@ -28,6 +28,14 @@ const INFO: Record<Feature, { title: string; text: string; art: string; hero?: b
 const ORDER = Object.keys(UNLOCK_AT) as Feature[];
 const SESSION_START = Date.now();
 const flag = (f: Feature) => `unl_${f}`;
+// Test « nouveau joueur » : les annonces surgissaient pendant que le joueur touchait autre chose (Courrier → annonce du Camp)
+// et s'enchaînaient à 3 ou 4. Désormais : seulement sur l'Accueil, une seule par passage à l'Accueil, jamais juste après un toucher.
+let lastTouch = 0;
+if (typeof window !== 'undefined') window.addEventListener('pointerdown', () => { lastTouch = Date.now(); }, { capture: true, passive: true });
+let shownOnVisit = -1;
+let homeVisit = 0;
+useUI.subscribe((st, prev) => { const atHome = st.stack.length === 1 && st.stack[0].name === 'home'; const was = prev.stack.length === 1 && prev.stack[0].name === 'home'; if (atHome && !was) homeVisit++; });
+const onHome = () => { const st = useUI.getState().stack; return st.length === 1 && st[0].name === 'home'; };
 
 export function UnlockAnnounce() {
   const save = useGame((s) => s.save)!;
@@ -45,17 +53,22 @@ export function UnlockAnnounce() {
     if (!next && !special) return;
     // Un nouvel événement n'interrompt pas l'arrivée : il est présenté après une minute de jeu dans la session.
     const wait = next ? 600 : Math.max(600, SESSION_START + 60_000 - Date.now());
-    const t = setTimeout(() => { if (!document.querySelector('.modal-backdrop, .sheet-backdrop, .coach')) { if (next) setF(next); else setEv(special!.id); play('rare'); } }, wait);
-    return () => clearTimeout(t);
+    const from = Date.now() + wait;
+    const t = setInterval(() => {
+      if (Date.now() < from || !onHome() || shownOnVisit === homeVisit || Date.now() - lastTouch < 1500 || document.querySelector('.modal-backdrop, .sheet-backdrop, .coach')) return;
+      clearInterval(t); shownOnVisit = homeVisit;
+      if (next) setF(next); else setEv(special!.id); play('rare');
+    }, 500);
+    return () => clearInterval(t);
   }, [save]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (ev) {
     const e = activeEvents(save.time.highWater).find((x) => x.id === ev);
     const heroId = e?.login?.days.find((d) => d.hero)?.hero;
-    const close = (go: boolean) => { mutate((s) => { s.flags[`ann_${ev}`] = true; }); setEv(null); if (go) useUI.getState().push({ name: 'events' }); };
+    const close = (go: boolean) => { mutate((s) => { s.flags[`ann_${ev}`] = true; }); setEv(null); if (go) useUI.getState().push({ name: 'events', eventId: ev }); };
     if (!e) return null;
     return (
-      <Modal onClose={() => close(false)}>
+      <Modal onClose={() => close(false)} backdropClose={false}>
         {heroId && <div className="unl-art hero"><HeroArt heroId={heroId} kind="full" /></div>}
         <div className="unl-tag">Nouvel événement</div>
         <h2>{e.name}</h2>
@@ -69,7 +82,7 @@ export function UnlockAnnounce() {
   const i = INFO[f];
   const close = (go: boolean) => { mutate((s) => { s.flags[flag(f)] = true; }); setF(null); if (go) useUI.getState().push(i.route); };
   return (
-    <Modal onClose={() => close(false)}>
+    <Modal onClose={() => close(false)} backdropClose={false}>
       {i.hero ? <div className="unl-art hero"><HeroArt heroId={i.art} kind="full" /></div> : <div className="unl-art"><EnemyArt enemyId={i.art} /></div>}
       <div className="unl-tag">{i.hero ? 'Nouveau lieu' : 'Nouveau mode'}</div>
       <h2>{i.title}</h2>

@@ -56,7 +56,8 @@ export const Icon = {
   // ─── Ressources (en couleur) ───
   diamond: ({ size = 22 }: P) => <img className="diamond-ic" src={diamondUrl} width={size} height={size} alt="" draggable={false} />,
   energy: ({ size = 22 }: P) => <svg viewBox="0 0 24 24" width={size} height={size}><path d="M13 2 4 14h7l-1 8 9-12h-7z" fill="#5fe0ff" stroke="#0b4d63" strokeWidth="1.2" strokeLinejoin="round" /></svg>,
-  coin: ({ size = 22 }: P) => <svg viewBox="0 0 24 24" width={size} height={size}><circle cx="12" cy="12" r="9.5" fill="#e8b43e" stroke="#7a5512" strokeWidth="1.2" /><circle cx="12" cy="12" r="6.5" fill="none" stroke="#fff0b8" strokeWidth="1.2" opacity="0.7" /><path d="M12 8v8M9.5 10h5" stroke="#7a5512" strokeWidth="1.6" strokeLinecap="round" /></svg>,
+  // Une seule pièce d'or dans tout le jeu : l'icône peinte (v1.111.0 ; avant, un glyphe vectoriel « t » à côté de la pile peinte).
+  coin: ({ size = 22 }: P) => <img className="art-img res-art" src={RES_ART.gold} alt="" width={size} height={size} draggable={false} decoding="async" />,
   crystal: ({ size = 22, color = '#7fe7ff' }: P) => <svg viewBox="0 0 24 24" width={size} height={size}><path d="M12 2 19 8l-7 14L5 8z" fill={color} stroke="#0d3f52" strokeWidth="1.2" strokeLinejoin="round" /><path d="M5 8h14M12 2l-3 6 3 14 3-14z" fill="none" stroke="#e8fbff" strokeWidth="0.9" opacity="0.8" /></svg>,
   shard: ({ size = 22, color = '#3d8bff' }: P) => <svg viewBox="0 0 24 24" width={size} height={size}><path d="M9 2 16 5 20 13 13 22 6 17 4 8z" fill={color} stroke="#000" strokeOpacity="0.5" strokeWidth="1.2" strokeLinejoin="round" /><path d="M9 2 11 12 4 8M11 12l9 1M11 12l2 10" stroke="#fff" strokeOpacity="0.55" strokeWidth="0.9" fill="none" /></svg>,
   flask: ({ size = 22, color = '#9bdc6a' }: P) => <svg viewBox="0 0 24 24" width={size} height={size}><path d="M9 2h6M10 2v6L4.5 18.5A2.3 2.3 0 0 0 6.5 22h11a2.3 2.3 0 0 0 2-3.5L14 8V2" fill="none" stroke="#ddd" strokeWidth="1.4" /><path d="M7 14h10l2.5 4.5a2.3 2.3 0 0 1-2 3.5h-11a2.3 2.3 0 0 1-2-3.5z" fill={color} /></svg>,
@@ -75,6 +76,8 @@ import shardEpicImg from '../../assets/kit/shard_epic.webp';
 import shardRiftImg from '../../assets/kit/shard_rift.webp';
 const RES_FILES = import.meta.glob('/src/assets/res/*.webp', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
 const RES_ART: Record<string, string> = {};
+/** Icône → ressource (icônes propres à une seule ressource). */
+const ICON_TO_RES: Record<string, string> = { coin: 'gold', flask: 'xpElixir', book: 'skillTome', sigil: 'rankSigil', potion: 'potionMinor', ore: 'forgeOre', mscroll: 'masteryScroll', essence: 'awakenEssence', diamond: 'diamonds' };
 for (const [path, url] of Object.entries(RES_FILES)) { const m = path.match(/res-([a-zA-Z]+)\.webp$/); if (m) RES_ART[m[1]] = url; }
 // Éclats (v1.101.1) : UNE seule texture partout, celle des cristaux de l'Autel (petites icônes comprises).
 RES_ART.shardDim = shardCommonImg; RES_ART.shardAeon = shardAeonImg; RES_ART.shardEpic = shardEpicImg; RES_ART.shardEvent = shardRiftImg;
@@ -86,7 +89,10 @@ export function ResourceIcon({ icon, color, size, res }: { icon: string; color?:
   // Un éclat est reconnu même quand l'appelant ne donne que l'icône et la couleur.
   const shard = res && SHARDS.has(res) ? res : icon === 'shard' && color ? SHARD_BY_COLOR[color.toLowerCase()] : undefined;
   if (shard) return <img className="art-img res-shard" src={RES_ART[shard]} alt="" width={size ?? 22} height={size ?? 22} draggable={false} decoding="async" />;
-  const url = res && (size ?? 22) >= 26 ? RES_ART[res] : undefined;
+  // v1.111.0 (audit DA) : l'icône peinte à toutes les tailles (avant : glyphe vectoriel sous 26 px, deux icônes pour une
+  // même ressource). La ressource se déduit aussi de l'icône quand l'appelant ne la donne pas.
+  const rid = res ?? ICON_TO_RES[icon];
+  const url = rid ? RES_ART[rid] : undefined;
   if (url) return <img className="art-img res-art" src={url} alt="" width={size} height={size} draggable={false} loading="lazy" decoding="async" onLoad={(e) => e.currentTarget.classList.add('ok')} style={{ ['--ph' as string]: color ?? '#2a2134' }} />;
   const f = (Icon as Record<string, (p: P) => JSX.Element>)[icon] ?? Icon.crystal;
   return f({ size, color });

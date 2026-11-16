@@ -204,12 +204,6 @@ export function playEmerge(order: number) {
   whoosh(300, 1800, 0.45, 0.3);
   chimes(order >= 5 ? [784, 988, 1175, 1568] : [659, 784, 988], 0.07, 0.6, 0.09, 0.2);
 }
-/** Une carte sort de la faille (invocation ×10). */
-export function playCardOut(order: number) {
-  if (!out()) return;
-  whoosh(800, 2400, 0.12, 0.18);
-  if (order >= 4) osc('sine', order >= 5 ? 1046 : 880, null, { at: 0.05, dur: 0.3, gain: 0.08 });
-}
 
 /** v1.85.0 : silence tendu avant un Légendaire ou un Mythique — grondement qui monte puis se coupe net. */
 export function playHush(order: number) {

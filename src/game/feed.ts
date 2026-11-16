@@ -1,6 +1,7 @@
 import type { HeroInstance, SaveData } from '../save/schema';
 import type { RarityId } from '../data/types';
 import { HERO_BY_ID } from '../data/heroes';
+import { RARITIES } from '../data/rarities';
 import { heroXpToNext, addHeroXp } from './progression';
 import { maxLevelForRank } from './stats';
 import { busyHeroes } from './expeditions';
@@ -30,6 +31,10 @@ export function feedBlock(s: SaveData, targetUid: string, h: HeroInstance): stri
   if (s.teams.some((t) => t.slots.includes(h.uid))) return 'Dans une équipe.';
   if (busyHeroes(s).has(h.uid)) return 'En expédition.';
   if (s.profile.avatarHeroId === h.heroId) return 'Avatar du profil.';
+  // v1.111.0 (test « joueur curieux ») : on ne sacrifie jamais un héros plus rare que celui qu'on améliore
+  // (un débutant se voyait proposer son tout nouveau Rare pour nourrir un Commun).
+  const target = s.heroes.find((x) => x.uid === targetUid);
+  if (target && RARITIES[HERO_BY_ID[h.heroId].rarity].order > RARITIES[HERO_BY_ID[target.heroId].rarity].order) return 'Plus rare que le héros à améliorer.';
   return null;
 }
 /** Héros absorbables, les moins précieux d'abord. */

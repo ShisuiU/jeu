@@ -11,7 +11,7 @@ beforeEach(async () => { await t.clearFirestore(); });
 const m = (role: 'leader' | 'member', name = 'X') => ({ name, avatar: 'kaedra', power: 1000, role, joinedAt: 1 });
 const guild = (extra: Record<string, unknown> = {}) => ({
   name: 'Les Veilleurs', nameLower: 'les veilleurs', tag: 'LV', description: 'Bienvenue', emblem: 'aldric', open: true,
-  leader: 'a', members: { a: m('leader', 'Alice') }, count: 1, createdAt: 1, boss: { week: '2026-W45', dmg: {} }, ...extra,
+  leader: 'a', members: { a: m('leader', 'Alice') }, count: 1, createdAt: 1, boss: { week: '2026-11-02', dmg: {} }, ...extra,
 });
 const db = (uid: string) => t.authenticatedContext(uid).firestore();
 const seed = (data: Record<string, unknown>) => t.withSecurityRulesDisabled(async (c) => { await setDoc(doc(c.firestore(), 'guilds/g'), data); });
@@ -43,7 +43,7 @@ describe('clans : rejoindre, quitter, chef', () => {
     await assertFails(updateDoc(doc(db('b'), 'guilds/g'), { 'members.b': m('member'), count: 31 }));
   });
   it('un membre ne touche qu’à sa fiche et à ses dégâts', async () => {
-    await seed(guild({ members: { a: m('leader'), b: m('member') }, count: 2, boss: { week: '2026-W45', dmg: { a: 100 } } }));
+    await seed(guild({ members: { a: m('leader'), b: m('member') }, count: 2, boss: { week: '2026-11-02', dmg: { a: 100 } } }));
     await assertSucceeds(updateDoc(doc(db('b'), 'guilds/g'), { 'members.b.power': 2000, 'boss.dmg.b': 5000 }));
     await assertFails(updateDoc(doc(db('b'), 'guilds/g'), { 'boss.dmg.a': 0 }));
     await assertFails(updateDoc(doc(db('b'), 'guilds/g'), { 'boss.dmg.b': 10 })); // baisser ses dégâts
@@ -51,7 +51,7 @@ describe('clans : rejoindre, quitter, chef', () => {
     await assertFails(updateDoc(doc(db('b'), 'guilds/g'), { open: false }));
     await assertFails(updateDoc(doc(db('b'), 'guilds/g'), { 'members.b.role': 'leader' }));
     // Nouvelle semaine : on repart de sa seule ligne.
-    await assertSucceeds(updateDoc(doc(db('b'), 'guilds/g'), { boss: { week: '2026-W46', dmg: { b: 1 } } }));
+    await assertSucceeds(updateDoc(doc(db('b'), 'guilds/g'), { boss: { week: '2026-11-09', dmg: { b: 1 } } }));
   });
   it('quitter ; le chef exclut, règle, nomme un successeur', async () => {
     await seed(guild({ members: { a: m('leader'), b: m('member'), c: m('member') }, count: 3 }));
@@ -113,5 +113,12 @@ describe('discussion de clan', () => {
     await assertFails(addDoc(collection(db('z'), 'guilds/g/chat'), msg('z')));
     await assertSucceeds(getDocs(collection(db('a'), 'guilds/g/chat')));
     await assertFails(getDocs(collection(db('z'), 'guilds/g/chat')));
+  });
+});
+
+describe('semaine du boss de clan (v1.111.0)', () => {
+  it('une semaine au mauvais format est refusée', async () => {
+    await seed(guild({ members: { a: m('leader'), b: m('member') }, count: 2, boss: { week: '2026-11-02', dmg: { a: 100 } } }));
+    await assertFails(updateDoc(doc(db('b'), 'guilds/g'), { boss: { week: '9999-ZZ', dmg: { b: 1 } } }));
   });
 });

@@ -1,5 +1,6 @@
+import { isUnlocked } from '../../game/unlocks';
 import { ClaimAllButton } from '../components/ClaimAll';
-import { claimAllMissions, claimableIn } from '../../game/quickClaim';
+import { claimAllMissionTabs, claimableIn } from '../../game/quickClaim';
 import { useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
@@ -34,12 +35,12 @@ export function Row({ title, value, target, reward, claimed, onClaim, goKey }: {
 /** Ordre des succès : à réclamer, puis en cours, puis déjà obtenus (v1.103.0). */
 const achRank = (s: Parameters<typeof achievementDone>[0], id: string) => (s.achievements.includes(id) ? 2 : achievementDone(s, id) ? 0 : 1);
 
-export function Missions() {
+export function Missions({ initialTab = 'daily' }: { initialTab?: 'daily' | 'weekly' | 'progress' } = {}) {
   const save = useGame((s) => s.save)!;
   const now = useGame((s) => s.now);
   const mutate = useGame((s) => s.mutate);
   const toast = useUI((s) => s.toast);
-  const [tab, setTab] = useState<'daily' | 'weekly' | 'progress'>('daily');
+  const [tab, setTab] = useState<'daily' | 'weekly' | 'progress'>(initialTab);
   const claim = (fn: (s: typeof save) => boolean) => { let ok = false; mutate((s) => { ok = fn(s); }); if (ok) { play('claim'); toast('Récompense obtenue !', 'ok'); } };
   const kind = tab as MissionKind;
   const list = activeMissions(save, tab === 'daily' ? 'daily' : 'weekly');
@@ -53,8 +54,8 @@ export function Missions() {
           </button>
         ))}
       </div>
-      <ClaimAllButton key={tab} label="Tout réclamer" title="Récompenses réclamées" count={claimableIn(save, tab) + (tab !== 'progress' && bonusAvailable(save, kind) ? 1 : 0)}
-        onRun={() => { let r = { reward: {}, count: 0 } as ReturnType<typeof claimAllMissions>; mutate((s) => { r = claimAllMissions(s, tab); }); return r; }} />
+      <ClaimAllButton key={tab} label="Tout réclamer" title="Récompenses réclamées" count={(['daily', 'weekly', 'progress'] as const).reduce((n, t) => n + claimableIn(save, t) + (t !== 'progress' && bonusAvailable(save, t) ? 1 : 0), 0)}
+        onRun={() => { let r = { reward: {}, count: 0 } as ReturnType<typeof claimAllMissionTabs>; mutate((s) => { r = claimAllMissionTabs(s); }); return r; }} />
       {tab !== 'progress' && (
         <>
           <p className="faint" style={{ marginTop: 0 }}>Renouvellement dans {formatDuration(tab === 'daily' ? msUntilReset(now) : msUntilWeekReset(now))}</p>
@@ -63,13 +64,14 @@ export function Missions() {
           </Panel>
           <Panel title={tab === 'daily' ? 'Coffre du jour' : 'Coffre de la semaine'}>
             <RewardView reward={tab === 'daily' ? DAILY_BONUS : WEEKLY_BONUS} />
+            {!save.missions[kind].bonus && !bonusAvailable(save, kind) && <p className="faint" style={{ margin: '8px 0 0', textAlign: 'center' }}>S’ouvre quand toutes les missions {tab === 'daily' ? 'du jour' : 'de la semaine'} sont réclamées.</p>}
             <button className="btn block" style={{ marginTop: 10 }} disabled={!bonusAvailable(save, kind)} onClick={() => claim((s) => claimBonus(s, kind))}>{save.missions[kind].bonus ? 'Déjà ouvert' : 'Ouvrir le coffre'}</button>
           </Panel>
         </>
       )}
       {tab === 'progress' && (
         <Panel>
-          {[...ACHIEVEMENTS].sort((x, y) => achRank(save, x.id) - achRank(save, y.id)).map((a) => { const [v, t] = a.progress(save); return <Row key={a.id} title={a.title} value={v} target={t} reward={a.reward} claimed={save.achievements.includes(a.id)} onClaim={() => claim((s) => claimAchievement(s, a.id))} />; })}
+          {[...ACHIEVEMENTS].filter((a) => !a.feature || isUnlocked(save, a.feature)).sort((x, y) => achRank(save, x.id) - achRank(save, y.id)).map((a) => { const [v, t] = a.progress(save); return <Row key={a.id} title={a.title} value={v} target={t} reward={a.reward} claimed={save.achievements.includes(a.id)} onClaim={() => claim((s) => claimAchievement(s, a.id))} />; })}
         </Panel>
       )}
     </Screen>

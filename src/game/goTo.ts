@@ -5,6 +5,7 @@ import { isUnlocked, unlockText, type Feature } from './unlocks';
 
 // « Y ALLER » — chaque objectif (mission, événement) mène directement à l'écran où on l'accomplit.
 const GO: Partial<Record<TrackKey, { route: Route; feature?: Feature }>> = {
+  login: { route: { name: 'daily' } },
   battleWin: { route: { name: 'campaign' } },
   campaignWin: { route: { name: 'campaign' } },
   energySpent: { route: { name: 'campaign' } },

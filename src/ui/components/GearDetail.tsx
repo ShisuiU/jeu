@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Icon } from '../art/Icons';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
@@ -68,6 +69,10 @@ export function GearDetail({ gearUid, onClose, equipTo, place = 'hero', onReplac
   const save = useGame((s) => s.save)!;
   const mutate = useGame((s) => s.mutate);
   const toast = useUI((s) => s.toast);
+  // Démanteler est définitif : un premier toucher arme le bouton, un second (dans les 3 s) confirme.
+  const [armed, setArmed] = useState(false);
+  const [picking, setPicking] = useState(false);
+  useEffect(() => { if (!armed) return; const t = setTimeout(() => setArmed(false), 3000); return () => clearTimeout(t); }, [armed]);
   const g = save.equipment.find((x) => x.uid === gearUid);
   if (!g) return null;
   const r = GEAR_RARITIES[g.rarity];
@@ -137,7 +142,22 @@ export function GearDetail({ gearUid, onClose, equipTo, place = 'hero', onReplac
       <p className="faint gd-next">{g.level >= GEAR_MAX_LEVEL ? 'Niveau maximum atteint.' : g.subs.length < 4 ? `Au +${nextMilestone} : une secondaire révélée.` : `Au +${nextMilestone} : une secondaire renforcée.`}</p>
       <p className="faint" style={{ margin: '4px 0 0' }}>{owner ? `Équipé sur ${HERO_BY_ID[owner.heroId].name}` : 'Non équipé'}</p>
 
+      {equipTo && g.heroUid !== equipTo && (
+        <button className="btn block gd-equip-top" onClick={() => { mutate((s) => { equipGear(s, g.uid, equipTo); }); play('claim'); onClose(); }}>Équiper sur {HERO_BY_ID[save.heroes.find((h) => h.uid === equipTo)?.heroId ?? '']?.name.split(/[ ,]/)[0] ?? 'ce héros'}</button>
+      )}
       {equipTo && g.heroUid !== equipTo && <GearCompare save={save} g={g} heroUid={equipTo} />}
+      {/* Objet libre ouvert hors d'une fiche de héros (butin, Forge) : choisir directement le héros qui le porte. */}
+      {!equipTo && !owner && picking && (
+        <div className="gd-pick">
+          <div className="faint" style={{ marginBottom: 6 }}>Équiper sur :</div>
+          <div className="row wrap" style={{ gap: 6 }}>
+            {(() => { const team = new Set((save.teams.find((t) => t.id === save.activeTeamId) ?? save.teams[0])?.slots ?? []); return [...save.heroes].sort((a, b) => Number(team.has(b.uid)) - Number(team.has(a.uid)) || b.level - a.level); })().slice(0, 8).map((h) => {
+              const cur = save.equipment.find((x) => x.heroUid === h.uid && x.slot === g.slot);
+              return <button key={h.uid} className="chip" onClick={() => { mutate((s) => { equipGear(s, g.uid, h.uid); }); play('claim'); toast(`Équipé sur ${HERO_BY_ID[h.heroId].name.split(/[ ,]/)[0]}${cur ? ' (l’ancien objet retourne au sac)' : ''}.`, 'ok'); onClose(); }}>{HERO_BY_ID[h.heroId].name.split(/[ ,]/)[0]} · Nv {h.level}{cur ? '' : ' · vide'}</button>;
+            })}
+          </div>
+        </div>
+      )}
 
       {place === 'forge' && (g.level < GEAR_MAX_LEVEL ? (
         <div className="upg-row gd-up">
@@ -151,14 +171,12 @@ export function GearDetail({ gearUid, onClose, equipTo, place = 'hero', onReplac
         <button className="btn block" style={{ marginTop: 12 }} onClick={() => { onClose(); push({ name: 'gear', gearUid: g.uid }); }}>Renforcer à la Forge</button>
       )}
       <div className="row wrap gd-actions" style={{ gap: 8, marginTop: 12 }}>
-        {equipTo && g.heroUid !== equipTo && (
-          <button className="btn grow" onClick={() => { mutate((s) => { equipGear(s, g.uid, equipTo); }); play('claim'); onClose(); }}>Équiper</button>
-        )}
+        {!equipTo && !owner && !picking && <button className="btn grow" onClick={() => setPicking(true)}>Équiper…</button>}
         {onReplace && <button className="btn secondary grow" onClick={() => { onClose(); onReplace(); }}>Changer</button>}
         {owner && <button className="btn secondary grow" onClick={() => { mutate((s) => unequipGear(s, g.uid)); onClose(); }}>Retirer</button>}
         <button className="btn secondary grow" onClick={() => mutate((s) => { const x = s.equipment.find((y) => y.uid === g.uid); if (x) x.locked = !x.locked; })}>{g.locked ? 'Déverrouiller' : 'Verrouiller'}</button>
         {place === 'forge' && !owner && !g.locked && (
-          <button className="btn danger grow" onClick={() => { mutate((s) => { dismantleGear(s, g.uid); }); toast(`Démantelé : +${dis.gold} or, +${dis.forgeOre} minerai.`, 'ok'); onClose(); }}>Démanteler</button>
+          <button className={`btn danger grow ${armed ? 'armed' : ''}`} onClick={() => { if (!armed) { setArmed(true); return; } mutate((s) => { dismantleGear(s, g.uid); }); toast(`Démantelé : +${dis.gold} or, +${dis.forgeOre} minerai.`, 'ok'); onClose(); }}>{armed ? 'Confirmer ?' : 'Démanteler'}</button>
         )}
       </div>
     </Modal>

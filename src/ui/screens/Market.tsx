@@ -12,11 +12,12 @@ import { Wallet } from '../components/Wallet';
 import { GearCard, statText } from '../components/GearCard';
 import { GearStars, SetEmblem } from '../art/SetEmblem';
 import { Icon, ResourceIcon } from '../art/Icons';
+import { GetButton } from '../components/Sources';
 
 // MARCHÉ — 6 offres par jour, un achat chacune. On peut renouveler les offres 3 fois par jour (cristaux).
 const PriceTag = ({ o, enough }: { o: MarketOffer; enough: boolean }) => (
   <span className={`mk-price ${enough ? '' : 'lack'}`}>
-    {o.price.resource === 'gold' ? <Icon.coin size={15} /> : <ResourceIcon icon={RESOURCES.crystals.icon} color={RESOURCES.crystals.color} size={15} />}
+    {o.price.resource === 'gold' ? <Icon.coin size={15} /> : <ResourceIcon icon={RESOURCES[o.price.resource].icon} color={RESOURCES[o.price.resource].color} size={15} res={o.price.resource} />}
     {fmt(o.price.amount)}
   </span>
 );
@@ -65,7 +66,7 @@ export function Market() {
               <div className="mk-art">
                 {x.gear ? <GearCard g={x.gear} /> : def && <><ResourceIcon icon={def.icon} color={def.color} size={40} res={def.id} /><b className="mk-qty">×{res![1]}</b></>}
               </div>
-              <div className="mk-name">{x.gear ? GEAR_RARITIES[x.gear.rarity].name : def?.name}</div>
+              <div className="mk-name" style={x.gear ? { color: GEAR_RARITIES[x.gear.rarity].color } : undefined}>{x.gear ? <>{SLOT_BY_ID[x.gear.slot].name} <span className="mk-set">{SETS[x.gear.set].name}</span></> : def?.name}</div>
               {x.bought ? <span className="mk-sold">Acheté</span> : <PriceTag o={x} enough={has(x)} />}
             </button>
           );
@@ -99,10 +100,10 @@ export function Market() {
           ) : (
             <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>{RESOURCES[Object.keys(o.reward ?? {})[0] as keyof typeof RESOURCES]?.description}</p>
           )}
-          <div className="mk-cost"><span className="muted">Prix</span><PriceTag o={o} enough={has(o)} /></div>
+          <div className="mk-cost"><span className="muted">Prix</span><span className="row" style={{ gap: 6 }}><PriceTag o={o} enough={has(o)} />{!has(o) && <GetButton res={o.price.resource} />}</span></div>
           <div className="row" style={{ gap: 8, marginTop: 10 }}>
             <button className="btn secondary grow" onClick={() => setSel(null)}>Annuler</button>
-            <button className="btn grow" disabled={!has(o)} onClick={buy}>{has(o) ? 'Acheter' : o.price.resource === 'gold' ? 'Or insuffisant' : 'Cristaux insuffisants'}</button>
+            <button className="btn grow" disabled={!has(o)} onClick={buy}>{has(o) ? 'Acheter' : `${RESOURCES[o.price.resource].name} insuffisant`}</button>
           </div>
         </Modal>
       )}

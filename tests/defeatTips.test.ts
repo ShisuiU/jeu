@@ -25,3 +25,11 @@ describe('Conseils après une défaite', () => {
     expect(lvl?.label).toBe('Grotte');
   });
 });
+
+import { DAILY_REWARDS } from '../src/data/dailyRewards';
+import { normalizeReward } from '../src/data/resources';
+describe('Calendrier de connexion (v1.111.0)', () => {
+  it('affiche exactement ce qui est versé (plus de monnaie retirée convertie en douce)', () => {
+    for (const d of DAILY_REWARDS) expect(normalizeReward(d.reward), `J${d.day}`).toEqual(d.reward);
+  });
+});

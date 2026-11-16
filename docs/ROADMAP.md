@@ -558,6 +558,28 @@
 - **Une musique par lieu** : Forge (lourde et grave), Sanctuaire (chœur), Tour (mystérieuse), Arène (martiale), Marché, Camp ; les boss gardent la leur
 - **Arène : correction** : depuis la v1.54, une défense dont l'équipement donnait plus de 3 % de bonus était écartée par erreur (les joueurs bien équipés n'apparaissaient presque jamais) ; plafond réaliste de 400 %, la vérification de puissance reste
 
+## 🌙 Mission nocturne (15-16 novembre 2026) — journal de travail
+
+Travail sur la branche `claude/keen-faraday-bcryji`, **sans fusion sur `main`** (pas de mise en production sans autorisation). Cycles : audit → corrections → tests → nouvel audit, jusqu'à 07:00 UTC.
+
+- Cycle 1 (22:00 UTC → 02:45 UTC, dont ~4 h d'arrêt forcé par la limite d'utilisation) : retours du testeur « joueur curieux » ; 4 audits en parallèle (ressources « Obtenir », mobile 3 tailles, technique, boutons sans effet) et leurs corrections : sauvegarde fiable (victoire conservée après fermeture brutale, vérifié), sauvegarde illisible jamais écrasée, deux fenêtres, « Obtenir » sur chaque coût manquant, 15 corrections mobiles, 6 boutons trompeurs.
+- Cycle 2 (02:45 UTC) : critique « finition commerciale » de tous les écrans ; second test « nouveau joueur » sur la version corrigée ; boss de clan (fuseaux horaires).
+- Cycle 2, suite (03:00 → 03:25 UTC) : icônes de ressources détourées (15 images), croix des fenêtres et paliers d'Événements remis en place (régression du cycle 1), toasts avec icône, boutons inactifs lisibles ; **Démanteler demande une confirmation** ; nom des équipements au Marché ; décimales à la française ; icône peinte « Code promo » (SpriteCook) ; état vide de la Forge avec action ; boutons Fermer en double retirés (7 fenêtres) ; cases d'équipement vides d'un seul style.
+- Arrêt forcé de 03:25 à 07:30 UTC (limite d'utilisation) : le second test « nouveau joueur » et la seconde critique artistique n'ont pas pu aboutir.
+
+## ✅ Version 1.111.0 — Mission nocturne : fiabilité, « Obtenir » partout, finition
+
+- **Sauvegarde fiable** : une victoire n'est plus perdue si l'app est fermée brutalement (copie immédiate), une sauvegarde illisible est mise de côté au lieu d'être écrasée, une seconde fenêtre ouverte passe en lecture seule.
+- **« Obtenir » sur chaque coût manquant** (Sanctuaire, Copies, Marché, Maîtrises, énergie).
+- **Mobile** : 15 corrections de 320 à 430 px de large.
+- **Finition** : icônes de ressources sans carré noir, toasts avec icône, boutons inactifs lisibles, une seule croix par fenêtre, cases vides homogènes, icône « Code promo », Forge vide qui propose les Donjons.
+- **Sécurité des objets** : Démanteler demande un second toucher.
+- **Second test « nouveau joueur » (aucun blocage ; mur du 2-4, combat décalé, bulles en retard, conseils de défaite : confirmés réglés)** et ses retours : « Équiper sur … » en haut de la fiche d'objet, « Équiper… » depuis le butin et la Forge (choix du héros), bulles Invocation et Sanctuaire aussi sur l'écran de préparation (après le 1-3 et le 1-4), bouton « Chapitre 2 » après le dernier niveau d'un chapitre, annonces de nouveaux modes une seule à la fois et seulement sur l'Accueil (plus fermées par un toucher sur le fond), message unique quand AUTO utilise le Lien, plus de pastille sur l'onglet de l'écran affiché.
+- **Troisième test « nouveau joueur » (jusqu'au 3-1 en 43 min, aucun blocage, 6 corrections sur 7 confirmées)** et ses retours : plus de pastille sur l'onglet actif dans ses sous-écrans, conseil « monter de rang » qui ouvre l'onglet Rang, « Voir l'événement » qui ouvre l'événement annoncé, « Tout réclamer » des Missions sur les trois onglets, bandeau des Coutures caché tant que le joueur ne connaît pas les familles, introduction lisible (3,6 s par phrase, un toucher = une phrase), Camp et Expéditions : « à retrouver dans Bâtiments », portraits du Sanctuaire qui ne changent plus de place, « max · rang possible ▲ » à la victoire, faute corrigée dans le dialogue du 1-1. Boutons secondaires harmonisés, bulles d'aide qui répondent à un toucher à côté, chances de la Roue affichées, iPhone SE sans coupures.
+- **Fin du chapitre 2 adoucie (mesurée par simulation)** : avec les 4 héros de départ, le 2-9 demandait le niveau 28 et le 2-10 le niveau 36, contre 20 au 3-1 (le testeur y a perdu trois fois). Au chapitre 2, une seule élite par niveau à partir du 2-7, au niveau de la vague, et boss ajusté comme celui du chapitre 3 : 2-5 → 2-10 demandent maintenant 19, 20, 21, 22, 23, 24. La courbe générale de la campagne (test d'équilibrage) reste respectée.
+- **Seconde critique artistique (7/10) traitée** : boutons inactifs lisibles, ruban « Chef » sur une ligne, bouton Répéter peint, onglets qui défilent en fondu, gains de la Roue à l'endroit, Marché « Accessoire · ensemble », toasts alignés, pastilles d'effets deux par ligne en combat, écran de victoire centré avec rayons dorés, cases vides creusées.
+- **Clan** : dégâts au boss comptés même avec une semaine de décalage ; règles du serveur renforcées (à publier).
+
 ## ✅ Version 1.110.0 — Test « joueur pressé » : le mur du 2-4, et fin de la refonte
 
 - **Mur du 2-4** (un testeur jouant une partie neuve y a perdu deux fois) : simulé avec les 4 héros de départ, le 2-3 demandait le niveau 12 et le 2-4 le niveau 21. Cause : l'élite (Chevalier) entrait au 4ᵉ niveau du chapitre. Au chapitre 2 seulement, pas d'élite avant le 2-7 : le 2-4 demande le niveau 15. Garde retirée de la Sylve pourrissante (trop tôt pour une nouvelle mécanique). Courbe de la campagne : test existant toujours vert.

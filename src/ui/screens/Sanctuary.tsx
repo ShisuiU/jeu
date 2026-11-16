@@ -25,28 +25,30 @@ import emblemLevel from '../../assets/kit/emblem_level.webp';
 import { Ceremony, snapHero, type CeremonyKind, type HeroSnap } from '../components/Ceremony';
 
 // SANCTUAIRE — un héros à la fois, une ligne par amélioration.
-export function Sanctuary({ uid }: { uid?: string }) {
+export function Sanctuary({ uid, initialTab }: { uid?: string; initialTab?: 'level' | 'rank' | 'ascend' | 'skills' | 'mastery' }) {
   const save = useGame((s) => s.save)!;
   const mutate = useGame((s) => s.mutate);
   const push = useUI((s) => s.push);
   const toast = useUI((s) => s.toast);
   const { defaultUid } = useHeroOrder();
   const [sel, setSel] = useState<string | undefined>(uid && save.heroes.some((h) => h.uid === uid) ? uid : defaultUid);
+  // Tous les hooks avant le retour anticipé « aucun héros » (règle des hooks React ; audit technique I4).
+  const [maxAsk, setMaxAsk] = useState(false);
+  const [tapGuard, setTapGuard] = useState(false);
+  const [cele, setCele] = useState<{ kind: Celebration; title: string; from: number; to: number; key: number } | null>(null);
+  const [cer, setCer] = useState<{ kind: CeremonyKind; heroId: string; before: HeroSnap; after: HeroSnap; key: number } | null>(null);
+  const [tab, setTab] = useState<'level' | 'rank' | 'ascend' | 'skills' | 'mastery'>(initialTab ?? 'level');
   const h = save.heroes.find((x) => x.uid === sel) ?? save.heroes[0];
   if (!h) return <Screen title="Sanctuaire"><p className="muted">Aucun héros.</p></Screen>;
   const d = HERO_BY_ID[h.heroId];
   const cap = maxLevelForRank(h.rank);
   const toCap = elixirsToCap(h);
-  const [maxAsk, setMaxAsk] = useState(false);
   const one = elixirPreview(save, h, 1);
   const all = elixirPreview(save, h, toCap);
 
   // Moments de progression mis en scène (v1.89.0) : niveau, rang, ascension et éveil ont chacun leur animation.
-  const [tapGuard, setTapGuard] = useState(false);
-  const [cele, setCele] = useState<{ kind: Celebration; title: string; from: number; to: number; key: number } | null>(null);
   const powerNow = () => powerOf(heroTotalStats(useGame.getState().save!, useGame.getState().save!.heroes.find((x) => x.uid === h.uid)!).total);
   // Cérémonie (v1.107.0) : rang, ascension et éveil ont leur mise en scène complète, avec le bilan avant → après.
-  const [cer, setCer] = useState<{ kind: CeremonyKind; heroId: string; before: HeroSnap; after: HeroSnap; key: number } | null>(null);
   const run = (fn: (s: typeof save) => Check, _okMsg: string, kind: CeremonyKind) => {
     const before = snapHero(useGame.getState().save!, h.uid);
     let c: Check = { ok: false, cost: {} };
@@ -58,13 +60,12 @@ export function Sanctuary({ uid }: { uid?: string }) {
     const before = powerNow();
     let r: ReturnType<typeof applyElixirs> = { used: 0, levels: 0 };
     mutate((s) => { r = applyElixirs(s, h.uid, n); });
-    if (r.used) { play('claim'); if (r.levels) setCele({ kind: 'level', title: `Niveau ${useGame.getState().save!.heroes.find((x) => x.uid === h.uid)!.level}`, from: before, to: powerNow(), key: Date.now() }); else toast(`+${r.used} élixir(s)`, 'ok'); } else toast(r.reason ?? 'Impossible.', 'error');
+    if (r.used) { play('claim'); if (r.levels) setCele({ kind: 'level', title: `Niveau ${useGame.getState().save!.heroes.find((x) => x.uid === h.uid)!.level}`, from: before, to: powerNow(), key: Date.now() }); else toast(`+${r.used} élixir${r.used > 1 ? 's' : ''}`, 'ok'); } else toast(r.reason ?? 'Impossible.', 'error');
   };
   const skillMax = d.skills.reduce((a, s) => a + s.upgrades.length + 1, 0);
   const skillNow = d.skills.reduce((a, s) => a + (h.skillLevels[s.id] ?? 1), 0);
   const skillReady = d.skills.some((s) => skillCheck(save, h, s.id).ok);
 
-  const [tab, setTab] = useState<'level' | 'rank' | 'ascend' | 'skills' | 'mastery'>('level');
   const TABS = [
     { id: 'level', label: 'Niveau', dot: !!toCap && save.resources.xpElixir > 0 },
     { id: 'rank', label: 'Rang', dot: rankUpCheck(save, h).ok },
@@ -96,8 +97,8 @@ export function Sanctuary({ uid }: { uid?: string }) {
         <>
           <Wallet ids={['xpElixir', 'gold']} cols={2} />
           <div className="upg-list">
-            <UpRow icon={<ResourceIcon icon="flask" color="#9bdc6a" size={20} />} label="Élixirs" value={`${h.level}/${cap}`}
-              sub={h.level < cap ? <span>{save.resources.xpElixir} élixir(s) · +1 : {fmt(BALANCE.upgrades.elixirGoldPerLevel * h.level)} or</span> : <span>Niveau maximum du rang : monte de rang</span>}>
+            <UpRow icon={<ResourceIcon icon="flask" color="#9bdc6a" size={20} />} label="Niveau" value={`${h.level}/${cap}`}
+              sub={h.level < cap ? <span>{save.resources.xpElixir} élixir{save.resources.xpElixir > 1 ? 's' : ''} · +1 : {fmt(BALANCE.upgrades.elixirGoldPerLevel * h.level)} or</span> : <span>Niveau maximum du rang : monte de rang</span>}>
               <button className="btn secondary small" disabled={!one.used} onClick={() => elixir(1)}>+1</button>
               <button className="btn small" disabled={!all.used} onClick={() => setMaxAsk(true)}>Max</button>
             </UpRow>
@@ -213,7 +214,8 @@ function UpRow({ icon, label, value, sub, dot, children }: { icon: React.ReactNo
 
 function CheckRow({ icon, label, value, check, max, heroId, onGo }: { icon: React.ReactNode; label: string; value: string; check: Check; max: boolean; heroId: string; onGo: () => void }) {
   const save = useGame((s) => s.save)!;
-  const blocked = !check.ok && !!check.reason && !check.reason.includes('insuffisant');
+  // Ressource manquante (« … insuffisant » / « Il manque : … ») : on montre le coût et « Obtenir », pas un cadenas.
+  const blocked = !check.ok && !!check.reason && !/insuffisant|Il manque/.test(check.reason);
   return (
     <UpRow icon={icon} label={label} value={value} dot={check.ok}
       sub={max ? <span>Maximum atteint</span> : blocked ? <span>{check.reason}</span> : <CostView cost={check.cost} save={save} heroId={heroId} />}>

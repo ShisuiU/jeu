@@ -43,7 +43,9 @@ export function BottomNav() {
   const combatsDot = useGame((s) => !!s.save && (s.save.expeditions?.runs ?? []).some((r) => s.now >= r.endsAt));
   const gifts = useGifts((g) => g.waiting > 0);
   const homeDotGame = useGame((s) => !!s.save && (canClaimDaily(s.save, s.now) || unreadMail(s.save.flags) || claimableCount(s.save) > 0 || (isUnlocked(s.save, 'events') && eventsDot(s.save, s.now))));
-  const homeDot = gifts || homeDotGame;
+  // Comme sur l'Accueil : aucune pastille avant la première victoire (le joueur suit d'abord le tutoriel).
+  const firstWin = useGame((s) => !!s.save && Object.values(s.save.progress.campaign).some((p) => p.clears > 0));
+  const homeDot = (gifts || homeDotGame) && firstWin;
   // Héros : nouveaux doublons, palier de collection, ou un héros de l'équipe peut franchir une étape majeure (rang, ascension, éveil).
   const heroesDot = useGame((s) => !!s.save && (newCopies(s.save) || teamCanImprove(s.save) || collectionClaimable(s.save).length > 0));
   // Menu : invitation à protéger sa partie, jusqu'à la première visite de l'écran Sauvegarde.

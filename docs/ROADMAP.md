@@ -564,6 +564,17 @@ Travail sur la branche `claude/keen-faraday-bcryji`, **sans fusion sur `main`** 
 
 - Cycle 1 (22:00 UTC → 02:45 UTC, dont ~4 h d'arrêt forcé par la limite d'utilisation) : retours du testeur « joueur curieux » ; 4 audits en parallèle (ressources « Obtenir », mobile 3 tailles, technique, boutons sans effet) et leurs corrections : sauvegarde fiable (victoire conservée après fermeture brutale, vérifié), sauvegarde illisible jamais écrasée, deux fenêtres, « Obtenir » sur chaque coût manquant, 15 corrections mobiles, 6 boutons trompeurs.
 - Cycle 2 (02:45 UTC) : critique « finition commerciale » de tous les écrans ; second test « nouveau joueur » sur la version corrigée ; boss de clan (fuseaux horaires).
+- Cycle 2, suite (03:00 → 03:25 UTC) : icônes de ressources détourées (15 images), croix des fenêtres et paliers d'Événements remis en place (régression du cycle 1), toasts avec icône, boutons inactifs lisibles ; **Démanteler demande une confirmation** ; nom des équipements au Marché ; décimales à la française ; icône peinte « Code promo » (SpriteCook) ; état vide de la Forge avec action ; boutons Fermer en double retirés (7 fenêtres) ; cases d'équipement vides d'un seul style.
+- Arrêt forcé de 03:25 à 07:30 UTC (limite d'utilisation) : le second test « nouveau joueur » et la seconde critique artistique n'ont pas pu aboutir.
+
+## ✅ Version 1.111.0 — Mission nocturne : fiabilité, « Obtenir » partout, finition
+
+- **Sauvegarde fiable** : une victoire n'est plus perdue si l'app est fermée brutalement (copie immédiate), une sauvegarde illisible est mise de côté au lieu d'être écrasée, une seconde fenêtre ouverte passe en lecture seule.
+- **« Obtenir » sur chaque coût manquant** (Sanctuaire, Copies, Marché, Maîtrises, énergie).
+- **Mobile** : 15 corrections de 320 à 430 px de large.
+- **Finition** : icônes de ressources sans carré noir, toasts avec icône, boutons inactifs lisibles, une seule croix par fenêtre, cases vides homogènes, icône « Code promo », Forge vide qui propose les Donjons.
+- **Sécurité des objets** : Démanteler demande un second toucher.
+- **Clan** : dégâts au boss comptés même avec une semaine de décalage ; règles du serveur renforcées (à publier).
 
 ## ✅ Version 1.110.0 — Test « joueur pressé » : le mur du 2-4, et fin de la refonte
 

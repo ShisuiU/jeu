@@ -574,6 +574,7 @@ Travail sur la branche `claude/keen-faraday-bcryji`, **sans fusion sur `main`** 
 - **Mobile** : 15 corrections de 320 à 430 px de large.
 - **Finition** : icônes de ressources sans carré noir, toasts avec icône, boutons inactifs lisibles, une seule croix par fenêtre, cases vides homogènes, icône « Code promo », Forge vide qui propose les Donjons.
 - **Sécurité des objets** : Démanteler demande un second toucher.
+- **Seconde critique artistique (7/10) traitée** : boutons inactifs lisibles, ruban « Chef » sur une ligne, bouton Répéter peint, onglets qui défilent en fondu, gains de la Roue à l'endroit, Marché « Accessoire · ensemble », toasts alignés, pastilles d'effets deux par ligne en combat, écran de victoire centré avec rayons dorés, cases vides creusées.
 - **Clan** : dégâts au boss comptés même avec une semaine de décalage ; règles du serveur renforcées (à publier).
 
 ## ✅ Version 1.110.0 — Test « joueur pressé » : le mur du 2-4, et fin de la refonte

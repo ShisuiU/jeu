@@ -771,3 +771,8 @@ select.prep-team { min-height: 40px; }
 /* Une seule famille de boutons secondaires : « Y aller », « Améliorer » (fiche héros) reprennent le style des boutons secondaires. */
 .theme-v2 .m-go, .theme-v2 .hs-upgrade { border: 1px solid rgba(217, 192, 138, 0.30) !important; background: linear-gradient(180deg, #2b2331, #17121d) !important; border-radius: var(--r-pill) !important; color: #efe3c8 !important; box-shadow: inset 0 1px 0 rgba(255, 236, 200, 0.10), 0 2px 6px rgba(0, 0, 0, 0.45); }
 .theme-v2 .coach-actions .coach-ok { border-radius: var(--r-pill); }
+/* Bulle d'aide : un toucher sur le voile fait pulser la cible et la bulle (le jeu répond, il montre où toucher). */
+.coach.nudge .coach-ring { animation: coachNudge 0.5s ease-out; }
+.coach.nudge .coach-bubble { animation: coachNudgeB 0.4s ease-out; }
+@keyframes coachNudge { 0% { box-shadow: 0 0 0 2px var(--gold-hi), 0 0 0 0 rgba(255, 211, 107, 0.9); } 100% { box-shadow: 0 0 0 2px var(--gold-hi), 0 0 0 18px rgba(255, 211, 107, 0); } }
+@keyframes coachNudgeB { 30% { transform: translateX(-5px); } 60% { transform: translateX(5px); } 100% { transform: none; } }

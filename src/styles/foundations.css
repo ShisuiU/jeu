@@ -688,7 +688,8 @@ select.prep-team { min-height: 40px; }
 /* Panneaux : le liseré pointillé (effet maquette) devient un filet intérieur à peine visible. */
 .theme-v2 .panel::before { border: 1px solid rgba(217, 192, 138, 0.07) !important; inset: 4px !important; }
 /* Bouton désactivé : clairement éteint (il se confondait avec un bouton secondaire « argent »). */
-.theme-v2 .btn:disabled { filter: grayscale(1) brightness(0.45) !important; opacity: 0.6; }
+.theme-v2 .btn:disabled { filter: saturate(0.15) brightness(0.78) !important; opacity: 0.85; color: #e2d9c8 !important; text-shadow: 0 1px 2px rgba(0,0,0,0.9) !important; }
+.theme-v2 .btn:disabled svg, .theme-v2 .btn:disabled img { opacity: 0.85; }
 /* Chiffres de dégâts : plus grands, détourés, lisibles sur les visages. */
 .popup.dmg { font-size: 20px; -webkit-text-stroke: 0.8px rgba(0, 0, 0, 0.85); paint-order: stroke fill; }
 .popup.dmg.crit { font-size: 25px; }
@@ -720,3 +721,19 @@ select.prep-team { min-height: 40px; }
 .forge-empty span { flex: 1; }
 /* Cases vides : un seul style partout (fiche héros = Forge) : pointillé gris sur fond sombre, icône du type d'objet. */
 .gear-card.empty { border: 1.5px dashed #6a6274 !important; border-image: none !important; background: rgba(10,9,14,0.72) !important; box-shadow: none !important; color: #6f6878; border-radius: var(--r-lg); }
+
+/* Recritique DA (v1.111.1) */
+/* Ruban « Chef » : une seule ligne, texte lisible sur le ruban. */
+.prep-lead.on { white-space: nowrap; height: 18px; line-height: 18px !important; min-width: 70px; text-align: center; padding: 0 8px !important; overflow: visible; }
+/* Répéter : même famille que Combattre (bouton peint), pas une pilule grise. */
+.theme-v2 .btn.secondary.prep-sweep { border: solid transparent !important; border-width: 0 22px !important; border-image: url('../assets/kit/p_btn_repeat.webp') 0 18% 0 18% fill / 0 22px stretch !important; background: none !important; border-radius: 0 !important; color: #f1e4c6 !important; text-shadow: 0 1px 2px rgba(0,0,0,0.85) !important; padding-left: 8px !important; padding-right: 8px !important; }
+/* Barre de préparation : fond opaque, le panneau Récompenses ne transparaît plus. */
+.theme-v2 .prep-bar { background: linear-gradient(180deg, rgba(10, 8, 14, 0) 0, rgb(10, 8, 14) 14px, rgb(9, 7, 13)) !important; }
+.mk-name .mk-set { display: block; font-size: var(--fs-2xs); font-weight: 600; color: var(--text-dim); letter-spacing: 0.02em; }
+/* Onglets qui défilent : fondu sur le bord droit pour montrer qu'il y en a d'autres, au lieu d'un mot coupé net. */
+/* (classe .ovf posée par ui/segOverflow.ts) */
+.seg.ovf { -webkit-mask-image: linear-gradient(90deg, #000 78%, transparent); mask-image: linear-gradient(90deg, #000 78%, transparent); scroll-padding-inline: 16px; }
+/* Toasts : une largeur commune, pile alignée. */
+.toast { width: min(340px, 88vw); box-sizing: border-box; }
+.wl-in { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.wl-in.flip { transform: rotate(180deg); }

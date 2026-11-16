@@ -1,5 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { watchSegOverflow } from './ui/segOverflow';
 import '@fontsource/cinzel/latin-600.css';
 import '@fontsource/cinzel/latin-ext-600.css';
 import '@fontsource/cinzel/latin-800.css';
@@ -49,3 +50,4 @@ document.addEventListener('pointerdown', (e) => {
   el.appendChild(dot);
   setTimeout(() => dot.remove(), 600);
 }, { passive: true });
+watchSegOverflow();

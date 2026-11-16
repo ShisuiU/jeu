@@ -107,8 +107,11 @@ export function Wheel() {
           <div className="wheel-labels">
             {WHEEL.map((w, i) => (
               <div key={w.id} className={`wl ${w.id === 'faille' ? 'rare' : ''} ${!spinning && lastIdx === i && !ready ? 'won' : ''}`} style={{ transform: `rotate(${i * SEG + SEG / 2}deg)` }}>
-                <SlotIcon id={w.id} size={22} />
-                <span>{w.short}</span>
+                {/* Moitié basse : contenu retourné pour se lire à l'endroit quand la roue est au repos. */}
+                <div className={`wl-in ${((i * SEG + SEG / 2) % 360) > 90 && ((i * SEG + SEG / 2) % 360) < 270 ? 'flip' : ''}`}>
+                  <SlotIcon id={w.id} size={22} />
+                  <span>{w.short}</span>
+                </div>
               </div>
             ))}
           </div>

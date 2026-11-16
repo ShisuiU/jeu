@@ -5,14 +5,14 @@ import { Modal } from './common';
 import { RewardView } from './RewardView';
 
 // RÉCUPÉRATION GROUPÉE (v1.103.0) — un bouton « Tout réclamer » et une fenêtre unique qui récapitule le butin.
-export function ClaimAllButton({ label, count, onRun, title }: { label: string; count: number; onRun: () => { reward: Reward; count: number }; title: string }) {
+export function ClaimAllButton({ label, count, onRun, title, unit }: { label: string; count: number; onRun: () => { reward: Reward; count: number }; title: string; unit?: (n: number) => string }) {
   const [shown, setShown] = useState<Reward | null>(null);
   if (count <= 0 && !shown) return null;
   return (
     <>
       {count > 0 && (
         <button className="btn block claim-all" onClick={() => { const r = onRun(); if (r.count > 0) { play('claim'); setShown(r.reward); } }}>
-          {label}<span className="ca-n">{count}</span>
+          {label}<span className="ca-n">{unit ? unit(count) : count}</span>
         </button>
       )}
       {shown && <RewardModal title={title} reward={shown} onClose={() => setShown(null)} />}

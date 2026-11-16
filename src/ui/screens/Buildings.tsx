@@ -51,7 +51,7 @@ export function Buildings() {
     <Screen title="Bâtiments" right={<span className="bld-wallet"><D /> {fmt(diamonds)}</span>}>
       {/* v1.88.0 : le Camp et les Expéditions rejoignent les Bâtiments (tout ce qui travaille pour toi, même jeu fermé). */}
       {/* v1.103.0 : Camp + Mine en un geste. */}
-      <ClaimAllButton label="Tout récolter" title="Récolte" count={harvestReady(save, now)}
+      <ClaimAllButton label="Tout récolter" title="Récolte" count={harvestReady(save, now)} unit={(n) => `${n} lieu${n > 1 ? 'x' : ''} prêt${n > 1 ? 's' : ''}`}
         onRun={() => { let r = { reward: {}, count: 0 } as ReturnType<typeof harvestAll>; mutate((s) => { r = harvestAll(s, now); }); return r; }} />
       <div className="bld-links">
         {([

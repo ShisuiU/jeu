@@ -130,6 +130,7 @@ export function EffectsLegend({ onClose }: { onClose: () => void }) {
           <div key={k} className="fxl-row"><span className="fxl-ico fxl-trait" style={{ ['--tc' as string]: TRAITS[k].color }} /><span><b style={{ color: TRAITS[k].color }}>{TRAITS[k].name}</b> : {TRAITS[k].text}</span></div>
         ))}
       </div>
+      <p className="faint" style={{ textAlign: 'center', margin: '10px 0 0' }}>Toutes les règles (Lien, Coutures, boss…) : Menu ▸ Codex ▸ Règles.</p>
       <button className="btn grow" style={{ width: '100%', marginTop: 10 }} onClick={() => onClose()}>Compris</button>
     </Modal>
   );

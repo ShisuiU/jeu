@@ -28,9 +28,10 @@ function buildStages(c: ChapterCfg): StageDef[] {
     let waves: WaveEnemy[][];
     if (boss) waves = [[W(a, lv, 0), W(b, lv, 1), W(a, lv, 2), W(d, lv, 3)], [W(c.boss, lv + 1, 1, 4 + c.n * 0.1), W(d, lv, 3), W(c.elite, lv, 4)]];
     else if (i <= 3) waves = [[W(a, lv, 0), W(b, lv, 1), W(a, lv, 2)], [W(b, lv, 0), W(d, lv, 3), W(a, lv, 2)]];
-    // v1.110.0 : au chapitre 2 (premier mur d'un débutant, 4 héros de départ), pas d'élite avant le 2-7 :
+    // v1.110.0 : au chapitre 2 (premier mur d'un débutant, 4 héros de départ), pas d'élite avant le 2-7 (v1.112.0 : chapitre 3 aussi,
+    // son élite faisait passer le niveau requis de 9 au 3-3 à 19 au 3-5) :
     // avec le Chevalier, le 2-4 demandait le niveau 21 contre 12 pour le 2-3 (simulation) ; avec un Traqueur, 15.
-    else if (i <= 6) waves = [[W(a, lv, 0), W(b, lv, 1), W(d, lv, 3)], [W(c.n === 2 ? b : c.elite, lv, 1), W(a, lv, 0), W(a, lv, 2), W(d, lv, 4)]];
+    else if (i <= 6) waves = [[W(a, lv, 0), W(b, lv, 1), W(d, lv, 3)], [W(c.n <= 3 ? b : c.elite, lv, 1), W(a, lv, 0), W(a, lv, 2), W(d, lv, 4)]];
     // Simulation (v1.111/v1.112) : aux chapitres 2 et 6, deux élites rendaient les niveaux 7 à 9 plus durs que le chapitre suivant
     // (2-9 : niveau 28 contre 20 au 3-1 ; 6-9 : 56 contre 41 au 8-1) ; une seule élite, au niveau de la vague.
     else if (ONE_ELITE.has(c.n)) waves = [[W(a, lv, 0), W(b, lv, 1), W(a, lv, 2), W(d, lv, 3)], [W(c.elite, lv, 0), W(b, lv, 1), W(a, lv, 2), W(d, lv, 4)]];

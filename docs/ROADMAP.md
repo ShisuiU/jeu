@@ -570,6 +570,7 @@ Travail sur la branche `claude/keen-faraday-bcryji`, **sans fusion sur `main`** 
 ## 🔧 Version 1.112.0 (en cours, branche) — suite de la reprise
 
 - **Fin du chapitre 6 adoucie (simulation sur toute la campagne, 5 Rares)** : les 6-7 à 6-9 demandaient le niveau 50 à 56, plus que le boss 6-10 (42), tout le chapitre 7 et le début du chapitre 8 (41). Une seule élite au niveau de la vague, comme au chapitre 2 : 44 à 46 désormais. Courbe générale (test d'équilibrage) respectée.
+- **Milieu du chapitre 3 lissé** : l'élite arrivait dès le 3-4 (niveau requis 9 au 3-3, 19 au 3-5) ; elle n'arrive plus qu'au 3-7, comme au chapitre 2 : 9, 10, 13, 12, 17, puis 20 au boss.
 
 ## ✅ Version 1.111.0 — Mission nocturne : fiabilité, « Obtenir » partout, finition
 

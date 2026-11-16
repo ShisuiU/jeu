@@ -59,3 +59,15 @@ describe('amitiés', () => {
     await assertSucceeds(deleteDoc(doc(db('b'), 'friendships/a_b')));
   });
 });
+
+describe('héros prêté (v1.111.0)', () => {
+  const lend = { refId: 'kaedra', slot: 0, level: 40, rank: 4, ascension: 3, awaken: 1, skillLevels: { k1: 2 }, gear: { atk: 100 }, name: 'Kaedra' };
+  it('un héros prêté plausible est accepté', async () => {
+    await assertSucceeds(setDoc(doc(db('a'), 'profiles/a'), { ...profile, lend }));
+  });
+  it('un héros prêté gonflé ou mal formé est refusé', async () => {
+    await assertFails(setDoc(doc(db('a'), 'profiles/a'), { ...profile, lend: { ...lend, level: 999 } }));
+    await assertFails(setDoc(doc(db('a'), 'profiles/a'), { ...profile, lend: { ...lend, rank: 12 } }));
+    await assertFails(setDoc(doc(db('a'), 'profiles/a'), { ...profile, lend: { ...lend, hack: true } }));
+  });
+});

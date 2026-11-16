@@ -16,9 +16,9 @@ import { play } from '../../audio/sfx';
 
 const INFO: Record<Feature, { title: string; text: string; art: string; hero?: boolean; route: Route }> = {
   guild: { title: 'Clans', text: 'Rejoins d’autres joueurs : une discussion, et un boss de clan chaque semaine dont les dégâts s’additionnent. Il faut un compte.', art: 'dead_constellation', route: { name: 'guild' } },
-  camp: { title: 'Camp des Héritiers', text: 'Pendant ton absence, tes héros rapportent de l’or, des élixirs et du minerai. Jusqu’à 12 h de butin, même jeu fermé.', art: 'torvald', hero: true, route: { name: 'camp' } },
+  camp: { title: 'Camp des Héritiers', text: 'Pendant ton absence, tes héros rapportent de l’or, des élixirs et du minerai. Jusqu’à 12 h de butin, même jeu fermé. À retrouver à l’Accueil, dans Bâtiments.', art: 'torvald', hero: true, route: { name: 'camp' } },
   market: { title: 'Marché', text: 'Chaque jour, 6 offres à acheter avec ton or : éclats, élixirs, potions et équipements.', art: 'lio', hero: true, route: { name: 'market' } },
-  expeditions: { title: 'Expéditions', text: 'Envoie des héros en mission : ils reviennent avec du butin, même jeu fermé.', art: 'seam_stalker', route: { name: 'expeditions' } },
+  expeditions: { title: 'Expéditions', text: 'Envoie des héros en mission : ils reviennent avec du butin, même jeu fermé. À retrouver à l’Accueil, dans Bâtiments.', art: 'seam_stalker', route: { name: 'expeditions' } },
   events: { title: 'Événements', text: 'Chaque semaine, un nouvel événement : objectifs, épreuve et récompenses.', art: 'hollow_knight', route: { name: 'events' } },
   dungeons: { title: 'Donjons', text: 'Équipement et matériaux d’amélioration, étage après étage.', art: 'forge_golem', route: { name: 'dungeons' } },
   worldboss: { title: 'Boss mondial', text: 'Frappe le plus fort possible : 3 essais par jour, des coffres selon les dégâts.', art: WORLD_BOSS.enemy, route: { name: 'worldboss' } },
@@ -65,7 +65,7 @@ export function UnlockAnnounce() {
   if (ev) {
     const e = activeEvents(save.time.highWater).find((x) => x.id === ev);
     const heroId = e?.login?.days.find((d) => d.hero)?.hero;
-    const close = (go: boolean) => { mutate((s) => { s.flags[`ann_${ev}`] = true; }); setEv(null); if (go) useUI.getState().push({ name: 'events' }); };
+    const close = (go: boolean) => { mutate((s) => { s.flags[`ann_${ev}`] = true; }); setEv(null); if (go) useUI.getState().push({ name: 'events', eventId: ev }); };
     if (!e) return null;
     return (
       <Modal onClose={() => close(false)} backdropClose={false}>

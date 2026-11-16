@@ -75,3 +75,10 @@ export function harvestAll(s: SaveData, now: number): { reward: Reward; count: n
   return { reward: total, count };
 }
 export const harvestReady = (s: SaveData, now: number) => (campElapsed(s, now) >= CAMP_MIN_MS ? 1 : 0) + (mineReady(s, now) >= 1 ? 1 : 0);
+
+/** « Tout réclamer » des Missions (test « nouveau joueur ») : les trois onglets d'un coup, pas seulement celui qui est ouvert. */
+export function claimAllMissionTabs(s: SaveData): { reward: Reward; count: number } {
+  const total: Reward = {}; let count = 0;
+  for (const tab of ['daily', 'weekly', 'progress'] as const) { const r = claimAllMissions(s, tab); add(total, r.reward); count += r.count; }
+  return { reward: total, count };
+}

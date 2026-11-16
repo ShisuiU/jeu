@@ -26,7 +26,7 @@ export function defeatTips(s: SaveData, team: TeamPreset, waves: UnitSetup[][]):
     tips.push({ text: `Les ennemis sont surtout ${AFFINITIES[main].name}s : ajoute un héros ${AFFINITIES[counter].name} (il frappe 30 % plus fort et brise vite la Fracture des boss).`, route: { name: 'team' }, label: 'Équipe' });
   // 2. Rang : un héros peut monter de rang (et donc de niveau).
   const rankable = heroes.find((h) => rankUpCheck(s, h).ok);
-  if (rankable) tips.push({ text: `${HERO_BY_ID[rankable.heroId].name.split(' ')[0]} peut monter de rang : son niveau maximum augmente.`, route: { name: 'sanctuary', uid: rankable.uid }, label: 'Sanctuaire' });
+  if (rankable) tips.push({ text: `${HERO_BY_ID[rankable.heroId].name.split(' ')[0]} peut monter de rang : son niveau maximum augmente.`, route: { name: 'sanctuary', uid: rankable.uid, tab: 'rank' }, label: 'Sanctuaire' });
   // 3. Niveau : le héros le plus faible est loin de son maximum.
   const weakest = [...heroes].sort((a, b) => a.level - b.level)[0];
   const cap = maxLevelForRank(weakest.rank);

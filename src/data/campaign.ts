@@ -54,7 +54,7 @@ const CH1: StageDef[] = [
     before: [
       { speaker: 'narrator', text: 'Marches de Valcrest. Depuis mille ans, le Mur Blanc n’a jamais cédé. Cette nuit, aucune cloche ne sonne.' },
       { speaker: 'corvin', text: 'Pas un cri, pas une torche. Les sentinelles ont disparu… Non. Pire. Elles sont toujours là.' },
-      { speaker: 'brann', text: 'Elles ont plus de visage. Ça me suffit pour savoir où taper.' },
+      { speaker: 'brann', text: 'Elles n’ont plus de visage. Ça me suffit pour savoir où taper.' },
       { speaker: 'elowen', text: 'Des Effacés. Le Néant leur a pris leur nom. Ils ne sentent plus rien, ne craignent plus rien.' },
       { speaker: 'torvald', text: 'Alors rendons-leur le repos. Restez derrière moi.' },
     ],

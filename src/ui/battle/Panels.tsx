@@ -14,6 +14,8 @@ import { StatusIcon } from '../art/StatusIcon';
 import { Modal } from '../components/common';
 import { HeroArt } from '../art/HeroArt';
 import { shortName } from './UnitView';
+import { useGame } from '../../state/store';
+import { rankUpCheck } from '../../game/upgrade';
 
 // Extrait de Battle.tsx (v1.98.0).
 export const SLOT_TAG = { basic: 'Base', special: 'Spéciale', ultimate: 'Ultime', passive: 'Passif' } as const;
@@ -37,6 +39,9 @@ export function SkillInfoBody({ unit, sk, onLaunch }: { unit: Unit; sk: SkillDef
 /** Récap de fin de combat : part des dégâts infligés par chaque héros (du plus gros au plus petit). */
 /** Héros du combat : part des dégâts (et, après une victoire, niveau et expérience gagnée) en une seule liste. */
 export function DamageRecap({ units, xp }: { units: Unit[]; xp?: { uid: string; heroId: string; xp: number; levelsGained: number; capped: boolean; level: number }[] }) {
+  const save = useGame((st) => st.save);
+  // Héros bloqué au plafond de son rang (test « nouveau joueur ») : on dit que le rang peut monter, au lieu d'un simple « max ».
+  const canRank = (uid: string) => { const h = save?.heroes.find((y) => y.uid === uid); return !!(save && h && rankUpCheck(save, h).ok); };
   const heroes = units.filter((u) => u.side === 'ally' && u.kind === 'hero');
   const total = heroes.reduce((n, u) => n + (u.flags.dmgDealt ?? 0), 0);
   if (!total && !xp?.length) return null;
@@ -57,7 +62,7 @@ export function DamageRecap({ units, xp }: { units: Unit[]; xp?: { uid: string; 
             <div className="grow">
               <div className="row between"><b>{HERO_BY_ID[u.refId]?.name.split(/[ ,]/)[0] ?? u.name}{i === 0 && <span className="dr-mvp">Meilleur</span>}</b><span className="dr-pct">{pct} %</span></div>
               <div className="dr-bar"><div style={{ width: `${top ? (d / top) * 100 : 0}%`, animationDelay: `${0.15 + i * 0.12}s` }} /></div>
-              {x && <div className="dr-xp"><span className={x.levelsGained ? 'lvlup' : ''}>{x.levelsGained ? `Niv. ${x.level} ▲` : x.capped ? <>Niv. {x.level} <i className="dr-cap">max</i></> : `Niv. ${x.level}`}</span>{x.capped && !x.levelsGained ? null : <span>+{x.xp} XP</span>}</div>}
+              {x && <div className="dr-xp"><span className={x.levelsGained ? 'lvlup' : ''}>{x.levelsGained ? `Niv. ${x.level} ▲` : x.capped ? <>Niv. {x.level} {canRank(x.uid) ? <i className="dr-cap rank">max · rang possible ▲</i> : <i className="dr-cap">max</i>}</> : `Niv. ${x.level}`}</span>{x.capped && !x.levelsGained ? null : <span>+{x.xp} XP</span>}</div>}
             </div>
             <span className="faint dr-val">{fmt(d)}</span>
           </div>

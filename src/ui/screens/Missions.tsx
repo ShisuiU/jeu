@@ -1,6 +1,6 @@
 import { isUnlocked } from '../../game/unlocks';
 import { ClaimAllButton } from '../components/ClaimAll';
-import { claimAllMissions, claimableIn } from '../../game/quickClaim';
+import { claimAllMissionTabs, claimableIn } from '../../game/quickClaim';
 import { useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
@@ -54,8 +54,8 @@ export function Missions({ initialTab = 'daily' }: { initialTab?: 'daily' | 'wee
           </button>
         ))}
       </div>
-      <ClaimAllButton key={tab} label="Tout réclamer" title="Récompenses réclamées" count={claimableIn(save, tab) + (tab !== 'progress' && bonusAvailable(save, kind) ? 1 : 0)}
-        onRun={() => { let r = { reward: {}, count: 0 } as ReturnType<typeof claimAllMissions>; mutate((s) => { r = claimAllMissions(s, tab); }); return r; }} />
+      <ClaimAllButton key={tab} label="Tout réclamer" title="Récompenses réclamées" count={(['daily', 'weekly', 'progress'] as const).reduce((n, t) => n + claimableIn(save, t) + (t !== 'progress' && bonusAvailable(save, t) ? 1 : 0), 0)}
+        onRun={() => { let r = { reward: {}, count: 0 } as ReturnType<typeof claimAllMissionTabs>; mutate((s) => { r = claimAllMissionTabs(s); }); return r; }} />
       {tab !== 'progress' && (
         <>
           <p className="faint" style={{ marginTop: 0 }}>Renouvellement dans {formatDuration(tab === 'daily' ? msUntilReset(now) : msUntilWeekReset(now))}</p>

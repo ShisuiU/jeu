@@ -80,7 +80,7 @@ function renderRoute(r: Route) {
     case 'campaign': return <Campaign />;
     case 'summon': return <Summon />;
     case 'gear': return <Gear key={r.tab ?? 'upgrade'} gearUid={r.gearUid} initialTab={r.tab} />;
-    case 'sanctuary': return <Sanctuary uid={r.uid} />;
+    case 'sanctuary': return <Sanctuary uid={r.uid} initialTab={r.tab} />;
     case 'mail': return <Mail />;
     case 'dungeons': return <Dungeons />;
     case 'dungeon': return <Dungeon key={r.dungeonId} dungeonId={r.dungeonId} />;
@@ -88,7 +88,7 @@ function renderRoute(r: Route) {
     case 'worldboss': return <WorldBoss />;
     case 'arena': return <Arena />;
     case 'missions': return <Missions key={r.tab ?? 'daily'} initialTab={r.tab} />;
-    case 'events': return <Events />;
+    case 'events': return <Events key={r.eventId ?? 'events'} eventId={r.eventId} />;
     case 'combats': return <Combats />;
     case 'expeditions': return <Expeditions />;
     case 'market': return <Market />;

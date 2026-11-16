@@ -25,7 +25,7 @@ import emblemLevel from '../../assets/kit/emblem_level.webp';
 import { Ceremony, snapHero, type CeremonyKind, type HeroSnap } from '../components/Ceremony';
 
 // SANCTUAIRE — un héros à la fois, une ligne par amélioration.
-export function Sanctuary({ uid }: { uid?: string }) {
+export function Sanctuary({ uid, initialTab }: { uid?: string; initialTab?: 'level' | 'rank' | 'ascend' | 'skills' | 'mastery' }) {
   const save = useGame((s) => s.save)!;
   const mutate = useGame((s) => s.mutate);
   const push = useUI((s) => s.push);
@@ -37,7 +37,7 @@ export function Sanctuary({ uid }: { uid?: string }) {
   const [tapGuard, setTapGuard] = useState(false);
   const [cele, setCele] = useState<{ kind: Celebration; title: string; from: number; to: number; key: number } | null>(null);
   const [cer, setCer] = useState<{ kind: CeremonyKind; heroId: string; before: HeroSnap; after: HeroSnap; key: number } | null>(null);
-  const [tab, setTab] = useState<'level' | 'rank' | 'ascend' | 'skills' | 'mastery'>('level');
+  const [tab, setTab] = useState<'level' | 'rank' | 'ascend' | 'skills' | 'mastery'>(initialTab ?? 'level');
   const h = save.heroes.find((x) => x.uid === sel) ?? save.heroes[0];
   if (!h) return <Screen title="Sanctuaire"><p className="muted">Aucun héros.</p></Screen>;
   const d = HERO_BY_ID[h.heroId];

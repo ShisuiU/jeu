@@ -27,12 +27,14 @@ const left = (ms: number) => { const d = Math.floor(ms / 86_400_000); return d >
 const fmtMult = (m: number) => `×${String(m).replace('.', ',')}`;
 const rewardText = (r: Record<string, number | undefined>) => Object.entries(normalizeReward(r)).map(([k, v]) => `+${(v ?? 0).toLocaleString('fr-FR')} ${RESOURCES[k as keyof typeof RESOURCES]?.name ?? k}`).join(' · ');
 
-export function Events() {
+export function Events({ eventId }: { eventId?: string } = {}) {
   const save = useGame((s) => s.save)!;
   const now = useGame((s) => s.now);
   const mutate = useGame((s) => s.mutate);
   const list = activeEvents(now);
-  const [sel, setSel] = useState(list[0]?.id);
+  const [sel, setSel] = useState(list.some((x) => x.id === eventId) ? eventId : list[0]?.id);
+  // Arrivée depuis une annonce : l'onglet annoncé est sélectionné et ramené dans l'écran (il pouvait être coupé à droite).
+  useEffect(() => { if (!eventId) return; const b = document.querySelector(`.seg [data-ev="${eventId}"]`); const seg = b?.parentElement; if (b && seg) seg.scrollLeft = (b as HTMLElement).offsetLeft - seg.clientWidth / 2 + (b as HTMLElement).offsetWidth / 2; }, [eventId]);
   const e = list.find((x) => x.id === sel) ?? list[0];
 
   // L'événement a été vu : la pastille « nouveau » disparaît.
@@ -42,7 +44,7 @@ export function Events() {
     <Screen title="Événements">
       {list.length > 1 && (
         <div className="seg" style={{ marginBottom: 12 }}>
-          {list.map((x) => { const n = eventClaimable(save, now, x.id); return <button key={x.id} className={x.id === e?.id ? 'on' : ''} onClick={() => setSel(x.id)}>{x.cycle ? 'Semaine' : x.short ?? x.name}{n > 0 && <span className="seg-count">{n}</span>}</button>; })}
+          {list.map((x) => { const n = eventClaimable(save, now, x.id); return <button key={x.id} className={x.id === e?.id ? 'on' : ''} data-ev={x.id} onClick={() => setSel(x.id)}>{x.cycle ? 'Semaine' : x.short ?? x.name}{n > 0 && <span className="seg-count">{n}</span>}</button>; })}
         </div>
       )}
       {!e && <div className="hint">Aucun événement en cours.</div>}

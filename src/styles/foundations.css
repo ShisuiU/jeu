@@ -787,3 +787,4 @@ select.prep-team { min-height: 40px; }
   .theme-v2 .result-actions .btn.secondary { border-width: 0 9px !important; }
   .result-actions { gap: 5px; }
 }
+.dr-xp .dr-cap.rank { color: var(--gold-hi); }

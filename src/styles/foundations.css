@@ -720,7 +720,7 @@ select.prep-team { min-height: 40px; }
 .forge-empty { display: flex; align-items: center; gap: 10px; margin-top: 10px; padding: 10px 12px; border-radius: var(--r-md); background: var(--surface-1); border: 1px solid var(--line-1); font-size: var(--fs-sm); color: var(--text-dim); }
 .forge-empty span { flex: 1; }
 /* Cases vides : un seul style partout (fiche héros = Forge) : pointillé gris sur fond sombre, icône du type d'objet. */
-.gear-card.empty { border: 1.5px dashed #6a6274 !important; border-image: none !important; background: rgba(10,9,14,0.72) !important; box-shadow: none !important; color: #6f6878; border-radius: var(--r-lg); }
+.gear-card.empty { border: 1px solid #3a3242 !important; border-image: none !important; background: rgba(10,9,14,0.72) !important; box-shadow: none !important; color: #6f6878; border-radius: var(--r-lg); }
 
 /* Recritique DA (v1.111.1) */
 /* Ruban « Chef » : une seule ligne, texte lisible sur le ruban. */
@@ -762,3 +762,7 @@ select.prep-team { min-height: 40px; }
 .result-actions .btn svg { flex-shrink: 0; }
 .theme-v2 .result-actions .btn.secondary { padding: 0 2px !important; gap: 3px; }
 .result-actions .btn.secondary:first-child { flex: 0.8 1 0; }
+/* Cases vides (recritique DA) : creusées dans le cadre plutôt qu'en pointillé de maquette. */
+.gear-card.empty, .sc-slot.empty { box-shadow: inset 0 2px 8px rgba(0,0,0,0.75), inset 0 0 0 1px rgba(217,192,138,0.06) !important; background: linear-gradient(180deg, rgba(8,6,12,0.85), rgba(20,16,26,0.8)) !important; }
+.sc-slot.empty { border: 1px solid #3a3242 !important; }
+.gear-card.empty svg, .sc-slot.empty svg { opacity: 0.45; }

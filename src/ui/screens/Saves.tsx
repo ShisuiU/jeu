@@ -16,7 +16,7 @@ function Summary({ s }: { s: SaveData }) {
   return (
     <div className="stack" style={{ fontSize: 13.5 }}>
       <div className="stat-row"><span className="muted">Nom</span><b>{s.profile.name}</b></div>
-      <div className="stat-row"><span className="muted">Héros</span><b>{s.heroes.length}{best ? ` (meilleur : ${HERO_BY_ID[best.heroId]?.name} Nv ${best.level})` : ''}</b></div>
+      <div className="stat-row"><span className="muted">Héros</span><b>{s.heroes.length}{best && <span style={{ fontVariantNumeric: 'normal' }}>{` (meilleur : ${HERO_BY_ID[best.heroId]?.name} Nv ${best.level})`}</span>}</b></div>
       <div className="stat-row"><span className="muted">Or · Éclats épiques</span><b>{fmt(s.resources.gold)} · {fmt(s.resources.shardEpic ?? 0)}</b></div>
       <div className="stat-row"><span className="muted">Jours de connexion</span><b>{s.daily.totalLogins}</b></div>
       <div className="stat-row"><span className="muted">Dernière modification</span><b>{dt(s.updatedAt)}</b></div>

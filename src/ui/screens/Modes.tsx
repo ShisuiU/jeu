@@ -284,8 +284,8 @@ export function Arena() {
   };
   return (
     <Screen title="Arène" right={<span className="row" style={{ gap: 6 }}>
-      <button className="btn secondary small" onClick={() => setLeagueOpen(true)} aria-label="Les ligues de l’Arène"><Icon.star size={15} /> Ligues</button>
-      <button className="btn secondary small" onClick={() => setDefOpen(true)} aria-label="Gérer ta défense"><Icon.team size={16} /> Défense</button>
+      <button className="btn secondary small" onClick={() => setLeagueOpen(true)} aria-label="Les ligues de l’Arène"><Icon.star size={15} /> <span className="hb-lbl">Ligues</span></button>
+      <button className="btn secondary small" onClick={() => setDefOpen(true)} aria-label="Gérer ta défense"><Icon.team size={16} /> <span className="hb-lbl">Défense</span></button>
     </span>}>
       <Panel>
         <div className="row between">

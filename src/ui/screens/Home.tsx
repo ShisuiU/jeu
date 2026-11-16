@@ -106,7 +106,8 @@ export function Home() {
           <img src={panelArt} alt="" draggable={false} />
           <span className="big">Campagne</span>
           <span className="sub">{nextStage && chapter ? `Chapitre ${chapter.n} — ${chapter.name}` : 'Histoire terminée'}</span>
-          <span className="cc-stars"><Icon.star size={15} /> {stars.stars} / {stars.max}</span>
+          {/* v1.111.0 : le prochain niveau à jouer, d'un coup d'œil (test « joueur pressé »). */}
+          <span className="cc-stars">{nextStage && <><b className="cc-next">▶ {nextStage.id}</b><i className="cc-sep" aria-hidden /></>}<Icon.star size={15} /> {stars.stars} / {stars.max}</span>
         </button>
       </div>
 

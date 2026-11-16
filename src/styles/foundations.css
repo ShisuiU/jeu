@@ -628,3 +628,55 @@ body:has(.battle-controls) .toast { font-size: var(--fs-sm); padding-top: 7px; p
 .daily-cell .d-more { font-size: var(--fs-2xs); color: var(--text-dim); }
 .prep-sweep.off { opacity: 0.5; filter: grayscale(0.6); }
 .dr-legend { font-size: var(--fs-2xs); font-weight: 600; letter-spacing: 0.04em; text-transform: none; color: var(--text-faint); }
+.cc-stars .cc-next { color: #fff3d6; font-weight: 800; letter-spacing: 0.02em; }
+.cc-stars .cc-sep { display: inline-block; width: 1px; height: 0.9em; margin: 0 8px; vertical-align: -1px; background: currentColor; opacity: 0.4; }
+
+/* ─── Audit mobile 3 tailles (v1.111.0, mission nocturne) ─── */
+/* 1. Accueil 320 px : le nom du joueur et son XP ne sont plus écrasés par les compteurs. */
+@media (max-width: 360px) {
+  .home .topbar .pill small { display: none; }
+  .home .topbar .avatar-btn { flex: 1 0 104px; min-width: 104px; }
+}
+/* 2. Préparation 320 px : « Répéter » garde son icône (il était vide). */
+@media (max-width: 360px) {
+  .theme-v2 .btn.secondary.prep-sweep > svg { display: inline-block !important; }
+  .theme-v2 .btn.secondary.prep-sweep { min-width: 48px; }
+}
+/* 3. Combat sur écran peu haut : la scène descend sous l'ordre des tours, le titre tient sur une ligne. */
+.battle .battle-stage { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 62vw; }
+@media (max-height: 600px) { .battle .cam25 { margin-top: 26px; } }
+/* 4. Forge 320 px : la grille d'équipement ne déborde plus (« Gants » coupé, défilement horizontal). */
+.gear-slots { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+/* 5. Titres d'écran sur petit écran : cadre peint plus étroit, taille réduite. */
+@media (max-width: 360px) {
+  .theme-v2 .screen-header h1 { border-width: 0 22px !important; border-image-width: 0 22px !important; font-size: var(--fs-lg) !important; }
+  .theme-v2 .screen-header h1.long { font-size: var(--fs-sm) !important; }
+}
+/* 6. Fin de combat : « Rejouer ⚡2 » tient dans son bouton ; fond des boutons opaque. */
+.result-actions .btn { padding: 0 4px; letter-spacing: 0; white-space: nowrap; }
+@media (max-width: 400px) { .result-actions .btn { font-size: var(--fs-sm); } }
+.result-actions { background: linear-gradient(180deg, rgba(5, 4, 8, 0.6), #050408 16px) !important; }
+/* 7. Préparation 320 px : les trois règles d'étoiles passent à la ligne au lieu d'être coupées. */
+@media (max-width: 360px) { .star-rules { flex-wrap: wrap !important; overflow: visible !important; } }
+/* 8. Bande d'équipe de la préparation : noms coupés proprement ; sélecteur d'équipe à 40 px. */
+.prep-team-strip .hero-card .name .n-short { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: 0; }
+@media (max-width: 400px) { .prep-team-strip .hero-card .name .n-short { font-size: var(--fs-2xs); } }
+select.prep-team { min-height: 40px; }
+/* 9-15. Zones de toucher ≥ 40 px (dessin inchangé, zone agrandie par un pseudo-élément). */
+.setting-row input[type='range'] { height: 40px; }
+.hs-upgrade, .forge-res button, .wallet > .wallet-item, .wk-node, .modal-x, .lc-btn { position: relative; }
+.hs-upgrade::before { content: ''; position: absolute; inset: -8px -4px; }
+.forge-res button::before { content: ''; position: absolute; inset: -7px -4px; }
+.wallet > .wallet-item::before { content: ''; position: absolute; inset: -6px 0; }
+.wk-node::before { content: ''; position: absolute; inset: -6px; border-radius: 50%; }
+.modal-x::before { content: ''; position: absolute; inset: -6px; }
+.ul-act .btn { min-height: 40px; }
+.theme-v2 .ctrl-col { gap: 2px; }
+.theme-v2 .ctrl-col .ctrl { height: 33px !important; }
+.theme-v2 .seg button { height: 40px; }
+.lc-btn { min-height: 40px; }
+/* Invocation 320 px : le texte de garantie ne se lit plus à travers la barre d'appel. */
+.theme-v2 .summon-bar { background: linear-gradient(180deg, rgba(10, 8, 14, 0.75) 0, rgba(10, 8, 14, 0.96) 12px, rgba(9, 7, 13, 0.98)); }
+.wheel-halo { max-width: 100%; }
+/* Arène 320 px : les boutons d'en-tête passent en icône seule (libellé lu par aria-label) pour laisser le titre lisible. */
+@media (max-width: 360px) { .screen-header .btn .hb-lbl { display: none; } .screen-header .btn.small { min-width: 40px; } }

@@ -123,4 +123,3 @@ export const HeroArt = memo(function HeroArt({ heroId, kind = 'portrait', positi
   return <Procedural def={def} kind={kind} />;
 });
 
-export function hasRealArt(heroId: string) { return !!ART[heroId]; }

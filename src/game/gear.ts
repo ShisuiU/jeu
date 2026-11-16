@@ -2,7 +2,7 @@ import { nextRandom } from '../core/rng';
 import { uid } from '../core/ids';
 import {
   GEAR_MAX_LEVEL, GEAR_MAX_STARS, GEAR_RARITIES, MAIN_BASE, SET_LIST, SETS, SLOTS, SLOT_BY_ID, STAR_MULT, SUB_RANGE,
-  campaignGearTable, gearUpgradeCost, gearDismantleValue, type GearRarity, type GearSlot, type GearStat, type SetId,
+  gearUpgradeCost, gearDismantleValue, type GearRarity, type GearSlot, type GearStat, type SetId,
 } from '../data/equipment';
 import type { Stats } from '../data/types';
 import type { GearItem, SaveData } from '../save/schema';
@@ -192,6 +192,3 @@ export function dungeonStars(r: Rand, floor: number): number {
   return clampStars(1 + Math.ceil(floor / 2.5) + (r() < 0.2 ? 1 : 0));
 }
 
-export function rollCampaignGear(r: Rand, stageIndex: number, boss: boolean, now: number, chapter = 1): GearItem {
-  return generateGear(r, pickWeighted(r, campaignGearTable(stageIndex, boss)), now, undefined, undefined, campaignStars(r, chapter, boss));
-}

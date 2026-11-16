@@ -780,3 +780,10 @@ select.prep-team { min-height: 40px; }
 .wo-row { display: flex; align-items: center; gap: 8px; font-size: var(--fs-sm); padding: 3px 0; border-bottom: 1px solid var(--line-1); }
 .wo-row b { font-variant-numeric: tabular-nums; color: var(--text-dim); font-weight: 700; }
 .wo-row.rare span, .wo-row.rare b { color: #ff7f9b; }
+/* Petits écrans (iPhone SE, 320 px) : titres d'écran et boutons du résultat sans coupure. */
+@media (max-width: 345px) {
+  .theme-v2 .screen-header h1:not(.long) { font-size: var(--fs-md) !important; letter-spacing: 0.02em; }
+  .theme-v2 .result-actions .btn { font-size: var(--fs-xs) !important; }
+  .theme-v2 .result-actions .btn.secondary { border-width: 0 9px !important; }
+  .result-actions { gap: 5px; }
+}

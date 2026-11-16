@@ -788,3 +788,9 @@ select.prep-team { min-height: 40px; }
   .result-actions { gap: 5px; }
 }
 .dr-xp .dr-cap.rank { color: var(--gold-hi); }
+/* Bulles d'aide (troisième test « nouveau joueur ») : voile plus léger, l'écran reste lisible (ennemis, récompenses dont la bulle parle) ;
+   bulle plus compacte pour cacher moins de contenu. */
+.coach-veil { background: rgba(3, 2, 6, 0.48) !important; }
+.coach-bubble { padding: 9px 12px 8px !important; }
+.coach-bubble p { font-size: var(--fs-md) !important; margin-bottom: 6px !important; }
+.coach-actions .coach-ok { min-height: 34px !important; min-width: 72px !important; }

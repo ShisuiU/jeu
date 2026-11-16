@@ -113,7 +113,7 @@ export function Prep({ spec }: { spec: BattleSpec }) {
 
   return (
     <Screen title={info.title}>
-      <Coach id="prep_fight" target=".fight-btn" text="Voici les ennemis et la récompense. Lance le combat !" />
+      <Coach id="prep_fight" place="top" target=".fight-btn" text="Voici les ennemis et la récompense. Lance le combat !" />
       {/* Test « nouveau joueur » : « Suivant » enchaîne les niveaux sans repasser par l'Accueil ; ces deux bulles (Invocation, puis Sanctuaire)
           viennent donc aussi ici, après le 1-3 et le 1-4, avant le premier niveau difficile (1-6). Jamais en même temps que celle des affinités. */}
       {(() => { const clears = Object.values(save.progress.campaign).filter((p) => p.clears > 0).length; return <>

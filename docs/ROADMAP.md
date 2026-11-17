@@ -569,7 +569,7 @@ Travail sur la branche `claude/keen-faraday-bcryji`, **sans fusion sur `main`** 
 
 ## 🔧 Version 1.113.0 (en cours, branche)
 
-- **Terrain d'entraînement : expérience fixe (retour du joueur)** : 500 XP par heure pour chaque héros placé, quel que soit son niveau (un peu plus qu'un élixir par heure). Avant, 3 % du niveau suivant : 4 XP/h au niveau 1, environ 420 au niveau 45. Les bas niveaux montent vite ; rien ne baisse jusqu'au niveau 47 environ. Test ajouté.
+- **Terrain d'entraînement : expérience fixe, et plus forte à chaque place ouverte (retours du joueur)** : 500, 600 puis 700 XP par heure selon la place, quel que soit le niveau du héros (la première vaut un peu plus qu'un élixir par heure) ; chaque place affiche son rendement. Avant, 3 % du niveau suivant : 4 XP/h au niveau 1, environ 420 au niveau 45. Les bas niveaux montent vite ; rien ne baisse jusqu'au niveau 47 environ. Test ajouté.
 
 ## ✅ Version 1.112.0 — Récap de combat au choix, chapitres lissés, verrous expliqués
 

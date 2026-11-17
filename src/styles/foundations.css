@@ -812,3 +812,4 @@ select.prep-team { min-height: 40px; }
 .dr-tabs button.on { color: #1d1408; background: linear-gradient(180deg, #e9cd88, #b8904a); }
 .dr-bar.dmgTaken > div { background: linear-gradient(90deg, #b8423f, #e07a5f) !important; }
 .dr-bar.healDone > div { background: linear-gradient(90deg, #3e9b63, #7be0a0) !important; }
+.train-slot .ts-rate { font-size: var(--fs-2xs); color: var(--gold-hi); font-weight: 700; }

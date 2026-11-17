@@ -59,6 +59,12 @@ describe('Bâtiments (v1.78.0)', () => {
     expect(at(1)).toBe(1000);
     expect(at(40)).toBe(1000);
   });
+  it('terrain : chaque place ouverte rapporte un peu plus que la précédente (500, 600, 700 XP/h)', () => {
+    const t = 1_800_000_000_000; const s = createNewSave(t);
+    s.buildings.trainSlots = 3;
+    s.heroes.slice(0, 3).forEach((h, i) => { h.rank = 6; placeTrainee(s, i, h.uid, t); });
+    expect([0, 1, 2].map((i) => trainPending(s, i, t + H))).toEqual([500, 600, 700]);
+  });
   it('les anciennes sauvegardes reçoivent les bâtiments', () => {
     const s = createNewSave(Date.now()) as unknown as Record<string, unknown>;
     delete s.buildings;

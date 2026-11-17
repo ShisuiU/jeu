@@ -6,6 +6,7 @@ import { createHeroInstance, type SaveData } from '../save/schema';
 import { pickWeighted, type Rand } from './gear';
 import { track } from './missions';
 import { bannerAvailable } from './events';
+import { weekKey } from '../core/time';
 import { addCopy } from './copies';
 
 /** `duplicate` : héros déjà possédé, transformé en copie (doublon). */
@@ -22,8 +23,20 @@ export function rollRarity(r: Rand, b: BannerDef, pityCount: number): { rarity: 
   return { rarity: pickWeighted(r, Object.entries(b.rates) as [RarityId, number][]), guaranteed: false };
 }
 
-export function pickHero(r: Rand, rarity: RarityId, b: BannerDef): string {
-  if (b.featured && HERO_BY_ID[b.featured.heroId]?.rarity === rarity && r() < b.featured.share) return b.featured.heroId;
+/** Héros en vedette d'une bannière à la date `now` : fixe, ou un nouveau chaque semaine (renouvellement du lundi) si la bannière a une rotation. */
+export function featuredHero(b: BannerDef, now: number): string | undefined {
+  const f = b.featured;
+  if (!f) return undefined;
+  const list = (f.rotation ?? []).filter((id) => HERO_BY_ID[id]);
+  if (!list.length) return f.heroId;
+  const monday = new Date(`${weekKey(now)}T12:00:00`).getTime(); // midi : à l'abri des changements d'heure
+  const week = Math.round(monday / (7 * 86_400_000));
+  return list[((week % list.length) + list.length) % list.length];
+}
+
+export function pickHero(r: Rand, rarity: RarityId, b: BannerDef, now: number = Date.now()): string {
+  const star = featuredHero(b, now);
+  if (b.featured && star && HERO_BY_ID[star]?.rarity === rarity && r() < b.featured.share) return star;
   // Les héros exclusifs (événements) ne sortent jamais à l'invocation.
   const pool = HEROES.filter((h) => h.rarity === rarity && !h.exclusive);
   return pool[Math.floor(r() * pool.length)].id;
@@ -56,7 +69,7 @@ export function summon(s: SaveData, bannerId: string, count: 1 | 10, r: Rand, no
   s.summons.pity[b.id] = pity;
 
   const results: SummonResult[] = rolls.map(({ rarity, guaranteed }) => {
-    const heroId = pickHero(r, rarity, b);
+    const heroId = pickHero(r, rarity, b, now);
     const owned = s.heroes.some((h) => h.heroId === heroId);
     if (owned) addCopy(s, heroId);
     else {

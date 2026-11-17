@@ -813,3 +813,6 @@ select.prep-team { min-height: 40px; }
 .dr-bar.dmgTaken > div { background: linear-gradient(90deg, #b8423f, #e07a5f) !important; }
 .dr-bar.healDone > div { background: linear-gradient(90deg, #3e9b63, #7be0a0) !important; }
 .train-slot .ts-rate { font-size: var(--fs-2xs); color: var(--gold-hi); font-weight: 700; }
+/* Héros en vedette de la Faille (retour du joueur : il chevauchait « Obtenir », en haut à droite) : en haut à gauche. */
+.altar-featured { right: auto !important; left: 12px !important; top: 10px !important; }
+.altar-featured .af-next { font-size: var(--fs-2xs); color: var(--text-dim); text-shadow: 0 1px 3px #000; white-space: nowrap; }

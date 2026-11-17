@@ -16,7 +16,8 @@ import { HEROES, HERO_BY_ID } from '../../data/heroes';
 import { RARITIES } from '../../data/rarities';
 import { RESOURCES } from '../../data/resources';
 import type { RarityId } from '../../data/types';
-import { canAfford, summon, type SummonResult } from '../../game/summon';
+import { canAfford, featuredHero, summon, type SummonResult } from '../../game/summon';
+import { formatDaysHours, msUntilWeekReset } from '../../core/time';
 import { applyReward } from '../../game/rewards';
 import { bannerAvailable } from '../../game/events';
 import { play } from '../../audio/sfx';
@@ -57,6 +58,7 @@ export function Summon() {
     setReveal({ results: out.results, banner: id, count, key: Date.now() });
   };
   const giftAvailable = b.featured && !save.flags[EVENT_WELCOME_GIFT.flag];
+  const star = featuredHero(b, now);
 
   return (
     <Screen title="Autel des Failles" bg={<div className="altar-bg">{altar && <img src={altar} alt="" draggable={false} />}</div>}>
@@ -77,10 +79,11 @@ export function Summon() {
       <div className="altar-stage" style={{ ['--bc' as string]: b.color, ['--bg2' as string]: b.glow }}>
         {altar && <img className="altar-img" src={altar} alt="" draggable={false} />}
         <div className="altar-rift" />
-        {b.featured && (
+        {star && (
           <div className="altar-featured">
-            <div className="af-art"><HeroArt heroId={b.featured.heroId} kind="full" /></div>
-            <span>En vedette · {HERO_BY_ID[b.featured.heroId].name}</span>
+            <div className="af-art"><HeroArt heroId={star} kind="full" /></div>
+            <span>En vedette · {HERO_BY_ID[star].name}</span>
+            {b.featured?.rotation && <small className="af-next">Change dans {formatDaysHours(msUntilWeekReset(now))}</small>}
           </div>
         )}
         <div className="altar-shard" key={b.id}><Crystal color={b.color} glow={b.glow} size={74} /></div>
@@ -127,7 +130,7 @@ export function Summon() {
               <span>{v} % <span className="faint">· {HEROES.filter((h) => h.rarity === r).map((h) => h.name.split(/[ ,]/)[0]).join(', ')}</span></span>
             </div>
           ))}
-          {b.featured && <p className="faint">{HERO_BY_ID[b.featured.heroId].name} : {Math.round(b.featured.share * 100)} % des tirages {RARITIES[HERO_BY_ID[b.featured.heroId].rarity].name.toLowerCase()}s.</p>}
+          {b.featured && star && <p className="faint">{HERO_BY_ID[star].name} : {Math.round(b.featured.share * 100)} % des tirages {RARITIES[HERO_BY_ID[star].rarity].name.toLowerCase()}s{b.featured.rotation ? ' (la vedette change chaque lundi)' : ''}.</p>}
           {b.pity && <p className="faint">Garantie : un héros {RARITIES[b.pity.rarity].name.toLowerCase()} ou mieux au plus tard tous les {b.pity.every} appels (compteur : {pity}).</p>}
           {b.multiGuarantee && <p className="faint">Appel ×10 : au moins un héros {RARITIES[b.multiGuarantee].name.toLowerCase()} ou mieux.</p>}
           <p className="faint">Héros déjà possédé → 1 doublon : il sert à l’éveiller ou à renforcer sa famille ou son affinité (fiche du héros).</p>

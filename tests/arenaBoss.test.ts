@@ -39,3 +39,21 @@ describe('Arène et boss mondial (v1.114.0, retours du joueur)', () => {
     expect(migrateSave(JSON.parse(JSON.stringify(m))).worldBoss.best).toEqual({ normal: 50, hard: 20 });
   });
 });
+
+import { BANNER_BY_ID } from '../src/data/summons';
+import { featuredHero, pickHero } from '../src/game/summon';
+describe('Faille : héros en vedette (v1.114.0, retour du joueur)', () => {
+  const b = BANNER_BY_ID.event_ash;
+  const WEEK = 7 * 86_400_000;
+  const t0 = new Date('2026-11-18T12:00:00').getTime(); // un mercredi
+  it('change chaque semaine, reste le même pendant la semaine, et passe par tous les héros de la rotation', () => {
+    expect(featuredHero(b, t0)).toBe(featuredHero(b, t0 + 2 * 86_400_000));
+    const seen = new Set(Array.from({ length: 7 }, (_, k) => featuredHero(b, t0 + k * WEEK)));
+    expect(seen.size).toBe(b.featured!.rotation!.length);
+    expect(featuredHero(b, t0)).not.toBe(featuredHero(b, t0 + WEEK));
+  });
+  it('l’invocation tire bien la vedette de la semaine', () => {
+    const star = featuredHero(b, t0 + WEEK)!;
+    expect(pickHero(() => 0, 'legendary', b, t0 + WEEK)).toBe(star);
+  });
+});

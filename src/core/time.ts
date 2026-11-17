@@ -74,3 +74,6 @@ export function msUntilWeekReset(ms: number, resetHour: number = BALANCE.time.da
   while (weekKey(ms + t + 1000, resetHour) === weekKey(ms, resetHour)) t += 24 * 3600 * 1000;
   return t;
 }
+
+/** Durée longue lisible : « 5 j 17 h » au-delà d'un jour, sinon comme formatDuration. */
+export const formatDaysHours = (ms: number): string => (ms >= 86_400_000 ? `${Math.floor(ms / 86_400_000)}\u00a0j\u00a0${Math.floor((ms % 86_400_000) / 3_600_000)}\u00a0h` : formatDuration(ms));

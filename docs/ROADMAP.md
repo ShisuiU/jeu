@@ -572,7 +572,9 @@ Travail sur la branche `claude/keen-faraday-bcryji`, **sans fusion sur `main`** 
 - **Arène : adversaires imaginaires bien calibrés** : sans assez de vrais joueurs dans la ligue, le jeu complète avec des Héritiers imaginaires. Leur niveau était plafonné par leur rareté (un Commun ne dépassait pas 20) et ils n'avaient ni rang ni ascension : à niveau 60, les trois adversaires, « Redoutable » compris, n'avaient que 41 à 66 % de la puissance du joueur (simulation : 6 victoires sur 6 partout). Ils progressent maintenant comme un joueur (rang et ascension suivant le niveau) et ont bien ~70 / 95 / 115 % de ta puissance à tous les niveaux.
 - **Boss mondial : récompense proportionnelle à la participation** : tu reçois la part de la récompense maximale égale à la part des PV infligée (37 % des PV = 37 % de la récompense), au lieu de 6 paliers.
 - **Boss mondial : deux fois plus résistant** (PV doublés à chaque difficulté) : sans équipement, une équipe de niveau 60 passe de 100 % à 63 % en Normal et de 34 % à 26 % en Cauchemar. Les meilleurs scores déjà enregistrés sont divisés par deux une fois (même dégâts = moitié des PV), pour l'écran et le classement.
-- Tests ajoutés (calibrage de l'Arène, part de la récompense, conversion des anciens scores).
+- **Faille : le héros en vedette change chaque semaine** (retour du joueur) : à tour de rôle parmi les 7 Légendaires invocables (Sulfura, Idris, Vaelshira, Nerissa, Ondine, Corentin, Thalor), au renouvellement du lundi ; l'Autel affiche « Change dans 5 j 17 h ».
+- **Faille : la carte du héros en vedette ne chevauche plus « Obtenir »** (elle passe en haut à gauche).
+- Tests ajoutés (calibrage de l'Arène, part de la récompense, conversion des anciens scores, rotation de la vedette).
 
 ## ✅ Version 1.113.0 — Terrain d’entraînement : expérience fixe, places progressives
 

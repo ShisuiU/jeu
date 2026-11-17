@@ -20,7 +20,7 @@ import { maskProfanity } from '../../game/moderation';
 import { loadCloud, useAccount } from '../../cloud/account';
 import { seededRand } from '../../game/gear';
 import { dungeonBonus } from '../../game/events';
-import { formatDuration, msUntilReset, msUntilWeekReset } from '../../core/time';
+import { formatDaysHours, formatDuration, msUntilReset, msUntilWeekReset } from '../../core/time';
 import { InfoButton, Modal, Panel, Screen, fmt } from '../components/common';
 import { RewardInline, rewardMainIcon } from '../components/RewardView';
 import { EnemyArt } from '../art/EnemyArt';
@@ -32,7 +32,7 @@ import { SETS } from '../../data/equipment';
 import type { DungeonDef } from '../../data/dungeons';
 
 /** Temps restant de la saison : en jours et heures au-delà d'un jour. */
-const seasonLeft = (ms: number) => (ms >= 86400_000 ? `${Math.floor(ms / 86400_000)}\u00a0j\u00a0${Math.floor((ms % 86400_000) / 3600_000)}\u00a0h` : formatDuration(ms));
+const seasonLeft = formatDaysHours;
 
 const DICON = { forge: 'ore', flask: 'flask', potion: 'potion', book: 'book' } as const;
 

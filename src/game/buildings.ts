@@ -1,6 +1,6 @@
 import { MINE, TRAINING } from '../data/buildings';
 import type { SaveData } from '../save/schema';
-import { addHeroXp, heroXpToNext } from './progression';
+import { addHeroXp } from './progression';
 import { maxLevelForRank } from './stats';
 
 const HOUR = 3600_000;
@@ -40,9 +40,10 @@ export function trainPending(s: SaveData, i: number, now: number): number {
   const h = t && s.heroes.find((x) => x.uid === t.uid);
   if (!t || !h || h.level >= maxLevelForRank(h.rank)) return 0;
   const hours = Math.max(0, now - t.since) / HOUR;
-  return Math.floor(hours * TRAINING.xpPctPerHour * heroXpToNext(h.level));
+  return Math.floor(hours * trainXpPerHour(i));
 }
-export const trainXpPerHour = (lv: number) => Math.max(1, Math.round(TRAINING.xpPctPerHour * heroXpToNext(lv)));
+/** Expérience par heure d'une place du Terrain d'entraînement : fixe quel que soit le niveau, un peu plus à chaque place. */
+export const trainXpPerHour = (slot: number) => TRAINING.xpPerHour[Math.min(Math.max(0, slot), TRAINING.xpPerHour.length - 1)];
 /** Au moins une minute entre deux versements, pour ne pas réécrire la sauvegarde à chaque seconde. */
 const TRAIN_STEP = 60_000;
 /** Vrai si l'un des héros placés a de l'expérience à recevoir. */
@@ -60,7 +61,7 @@ export function collectTraining(s: SaveData, now: number): { uid: string; xp: nu
     if (h.level >= maxLevelForRank(h.rank)) { t.since = now; return; }
     const xp = trainPending(s, i, now);
     if (xp <= 0) return;
-    const perHour = TRAINING.xpPctPerHour * heroXpToNext(h.level);
+    const perHour = trainXpPerHour(i);
     t.since = Math.min(now, t.since + (xp / perHour) * HOUR);
     const r = addHeroXp(h, xp);
     out.push({ uid: h.uid, xp, levels: r.gained });

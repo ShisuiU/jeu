@@ -40,7 +40,7 @@ describe('Bâtiments (v1.78.0)', () => {
   });
   it('terrain : l’expérience arrive toute seule, minute après minute, sans rien perdre ni plafond', () => {
     const t = 1_800_000_000_000;
-    const mk = () => { const s = createNewSave(t); const h = s.heroes[0]; h.level = 1; h.xp = 0; placeTrainee(s, 0, h.uid, t); return s; };
+    const mk = () => { const s = createNewSave(t); const h = s.heroes[0]; h.level = 1; h.rank = 6; h.xp = 0; placeTrainee(s, 0, h.uid, t); return s; }; // rang 6 : pas de plafond pendant le test
     const s = mk();
     expect(trainDue(s, t + 30_000)).toBe(false);
     // versements à chaque minute pendant 10 h : le total doit égaler un seul versement de 10 h
@@ -52,6 +52,18 @@ describe('Bâtiments (v1.78.0)', () => {
     // 3 jours sans jouer : tout est compté (plus de plafond à 24 h)
     const c = mk();
     expect(trainPendingTotal(c, t + 72 * H)).toBeGreaterThan(trainPendingTotal(c, t + 24 * H) * 2.5);
+  });
+  it('terrain : expérience fixe, la même pour un héros de niveau 1 ou 40 (v1.113.0)', () => {
+    const t = 1_800_000_000_000;
+    const at = (lv: number) => { const s = createNewSave(t); const h = s.heroes[0]; h.level = lv; h.rank = 6; h.xp = 0; placeTrainee(s, 0, h.uid, t); return trainPending(s, 0, t + 2 * H); };
+    expect(at(1)).toBe(1000);
+    expect(at(40)).toBe(1000);
+  });
+  it('terrain : chaque place ouverte rapporte un peu plus que la précédente (500, 600, 700 XP/h)', () => {
+    const t = 1_800_000_000_000; const s = createNewSave(t);
+    s.buildings.trainSlots = 3;
+    s.heroes.slice(0, 3).forEach((h, i) => { h.rank = 6; placeTrainee(s, i, h.uid, t); });
+    expect([0, 1, 2].map((i) => trainPending(s, i, t + H))).toEqual([500, 600, 700]);
   });
   it('les anciennes sauvegardes reçoivent les bâtiments', () => {
     const s = createNewSave(Date.now()) as unknown as Record<string, unknown>;

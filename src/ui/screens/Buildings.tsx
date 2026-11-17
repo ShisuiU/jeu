@@ -99,7 +99,7 @@ export function Buildings() {
         <div className="bld-art"><img src={trainArt} alt="" draggable={false} /></div>
         <div className="bld-body">
           <div className="bld-head"><b>Terrain d’entraînement</b></div>
-          <p className="faint" style={{ margin: '0 0 8px', fontSize: 12.5 }}>+{Math.round(TRAINING.xpPctPerHour * 100)} % d’un niveau par heure, même jeu fermé. Les héros placés peuvent toujours combattre.</p>
+          <p className="faint" style={{ margin: '0 0 8px', fontSize: 12.5 }}>Chaque héros placé gagne de l’expérience à l’heure, quel que soit son niveau, même jeu fermé : {TRAINING.xpPerHour.join(', ').replace(/, (?=[^,]*$)/, ' puis ')} XP/h selon la place. Les héros placés peuvent toujours combattre.</p>
           <div className="train-slots">
             {Array.from({ length: TRAINING.slots }, (_, i) => {
               const open = i < b.trainSlots;
@@ -111,16 +111,17 @@ export function Buildings() {
                   <button key={i} className="train-slot locked" disabled={!next} onClick={() => act(unlockTrainSlot, 'Nouvelle place ouverte au Terrain.')}>
                     <Icon.lock size={20} />
                     <span><D size={14} /> {TRAINING.slotCost[i]}</span>
+                    <span className="ts-rate">{trainXpPerHour(i)} XP/h</span>
                   </button>
                 );
               }
-              if (!h) return <button key={i} className="train-slot empty" onClick={() => setPick(i)}><span className="plus">+</span><span>Placer un héros</span></button>;
+              if (!h) return <button key={i} className="train-slot empty" onClick={() => setPick(i)}><span className="plus">+</span><span>Placer un héros</span><span className="ts-rate">{trainXpPerHour(i)} XP/h</span></button>;
               const maxed = h.level >= maxLevelForRank(h.rank);
               return (
                 <button key={i} className="train-slot" onClick={() => setPick(i)} style={{ ['--rc' as string]: RARITIES[HERO_BY_ID[h.heroId].rarity].color }}>
                   <span className="ts-art"><HeroArt heroId={h.heroId} /><span className="ts-lv">{h.level}</span></span>
                   <span className="ts-name">{HERO_BY_ID[h.heroId].name.split(' ')[0]}</span>
-                  <span className="ts-xp">{maxed ? 'Niveau max du rang' : `+${fmt(trainXpPerHour(h.level))} XP/h`}</span>
+                  <span className="ts-xp">{maxed ? 'Niveau max du rang' : `+${fmt(trainXpPerHour(i))} XP/h`}</span>
                 </button>
               );
             })}

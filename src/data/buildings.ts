@@ -13,6 +13,8 @@ export const MINE = {
 export const TRAINING = {
   slots: 3,
   slotCost: [0, 100, 250] as const, // index = place (0 gratuite)
-  /** Expérience gagnée par heure : 3 % de ce qu'il faut pour le niveau suivant (peu, mais sans rien faire). */
-  xpPctPerHour: 0.03,
+  /** Expérience gagnée par heure, la même quel que soit le niveau du héros (v1.113.0, retour du joueur : à 3 % du niveau suivant,
+   *  un héros de niveau 1 ne gagnait que 4 XP/h). Chaque place ouverte rapporte un peu plus que la précédente (retour du joueur) :
+   *  500, 600 puis 700 XP/h (la première vaut un peu plus qu'un élixir de 400 XP par heure). */
+  xpPerHour: [500, 600, 700] as const, // index = place
 };

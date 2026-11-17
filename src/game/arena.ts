@@ -3,7 +3,7 @@ import { HEROES, HERO_BY_ID } from '../data/heroes';
 import { RARITIES } from '../data/rarities';
 import { uid } from '../core/ids';
 import type { ArenaLogEntry, ArenaOpponent, SaveData } from '../save/schema';
-import { computeStats, maxLevelForRank, powerOf } from './stats';
+import { computeStats, powerOf } from './stats';
 import { applyGearBonus, type GearBonus, type Rand } from './gear';
 import { teamSetups } from './campaign';
 import { heroTotalStats } from './heroStats';
@@ -19,8 +19,15 @@ export function playerTeamPower(s: SaveData): number {
   return list.reduce((a, h) => a + powerOf(heroTotalStats(s, h).total), 0);
 }
 
-function teamPower(heroes: { heroId: string; level: number }[]): number {
-  return heroes.reduce((a, h) => a + powerOf(computeStats(HERO_BY_ID[h.heroId], { level: h.level, rank: RARITIES[HERO_BY_ID[h.heroId].rarity].startRank, ascension: 0, awaken: 0 })), 0);
+/** Progression d'un Héritier imaginaire au niveau `lv`, comme celle d'un joueur : rang suffisant pour ce niveau,
+ *  une ascension tous les 10 niveaux (v1.114.0 : avant, niveau plafonné par la rareté et ni rang ni ascension,
+ *  si bien qu'une équipe de niveau 60 n'affrontait que des adversaires à 40-65 % de sa puissance). */
+export function botProgress(heroId: string, lv: number): { level: number; rank: number; ascension: number } {
+  const start = RARITIES[HERO_BY_ID[heroId].rarity].startRank;
+  return { level: lv, rank: Math.min(6, Math.max(start, Math.ceil(lv / 10))), ascension: Math.min(6, Math.floor(lv / 10)) };
+}
+function teamPower(heroes: { heroId: string; level: number; rank?: number; ascension?: number }[]): number {
+  return heroes.reduce((a, h) => a + powerOf(computeStats(HERO_BY_ID[h.heroId], { level: h.level, rank: h.rank ?? RARITIES[HERO_BY_ID[h.heroId].rarity].startRank, ascension: h.ascension ?? 0, awaken: 0 })), 0);
 }
 
 // ARÈNE RÉELLE — chaque joueur connecté publie son équipe de défense (defenses/{uid}) : héros, niveaux,
@@ -109,10 +116,10 @@ export function generateOpponents(s: SaveData, r: Rand, pool: ArenaDefense[] = d
     // Niveau choisi pour approcher la puissance visée.
     let level = 1;
     for (let lv = 1; lv <= 60; lv++) {
-      if (teamPower(picks.map((heroId) => ({ heroId, level: lv }))) > want) break;
+      if (teamPower(picks.map((heroId) => ({ heroId, ...botProgress(heroId, lv) }))) > want) break;
       level = lv;
     }
-    const heroes = picks.map((heroId, i) => ({ heroId, level: Math.min(level, maxLevelForRank(RARITIES[HERO_BY_ID[heroId].rarity].startRank + 1)), slot: i }));
+    const heroes = picks.map((heroId, i) => ({ heroId, ...botProgress(heroId, level), slot: i }));
     return { id: uid('op_'), name: ARENA_NAMES[Math.floor(r() * ARENA_NAMES.length)], heroes, power: teamPower(heroes) } as ArenaOpponent;
   });
   // Du plus faible au plus fort : « Accessible », « Équilibré », « Redoutable » restent vrais.

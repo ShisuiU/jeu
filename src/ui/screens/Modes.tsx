@@ -9,7 +9,7 @@ import { TOWER_FLOORS, towerReward } from '../../data/tower';
 import { CHALLENGES, TOWER_CHALLENGE_STEP, towerChallengeOf, towerChallengeReward } from '../../data/challenges';
 import { sweepTower, towerSweepMax } from '../../game/towerSweep';
 import type { Reward } from '../../data/resources';
-import { BOSS_TIERS, DAMAGE_CHESTS, WORLD_BOSS } from '../../data/worldBoss';
+import { BOSS_TIERS, WORLD_BOSS } from '../../data/worldBoss';
 import { ARENA, ARENA_TIERS, arenaTier } from '../../data/arena';
 import { claimSeasonReward } from '../../game/missions';
 import { HERO_BY_ID } from '../../data/heroes';
@@ -196,7 +196,7 @@ export function WorldBoss() {
       </div>
       <Panel>
         <div className="row between"><span>Clés : <b style={{ color: 'var(--gold-hi)' }}>{keys}</b> / {WORLD_BOSS.keysPerDay}</span><span className="faint">Renouvellement dans {formatDuration(msUntilReset(now))}</span></div>
-        <div className="row" style={{ marginTop: 6, gap: 6 }}><span className="faint grow">{WORLD_BOSS.turnLimit} actions pour frapper le plus fort possible</span><InfoButton title={WORLD_BOSS.name}>Inflige un maximum de dégâts en {WORLD_BOSS.turnLimit} actions. Paliers de récompense à {DAMAGE_CHESTS.join(', ')} % de ses PV. Le Colosse est immunisé à l’étourdissement et au gel.</InfoButton></div>
+        <div className="row" style={{ marginTop: 6, gap: 6 }}><span className="faint grow">{WORLD_BOSS.turnLimit} actions pour frapper le plus fort possible</span><InfoButton title={WORLD_BOSS.name}>Inflige un maximum de dégâts en {WORLD_BOSS.turnLimit} actions. Ta récompense est proportionnelle à ta participation : si tu lui retires 37 % de ses PV, tu reçois 37 % de la récompense maximale affichée. Le Colosse est immunisé à l’étourdissement et au gel.</InfoButton></div>
       </Panel>
       {BOSS_TIERS.map((t) => {
         const best = save.worldBoss.best[t.id] ?? 0;
@@ -209,13 +209,11 @@ export function WorldBoss() {
               </div>
               <button className="btn" disabled={keys <= 0} onClick={() => push({ name: 'prep', spec: { mode: 'worldboss', tier: t.id } })}>Affronter</button>
             </div>
-            {/* Un seul repère : le prochain palier (les six paliers sont dans le ⓘ). */}
-            {(() => { const got = DAMAGE_CHESTS.filter((c) => best >= c).length; const next = DAMAGE_CHESTS[got]; return (
-              <div className="wb-next">
-                <div className="progress"><div style={{ width: `${Math.min(100, best)}%` }} /></div>
-                <span className="faint">{next ? <>Prochain palier : <b>{next} %</b> · {got}/{DAMAGE_CHESTS.length} atteints</> : <>Tous les paliers atteints</>}</span>
-              </div>
-            ); })()}
+            {/* v1.114.0 : récompense proportionnelle aux dégâts ; la barre montre la meilleure part obtenue. */}
+            <div className="wb-next">
+              <div className="progress"><div style={{ width: `${Math.min(100, best)}%` }} /></div>
+              <span className="faint">{best >= 100 ? <>Récompense complète atteinte</> : <>Ta meilleure part : <b>{Math.floor(best)} %</b> de la récompense ci-dessous</>}</span>
+            </div>
             <RewardInline reward={t.reward} />
           </Panel>
         );

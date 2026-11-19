@@ -567,6 +567,17 @@ Travail sur la branche `claude/keen-faraday-bcryji`, **sans fusion sur `main`** 
 - Cycle 2, suite (03:00 → 03:25 UTC) : icônes de ressources détourées (15 images), croix des fenêtres et paliers d'Événements remis en place (régression du cycle 1), toasts avec icône, boutons inactifs lisibles ; **Démanteler demande une confirmation** ; nom des équipements au Marché ; décimales à la française ; icône peinte « Code promo » (SpriteCook) ; état vide de la Forge avec action ; boutons Fermer en double retirés (7 fenêtres) ; cases d'équipement vides d'un seul style.
 - Arrêt forcé de 03:25 à 07:30 UTC (limite d'utilisation) : le second test « nouveau joueur » et la seconde critique artistique n'ont pas pu aboutir.
 
+## 🔧 Version 1.117.0 (en cours, branche) — amélioration continue
+
+- **Mine de diamants** : les diamants récoltés s'envolent vers le haut.
+- **Revue de code de la v1.116.0, corrigée** :
+  - montée rapide de la Tour : le message et l'envol annonçaient parfois des éclats épiques au lieu de l'or réellement reçu (conversion des anciens cristaux faite sur le total au lieu d'étage par étage) ; test : butin annoncé = ressources reçues ;
+  - expéditions : un événement « expéditions » commencé pendant le trajet augmente encore le butin fixé au départ ;
+  - envol des récompenses sans effet ni erreur sur un navigateur sans animations web ; « énergie » correctement nommée ;
+  - retouche : libellé vocal « Confirmer la retouche… » pendant l'attente, et rien n'est armé en changeant d'objet ;
+  - boss mondial : la liste et la préparation utilisent la même horloge pour le bonus d'événement ;
+  - « gravir 1 étage » au singulier.
+
 ## ✅ Version 1.116.0 — Récompenses qui s'envolent, corrections de la chasse aux bugs
 
 - **Récompenses qui s'envolent** : en réclamant une mission, un succès, un coffre bonus, un objectif ou un palier d'événement, ou un coffre d'étoiles de la campagne, les icônes de la récompense partent du bouton vers le haut de l'écran, et le message dit exactement ce qui a été reçu (« +1 Éclat d'Aeon · +1 Éclat épique ») au lieu de « Récompense obtenue ! ». Rien ne bouge avec « Animations réduites ».

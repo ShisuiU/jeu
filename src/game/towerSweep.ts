@@ -1,3 +1,4 @@
+import { normalizeReward } from '../data/resources';
 import type { SaveData } from '../save/schema';
 import type { Reward } from '../data/resources';
 import { SUMMIT_FROM, towerLevel, towerReward } from '../data/tower';
@@ -31,7 +32,8 @@ export function sweepTower(s: SaveData): { floors: number; reward: Reward } {
   for (let f = from + 1; f <= to; f++) {
     const r = towerReward(f);
     applyReward(s, r);
-    for (const [k, v] of Object.entries(r)) if (typeof v === 'number') total[k] = (total[k] ?? 0) + v;
+    // Total de ce qui a été réellement versé : chaque étage est converti à part (anciens cristaux → or / éclats), comme applyReward.
+    for (const [k, v] of Object.entries(normalizeReward(r))) if (typeof v === 'number') total[k] = (total[k] ?? 0) + v;
     track(s, 'towerWin');
   }
   s.progress.tower.floor = to;

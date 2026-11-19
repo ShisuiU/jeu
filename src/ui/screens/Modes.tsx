@@ -197,14 +197,14 @@ export function Tower() {
       {sweepTo > 0 && (
         <div className="hint" style={{ marginTop: 14 }}>
           Les étages {cur + 1} à {sweepTo} sont bien en dessous du niveau de ton équipe.
-          {/* v1.116.0 (QA) : gros butin d'un coup → un toucher pour voir, un second pour confirmer ; puis le butin s'envole et est détaillé. */}
+          {/* v1.116.0 (QA) : gros butin d'un coup → un premier toucher arme le bouton, un second confirme ; puis le butin s'envole et est détaillé. */}
           <button className={`btn ${sweepArm ? '' : 'secondary'} block`} style={{ marginTop: 8 }} onClick={(e) => {
             if (!sweepArm) { setSweepArm(true); return; }
             setSweepArm(false);
             const from = e.currentTarget;
             let res = { floors: 0, reward: {} as Reward }; mutate((d) => { res = sweepTower(d); });
             if (res.floors) { play('claim'); flyReward(res.reward, from); toast(`Montée rapide : ${res.floors} étages · ${rewardSummary(res.reward)}`, 'ok', undefined, 5000); }
-          }}>{sweepArm ? `Confirmer : gravir ${sweepTo - cur} étages` : `Monter d’un coup jusqu’à l’étage ${sweepTo}`}</button>
+          }}>{sweepArm ? `Confirmer : gravir ${sweepTo - cur} étage${sweepTo - cur > 1 ? 's' : ''}` : `Monter d’un coup jusqu’à l’étage ${sweepTo}`}</button>
         </div>
       )}
     </Screen>
@@ -243,8 +243,8 @@ export function WorldBoss() {
               <span className="faint">{best >= 100 ? <>Récompense complète atteinte</> : <>Ta meilleure part : <b>{Math.floor(best)} %</b> de la récompense ci-dessous</>}</span>
             </div>
             {/* Avec le bonus d'événement s'il y en a un (QA : la liste l'oubliait, alors que la préparation et le versement l'incluent). */}
-            <RewardInline reward={bossShare(t.reward, 100, eventBonus(now, 'worldBoss'))} />
-            {eventBonus(now, 'worldBoss') > 1 && <div className="faint" style={{ fontSize: 12 }}>Bonus d’événement ×{eventBonus(now, 'worldBoss')} compris</div>}
+            <RewardInline reward={bossShare(t.reward, 100, eventBonus(save.time.highWater, 'worldBoss'))} />
+            {eventBonus(save.time.highWater, 'worldBoss') > 1 && <div className="faint" style={{ fontSize: 12 }}>Bonus d’événement ×{eventBonus(save.time.highWater, 'worldBoss')} compris</div>}
           </Panel>
         );
       })}

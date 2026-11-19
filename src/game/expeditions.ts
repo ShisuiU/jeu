@@ -22,8 +22,9 @@ export interface ExpeditionOffer {
   cond: { kind: 'affinity' | 'role' | 'faction'; id: string };
   reqPower: number; base: Reward;
 }
-/** `loot` (v1.116.0) : butin calculé au départ (puissance de l'équipe à ce moment) ; versé tel quel au retour. */
-export interface ExpeditionRun { offerId: string; heroUids: string[]; startAt: number; endsAt: number; offer: ExpeditionOffer; loot?: Reward }
+/** `loot` (v1.116.0) : butin calculé au départ (puissance de l'équipe à ce moment) ; `lootEv` : bonus d'événement compris dedans.
+ *  Au retour, le butin est versé tel quel, augmenté si un événement plus généreux a commencé entre-temps. */
+export interface ExpeditionRun { offerId: string; heroUids: string[]; startAt: number; endsAt: number; offer: ExpeditionOffer; loot?: Reward; lootEv?: number }
 export interface ExpeditionState { day: string; offers: ExpeditionOffer[]; runs: ExpeditionRun[]; done: string[] }
 
 export const EXPEDITION_SLOTS = 4;
@@ -108,7 +109,7 @@ export function startExpedition(s: SaveData, offerId: string, heroUids: string[]
   if (heroUids.length !== o.size) return { ok: false, reason: `Choisis ${o.size} héros.` };
   const busy = busyHeroes(s);
   if (heroUids.some((u) => busy.has(u) || !s.heroes.some((h) => h.uid === u))) return { ok: false, reason: 'Un héros est déjà en expédition.' };
-  ex.runs.push({ offerId, heroUids: [...heroUids], startAt: now, endsAt: now + o.minutes * 60_000, offer: o, loot: expeditionLoot(s, o, heroUids).reward });
+  ex.runs.push({ offerId, heroUids: [...heroUids], startAt: now, endsAt: now + o.minutes * 60_000, offer: o, loot: expeditionLoot(s, o, heroUids).reward, lootEv: eventBonus(s.time.highWater, 'expedition') });
   return { ok: true };
 }
 
@@ -123,7 +124,10 @@ export function claimExpedition(s: SaveData, offerId: string, now: number): { ok
   if (!run) return { ok: false, reason: 'Aucune expédition.' };
   if (now < run.endsAt) return { ok: false, reason: 'Pas encore de retour.' };
   // Le butin annoncé au départ est celui versé (avant : recalculé au retour, il changeait si un héros avait progressé en route).
-  const reward = run.loot ?? expeditionLoot(s, run.offer, run.heroUids.filter((u) => s.heroes.some((h) => h.uid === u))).reward;
+  let reward = run.loot ?? expeditionLoot(s, run.offer, run.heroUids.filter((u) => s.heroes.some((h) => h.uid === u))).reward;
+  // Revue de code : un événement « expéditions » commencé pendant le trajet augmente encore le butin (comme avant la v1.116.0).
+  const evNow = eventBonus(s.time.highWater, 'expedition'), evThen = run.lootEv ?? 1;
+  if (run.loot && evNow > evThen) reward = Object.fromEntries(Object.entries(reward).map(([k, v]) => [k, Math.round((v as number) * (evNow / evThen))])) as Reward;
   applyReward(s, reward);
   ex.runs = ex.runs.filter((r) => r !== run);
   if (!ex.done.includes(offerId) && ex.offers.some((o) => o.id === offerId)) ex.done.push(offerId);

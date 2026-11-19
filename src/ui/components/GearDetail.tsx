@@ -74,6 +74,7 @@ export function GearDetail({ gearUid, onClose, equipTo, place = 'hero', onReplac
   const [picking, setPicking] = useState(false);
   const [reforgeArm, setReforgeArm] = useState<number | null>(null);
   useEffect(() => { if (reforgeArm === null) return; const t = setTimeout(() => setReforgeArm(null), 4000); return () => clearTimeout(t); }, [reforgeArm]);
+  useEffect(() => { setReforgeArm(null); setArmed(false); }, [gearUid]); // autre objet : rien n'est « armé »
   useEffect(() => { if (!armed) return; const t = setTimeout(() => setArmed(false), 3000); return () => clearTimeout(t); }, [armed]);
   const g = save.equipment.find((x) => x.uid === gearUid);
   if (!g) return null;
@@ -126,7 +127,7 @@ export function GearDetail({ gearUid, onClose, equipTo, place = 'hero', onReplac
         <div key={i} className="gd-sub">
           <span>{statText(sb.stat, sb.value)}</span>
           <span className="gd-rolls" aria-label={`${sb.rolls - 1} renforcement(s)`}>{Array.from({ length: sb.rolls - 1 }, (_, k) => <i key={k} />)}</span>
-          <button className={`gd-reforge ${reforgeArm === i ? 'armed' : ''}`} aria-label={`Retoucher ${statText(sb.stat, sb.value)} (${REFORGE_COST.gold} or, ${REFORGE_COST.forgeOre} minerai)`} title={`Retoucher : ${REFORGE_COST.gold} or, ${REFORGE_COST.forgeOre} minerai`}
+          <button className={`gd-reforge ${reforgeArm === i ? 'armed' : ''}`} aria-label={reforgeArm === i ? `Confirmer la retouche de ${statText(sb.stat, sb.value)} : ${REFORGE_COST.gold} or, ${REFORGE_COST.forgeOre} minerai` : `Retoucher ${statText(sb.stat, sb.value)} (${REFORGE_COST.gold} or, ${REFORGE_COST.forgeOre} minerai)`} title={`Retoucher : ${REFORGE_COST.gold} or, ${REFORGE_COST.forgeOre} minerai`}
             onClick={() => {
               // v1.116.0 (QA) : la retouche coûte cher et efface la statistique : premier toucher = prix affiché, second = confirmé.
               if (reforgeArm !== i) { setReforgeArm(i); return; }

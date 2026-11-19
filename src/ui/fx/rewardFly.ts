@@ -2,7 +2,7 @@ import { RESOURCES, normalizeReward, type Reward } from '../../data/resources';
 import { RES_ART } from '../art/Icons';
 import { useGame } from '../../state/store';
 
-// RÉCOMPENSE QUI S'ENVOLE (v1.115.0) — au moment de réclamer, quelques icônes de la récompense partent du bouton touché
+// RÉCOMPENSE QUI S'ENVOLE (v1.116.0) — au moment de réclamer, quelques icônes de la récompense partent du bouton touché
 // vers le haut de l'écran (là où sont les ressources), et le message dit exactement ce qui a été reçu.
 // Rien ne bouge avec « Animations réduites » ou si le système le demande ; seul le message reste.
 
@@ -11,7 +11,7 @@ const fmt = (n: number) => Math.round(n).toLocaleString('fr-FR');
 /** « +3 000 Or · +3 Élixirs d'expérience » (au plus 3 lignes, puis « … »). */
 export function rewardSummary(raw: Reward): string {
   const r = normalizeReward(raw);
-  const parts = Object.entries(r).filter(([, v]) => (v ?? 0) > 0).map(([k, v]) => `+${fmt(v ?? 0)} ${RESOURCES[k as keyof typeof RESOURCES]?.name ?? k}`);
+  const parts = Object.entries(r).filter(([, v]) => (v ?? 0) > 0).map(([k, v]) => `+${fmt(v ?? 0)} ${k === 'energy' ? 'énergie' : RESOURCES[k as keyof typeof RESOURCES]?.name ?? k}`);
   return parts.length > 3 ? `${parts.slice(0, 3).join(' · ')} …` : parts.join(' · ');
 }
 
@@ -35,6 +35,7 @@ export function flyReward(raw: Reward, from?: Element | null): void {
       img.style.left = `${x0}px`; img.style.top = `${y0}px`;
       document.body.appendChild(img);
       const dx = tx - x0, dy = ty - y0, mid = { x: dx * 0.35 + (Math.random() - 0.5) * 70, y: dy * 0.2 - 50 - Math.random() * 40 };
+      if (typeof img.animate !== 'function') { img.remove(); continue; } // navigateur sans Web Animations : pas d'envol, le message reste
       const anim = img.animate([
         { transform: 'translate(-50%, -50%) scale(0.4)', opacity: 0 },
         { transform: `translate(calc(-50% + ${mid.x}px), calc(-50% + ${mid.y}px)) scale(1.1)`, opacity: 1, offset: 0.35 },

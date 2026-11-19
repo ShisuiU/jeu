@@ -749,7 +749,7 @@ select.prep-team { min-height: 40px; }
 .result-overlay > .result-title { margin-top: auto; }
 .result-overlay::after { content: ''; margin-top: auto; }
 .theme-v2 .result-actions .btn.secondary { border: solid transparent !important; border-width: 0 13px !important; border-image: url('../assets/kit/pill_dark.webp') 0 10% 0 10% fill / 0 13px stretch !important; background: none !important; border-radius: 0 !important; color: #f1e4c6 !important; min-height: 48px; }
-.result-overlay.won { background: radial-gradient(120% 60% at 50% 0%, rgba(120, 78, 22, 0.55), rgba(5, 4, 8, 0) 60%), rgba(5, 4, 8, 0.97); }
+.result-overlay.won { background: radial-gradient(120% 60% at 50% 0%, rgba(120, 78, 22, 0.55), rgba(5, 4, 8, 0) 60%), #050408; }
 .result-overlay.won .result-title::before { content: ''; position: absolute; left: 50%; top: 50%; width: 560px; height: 560px; margin: -280px 0 0 -280px; pointer-events: none; z-index: -1;
   background: repeating-conic-gradient(from 0deg, rgba(255, 214, 140, 0.13) 0deg 7deg, transparent 7deg 22deg);
   -webkit-mask-image: radial-gradient(circle, #000 0%, rgba(0,0,0,0.6) 30%, transparent 62%); mask-image: radial-gradient(circle, #000 0%, rgba(0,0,0,0.6) 30%, transparent 62%);
@@ -863,3 +863,4 @@ select.prep-team { min-height: 40px; }
 .rr-hero { border-radius: var(--r-md) !important; box-shadow: 0 0 0 3px #0b0910, 0 0 0 5px var(--rc), 0 0 0 6px rgba(255, 236, 200, 0.35), 0 0 34px var(--rc), 0 12px 40px rgba(0,0,0,0.7) !important; }
 .rr-ids { display: flex; justify-content: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
 .rr-ids > span { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: var(--r-pill); background: rgba(10, 8, 16, 0.75); border: 1px solid var(--line-2); font-size: var(--fs-xs); font-weight: 700; }
+.result-overlay.lost { background: #060509 !important; }

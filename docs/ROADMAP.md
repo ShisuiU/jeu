@@ -567,10 +567,12 @@ Travail sur la branche `claude/keen-faraday-bcryji`, **sans fusion sur `main`** 
 - Cycle 2, suite (03:00 → 03:25 UTC) : icônes de ressources détourées (15 images), croix des fenêtres et paliers d'Événements remis en place (régression du cycle 1), toasts avec icône, boutons inactifs lisibles ; **Démanteler demande une confirmation** ; nom des équipements au Marché ; décimales à la française ; icône peinte « Code promo » (SpriteCook) ; état vide de la Forge avec action ; boutons Fermer en double retirés (7 fenêtres) ; cases d'équipement vides d'un seul style.
 - Arrêt forcé de 03:25 à 07:30 UTC (limite d'utilisation) : le second test « nouveau joueur » et la seconde critique artistique n'ont pas pu aboutir.
 
-## 🔧 Version 1.115.0 (en cours, branche) — amélioration continue
+## ✅ Version 1.115.0 — Amélioration continue : combat lisible, Tour repensée, révélations
 
 - **Icônes de compétences en combat** : chaque carte de compétence porte une icône dessinée d'après sa fonction (frappe unique, frappes multiples, zone, soin, bouclier, renforcement, affaiblissement, résurrection), teintée par l'affinité du héros, cadre violet pour la spéciale et or pour l'ultime, et un petit symbole d'effet (poison, brûlure…) dans le coin. Test : toutes les frappes, soins et boucliers sont reconnus.
 - **Tour adverse** : le panneau d'aide s'efface au lieu d'afficher un grand cadre vide.
+- **Mêmes icônes de compétences dans la fiche héros** (langage visuel unique entre la fiche et le combat).
+- **Écran de victoire et de défaite** : voile opaque, l'interface du combat ne se devine plus derrière.
 - **Tour des Âges repensée** (3e critique artistique : « l'écran le plus pauvre du jeu ») : illustration peinte de la Tour en décor (SpriteCook), compteur d'étages en grand, carte du prochain étage avec les portraits des ennemis, leur niveau, le nombre de vagues, la récompense et le bouton « Gravir l'étage », puis la suite de l'ascension avec les Sentinelles (tous les 10 étages) en violet.
 - **Révélation d'un héros invoqué** (3e critique : « plate ») : double cadre à la couleur de la rareté, rayons de lumière derrière la carte, insignes d'affinité, de rôle et de famille sous le nom.
 

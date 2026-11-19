@@ -852,3 +852,14 @@ select.prep-team { min-height: 40px; }
 .tc-floor .tf-n { width: 28px; height: 28px; display: grid; place-items: center; border-radius: var(--r-sm); font-family: var(--font-title); font-weight: 800; background: rgba(255,255,255,0.06); color: var(--text-dim); }
 .tc-floor.boss { border-color: rgba(185, 140, 255, 0.5); }
 .tc-floor.boss .tf-n { color: #d9b6ff; background: rgba(150, 100, 230, 0.2); }
+/* Révélation d'un héros (v1.115.0, 3e critique : « plate ») : cadre orné à la couleur de la rareté, rayons derrière la carte,
+   faisceau de la Faille passé derrière, identité (affinité, rôle, famille) sous le nom. */
+.rr-result { position: relative; z-index: 4; }
+.rr-single::before { content: ''; position: absolute; left: 50%; top: min(31vw, 125px); width: 620px; height: 620px; margin: -310px 0 0 -310px; z-index: -1; pointer-events: none;
+  background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--rc, #ffd36b) 26%, transparent) 0deg 6deg, transparent 6deg 20deg);
+  -webkit-mask-image: radial-gradient(circle, #000 0%, rgba(0,0,0,0.5) 30%, transparent 60%); mask-image: radial-gradient(circle, #000 0%, rgba(0,0,0,0.5) 30%, transparent 60%);
+  animation: resRays 50s linear infinite; }
+.reduced-motion .rr-single::before { animation: none; }
+.rr-hero { border-radius: var(--r-md) !important; box-shadow: 0 0 0 3px #0b0910, 0 0 0 5px var(--rc), 0 0 0 6px rgba(255, 236, 200, 0.35), 0 0 34px var(--rc), 0 12px 40px rgba(0,0,0,0.7) !important; }
+.rr-ids { display: flex; justify-content: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.rr-ids > span { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: var(--r-pill); background: rgba(10, 8, 16, 0.75); border: 1px solid var(--line-2); font-size: var(--fs-xs); font-weight: 700; }

@@ -572,6 +572,7 @@ Travail sur la branche `claude/keen-faraday-bcryji`, **sans fusion sur `main`** 
 - **Icônes de compétences en combat** : chaque carte de compétence porte une icône dessinée d'après sa fonction (frappe unique, frappes multiples, zone, soin, bouclier, renforcement, affaiblissement, résurrection), teintée par l'affinité du héros, cadre violet pour la spéciale et or pour l'ultime, et un petit symbole d'effet (poison, brûlure…) dans le coin. Test : toutes les frappes, soins et boucliers sont reconnus.
 - **Tour adverse** : le panneau d'aide s'efface au lieu d'afficher un grand cadre vide.
 - **Tour des Âges repensée** (3e critique artistique : « l'écran le plus pauvre du jeu ») : illustration peinte de la Tour en décor (SpriteCook), compteur d'étages en grand, carte du prochain étage avec les portraits des ennemis, leur niveau, le nombre de vagues, la récompense et le bouton « Gravir l'étage », puis la suite de l'ascension avec les Sentinelles (tous les 10 étages) en violet.
+- **Révélation d'un héros invoqué** (3e critique : « plate ») : double cadre à la couleur de la rareté, rayons de lumière derrière la carte, insignes d'affinité, de rôle et de famille sous le nom.
 
 ## ✅ Version 1.114.0 — Arène, boss mondial et Faille (retours du joueur)
 

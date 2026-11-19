@@ -1,3 +1,8 @@
+import { AFFINITIES } from '../../data/affinities';
+import { ROLES } from '../../data/roles';
+import { FACTIONS } from '../../data/factions';
+import { AffinityIcon, RoleIcon } from '../art/Identity';
+import { FactionEmblem } from '../art/FactionEmblem';
 import { LivingArt } from '../art/LivingArt';
 import { trackStat } from '../../state/stats';
 import { GetButton } from '../components/Sources';
@@ -283,6 +288,14 @@ function RiftReveal({ results, bannerColor, bannerGlow, altar, onClose, again, c
                 <span key={wi} className="rr-word">{wi > 0 && <span style={{ animationDelay: `${1 + k++ * 0.035}s` }}> </span>}{[...w].map((ch, i) => <span key={i} style={{ animationDelay: `${1 + k++ * 0.035}s` }}>{ch}</span>)}</span>
               )); })()}</h2>
               <div className="muted rr-sub" style={{ animationDelay: `${1.1 + name.length * 0.035}s` }}>{HERO_BY_ID[best.heroId].title}</div>
+              {/* v1.115.0 : identité du héros d'un coup d'œil (affinité, rôle, famille). */}
+              {(() => { const d = HERO_BY_ID[best.heroId]; return (
+                <div className="rr-ids rr-sub" style={{ animationDelay: `${1.15 + name.length * 0.035}s` }}>
+                  <span style={{ color: AFFINITIES[d.affinity].color }}><AffinityIcon id={d.affinity} size={15} />{AFFINITIES[d.affinity].name}</span>
+                  <span><RoleIcon id={d.role} size={14} />{ROLES[d.role].name}</span>
+                  <span><FactionEmblem id={d.faction} size={15} />{FACTIONS[d.faction].short}</span>
+                </div>
+              ); })()}
               {order >= 5 && HERO_LINES[best.heroId]?.[0] && <div className="rr-quote rr-sub" style={{ animationDelay: `${1.3 + name.length * 0.035}s` }}>« {HERO_LINES[best.heroId][0]} »</div>}
               <div className={`chip rr-sub ${best.duplicate ? '' : 'active'}`} style={{ margin: '10px auto 0', width: 'fit-content', animationDelay: `${1.2 + name.length * 0.035}s` }}>{best.duplicate ? 'Déjà à tes côtés · +1 doublon' : 'Un nouvel Héritier répond à l’appel'}</div>
             </div>

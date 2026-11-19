@@ -570,7 +570,6 @@ Travail sur la branche `claude/keen-faraday-bcryji`, **sans fusion sur `main`** 
 ## 🔧 Version 1.116.0 (en cours, branche) — amélioration continue
 
 - **Récompenses qui s'envolent** : en réclamant une mission, un succès, un coffre bonus, un objectif ou un palier d'événement, ou un coffre d'étoiles de la campagne, les icônes de la récompense partent du bouton vers le haut de l'écran, et le message dit exactement ce qui a été reçu (« +1 Éclat d'Aeon · +1 Éclat épique ») au lieu de « Récompense obtenue ! ». Rien ne bouge avec « Animations réduites ».
-- **CI plus robuste** : l'installation du navigateur de test réessaie jusqu'à 3 fois (deux publications bloquées par des pannes 503 des miroirs Ubuntu).
 
 ## ✅ Version 1.115.0 — Amélioration continue : combat lisible, Tour repensée, révélations
 
@@ -578,6 +577,7 @@ Travail sur la branche `claude/keen-faraday-bcryji`, **sans fusion sur `main`** 
 - **Tour adverse** : le panneau d'aide s'efface au lieu d'afficher un grand cadre vide.
 - **Mêmes icônes de compétences dans la fiche héros** (langage visuel unique entre la fiche et le combat).
 - **Écran de victoire et de défaite** : voile opaque, l'interface du combat ne se devine plus derrière.
+- **CI plus robuste** : l'installation du navigateur de test réessaie jusqu'à 3 fois (deux publications bloquées par des pannes 503 des miroirs Ubuntu).
 - **Tour des Âges repensée** (3e critique artistique : « l'écran le plus pauvre du jeu ») : illustration peinte de la Tour en décor (SpriteCook), compteur d'étages en grand, carte du prochain étage avec les portraits des ennemis, leur niveau, le nombre de vagues, la récompense et le bouton « Gravir l'étage », puis la suite de l'ascension avec les Sentinelles (tous les 10 étages) en violet.
 - **Révélation d'un héros invoqué** (3e critique : « plate ») : double cadre à la couleur de la rareté, rayons de lumière derrière la carte, insignes d'affinité, de rôle et de famille sous le nom.
 

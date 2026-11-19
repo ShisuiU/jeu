@@ -38,7 +38,7 @@ import { TRAITS } from '../../data/enemyTraits';
 import { saveNow } from '../../save/saveManager';
 import { previewTargets } from '../battle/targets';
 import { FxLayer, type FxItem } from '../battle/FxLayer';
-import { UnitView, type Popup } from '../battle/UnitView';
+import { UnitView, shortName, type Popup } from '../battle/UnitView';
 import { DamageRecap, EffectsLegend, SkillInfoBody, SLOT_TAG, UnitInfo } from '../battle/Panels';
 import { ACT3 } from '../../data/bossActs';
 import { Dialogue } from '../components/Dialogue';
@@ -592,7 +592,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
         {/* En AUTO, ce bloc disparaît (plus de place pour le combat) ; il revient avec les compétences quand on reprend la main. */}
         {!auto && <div className={`skill-info ${awaiting && active && selSkill ? '' : 'idle'}`} style={{ height: infoH }}>
           {awaiting && active && selSkill ? <SkillInfoBody unit={active} sk={selSkill} onLaunch={targetKind(selSkill) === 'none' ? () => act() : undefined} />
-            : <span>{finished.current ? '' : awaiting ? 'Choisis une compétence.' : 'Tour adverse…'}</span>}
+            : <span>{finished.current ? '' : awaiting ? 'Choisis une compétence.' : (() => { const a = s.units.find((u) => u.id === (acting ?? s.activeId)); return a && a.side === 'ally' ? `${shortName(a.name)} agit…` : 'Tour adverse…'; })()}</span>}
         </div>}
         <div className="ctrl-row">
           <div className="ctrl-col">
@@ -641,6 +641,8 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
       )}
       {phase === 'result' && result && (
         <div className={`result-overlay ${result.won ? 'won' : 'lost'} ${skipFx ? 'skip' : ''}`} onClick={() => setSkipFx(true)}>
+          {/* 4e critique : écran de victoire « vide noir » — le meilleur héros du combat apparaît en grand, fondu dans le fond. */}
+          {result.won && (() => { const mvp = [...s.units].filter((u) => u.side === 'ally' && u.kind === 'hero').sort((a, b) => (b.flags.dmgDealt ?? 0) - (a.flags.dmgDealt ?? 0))[0]; return mvp ? <div className="res-mvp" aria-hidden><HeroArt heroId={mvp.refId} kind="full" /></div> : null; })()}
           <div className={`result-title ${result.won ? 'win' : 'lose'}`}>{spec.mode === 'worldboss' || spec.mode === 'guildboss' ? 'COMBAT TERMINÉ' : result.won ? 'VICTOIRE' : 'DÉFAITE'}</div>
           {result.lines.map((l, i) => <div key={i} className="chip active" style={{ margin: '6px auto', display: 'flex', width: 'fit-content', textAlign: 'center' }}>{l}</div>)}
           {result.won && (spec.mode === 'campaign' || spec.mode === 'faction') && (

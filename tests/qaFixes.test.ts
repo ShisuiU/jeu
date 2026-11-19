@@ -27,3 +27,15 @@ describe('corrections QA', () => {
     expect(r.reason).toContain((11980).toLocaleString('fr-FR'));
   });
 });
+
+import { sweepTower } from '../src/game/towerSweep';
+describe('revue de code v1.116.0', () => {
+  it('montée rapide de la Tour : le butin annoncé = les ressources réellement reçues', () => {
+    const s = createNewSave(NOW);
+    for (const h of s.heroes) { h.level = 60; h.rank = 6; h.ascension = 6; }
+    const before = { ...s.resources } as Record<string, number>;
+    const r = sweepTower(s);
+    expect(r.floors).toBeGreaterThan(5);
+    for (const [k, v] of Object.entries(r.reward)) expect((s.resources as Record<string, number>)[k] - (before[k] ?? 0), k).toBe(v);
+  });
+});

@@ -42,7 +42,7 @@ export function Missions({ initialTab = 'daily' }: { initialTab?: 'daily' | 'wee
   const mutate = useGame((s) => s.mutate);
   const toast = useUI((s) => s.toast);
   const [tab, setTab] = useState<'daily' | 'weekly' | 'progress'>(initialTab);
-  // v1.115.0 : la récompense s'envole du bouton et le message dit ce qui a été reçu.
+  // v1.116.0 : la récompense s'envole du bouton et le message dit ce qui a été reçu.
   const claim = (fn: (s: typeof save) => boolean, reward?: Reward, from?: Element) => { let ok = false; mutate((s) => { ok = fn(s); }); if (ok) { play('claim'); if (reward) flyReward(reward, from); toast(reward ? rewardSummary(reward) || 'Récompense obtenue !' : 'Récompense obtenue !', 'ok'); } };
   const kind = tab as MissionKind;
   const list = activeMissions(save, tab === 'daily' ? 'daily' : 'weekly');

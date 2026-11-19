@@ -59,7 +59,7 @@ function useClaim() {
   const toast = useUI((s) => s.toast);
   return (fn: (s: NonNullable<ReturnType<typeof useGame.getState>['save']>) => boolean, reward?: Reward, from?: Element) => {
     let ok = false; mutate((s) => { ok = fn(s); });
-    // v1.115.0 : la récompense s'envole du bouton et le message dit ce qui a été reçu.
+    // v1.116.0 : la récompense s'envole du bouton et le message dit ce qui a été reçu.
     if (ok) { play('claim'); if (reward) flyReward(reward, from); toast((reward && rewardSummary(reward)) || 'Récompense obtenue !', 'ok'); }
   };
 }

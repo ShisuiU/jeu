@@ -22,7 +22,8 @@ export interface ExpeditionOffer {
   cond: { kind: 'affinity' | 'role' | 'faction'; id: string };
   reqPower: number; base: Reward;
 }
-export interface ExpeditionRun { offerId: string; heroUids: string[]; startAt: number; endsAt: number; offer: ExpeditionOffer }
+/** `loot` (v1.116.0) : butin calculé au départ (puissance de l'équipe à ce moment) ; versé tel quel au retour. */
+export interface ExpeditionRun { offerId: string; heroUids: string[]; startAt: number; endsAt: number; offer: ExpeditionOffer; loot?: Reward }
 export interface ExpeditionState { day: string; offers: ExpeditionOffer[]; runs: ExpeditionRun[]; done: string[] }
 
 export const EXPEDITION_SLOTS = 4;
@@ -107,7 +108,7 @@ export function startExpedition(s: SaveData, offerId: string, heroUids: string[]
   if (heroUids.length !== o.size) return { ok: false, reason: `Choisis ${o.size} héros.` };
   const busy = busyHeroes(s);
   if (heroUids.some((u) => busy.has(u) || !s.heroes.some((h) => h.uid === u))) return { ok: false, reason: 'Un héros est déjà en expédition.' };
-  ex.runs.push({ offerId, heroUids: [...heroUids], startAt: now, endsAt: now + o.minutes * 60_000, offer: o });
+  ex.runs.push({ offerId, heroUids: [...heroUids], startAt: now, endsAt: now + o.minutes * 60_000, offer: o, loot: expeditionLoot(s, o, heroUids).reward });
   return { ok: true };
 }
 
@@ -121,7 +122,8 @@ export function claimExpedition(s: SaveData, offerId: string, now: number): { ok
   const run = ex.runs.find((r) => r.offerId === offerId);
   if (!run) return { ok: false, reason: 'Aucune expédition.' };
   if (now < run.endsAt) return { ok: false, reason: 'Pas encore de retour.' };
-  const { reward } = expeditionLoot(s, run.offer, run.heroUids);
+  // Le butin annoncé au départ est celui versé (avant : recalculé au retour, il changeait si un héros avait progressé en route).
+  const reward = run.loot ?? expeditionLoot(s, run.offer, run.heroUids.filter((u) => s.heroes.some((h) => h.uid === u))).reward;
   applyReward(s, reward);
   ex.runs = ex.runs.filter((r) => r !== run);
   if (!ex.done.includes(offerId) && ex.offers.some((o) => o.id === offerId)) ex.done.push(offerId);

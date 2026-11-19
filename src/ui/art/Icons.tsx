@@ -75,7 +75,7 @@ import shardAeonImg from '../../assets/kit/shard_aeon.webp';
 import shardEpicImg from '../../assets/kit/shard_epic.webp';
 import shardRiftImg from '../../assets/kit/shard_rift.webp';
 const RES_FILES = import.meta.glob('/src/assets/res/*.webp', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
-const RES_ART: Record<string, string> = {};
+export const RES_ART: Record<string, string> = {};
 /** Icône → ressource (icônes propres à une seule ressource). */
 const ICON_TO_RES: Record<string, string> = { coin: 'gold', flask: 'xpElixir', book: 'skillTome', sigil: 'rankSigil', potion: 'potionMinor', ore: 'forgeOre', mscroll: 'masteryScroll', essence: 'awakenEssence', diamond: 'diamonds' };
 for (const [path, url] of Object.entries(RES_FILES)) { const m = path.match(/res-([a-zA-Z]+)\.webp$/); if (m) RES_ART[m[1]] = url; }

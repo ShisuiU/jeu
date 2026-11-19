@@ -864,3 +864,7 @@ select.prep-team { min-height: 40px; }
 .rr-ids { display: flex; justify-content: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
 .rr-ids > span { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: var(--r-pill); background: rgba(10, 8, 16, 0.75); border: 1px solid var(--line-2); font-size: var(--fs-xs); font-weight: 700; }
 .result-overlay.lost { background: #060509 !important; }
+.reward-fly { position: fixed; z-index: 120; width: 26px; height: 26px; object-fit: contain; pointer-events: none; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)) drop-shadow(0 0 6px rgba(255, 220, 140, 0.5)); }
+/* Retouche en deux temps (v1.116.0) : le prix s'affiche sur la ligne, le bouton passe à « OK ? ». */
+.gd-reforge.armed { width: auto; padding: 0 8px; border-radius: var(--r-pill); font-size: var(--fs-xs); font-weight: 800; color: #1d1408; background: linear-gradient(180deg, #f0d48d, #b8904a); border-color: transparent; }
+.gd-reforge-cost { position: absolute; right: 64px; top: 50%; transform: translateY(-50%); padding: 3px 8px; border-radius: var(--r-pill); background: rgba(10, 8, 16, 0.95); border: 1px solid rgba(226, 184, 102, 0.45); font-size: var(--fs-2xs); color: var(--gold-hi); white-space: nowrap; pointer-events: none; }

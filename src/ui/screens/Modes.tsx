@@ -11,7 +11,7 @@ import { ENEMIES } from '../../data/enemies';
 import { CHALLENGES, TOWER_CHALLENGE_STEP, towerChallengeOf, towerChallengeReward } from '../../data/challenges';
 import { sweepTower, towerSweepMax } from '../../game/towerSweep';
 import type { Reward } from '../../data/resources';
-import { BOSS_TIERS, WORLD_BOSS } from '../../data/worldBoss';
+import { BOSS_TIERS, WORLD_BOSS, bossShare } from '../../data/worldBoss';
 import { ARENA, ARENA_TIERS, arenaTier } from '../../data/arena';
 import { claimSeasonReward } from '../../game/missions';
 import { HERO_BY_ID } from '../../data/heroes';
@@ -21,7 +21,8 @@ import { ReportSheet, type ReportTarget } from '../components/ReportSheet';
 import { maskProfanity } from '../../game/moderation';
 import { loadCloud, useAccount } from '../../cloud/account';
 import { seededRand } from '../../game/gear';
-import { dungeonBonus } from '../../game/events';
+import { dungeonBonus, eventBonus } from '../../game/events';
+import { flyReward, rewardSummary } from '../fx/rewardFly';
 import { formatDaysHours, formatDuration, msUntilReset, msUntilWeekReset } from '../../core/time';
 import { InfoButton, Modal, Panel, Screen, fmt } from '../components/common';
 import { RewardInline, rewardMainIcon } from '../components/RewardView';
@@ -132,6 +133,8 @@ export function Tower() {
   const next = Math.min(cur + 1, TOWER_FLOORS);
   const done = cur >= TOWER_FLOORS;
   const sweepTo = towerSweepMax(save);
+  const [sweepArm, setSweepArm] = useState(false);
+  useEffect(() => { if (!sweepArm) return; const t = setTimeout(() => setSweepArm(false), 4000); return () => clearTimeout(t); }, [sweepArm]);
   const mutate = useGame((s) => s.mutate);
   const toast = useUI((s) => s.toast);
   return (
@@ -194,7 +197,14 @@ export function Tower() {
       {sweepTo > 0 && (
         <div className="hint" style={{ marginTop: 14 }}>
           Les étages {cur + 1} à {sweepTo} sont bien en dessous du niveau de ton équipe.
-          <button className="btn secondary block" style={{ marginTop: 8 }} onClick={() => { let res = { floors: 0, reward: {} as Reward }; mutate((d) => { res = sweepTower(d); }); if (res.floors) { play('claim'); toast(`Montée rapide : ${res.floors} étages gravis, récompenses récupérées.`, 'ok'); } }}>Monter d’un coup jusqu’à l’étage {sweepTo}</button>
+          {/* v1.116.0 (QA) : gros butin d'un coup → un toucher pour voir, un second pour confirmer ; puis le butin s'envole et est détaillé. */}
+          <button className={`btn ${sweepArm ? '' : 'secondary'} block`} style={{ marginTop: 8 }} onClick={(e) => {
+            if (!sweepArm) { setSweepArm(true); return; }
+            setSweepArm(false);
+            const from = e.currentTarget;
+            let res = { floors: 0, reward: {} as Reward }; mutate((d) => { res = sweepTower(d); });
+            if (res.floors) { play('claim'); flyReward(res.reward, from); toast(`Montée rapide : ${res.floors} étages · ${rewardSummary(res.reward)}`, 'ok', undefined, 5000); }
+          }}>{sweepArm ? `Confirmer : gravir ${sweepTo - cur} étages` : `Monter d’un coup jusqu’à l’étage ${sweepTo}`}</button>
         </div>
       )}
     </Screen>
@@ -232,7 +242,9 @@ export function WorldBoss() {
               <div className="progress"><div style={{ width: `${Math.min(100, best)}%` }} /></div>
               <span className="faint">{best >= 100 ? <>Récompense complète atteinte</> : <>Ta meilleure part : <b>{Math.floor(best)} %</b> de la récompense ci-dessous</>}</span>
             </div>
-            <RewardInline reward={t.reward} />
+            {/* Avec le bonus d'événement s'il y en a un (QA : la liste l'oubliait, alors que la préparation et le versement l'incluent). */}
+            <RewardInline reward={bossShare(t.reward, 100, eventBonus(now, 'worldBoss'))} />
+            {eventBonus(now, 'worldBoss') > 1 && <div className="faint" style={{ fontSize: 12 }}>Bonus d’événement ×{eventBonus(now, 'worldBoss')} compris</div>}
           </Panel>
         );
       })}

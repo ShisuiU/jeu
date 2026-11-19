@@ -749,7 +749,7 @@ select.prep-team { min-height: 40px; }
 .result-overlay > .result-title { margin-top: auto; }
 .result-overlay::after { content: ''; margin-top: auto; }
 .theme-v2 .result-actions .btn.secondary { border: solid transparent !important; border-width: 0 13px !important; border-image: url('../assets/kit/pill_dark.webp') 0 10% 0 10% fill / 0 13px stretch !important; background: none !important; border-radius: 0 !important; color: #f1e4c6 !important; min-height: 48px; }
-.result-overlay.won { background: radial-gradient(120% 60% at 50% 0%, rgba(120, 78, 22, 0.55), rgba(5, 4, 8, 0) 60%), rgba(5, 4, 8, 0.97); }
+.result-overlay.won { background: radial-gradient(120% 60% at 50% 0%, rgba(120, 78, 22, 0.55), rgba(5, 4, 8, 0) 60%), #050408; }
 .result-overlay.won .result-title::before { content: ''; position: absolute; left: 50%; top: 50%; width: 560px; height: 560px; margin: -280px 0 0 -280px; pointer-events: none; z-index: -1;
   background: repeating-conic-gradient(from 0deg, rgba(255, 214, 140, 0.13) 0deg 7deg, transparent 7deg 22deg);
   -webkit-mask-image: radial-gradient(circle, #000 0%, rgba(0,0,0,0.6) 30%, transparent 62%); mask-image: radial-gradient(circle, #000 0%, rgba(0,0,0,0.6) 30%, transparent 62%);
@@ -813,3 +813,54 @@ select.prep-team { min-height: 40px; }
 .dr-bar.dmgTaken > div { background: linear-gradient(90deg, #b8423f, #e07a5f) !important; }
 .dr-bar.healDone > div { background: linear-gradient(90deg, #3e9b63, #7be0a0) !important; }
 .train-slot .ts-rate { font-size: var(--fs-2xs); color: var(--gold-hi); font-weight: 700; }
+/* Héros en vedette de la Faille (retour du joueur : il chevauchait « Obtenir », en haut à droite) : en haut à gauche. */
+.altar-featured { right: auto !important; left: 12px !important; top: 10px !important; }
+.altar-featured .af-next { font-size: var(--fs-2xs); color: var(--text-dim); text-shadow: 0 1px 3px #000; white-space: nowrap; }
+/* Icône de compétence (v1.115.0) : dessinée d'après la fonction, teintée par l'affinité du héros ; cadre selon le type de compétence. */
+.skill-card { flex-direction: row !important; align-items: center !important; gap: 7px; padding: 5px 7px !important; }
+.skill-card .sk-txt { display: flex; flex-direction: column; min-width: 0; gap: 1px; }
+.sk-glyph { position: relative; flex: none; display: grid; place-items: center; border-radius: 50%; color: color-mix(in srgb, var(--gc) 55%, #fff);
+  background: radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--gc) 45%, #1a1420), #0d0a12 78%); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--gc) 60%, #000), 0 1px 3px rgba(0,0,0,0.6); }
+.sk-glyph.s-special { box-shadow: inset 0 0 0 1.5px #b98cff, 0 0 6px rgba(185, 140, 255, 0.35); }
+.sk-glyph.s-ultimate { box-shadow: inset 0 0 0 1.5px #ffcf7a, 0 0 8px rgba(255, 207, 122, 0.45); }
+.sk-glyph svg { filter: drop-shadow(0 1px 1px rgba(0,0,0,0.6)); }
+.sk-glyph-st { position: absolute; right: -3px; bottom: -3px; width: 15px; height: 15px; display: grid; place-items: center; border-radius: 50%; background: #0d0a12; box-shadow: 0 0 0 1px rgba(255,255,255,0.18); }
+.skill-card:disabled .sk-glyph { filter: grayscale(1) brightness(0.7); }
+/* Tour adverse : le panneau d'aide s'efface au lieu d'afficher un grand cadre vide. */
+.skill-info.idle { background: transparent !important; border-color: transparent !important; box-shadow: none !important; opacity: 0.55; }
+/* TOUR DES ÂGES (v1.115.0) — écran repensé : décor peint, prochain étage en grand, suite de l'ascension. */
+.tower-bg { position: absolute; inset: 0; z-index: -1; overflow: hidden; background: #07050c; }
+.tower-bg img { width: 100%; height: 100%; object-fit: cover; object-position: center 30%; filter: brightness(0.55) saturate(1.05); }
+.tower-bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(7,5,12,0.15) 0%, rgba(7,5,12,0.35) 38%, rgba(7,5,12,0.88) 70%, #07050c 100%); }
+.tower-head { display: flex; align-items: center; gap: 14px; padding: 12px 14px; border-radius: var(--r-lg); background: rgba(10, 8, 16, 0.72); border: 1px solid rgba(217, 192, 138, 0.25); backdrop-filter: blur(3px); }
+.th-count { display: flex; flex-direction: column; align-items: center; line-height: 1; }
+.th-count b { font-family: var(--font-title); font-size: 38px; color: var(--gold-hi); text-shadow: 0 2px 10px rgba(255, 200, 110, 0.35); }
+.th-count span { font-size: var(--fs-sm); color: var(--text-dim); margin-top: 2px; }
+.th-label { display: flex; align-items: center; justify-content: space-between; font-weight: 700; margin-bottom: 6px; }
+.th-sub { margin-top: 6px; font-size: var(--fs-xs); }
+.tower-next { margin-top: 150px; padding: 14px; border-radius: var(--r-lg); background: linear-gradient(180deg, rgba(28, 20, 40, 0.92), rgba(12, 9, 18, 0.96)); border: 1px solid rgba(255, 210, 130, 0.55); box-shadow: 0 0 22px rgba(255, 200, 110, 0.18), inset 0 1px 0 rgba(255, 236, 200, 0.08); }
+.tower-next.boss { border-color: rgba(200, 150, 255, 0.7); box-shadow: 0 0 26px rgba(180, 120, 255, 0.3); }
+.tn-top { display: flex; align-items: center; gap: 12px; }
+.tn-n { width: 46px; height: 46px; display: grid; place-items: center; border-radius: var(--r-md); font-family: var(--font-title); font-weight: 800; font-size: var(--fs-xl); color: #1d1408; background: linear-gradient(180deg, #f0d48d, #9c7636); box-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+.tower-next.boss .tn-n { background: linear-gradient(180deg, #d9b6ff, #7a4fb8); color: #160c22; }
+.tn-foes { display: flex; gap: 8px; margin: 12px 0 10px; }
+.tn-foe { width: 54px; height: 54px; border-radius: var(--r-md); overflow: hidden; background: #0b0910; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12); }
+.tn-foe .art-img, .tn-foe img, .tn-foe svg { width: 100%; height: 100%; object-fit: cover; }
+.tn-reward { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+.tower-climb { display: flex; flex-direction: column; gap: 5px; margin-top: 12px; }
+.tc-floor { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: var(--r-md); background: rgba(14, 11, 20, 0.82); border: 1px solid var(--line-1); font-size: var(--fs-sm); }
+.tc-floor .tf-n { width: 28px; height: 28px; display: grid; place-items: center; border-radius: var(--r-sm); font-family: var(--font-title); font-weight: 800; background: rgba(255,255,255,0.06); color: var(--text-dim); }
+.tc-floor.boss { border-color: rgba(185, 140, 255, 0.5); }
+.tc-floor.boss .tf-n { color: #d9b6ff; background: rgba(150, 100, 230, 0.2); }
+/* Révélation d'un héros (v1.115.0, 3e critique : « plate ») : cadre orné à la couleur de la rareté, rayons derrière la carte,
+   faisceau de la Faille passé derrière, identité (affinité, rôle, famille) sous le nom. */
+.rr-result { position: relative; z-index: 4; }
+.rr-single::before { content: ''; position: absolute; left: 50%; top: min(31vw, 125px); width: 620px; height: 620px; margin: -310px 0 0 -310px; z-index: -1; pointer-events: none;
+  background: repeating-conic-gradient(from 0deg, color-mix(in srgb, var(--rc, #ffd36b) 26%, transparent) 0deg 6deg, transparent 6deg 20deg);
+  -webkit-mask-image: radial-gradient(circle, #000 0%, rgba(0,0,0,0.5) 30%, transparent 60%); mask-image: radial-gradient(circle, #000 0%, rgba(0,0,0,0.5) 30%, transparent 60%);
+  animation: resRays 50s linear infinite; }
+.reduced-motion .rr-single::before { animation: none; }
+.rr-hero { border-radius: var(--r-md) !important; box-shadow: 0 0 0 3px #0b0910, 0 0 0 5px var(--rc), 0 0 0 6px rgba(255, 236, 200, 0.35), 0 0 34px var(--rc), 0 12px 40px rgba(0,0,0,0.7) !important; }
+.rr-ids { display: flex; justify-content: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.rr-ids > span { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: var(--r-pill); background: rgba(10, 8, 16, 0.75); border: 1px solid var(--line-2); font-size: var(--fs-xs); font-weight: 700; }
+.result-overlay.lost { background: #060509 !important; }

@@ -16,6 +16,7 @@ import { chooseAction } from '../../game/battle/ai';
 import { StatusIcon } from '../art/StatusIcon';
 import { STATUS_INFO, type Action, type BattleState, type Unit, type UnitSetup } from '../../game/battle/types';
 import { stageLockReason, teamSetups } from '../../game/campaign';
+import { SkillGlyph } from '../art/SkillGlyph';
 import { CHAPTERS, STAGE_BY_ID } from '../../data/campaign';
 import { applyMode, nextSpec, payMode, resolveMode, type BattleSpec, type ModeResult } from '../../game/modes';
 import { play } from '../../audio/sfx';
@@ -611,8 +612,11 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
               return (
                 <button key={sk.id} className={`skill-card ${sk.slot} ${selected === sk.id ? 'sel' : ''}`} disabled={cd > 0}
                   onClick={() => { play('tap'); if (selected === sk.id && targetKind(sk) === 'none') void act(); else setSelected(sk.id); }}>
-                  <span className={`sk-tag ${cd > 0 ? 'cd' : ''}`}>{cd > 0 ? `Recharge ${cd} t.` : SLOT_TAG[sk.slot]}</span>
-                  <span className="sk-name">{sk.name}</span>
+                  <SkillGlyph sk={sk} color={AFFINITIES[active!.affinity].color} size={30} />
+                  <span className="sk-txt">
+                    <span className={`sk-tag ${cd > 0 ? 'cd' : ''}`}>{cd > 0 ? `Recharge ${cd} t.` : SLOT_TAG[sk.slot]}</span>
+                    <span className="sk-name">{sk.name}</span>
+                  </span>
                 </button>
               );
             })}

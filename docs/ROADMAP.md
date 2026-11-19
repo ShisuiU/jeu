@@ -567,6 +567,24 @@ Travail sur la branche `claude/keen-faraday-bcryji`, **sans fusion sur `main`** 
 - Cycle 2, suite (03:00 → 03:25 UTC) : icônes de ressources détourées (15 images), croix des fenêtres et paliers d'Événements remis en place (régression du cycle 1), toasts avec icône, boutons inactifs lisibles ; **Démanteler demande une confirmation** ; nom des équipements au Marché ; décimales à la française ; icône peinte « Code promo » (SpriteCook) ; état vide de la Forge avec action ; boutons Fermer en double retirés (7 fenêtres) ; cases d'équipement vides d'un seul style.
 - Arrêt forcé de 03:25 à 07:30 UTC (limite d'utilisation) : le second test « nouveau joueur » et la seconde critique artistique n'ont pas pu aboutir.
 
+## ✅ Version 1.115.0 — Amélioration continue : combat lisible, Tour repensée, révélations
+
+- **Icônes de compétences en combat** : chaque carte de compétence porte une icône dessinée d'après sa fonction (frappe unique, frappes multiples, zone, soin, bouclier, renforcement, affaiblissement, résurrection), teintée par l'affinité du héros, cadre violet pour la spéciale et or pour l'ultime, et un petit symbole d'effet (poison, brûlure…) dans le coin. Test : toutes les frappes, soins et boucliers sont reconnus.
+- **Tour adverse** : le panneau d'aide s'efface au lieu d'afficher un grand cadre vide.
+- **Mêmes icônes de compétences dans la fiche héros** (langage visuel unique entre la fiche et le combat).
+- **Écran de victoire et de défaite** : voile opaque, l'interface du combat ne se devine plus derrière.
+- **Tour des Âges repensée** (3e critique artistique : « l'écran le plus pauvre du jeu ») : illustration peinte de la Tour en décor (SpriteCook), compteur d'étages en grand, carte du prochain étage avec les portraits des ennemis, leur niveau, le nombre de vagues, la récompense et le bouton « Gravir l'étage », puis la suite de l'ascension avec les Sentinelles (tous les 10 étages) en violet.
+- **Révélation d'un héros invoqué** (3e critique : « plate ») : double cadre à la couleur de la rareté, rayons de lumière derrière la carte, insignes d'affinité, de rôle et de famille sous le nom.
+
+## ✅ Version 1.114.0 — Arène, boss mondial et Faille (retours du joueur)
+
+- **Arène : adversaires imaginaires bien calibrés** : sans assez de vrais joueurs dans la ligue, le jeu complète avec des Héritiers imaginaires. Leur niveau était plafonné par leur rareté (un Commun ne dépassait pas 20) et ils n'avaient ni rang ni ascension : à niveau 60, les trois adversaires, « Redoutable » compris, n'avaient que 41 à 66 % de la puissance du joueur (simulation : 6 victoires sur 6 partout). Ils progressent maintenant comme un joueur (rang et ascension suivant le niveau) et ont bien ~70 / 95 / 115 % de ta puissance à tous les niveaux.
+- **Boss mondial : récompense proportionnelle à la participation** : tu reçois la part de la récompense maximale égale à la part des PV infligée (37 % des PV = 37 % de la récompense), au lieu de 6 paliers.
+- **Boss mondial : deux fois plus résistant** (PV doublés à chaque difficulté) : sans équipement, une équipe de niveau 60 passe de 100 % à 63 % en Normal et de 34 % à 26 % en Cauchemar. Les meilleurs scores déjà enregistrés sont divisés par deux une fois (même dégâts = moitié des PV), pour l'écran et le classement.
+- **Faille : le héros en vedette change chaque semaine** (retour du joueur) : à tour de rôle parmi les 7 Légendaires invocables (Sulfura, Idris, Vaelshira, Nerissa, Ondine, Corentin, Thalor), au renouvellement du lundi ; l'Autel affiche « Change dans 5 j 17 h ».
+- **Faille : la carte du héros en vedette ne chevauche plus « Obtenir »** (elle passe en haut à gauche).
+- Tests ajoutés (calibrage de l'Arène, part de la récompense, conversion des anciens scores, rotation de la vedette).
+
 ## ✅ Version 1.113.0 — Terrain d’entraînement : expérience fixe, places progressives
 
 - **Terrain d'entraînement : expérience fixe, et plus forte à chaque place ouverte (retours du joueur)** : 500, 600 puis 700 XP par heure selon la place, quel que soit le niveau du héros (la première vaut un peu plus qu'un élixir par heure) ; chaque place affiche son rendement. Avant, 3 % du niveau suivant : 4 XP/h au niveau 1, environ 420 au niveau 45. Les bas niveaux montent vite ; rien ne baisse jusqu'au niveau 47 environ. Test ajouté.

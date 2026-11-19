@@ -1,3 +1,8 @@
+import { AFFINITIES } from '../../data/affinities';
+import { ROLES } from '../../data/roles';
+import { FACTIONS } from '../../data/factions';
+import { AffinityIcon, RoleIcon } from '../art/Identity';
+import { FactionEmblem } from '../art/FactionEmblem';
 import { LivingArt } from '../art/LivingArt';
 import { trackStat } from '../../state/stats';
 import { GetButton } from '../components/Sources';
@@ -16,7 +21,8 @@ import { HEROES, HERO_BY_ID } from '../../data/heroes';
 import { RARITIES } from '../../data/rarities';
 import { RESOURCES } from '../../data/resources';
 import type { RarityId } from '../../data/types';
-import { canAfford, summon, type SummonResult } from '../../game/summon';
+import { canAfford, featuredHero, summon, type SummonResult } from '../../game/summon';
+import { formatDaysHours, msUntilWeekReset } from '../../core/time';
 import { applyReward } from '../../game/rewards';
 import { bannerAvailable } from '../../game/events';
 import { play } from '../../audio/sfx';
@@ -57,6 +63,7 @@ export function Summon() {
     setReveal({ results: out.results, banner: id, count, key: Date.now() });
   };
   const giftAvailable = b.featured && !save.flags[EVENT_WELCOME_GIFT.flag];
+  const star = featuredHero(b, now);
 
   return (
     <Screen title="Autel des Failles" bg={<div className="altar-bg">{altar && <img src={altar} alt="" draggable={false} />}</div>}>
@@ -77,10 +84,11 @@ export function Summon() {
       <div className="altar-stage" style={{ ['--bc' as string]: b.color, ['--bg2' as string]: b.glow }}>
         {altar && <img className="altar-img" src={altar} alt="" draggable={false} />}
         <div className="altar-rift" />
-        {b.featured && (
+        {star && (
           <div className="altar-featured">
-            <div className="af-art"><HeroArt heroId={b.featured.heroId} kind="full" /></div>
-            <span>En vedette · {HERO_BY_ID[b.featured.heroId].name}</span>
+            <div className="af-art"><HeroArt heroId={star} kind="full" /></div>
+            <span>En vedette · {HERO_BY_ID[star].name}</span>
+            {b.featured?.rotation && <small className="af-next">Change dans {formatDaysHours(msUntilWeekReset(now))}</small>}
           </div>
         )}
         <div className="altar-shard" key={b.id}><Crystal color={b.color} glow={b.glow} size={74} /></div>
@@ -127,7 +135,7 @@ export function Summon() {
               <span>{v} % <span className="faint">· {HEROES.filter((h) => h.rarity === r).map((h) => h.name.split(/[ ,]/)[0]).join(', ')}</span></span>
             </div>
           ))}
-          {b.featured && <p className="faint">{HERO_BY_ID[b.featured.heroId].name} : {Math.round(b.featured.share * 100)} % des tirages {RARITIES[HERO_BY_ID[b.featured.heroId].rarity].name.toLowerCase()}s.</p>}
+          {b.featured && star && <p className="faint">{HERO_BY_ID[star].name} : {Math.round(b.featured.share * 100)} % des tirages {RARITIES[HERO_BY_ID[star].rarity].name.toLowerCase()}s{b.featured.rotation ? ' (la vedette change chaque lundi)' : ''}.</p>}
           {b.pity && <p className="faint">Garantie : un héros {RARITIES[b.pity.rarity].name.toLowerCase()} ou mieux au plus tard tous les {b.pity.every} appels (compteur : {pity}).</p>}
           {b.multiGuarantee && <p className="faint">Appel ×10 : au moins un héros {RARITIES[b.multiGuarantee].name.toLowerCase()} ou mieux.</p>}
           <p className="faint">Héros déjà possédé → 1 doublon : il sert à l’éveiller ou à renforcer sa famille ou son affinité (fiche du héros).</p>
@@ -280,6 +288,14 @@ function RiftReveal({ results, bannerColor, bannerGlow, altar, onClose, again, c
                 <span key={wi} className="rr-word">{wi > 0 && <span style={{ animationDelay: `${1 + k++ * 0.035}s` }}> </span>}{[...w].map((ch, i) => <span key={i} style={{ animationDelay: `${1 + k++ * 0.035}s` }}>{ch}</span>)}</span>
               )); })()}</h2>
               <div className="muted rr-sub" style={{ animationDelay: `${1.1 + name.length * 0.035}s` }}>{HERO_BY_ID[best.heroId].title}</div>
+              {/* v1.115.0 : identité du héros d'un coup d'œil (affinité, rôle, famille). */}
+              {(() => { const d = HERO_BY_ID[best.heroId]; return (
+                <div className="rr-ids rr-sub" style={{ animationDelay: `${1.15 + name.length * 0.035}s` }}>
+                  <span style={{ color: AFFINITIES[d.affinity].color }}><AffinityIcon id={d.affinity} size={15} />{AFFINITIES[d.affinity].name}</span>
+                  <span><RoleIcon id={d.role} size={14} />{ROLES[d.role].name}</span>
+                  <span><FactionEmblem id={d.faction} size={15} />{FACTIONS[d.faction].short}</span>
+                </div>
+              ); })()}
               {order >= 5 && HERO_LINES[best.heroId]?.[0] && <div className="rr-quote rr-sub" style={{ animationDelay: `${1.3 + name.length * 0.035}s` }}>« {HERO_LINES[best.heroId][0]} »</div>}
               <div className={`chip rr-sub ${best.duplicate ? '' : 'active'}`} style={{ margin: '10px auto 0', width: 'fit-content', animationDelay: `${1.2 + name.length * 0.035}s` }}>{best.duplicate ? 'Déjà à tes côtés · +1 doublon' : 'Un nouvel Héritier répond à l’appel'}</div>
             </div>

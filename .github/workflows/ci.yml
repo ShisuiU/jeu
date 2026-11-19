@@ -27,5 +27,13 @@ jobs:
       - run: npm test
       - run: npm run build
       # Parcours de fumée : tous les écrans et un combat dans un vrai navigateur ; un écran qui plante bloque la fusion.
-      - run: npx playwright install --with-deps chromium
+      # Les miroirs Ubuntu renvoient parfois des erreurs 503 pendant l'installation des dépendances du navigateur :
+      # jusqu'à 3 essais espacés, pour qu'une panne passagère du réseau ne bloque pas la vérification (les tests, eux, ne changent pas).
+      - name: Installer Chromium (avec nouvelles tentatives)
+        run: |
+          for i in 1 2 3; do
+            npx playwright install --with-deps chromium && exit 0
+            echo "Essai $i échoué, nouvelle tentative dans 30 s"; sleep 30
+          done
+          exit 1
       - run: npm run smoke

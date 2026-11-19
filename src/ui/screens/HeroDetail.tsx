@@ -1,4 +1,6 @@
 import { SIGNATURES } from '../../data/signatures';
+import { AFFINITIES } from '../../data/affinities';
+import { SkillGlyph } from '../art/SkillGlyph';
 import { SPECS, SPEC_CHANGE_GOLD } from '../../data/specs';
 import { chooseSpec } from '../../game/specs';
 import { useGame } from '../../state/store';
@@ -102,9 +104,10 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
             <div className="grow"><div className="skill-tag">Signature</div><b>{SIGNATURES[d.id].name}</b><div className="muted">{SIGNATURES[d.id].text}</div></div>
           </div>
         )}
-        {d.skills.map((s, i) => (
+        {d.skills.map((s) => (
           <div key={s.id} className="skill">
-            <div className="skill-icon" style={{ ['--sc' as string]: s.slot === 'ultimate' ? rar.color : s.slot === 'passive' ? '#3b3350' : f.colors.primary }}>{s.slot === 'passive' ? 'P' : i + 1}</div>
+            {s.slot === 'passive' ? <div className="skill-icon" style={{ ['--sc' as string]: '#3b3350' }}>P</div>
+              : <SkillGlyph sk={s} color={AFFINITIES[d.affinity].color} size={36} />}{/* v1.115.0 : même icône qu'en combat */}
             <div className="grow">
               <div className="row between">
                 <span className="skill-name">{s.name}</span>

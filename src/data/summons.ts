@@ -14,8 +14,9 @@ export interface BannerDef {
   pity?: { rarity: RarityId; every: number };
   /** Une invocation ×10 contient au moins un héros de cette rareté. */
   multiGuarantee?: RarityId;
-  /** Héros mis en avant (bannière d'événement) : part des tirages de sa rareté qui lui reviennent. */
-  featured?: { heroId: string; share: number };
+  /** Héros mis en avant (bannière d'événement) : part des tirages de sa rareté qui lui reviennent.
+   *  `rotation` (v1.114.0, retour du joueur) : la vedette change chaque semaine, à tour de rôle parmi ces héros. */
+  featured?: { heroId: string; share: number; rotation?: string[] };
   color: string;
   glow: string;
 }
@@ -44,11 +45,11 @@ export const BANNERS: BannerDef[] = [
     color: '#a64dff', glow: '#cf9dff',
   },
   {
-    id: 'event_ash', name: 'Faille de Cendre', subtitle: 'Événement : Mère Sulfura plus fréquente.',
+    id: 'event_ash', name: 'Faille de Cendre', subtitle: 'Événement : le héros en vedette, plus fréquent, change chaque semaine.',
     cost: { resource: 'shardEvent', amount: 1 },
     rates: { rare: 75, epic: 21.5, legendary: 3, mythic: 0.5 },
     pity: { rarity: 'legendary', every: 50 },
-    featured: { heroId: 'sulfura', share: 0.5 },
+    featured: { heroId: 'sulfura', share: 0.5, rotation: ['sulfura', 'idris', 'vaelshira', 'nerissa', 'ondine', 'corentin', 'thalor'] },
     color: '#ff3d6e', glow: '#ff9bb5',
   },
 ];

@@ -11,7 +11,7 @@ import { addPending, triesLeft, useTry } from './guild';
 import { DUNGEON_BY_ID, DUNGEON_FLOORS, DUNGEON_GEAR_BONUS, dungeonEnergy, dungeonHeroXp, dungeonReward, dungeonWaves, forgeStarRange, rollForgeStars } from '../data/dungeons';
 import { dungeonBest, dungeonFloorCheck, setDungeonBest } from './dungeons';
 import { TOWER_FLOORS, towerReward, towerWaves } from '../data/tower';
-import { BOSS_TIERS, DAMAGE_CHESTS, WORLD_BOSS } from '../data/worldBoss';
+import { BOSS_TIERS, DAMAGE_CHESTS, WORLD_BOSS, bossShare } from '../data/worldBoss';
 import { ARENA, arenaTier } from '../data/arena';
 import type { Reward } from '../data/resources';
 import { GEAR_INVENTORY_CAP } from '../data/equipment';
@@ -163,8 +163,8 @@ export function resolveMode(s: SaveData, spec: BattleSpec): ModeInfo {
       return {
         title: `${WORLD_BOSS.name} · ${t.name}`, subtitle: `Combat limité à ${WORLD_BOSS.turnLimit} actions`, region: 'akkar',
         waves: [[{ kind: 'enemy', refId: WORLD_BOSS.enemy, slot: 1, level: t.level, hpMult: t.hpMult }]], turnLimit: WORLD_BOSS.turnLimit,
-        cost: { kind: 'key', amount: 1 }, rewardPreview: scaleReward(t.reward, eventBonus(s.time.highWater, 'worldBoss')), rewardLabel: eventBonus(s.time.highWater, 'worldBoss') > 1 ? 'Récompense maximale (bonus d’événement)' : 'Récompense maximale (100 % des PV)',
-        notes: [`Paliers de dégâts : ${DAMAGE_CHESTS.join(' / ')} %`, `Meilleur score : ${Math.round(s.worldBoss.best[t.id] ?? 0)} %`], firstTime: false,
+        cost: { kind: 'key', amount: 1 }, rewardPreview: scaleReward(t.reward, eventBonus(s.time.highWater, 'worldBoss')), rewardLabel: eventBonus(s.time.highWater, 'worldBoss') > 1 ? 'Récompense maximale à 100 % des PV (bonus d’événement)' : 'Récompense maximale (à 100 % des PV ; tu reçois la part de tes dégâts)',
+        notes: ['Récompense proportionnelle aux dégâts (part des PV infligée)', `Meilleur score : ${Math.round(s.worldBoss.best[t.id] ?? 0)} %`], firstTime: false,
       };
     }
     case 'guildboss':
@@ -353,9 +353,11 @@ export function applyMode(s: SaveData, spec: BattleSpec, o: Outcome, now: number
       const chests = DAMAGE_CHESTS.filter((c) => pct >= c).length;
       res.damage = { dealt, pct, chests };
       s.worldBoss.best[t.id] = Math.max(s.worldBoss.best[t.id] ?? 0, pct);
-      if (chests > 0) { res.reward = scaleReward(t.reward, (chests / DAMAGE_CHESTS.length) * eventBonus(now, 'worldBoss')); applyReward(s, res.reward); }
-      res.won = chests > 0;
-      res.lines.push(`Dégâts : ${Math.round(dealt).toLocaleString('fr-FR')} (${pct.toFixed(1)} % des PV) · ${chests}/${DAMAGE_CHESTS.length} paliers`);
+      // Récompense proportionnelle à la participation : la part des PV infligée = la part de la récompense maximale.
+      const share = bossShare(t.reward, pct, eventBonus(now, 'worldBoss'));
+      if (Object.keys(share).length) { res.reward = share; applyReward(s, res.reward); }
+      res.won = pct >= 1;
+      res.lines.push(`Dégâts : ${Math.round(dealt).toLocaleString('fr-FR')} (${pct.toFixed(1)} % des PV) · ${Math.round(pct)} % de la récompense`);
       return res;
     }
 

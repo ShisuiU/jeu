@@ -100,5 +100,7 @@ export function migrateSave(raw: unknown): SaveData {
     if (c > 0) { const epic = Math.floor(c / CRYSTALS_PER_EPIC); r.shardEpic = (r.shardEpic ?? 0) + epic; r.gold = (r.gold ?? 0) + (c - epic * CRYSTALS_PER_EPIC) * GOLD_PER_CRYSTAL; }
     r.crystals = 0;
     for (const o of merged.shop?.market?.offers ?? []) if (o.price?.resource === 'crystals') o.price = { resource: 'gold', amount: o.price.amount * 600 }; }
+  // v1.114.0 : PV du boss mondial doublés ; les meilleurs scores (en % des PV) sont divisés par deux une fois, pour rester justes.
+  if (!s.flags?.wb_hp2_v114) { const b = merged.worldBoss?.best ?? {}; for (const k of Object.keys(b)) b[k] = (b[k] ?? 0) / 2; merged.flags.wb_hp2_v114 = true; }
   return merged;
 }

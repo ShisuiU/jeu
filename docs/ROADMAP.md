@@ -567,7 +567,7 @@ Travail sur la branche `claude/keen-faraday-bcryji`, **sans fusion sur `main`** 
 - Cycle 2, suite (03:00 → 03:25 UTC) : icônes de ressources détourées (15 images), croix des fenêtres et paliers d'Événements remis en place (régression du cycle 1), toasts avec icône, boutons inactifs lisibles ; **Démanteler demande une confirmation** ; nom des équipements au Marché ; décimales à la française ; icône peinte « Code promo » (SpriteCook) ; état vide de la Forge avec action ; boutons Fermer en double retirés (7 fenêtres) ; cases d'équipement vides d'un seul style.
 - Arrêt forcé de 03:25 à 07:30 UTC (limite d'utilisation) : le second test « nouveau joueur » et la seconde critique artistique n'ont pas pu aboutir.
 
-## 🔧 Version 1.117.0 (en cours, branche) — amélioration continue
+## ✅ Version 1.117.0 — Quatrième critique artistique (7,6/10) et revue de code
 
 - **Mine de diamants** : les diamants récoltés s'envolent vers le haut.
 - **Revue de code de la v1.116.0, corrigée** :
@@ -577,6 +577,13 @@ Travail sur la branche `claude/keen-faraday-bcryji`, **sans fusion sur `main`** 
   - retouche : libellé vocal « Confirmer la retouche… » pendant l'attente, et rien n'est armé en changeant d'objet ;
   - boss mondial : la liste et la préparation utilisent la même horloge pour le bonus d'événement ;
   - « gravir 1 étage » au singulier.
+- **Quatrième critique artistique (7,6/10, contre 7,5) traitée** :
+  - **régression corrigée** : « Tour adverse… » s'affichait pendant l'action de ton propre héros ; c'est maintenant « Corvin agit… » ;
+  - **invocation ×10** : 4 cartes par ligne, centrées et plus grandes, prénom lisible, badges réduits à l'essentiel ;
+  - **invocation ×1** : le cadre et les rayons ne sont plus coupés en haut, l'éclat gris de la faille disparaît à la révélation ;
+  - **combat** : chiffres de dégâts au-dessus des pastilles (niveau, affinité) ; brûlure basse et translucide au lieu de trois capsules opaques sur le portrait ;
+  - **écran de victoire** : le meilleur héros du combat apparaît en grand en fond ; boutons moins serrés ;
+  - icônes de récompense qui s'envolent plus grandes.
 
 ## ✅ Version 1.116.0 — Récompenses qui s'envolent, corrections de la chasse aux bugs
 

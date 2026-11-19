@@ -868,3 +868,26 @@ select.prep-team { min-height: 40px; }
 /* Retouche en deux temps (v1.116.0) : le prix s'affiche sur la ligne, le bouton passe à « OK ? ». */
 .gd-reforge.armed { width: auto; padding: 0 8px; border-radius: var(--r-pill); font-size: var(--fs-xs); font-weight: 800; color: #1d1408; background: linear-gradient(180deg, #f0d48d, #b8904a); border-color: transparent; }
 .gd-reforge-cost { position: absolute; right: 64px; top: 50%; transform: translateY(-50%); padding: 3px 8px; border-radius: var(--r-pill); background: rgba(10, 8, 16, 0.95); border: 1px solid rgba(226, 184, 102, 0.45); font-size: var(--fs-2xs); color: var(--gold-hi); white-space: nowrap; pointer-events: none; }
+/* Invocation ×10 (4e critique : cartes de ~70 px, noms et étoiles coupés) : 4 par ligne, centrées, plus grandes ;
+   seuls l'affinité, les étoiles et le prénom restent sur la carte. */
+.rr-grid { display: flex !important; flex-wrap: wrap; justify-content: center; gap: 8px !important; max-width: 400px; margin: 0 auto; }
+.rr-grid .rr-card { width: calc(25% - 6px); }
+.rr-card .hero-card .hc-role, .rr-card .hero-card .hc-line .faction-emblem, .rr-card .hero-card .lvl { display: none !important; }
+.rr-card .hero-card .name .n-full { display: none !important; }
+.rr-card .hero-card .name .n-short { display: block !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: var(--fs-xs) !important; }
+.rr-card .hero-card .hc-line { justify-content: center; }
+.rift-reveal .btn { white-space: nowrap; }
+/* Invocation ×1 (4e critique : haut du cadre et des rayons coupé net, éclat gris de la faille au-dessus) */
+.rr-result { padding-top: 56px; } /* place pour le cadre et les rayons : la zone défile (petits écrans), elle ne doit pas les trancher */
+.rift-reveal.st-emerge .rr-rift, .rift-reveal.st-emerge .rr-beam { opacity: 0 !important; transition: opacity 0.4s; }
+/* Brûlure (4e critique : trois capsules orange opaques sur le portrait et le nom) : flammes basses, translucides, en mode « lumière ». */
+.unit.st-burn .u-stfx i { height: 24% !important; bottom: 0 !important; opacity: 0.6; mix-blend-mode: screen; }
+.unit.st-burn .u-stfx i:nth-child(2) { height: 30% !important; }
+/* Chiffres de dégâts au-dessus des pastilles (niveau, affinité, « +30 % ») au lieu de les recouvrir. */
+.stage25 .unit .popup { top: -6% !important; z-index: 8 !important; }
+.result-overlay .res-mvp { position: absolute; left: 0; right: 0; top: 0; height: 62%; z-index: -1; pointer-events: none; opacity: 0.32;
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, rgba(0,0,0,0.75) 45%, transparent 100%); mask-image: linear-gradient(180deg, #000 0%, rgba(0,0,0,0.75) 45%, transparent 100%); }
+.result-overlay .res-mvp .art-img, .result-overlay .res-mvp img { width: 100%; height: 100%; object-fit: cover; object-position: center 15%; }
+.result-overlay.won > .res-mvp { position: absolute; }
+.theme-v2 .result-actions .btn.secondary { padding: 0 12px !important; }
+.reward-fly { width: 34px !important; height: 34px !important; }

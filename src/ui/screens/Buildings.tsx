@@ -8,6 +8,7 @@ import { useUI } from '../../state/ui';
 import { MINE, TRAINING } from '../../data/buildings';
 import { HERO_BY_ID } from '../../data/heroes';
 import { RARITIES } from '../../data/rarities';
+import { flyReward } from '../fx/rewardFly';
 import { collectMine, mineCap, mineRate, mineReady, mineUpgradeCost, placeTrainee, trainXpPerHour, unlockTrainSlot, upgradeMine } from '../../game/buildings';
 import { maxLevelForRank, powerOf, computeStats } from '../../game/stats';
 import { formatDuration } from '../../core/time';
@@ -84,7 +85,7 @@ export function Buildings() {
             </div>
           </div>
           <div className="row" style={{ gap: 8, marginTop: 10 }}>
-            <button className="btn grow" disabled={ready <= 0} onClick={() => { let n = 0; mutate((s) => { n = collectMine(s, now); }); if (n) { play('claim'); toast(`+${n} diamant${n > 1 ? 's' : ''}.`, 'ok'); } }}>
+            <button className="btn grow" disabled={ready <= 0} onClick={(e) => { const from = e.currentTarget; let n = 0; mutate((s) => { n = collectMine(s, now); }); if (n) { play('claim'); flyReward({ diamonds: n }, from); toast(`+${n} diamant${n > 1 ? 's' : ''}.`, 'ok'); } }}>
               Récolter{ready > 0 ? ` ${ready}` : ''}
             </button>
             {upCost !== null

@@ -12,7 +12,8 @@ import { Modal } from '../components/common';
 import { claimEventTask, eventClaimable, eventTaskState } from '../../game/missions';
 import { canStart } from '../../game/modes';
 import { BONUS_LABEL, BONUS_SHORT } from '../../data/eventCycle';
-import { RESOURCES, normalizeReward } from '../../data/resources';
+import { RESOURCES, normalizeReward, type Reward } from '../../data/resources';
+import { flyReward, rewardSummary } from '../fx/rewardFly';
 import type { GameEvent } from '../../data/events';
 import { formatDuration } from '../../core/time';
 import { play } from '../../audio/sfx';
@@ -56,9 +57,10 @@ export function Events({ eventId }: { eventId?: string } = {}) {
 function useClaim() {
   const mutate = useGame((s) => s.mutate);
   const toast = useUI((s) => s.toast);
-  return (fn: (s: NonNullable<ReturnType<typeof useGame.getState>['save']>) => boolean) => {
+  return (fn: (s: NonNullable<ReturnType<typeof useGame.getState>['save']>) => boolean, reward?: Reward, from?: Element) => {
     let ok = false; mutate((s) => { ok = fn(s); });
-    if (ok) { play('claim'); toast('Récompense obtenue !', 'ok'); }
+    // v1.115.0 : la récompense s'envole du bouton et le message dit ce qui a été reçu.
+    if (ok) { play('claim'); if (reward) flyReward(reward, from); toast((reward && rewardSummary(reward)) || 'Récompense obtenue !', 'ok'); }
   };
 }
 
@@ -78,7 +80,7 @@ function Tasks({ e }: { e: GameEvent }) {
               <div className="progress" style={{ margin: '5px 0 3px' }}><div style={{ width: `${Math.min(100, (st.value / t.target) * 100)}%` }} /></div>
               <div className="faint">{rewardText(t.reward)}</div>
             </div>
-            {st.claimed ? <span className="m-done">✓</span> : st.done ? <button className="btn small" onClick={() => claim((s) => claimEventTask(s, e.id, t.id))}>Réclamer</button> : (() => { const go = goFor(save, t.key); return <span className="m-side"><span className="m-count">{st.value}/{t.target}</span>{go && ('route' in go ? <button className="m-go" onClick={() => useUI.getState().push(go.route)}>Y aller ›</button> : <span className="m-lock">{go.locked}</span>)}</span>; })()}
+            {st.claimed ? <span className="m-done">✓</span> : st.done ? <button className="btn small" onClick={(ev) => claim((s) => claimEventTask(s, e.id, t.id), t.reward, ev.currentTarget)}>Réclamer</button> : (() => { const go = goFor(save, t.key); return <span className="m-side"><span className="m-count">{st.value}/{t.target}</span>{go && ('route' in go ? <button className="m-go" onClick={() => useUI.getState().push(go.route)}>Y aller ›</button> : <span className="m-lock">{go.locked}</span>)}</span>; })()}
           </div>
         );
       })}
@@ -119,7 +121,7 @@ function Weekly({ e }: { e: GameEvent }) {
             const st = milestoneState(save, e, i)!;
             return (
               <button key={i} className={`wk-node ${st.claimed ? 'claimed' : st.ready ? 'ready' : ''}`} style={{ left: `${(m.points / max) * 100}%` }} aria-label={`Palier ${m.points} points`}
-                onClick={() => (st.ready ? claim((s) => claimMilestone(s, e.id, i, now)) : setTier(tier === i ? null : i))}>
+                onClick={(ev) => (st.ready ? claim((s) => claimMilestone(s, e.id, i, now), m.reward, ev.currentTarget) : setTier(tier === i ? null : i))}>
                 {st.claimed ? '✓' : rewardMainIcon(m.reward, 16)}
                 <span>{m.points}</span>
               </button>

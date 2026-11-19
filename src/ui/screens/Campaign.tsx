@@ -4,6 +4,7 @@ import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
 import { CHAPTERS, DIFFICULTIES, DIFFICULTY_ORDER, type DifficultyId } from '../../data/campaign';
 import { HERO_BY_ID } from '../../data/heroes';
+import { flyReward, rewardSummary } from '../fx/rewardFly';
 import { chapterStars, isStageUnlocked, stageEnergy, stageLockReason, stageProgress } from '../../game/campaign';
 import { InfoButton, Screen } from '../components/common';
 import { Icon } from '../art/Icons';
@@ -64,12 +65,12 @@ export function Campaign() {
                 const ready = !claimed && total >= n;
                 return (
                   <button key={n} className={`sc-chest ${ready ? 'ready' : ''} ${claimed ? 'claimed' : ''}`}
-                    onClick={() => {
+                    onClick={(ev) => {
                       if (claimed) { toast('Coffre déjà récupéré.'); return; }
                       if (!ready) { toast(`Encore ${n - total} étoile${n - total > 1 ? 's' : ''} en ${DIFFICULTIES[diff].name} pour ouvrir ce coffre.`); return; }
                       let got: ReturnType<typeof claimStarChest> = null;
                       mutate((d) => { got = claimStarChest(d, diff, n); });
-                      if (got) { play('claim'); toast(`Coffre de ${n} étoiles récupéré !`, 'ok'); }
+                      if (got) { play('claim'); flyReward(got, ev.currentTarget); toast(`Coffre de ${n} étoiles : ${rewardSummary(got)}`, 'ok'); }
                     }}>
                     <span className="scc-head"><Icon.star size={13} /> {n}{claimed ? ' ✓' : ''}</span>
                     <RewardInline reward={starChestReward(diff, n)} />

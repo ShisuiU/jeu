@@ -10,11 +10,12 @@ import { ACHIEVEMENTS } from '../../data/achievements';
 import { achievementDone, activeMissions, bonusAvailable, claimableByTab, claimAchievement, claimBonus, claimMission, missionState, type MissionKind } from '../../game/missions';
 import { formatDuration, msUntilReset, msUntilWeekReset } from '../../core/time';
 import { play } from '../../audio/sfx';
-import { RESOURCES, normalizeReward } from '../../data/resources';
+import { RESOURCES, normalizeReward, type Reward } from '../../data/resources';
+import { flyReward, rewardSummary } from '../fx/rewardFly';
 import { Panel, Screen } from '../components/common';
 import { RewardView, rewardMainIcon } from '../components/RewardView';
 
-export function Row({ title, value, target, reward, claimed, onClaim, goKey }: { title: string; value: number; target: number; reward: Parameters<typeof rewardMainIcon>[0]; claimed: boolean; onClaim: () => void; goKey?: TrackKey }) {
+export function Row({ title, value, target, reward, claimed, onClaim, goKey }: { title: string; value: number; target: number; reward: Parameters<typeof rewardMainIcon>[0]; claimed: boolean; onClaim: (from: Element) => void; goKey?: TrackKey }) {
   const save = useGame((s) => s.save)!;
   const go = goKey ? goFor(save, goKey) : null;
   const done = value >= target;
@@ -26,7 +27,7 @@ export function Row({ title, value, target, reward, claimed, onClaim, goKey }: {
         <div className="progress" style={{ margin: '5px 0 3px' }}><div style={{ width: `${Math.min(100, (value / target) * 100)}%` }} /></div>
         <div className="faint">{Object.entries(normalizeReward(reward)).map(([k, v]) => `+${v} ${k === 'energy' ? 'énergie' : RESOURCES[k as keyof typeof RESOURCES]?.name ?? k}`).join(' · ')}</div>
       </div>
-      {claimed ? <span className="m-done">✓</span> : done ? <button className="btn small" onClick={onClaim}>Réclamer</button> 
+      {claimed ? <span className="m-done">✓</span> : done ? <button className="btn small" onClick={(e) => onClaim(e.currentTarget)}>Réclamer</button> 
         : <span className="m-side"><span className="m-count">{Math.min(value, target)}/{target}</span>{go && ('route' in go ? <button className="m-go" onClick={() => useUI.getState().push(go.route)}>Y aller ›</button> : <span className="m-lock" title={go.locked}>{go.locked}</span>)}</span>}
     </div>
   );
@@ -41,7 +42,8 @@ export function Missions({ initialTab = 'daily' }: { initialTab?: 'daily' | 'wee
   const mutate = useGame((s) => s.mutate);
   const toast = useUI((s) => s.toast);
   const [tab, setTab] = useState<'daily' | 'weekly' | 'progress'>(initialTab);
-  const claim = (fn: (s: typeof save) => boolean) => { let ok = false; mutate((s) => { ok = fn(s); }); if (ok) { play('claim'); toast('Récompense obtenue !', 'ok'); } };
+  // v1.115.0 : la récompense s'envole du bouton et le message dit ce qui a été reçu.
+  const claim = (fn: (s: typeof save) => boolean, reward?: Reward, from?: Element) => { let ok = false; mutate((s) => { ok = fn(s); }); if (ok) { play('claim'); if (reward) flyReward(reward, from); toast(reward ? rewardSummary(reward) || 'Récompense obtenue !' : 'Récompense obtenue !', 'ok'); } };
   const kind = tab as MissionKind;
   const list = activeMissions(save, tab === 'daily' ? 'daily' : 'weekly');
   const counts = claimableByTab(save);
@@ -60,18 +62,18 @@ export function Missions({ initialTab = 'daily' }: { initialTab?: 'daily' | 'wee
         <>
           <p className="faint" style={{ marginTop: 0 }}>Renouvellement dans {formatDuration(tab === 'daily' ? msUntilReset(now) : msUntilWeekReset(now))}</p>
           <Panel>
-            {list.map((m) => { const st = missionState(save, kind, m.id); return <Row key={m.id} title={m.title} value={st.value} target={m.target} reward={m.reward} claimed={st.claimed} goKey={m.key} onClaim={() => claim((s) => claimMission(s, kind, m.id))} />; })}
+            {list.map((m) => { const st = missionState(save, kind, m.id); return <Row key={m.id} title={m.title} value={st.value} target={m.target} reward={m.reward} claimed={st.claimed} goKey={m.key} onClaim={(el) => claim((s) => claimMission(s, kind, m.id), m.reward, el)} />; })}
           </Panel>
           <Panel title={tab === 'daily' ? 'Coffre du jour' : 'Coffre de la semaine'}>
             <RewardView reward={tab === 'daily' ? DAILY_BONUS : WEEKLY_BONUS} />
             {!save.missions[kind].bonus && !bonusAvailable(save, kind) && <p className="faint" style={{ margin: '8px 0 0', textAlign: 'center' }}>S’ouvre quand toutes les missions {tab === 'daily' ? 'du jour' : 'de la semaine'} sont réclamées.</p>}
-            <button className="btn block" style={{ marginTop: 10 }} disabled={!bonusAvailable(save, kind)} onClick={() => claim((s) => claimBonus(s, kind))}>{save.missions[kind].bonus ? 'Déjà ouvert' : 'Ouvrir le coffre'}</button>
+            <button className="btn block" style={{ marginTop: 10 }} disabled={!bonusAvailable(save, kind)} onClick={(e) => claim((s) => claimBonus(s, kind), kind === 'daily' ? DAILY_BONUS : WEEKLY_BONUS, e.currentTarget)}>{save.missions[kind].bonus ? 'Déjà ouvert' : 'Ouvrir le coffre'}</button>
           </Panel>
         </>
       )}
       {tab === 'progress' && (
         <Panel>
-          {[...ACHIEVEMENTS].filter((a) => !a.feature || isUnlocked(save, a.feature)).sort((x, y) => achRank(save, x.id) - achRank(save, y.id)).map((a) => { const [v, t] = a.progress(save); return <Row key={a.id} title={a.title} value={v} target={t} reward={a.reward} claimed={save.achievements.includes(a.id)} onClaim={() => claim((s) => claimAchievement(s, a.id))} />; })}
+          {[...ACHIEVEMENTS].filter((a) => !a.feature || isUnlocked(save, a.feature)).sort((x, y) => achRank(save, x.id) - achRank(save, y.id)).map((a) => { const [v, t] = a.progress(save); return <Row key={a.id} title={a.title} value={v} target={t} reward={a.reward} claimed={save.achievements.includes(a.id)} onClaim={(el) => claim((s) => claimAchievement(s, a.id), a.reward, el)} />; })}
         </Panel>
       )}
     </Screen>

@@ -828,3 +828,27 @@ select.prep-team { min-height: 40px; }
 .skill-card:disabled .sk-glyph { filter: grayscale(1) brightness(0.7); }
 /* Tour adverse : le panneau d'aide s'efface au lieu d'afficher un grand cadre vide. */
 .skill-info.idle { background: transparent !important; border-color: transparent !important; box-shadow: none !important; opacity: 0.55; }
+/* TOUR DES ÂGES (v1.115.0) — écran repensé : décor peint, prochain étage en grand, suite de l'ascension. */
+.tower-bg { position: absolute; inset: 0; z-index: -1; overflow: hidden; background: #07050c; }
+.tower-bg img { width: 100%; height: 100%; object-fit: cover; object-position: center 30%; filter: brightness(0.55) saturate(1.05); }
+.tower-bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(7,5,12,0.15) 0%, rgba(7,5,12,0.35) 38%, rgba(7,5,12,0.88) 70%, #07050c 100%); }
+.tower-head { display: flex; align-items: center; gap: 14px; padding: 12px 14px; border-radius: var(--r-lg); background: rgba(10, 8, 16, 0.72); border: 1px solid rgba(217, 192, 138, 0.25); backdrop-filter: blur(3px); }
+.th-count { display: flex; flex-direction: column; align-items: center; line-height: 1; }
+.th-count b { font-family: var(--font-title); font-size: 38px; color: var(--gold-hi); text-shadow: 0 2px 10px rgba(255, 200, 110, 0.35); }
+.th-count span { font-size: var(--fs-sm); color: var(--text-dim); margin-top: 2px; }
+.th-label { display: flex; align-items: center; justify-content: space-between; font-weight: 700; margin-bottom: 6px; }
+.th-sub { margin-top: 6px; font-size: var(--fs-xs); }
+.tower-next { margin-top: 150px; padding: 14px; border-radius: var(--r-lg); background: linear-gradient(180deg, rgba(28, 20, 40, 0.92), rgba(12, 9, 18, 0.96)); border: 1px solid rgba(255, 210, 130, 0.55); box-shadow: 0 0 22px rgba(255, 200, 110, 0.18), inset 0 1px 0 rgba(255, 236, 200, 0.08); }
+.tower-next.boss { border-color: rgba(200, 150, 255, 0.7); box-shadow: 0 0 26px rgba(180, 120, 255, 0.3); }
+.tn-top { display: flex; align-items: center; gap: 12px; }
+.tn-n { width: 46px; height: 46px; display: grid; place-items: center; border-radius: var(--r-md); font-family: var(--font-title); font-weight: 800; font-size: var(--fs-xl); color: #1d1408; background: linear-gradient(180deg, #f0d48d, #9c7636); box-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+.tower-next.boss .tn-n { background: linear-gradient(180deg, #d9b6ff, #7a4fb8); color: #160c22; }
+.tn-foes { display: flex; gap: 8px; margin: 12px 0 10px; }
+.tn-foe { width: 54px; height: 54px; border-radius: var(--r-md); overflow: hidden; background: #0b0910; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12); }
+.tn-foe .art-img, .tn-foe img, .tn-foe svg { width: 100%; height: 100%; object-fit: cover; }
+.tn-reward { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
+.tower-climb { display: flex; flex-direction: column; gap: 5px; margin-top: 12px; }
+.tc-floor { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: var(--r-md); background: rgba(14, 11, 20, 0.82); border: 1px solid var(--line-1); font-size: var(--fs-sm); }
+.tc-floor .tf-n { width: 28px; height: 28px; display: grid; place-items: center; border-radius: var(--r-sm); font-family: var(--font-title); font-weight: 800; background: rgba(255,255,255,0.06); color: var(--text-dim); }
+.tc-floor.boss { border-color: rgba(185, 140, 255, 0.5); }
+.tc-floor.boss .tf-n { color: #d9b6ff; background: rgba(150, 100, 230, 0.2); }

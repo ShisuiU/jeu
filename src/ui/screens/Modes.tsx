@@ -5,7 +5,9 @@ import { DUNGEONS, DUNGEON_BY_ID, DUNGEON_DIFF_OPEN, DUNGEON_FLOORS, dungeonEner
 import { DIFFICULTIES, DIFFICULTY_ORDER, type DifficultyId } from '../../data/campaign';
 import { dungeonBest, dungeonDiffOpen, dungeonTopDiff } from '../../game/dungeons';
 import { usePersisted } from '../components/ListControls';
-import { TOWER_FLOORS, towerReward } from '../../data/tower';
+import { TOWER_FLOORS, towerLevel, towerReward, towerWaves } from '../../data/tower';
+import towerBg from '../../assets/places/tower_bg.webp';
+import { ENEMIES } from '../../data/enemies';
 import { CHALLENGES, TOWER_CHALLENGE_STEP, towerChallengeOf, towerChallengeReward } from '../../data/challenges';
 import { sweepTower, towerSweepMax } from '../../game/towerSweep';
 import type { Reward } from '../../data/resources';
@@ -129,23 +131,42 @@ export function Tower() {
   const cur = save.progress.tower.floor;
   const next = Math.min(cur + 1, TOWER_FLOORS);
   const done = cur >= TOWER_FLOORS;
-  const floors = Array.from({ length: 8 }, (_, i) => next + 3 - i).filter((f) => f >= 1 && f <= TOWER_FLOORS);
   const sweepTo = towerSweepMax(save);
   const mutate = useGame((s) => s.mutate);
   const toast = useUI((s) => s.toast);
   return (
-    <Screen title="Tour des Âges" right={<RanksBtn tab="tower" />}>
-      <Panel>
-        <div className="row between"><span>Étage atteint : <b style={{ color: 'var(--gold-hi)' }}>{cur}</b> / {TOWER_FLOORS}</span><span className="row" style={{ gap: 6 }}><span className="faint">Sans énergie</span><InfoButton title="Tour des Âges">Chaque étage se conquiert une seule fois. Tous les 10 étages, une Sentinelle garde le passage avec de grosses récompenses. Au-delà du 50ᵉ, les Sommets : les ennemis de toutes les régions, plus forts à chaque étage, et un boss de chapitre tous les 10 étages.</InfoButton></span></div>
-        <div className="progress" style={{ marginTop: 8 }}><div style={{ width: `${(cur / TOWER_FLOORS) * 100}%` }} /></div>
-      </Panel>
-      <div className="tower">
-        {floors.map((f) => (
-          <div key={f} className={`tower-floor ${f <= cur ? 'done' : f === next && !done ? 'next' : 'future'} ${f % 10 === 0 ? 'boss' : ''}`}>
+    <Screen title="Tour des Âges" right={<RanksBtn tab="tower" />} bg={<div className="tower-bg"><img src={towerBg} alt="" draggable={false} /></div>}>
+      {/* v1.115.0 : écran repensé (3e critique artistique : « le plus pauvre du jeu ») — la Tour en décor, le prochain étage en grand
+          (ennemis, niveau, récompense, bouton), puis la suite de l'ascension avec les Sentinelles en évidence. */}
+      <div className="tower-head">
+        <div className="th-count"><b>{cur}</b><span>/ {TOWER_FLOORS}</span></div>
+        <div className="grow">
+          <div className="th-label">Étages conquis <InfoButton title="Tour des Âges">Chaque étage se conquiert une seule fois. Tous les 10 étages, une Sentinelle garde le passage avec de grosses récompenses. Au-delà du 50ᵉ, les Sommets : des ennemis plus redoutables et des récompenses plus riches. Pas d’énergie : seulement ta force.</InfoButton></div>
+          <div className="progress"><div style={{ width: `${(cur / TOWER_FLOORS) * 100}%` }} /></div>
+          <div className="faint th-sub">Sans énergie · prochaine Sentinelle à l’étage {Math.min(TOWER_FLOORS, Math.ceil((cur + 1) / 10) * 10)}</div>
+        </div>
+      </div>
+      {!done ? (() => {
+        const foes = [...new Set(towerWaves(next).flat().map((e) => e.enemy))].slice(0, 5);
+        const boss = next % 10 === 0;
+        return (
+          <div className={`tower-next ${boss ? 'boss' : ''}`}>
+            <div className="tn-top">
+              <span className="tn-n">{next}</span>
+              <div className="grow"><b>{boss ? (next > 50 ? 'Boss des Sommets' : 'Sentinelle') : `Étage ${next}`}</b><div className="faint">Ennemis niveau {towerLevel(next)} · {towerWaves(next).length} vague{towerWaves(next).length > 1 ? 's' : ''}</div></div>
+            </div>
+            <div className="tn-foes">{foes.map((id) => <span key={id} className="tn-foe" title={ENEMIES[id]?.name}><EnemyArt enemyId={id} /></span>)}</div>
+            <div className="tn-reward"><span className="faint">Récompense</span><RewardInline reward={towerReward(next)} /></div>
+            <button className="btn block" style={{ minHeight: 52 }} onClick={() => push({ name: 'prep', spec: { mode: 'tower', floor: next } })}>Gravir l’étage {next}<span className="shine" /></button>
+          </div>
+        );
+      })() : <div className="hint" style={{ marginTop: 14 }}>Tu as conquis la Tour des Âges !</div>}
+      <div className="tower-climb">
+        {Array.from({ length: 6 }, (_, i) => next + 1 + i).filter((f) => f <= TOWER_FLOORS).map((f) => (
+          <div key={f} className={`tc-floor ${f % 10 === 0 ? 'boss' : ''}`}>
             <span className="tf-n">{f}</span>
             <span className="grow">{f % 10 === 0 ? (f > 50 ? 'Boss des Sommets' : 'Sentinelle') : `Étage ${f}`}</span>
             <span className="row" style={{ gap: 4 }}>{rewardMainIcon(towerReward(f), 18)}</span>
-            {f <= cur && <span className="chip active">✓</span>}
           </div>
         ))}
       </div>
@@ -176,9 +197,6 @@ export function Tower() {
           <button className="btn secondary block" style={{ marginTop: 8 }} onClick={() => { let res = { floors: 0, reward: {} as Reward }; mutate((d) => { res = sweepTower(d); }); if (res.floors) { play('claim'); toast(`Montée rapide : ${res.floors} étages gravis, récompenses récupérées.`, 'ok'); } }}>Monter d’un coup jusqu’à l’étage {sweepTo}</button>
         </div>
       )}
-      {!done ? (
-        <button className="btn block" style={{ marginTop: 14, minHeight: 54 }} onClick={() => push({ name: 'prep', spec: { mode: 'tower', floor: next } })}>Monter à l’étage {next}<span className="shine" /></button>
-      ) : <div className="hint" style={{ marginTop: 14 }}>Tu as conquis la Tour des Âges !</div>}
     </Screen>
   );
 }

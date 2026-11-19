@@ -816,3 +816,15 @@ select.prep-team { min-height: 40px; }
 /* Héros en vedette de la Faille (retour du joueur : il chevauchait « Obtenir », en haut à droite) : en haut à gauche. */
 .altar-featured { right: auto !important; left: 12px !important; top: 10px !important; }
 .altar-featured .af-next { font-size: var(--fs-2xs); color: var(--text-dim); text-shadow: 0 1px 3px #000; white-space: nowrap; }
+/* Icône de compétence (v1.115.0) : dessinée d'après la fonction, teintée par l'affinité du héros ; cadre selon le type de compétence. */
+.skill-card { flex-direction: row !important; align-items: center !important; gap: 7px; padding: 5px 7px !important; }
+.skill-card .sk-txt { display: flex; flex-direction: column; min-width: 0; gap: 1px; }
+.sk-glyph { position: relative; flex: none; display: grid; place-items: center; border-radius: 50%; color: color-mix(in srgb, var(--gc) 55%, #fff);
+  background: radial-gradient(circle at 50% 35%, color-mix(in srgb, var(--gc) 45%, #1a1420), #0d0a12 78%); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--gc) 60%, #000), 0 1px 3px rgba(0,0,0,0.6); }
+.sk-glyph.s-special { box-shadow: inset 0 0 0 1.5px #b98cff, 0 0 6px rgba(185, 140, 255, 0.35); }
+.sk-glyph.s-ultimate { box-shadow: inset 0 0 0 1.5px #ffcf7a, 0 0 8px rgba(255, 207, 122, 0.45); }
+.sk-glyph svg { filter: drop-shadow(0 1px 1px rgba(0,0,0,0.6)); }
+.sk-glyph-st { position: absolute; right: -3px; bottom: -3px; width: 15px; height: 15px; display: grid; place-items: center; border-radius: 50%; background: #0d0a12; box-shadow: 0 0 0 1px rgba(255,255,255,0.18); }
+.skill-card:disabled .sk-glyph { filter: grayscale(1) brightness(0.7); }
+/* Tour adverse : le panneau d'aide s'efface au lieu d'afficher un grand cadre vide. */
+.skill-info.idle { background: transparent !important; border-color: transparent !important; box-shadow: none !important; opacity: 0.55; }

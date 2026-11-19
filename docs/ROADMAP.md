@@ -567,6 +567,11 @@ Travail sur la branche `claude/keen-faraday-bcryji`, **sans fusion sur `main`** 
 - Cycle 2, suite (03:00 → 03:25 UTC) : icônes de ressources détourées (15 images), croix des fenêtres et paliers d'Événements remis en place (régression du cycle 1), toasts avec icône, boutons inactifs lisibles ; **Démanteler demande une confirmation** ; nom des équipements au Marché ; décimales à la française ; icône peinte « Code promo » (SpriteCook) ; état vide de la Forge avec action ; boutons Fermer en double retirés (7 fenêtres) ; cases d'équipement vides d'un seul style.
 - Arrêt forcé de 03:25 à 07:30 UTC (limite d'utilisation) : le second test « nouveau joueur » et la seconde critique artistique n'ont pas pu aboutir.
 
+## 🔧 Version 1.115.0 (en cours, branche) — amélioration continue
+
+- **Icônes de compétences en combat** : chaque carte de compétence porte une icône dessinée d'après sa fonction (frappe unique, frappes multiples, zone, soin, bouclier, renforcement, affaiblissement, résurrection), teintée par l'affinité du héros, cadre violet pour la spéciale et or pour l'ultime, et un petit symbole d'effet (poison, brûlure…) dans le coin. Test : toutes les frappes, soins et boucliers sont reconnus.
+- **Tour adverse** : le panneau d'aide s'efface au lieu d'afficher un grand cadre vide.
+
 ## ✅ Version 1.114.0 — Arène, boss mondial et Faille (retours du joueur)
 
 - **Arène : adversaires imaginaires bien calibrés** : sans assez de vrais joueurs dans la ligue, le jeu complète avec des Héritiers imaginaires. Leur niveau était plafonné par leur rareté (un Commun ne dépassait pas 20) et ils n'avaient ni rang ni ascension : à niveau 60, les trois adversaires, « Redoutable » compris, n'avaient que 41 à 66 % de la puissance du joueur (simulation : 6 victoires sur 6 partout). Ils progressent maintenant comme un joueur (rang et ascension suivant le niveau) et ont bien ~70 / 95 / 115 % de ta puissance à tous les niveaux.

@@ -72,6 +72,8 @@ export function GearDetail({ gearUid, onClose, equipTo, place = 'hero', onReplac
   // Démanteler est définitif : un premier toucher arme le bouton, un second (dans les 3 s) confirme.
   const [armed, setArmed] = useState(false);
   const [picking, setPicking] = useState(false);
+  const [reforgeArm, setReforgeArm] = useState<number | null>(null);
+  useEffect(() => { if (reforgeArm === null) return; const t = setTimeout(() => setReforgeArm(null), 4000); return () => clearTimeout(t); }, [reforgeArm]);
   useEffect(() => { if (!armed) return; const t = setTimeout(() => setArmed(false), 3000); return () => clearTimeout(t); }, [armed]);
   const g = save.equipment.find((x) => x.uid === gearUid);
   if (!g) return null;
@@ -124,8 +126,13 @@ export function GearDetail({ gearUid, onClose, equipTo, place = 'hero', onReplac
         <div key={i} className="gd-sub">
           <span>{statText(sb.stat, sb.value)}</span>
           <span className="gd-rolls" aria-label={`${sb.rolls - 1} renforcement(s)`}>{Array.from({ length: sb.rolls - 1 }, (_, k) => <i key={k} />)}</span>
-          <button className="gd-reforge" aria-label={`Retoucher ${statText(sb.stat, sb.value)} (${REFORGE_COST.gold} or, ${REFORGE_COST.forgeOre} minerai)`} title={`Retoucher : ${REFORGE_COST.gold} or, ${REFORGE_COST.forgeOre} minerai`}
-            onClick={() => { let res = { ok: false } as ReturnType<typeof reforgeSub>; mutate((st) => { res = reforgeSub(st, g.uid, i, Math.random); }); if (res.ok) { play('claim'); useUI.getState().toast('Statistique retouchée.', 'ok'); } else useUI.getState().toast(res.reason ?? 'Impossible.', 'error'); }}>↻</button>
+          <button className={`gd-reforge ${reforgeArm === i ? 'armed' : ''}`} aria-label={`Retoucher ${statText(sb.stat, sb.value)} (${REFORGE_COST.gold} or, ${REFORGE_COST.forgeOre} minerai)`} title={`Retoucher : ${REFORGE_COST.gold} or, ${REFORGE_COST.forgeOre} minerai`}
+            onClick={() => {
+              // v1.116.0 (QA) : la retouche coûte cher et efface la statistique : premier toucher = prix affiché, second = confirmé.
+              if (reforgeArm !== i) { setReforgeArm(i); return; }
+              setReforgeArm(null);
+              let res = { ok: false } as ReturnType<typeof reforgeSub>; mutate((st) => { res = reforgeSub(st, g.uid, i, Math.random); }); if (res.ok) { play('claim'); useUI.getState().toast('Statistique retouchée.', 'ok'); } else useUI.getState().toast(res.reason ?? 'Impossible.', 'error'); }}>{reforgeArm === i ? 'OK ?' : '↻'}</button>
+          {reforgeArm === i && <span className="gd-reforge-cost">Retoucher : {fmt(REFORGE_COST.gold)} or · {REFORGE_COST.forgeOre} minerai</span>}
         </div>
       ))}
       {/* v1.109.0 : les 4 emplacements sont toujours là ; ceux qui restent à révéler gardent leur place (cadenas + palier),

@@ -79,7 +79,8 @@ export function Expeditions() {
             <span>{dur(o.minutes)}</span><span>{o.size} héros</span>
             <span className="ex-cond"><CondIcon c={o.cond} /> {condLabel(o.cond)} +30 %</span>
           </div>
-          <MiniLoot reward={o.base} />
+          {/* Butin réellement versé : celui fixé au départ (avant : butin de base, différent de ce qu'on recevait). */}
+          <MiniLoot reward={run ? (run.loot ?? expeditionLoot(save, run.offer, run.heroUids.filter((u) => save.heroes.some((h) => h.uid === u))).reward) : o.base} />
           {run && !ready && (
             <div className="ex-run">
               <div className="ex-bar"><div style={{ width: `${Math.min(100, ((now - run.startAt) / (run.endsAt - run.startAt)) * 100)}%` }} /></div>

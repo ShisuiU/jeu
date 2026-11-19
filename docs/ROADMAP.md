@@ -567,9 +567,15 @@ Travail sur la branche `claude/keen-faraday-bcryji`, **sans fusion sur `main`** 
 - Cycle 2, suite (03:00 → 03:25 UTC) : icônes de ressources détourées (15 images), croix des fenêtres et paliers d'Événements remis en place (régression du cycle 1), toasts avec icône, boutons inactifs lisibles ; **Démanteler demande une confirmation** ; nom des équipements au Marché ; décimales à la française ; icône peinte « Code promo » (SpriteCook) ; état vide de la Forge avec action ; boutons Fermer en double retirés (7 fenêtres) ; cases d'équipement vides d'un seul style.
 - Arrêt forcé de 03:25 à 07:30 UTC (limite d'utilisation) : le second test « nouveau joueur » et la seconde critique artistique n'ont pas pu aboutir.
 
-## 🔧 Version 1.116.0 (en cours, branche) — amélioration continue
+## ✅ Version 1.116.0 — Récompenses qui s'envolent, corrections de la chasse aux bugs
 
 - **Récompenses qui s'envolent** : en réclamant une mission, un succès, un coffre bonus, un objectif ou un palier d'événement, ou un coffre d'étoiles de la campagne, les icônes de la récompense partent du bouton vers le haut de l'écran, et le message dit exactement ce qui a été reçu (« +1 Éclat d'Aeon · +1 Éclat épique ») au lieu de « Récompense obtenue ! ». Rien ne bouge avec « Animations réduites ».
+- **Chasse aux bugs (agent QA, ~40 min de clics réels, vérifiés dans la sauvegarde ; aucun bug grave, Marché, invocations, missions, Sanctuaire, Forge, Arène… exacts)** :
+  - **Retouche d'équipement** : elle dépensait 20 000 or et 40 minerai en un toucher, sans afficher le prix. Premier toucher : le prix s'affiche sur la ligne et le bouton devient « OK ? » ; second toucher : retouche. Le message dit combien il manque (« il manque 11 980 or »).
+  - **Expéditions** : la carte d'une expédition en cours affichait le butin de base, pas celui versé ; et le butin était recalculé au retour. Il est maintenant fixé au départ, affiché sur la carte et versé tel quel.
+  - **Boss mondial** : la liste oubliait le bonus d'événement (la préparation et le versement l'incluaient).
+  - **Tour, montée rapide** : gros butin d'un coup sans confirmation ; maintenant deux touchers, puis le butin s'envole et est détaillé.
+  - Tests ajoutés (butin d'expédition fixé au départ, montant manquant de la retouche).
 
 ## ✅ Version 1.115.0 — Amélioration continue : combat lisible, Tour repensée, révélations
 

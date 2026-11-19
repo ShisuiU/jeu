@@ -94,8 +94,9 @@ export function reforgeSub(s: SaveData, gearUid: string, idx: number, r: Rand): 
   const g = s.equipment.find((x) => x.uid === gearUid); if (!g) return { ok: false, reason: 'Équipement introuvable.' };
   const sub = g.subs[idx]; if (!sub) return { ok: false, reason: 'Statistique introuvable.' };
   // Messages « insuffisant » : le toast d'erreur propose alors « Obtenir » (lackingResource).
-  if (s.resources.gold < REFORGE_COST.gold) return { ok: false, reason: 'Or insuffisant.' };
-  if (s.resources.forgeOre < REFORGE_COST.forgeOre) return { ok: false, reason: 'Minerai de forge insuffisant.' };
+  // v1.116.0 (QA) : on dit combien il manque (le joueur voyait « Or insuffisant » sans connaître le prix).
+  if (s.resources.gold < REFORGE_COST.gold) return { ok: false, reason: `Or insuffisant : il manque ${(REFORGE_COST.gold - s.resources.gold).toLocaleString('fr-FR')} or.` };
+  if (s.resources.forgeOre < REFORGE_COST.forgeOre) return { ok: false, reason: `Minerai de forge insuffisant : il en manque ${REFORGE_COST.forgeOre - s.resources.forgeOre}.` };
   const pool = SUB_POOL.filter((x) => x !== g.main && !g.subs.some((y, i) => i !== idx && y.stat === x));
   const st = pick(r, pool);
   let v = 0; for (let k = 0; k < sub.rolls; k++) v += rollSub(r, st, g.rarity);

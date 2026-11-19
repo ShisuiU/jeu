@@ -2,6 +2,10 @@ import type { SkillDef, StatusId } from '../../data/types';
 import { BUFFS, DEBUFFS } from '../../game/battle/types';
 import { StatusIcon } from './StatusIcon';
 
+// Icônes peintes (SpriteCook, v1.118.0) : une par famille, découpées d'une même planche ; le tracé au trait reste en secours.
+const ART = import.meta.glob('/src/assets/skills/sk_*.webp', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
+const PAINTED: Partial<Record<string, string>> = Object.fromEntries(Object.entries(ART).map(([k, v]) => [k.match(/sk_([a-z]+)\.webp$/)![1], v]));
+
 // ICÔNE DE COMPÉTENCE (v1.115.0) — dessinée d'après ce que fait la compétence, pas peinte à la main :
 // frappe unique, frappes multiples, frappe de zone, soin, bouclier, renforcement, affaiblissement, résurrection.
 // Le joueur lit la fonction d'un coup d'œil ; un petit symbole d'effet (poison, brûlure…) s'ajoute dans le coin.
@@ -41,7 +45,7 @@ export function SkillGlyph({ sk, color, size = 30 }: { sk: SkillDef; color: stri
   const { kind, status } = skillKind(sk);
   return (
     <span className={`sk-glyph k-${kind} s-${sk.slot}`} style={{ ['--gc' as string]: color, width: size, height: size }} aria-hidden>
-      <svg viewBox="0 0 24 24" width={size * 0.62} height={size * 0.62}>{PATHS[kind]}</svg>
+      {PAINTED[kind] ? <img className="sk-glyph-art" src={PAINTED[kind]} alt="" width={size * 0.78} height={size * 0.78} draggable={false} /> : <svg viewBox="0 0 24 24" width={size * 0.62} height={size * 0.62}>{PATHS[kind]}</svg>}
       {status && <span className="sk-glyph-st"><StatusIcon id={status} size={Math.round(size * 0.38)} /></span>}
     </span>
   );

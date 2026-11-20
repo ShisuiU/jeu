@@ -7,6 +7,8 @@ import { ROLE_HELP, ROLE_NAMES, bossTotal, claimTier, claimableTiers, clanRights
 import { HERO_BY_ID } from '../../data/heroes';
 import { play } from '../../audio/sfx';
 import { Modal, Panel, Screen, fmt } from '../components/common';
+import { OnlinePitch } from '../components/OnlinePitch';
+import { Icon } from '../art/Icons';
 import { RewardInline } from '../components/RewardView';
 import { HeroArt } from '../art/HeroArt';
 import { EnemyArt } from '../art/EnemyArt';
@@ -30,13 +32,13 @@ const avatar = (id: string) => (HERO_BY_ID[id] ? id : 'torvald');
 export function Guild() {
   const save = useGame((s) => s.save)!;
   const user = useAccount((s) => s.user);
-  const push = useUI((s) => s.push);
   if (!user) return (
     <Screen title="Clan">
-      <Panel>
-        <p className="muted" style={{ marginTop: 0 }}>Jusqu’à {GUILD_MAX} joueurs, un chat et un boss commun chaque semaine : chaque palier atteint ensemble récompense tout le clan.</p>
-        <button className="btn block" onClick={() => push({ name: 'saves' })}>Se connecter</button>
-      </Panel>
+      <OnlinePitch title="Rejoins un clan" enemy={GUILD_BOSS.enemy} perks={[
+        { icon: <Icon.skull size={20} />, title: `Boss de clan : ${GUILD_BOSS.name}`, text: 'Les dégâts de tous les membres s’additionnent ; chaque palier atteint récompense tout le clan.' },
+        { icon: <Icon.heroes size={20} />, title: `Jusqu’à ${GUILD_MAX} joueurs`, text: 'Crée ton clan ou rejoins-en un ouvert, en un instant.' },
+        { icon: <Icon.mail size={20} />, title: 'Discussion du clan', text: 'Organisez vos attaques et partagez vos équipes.' },
+      ]} />
     </Screen>
   );
   return save.guild.id ? <MyGuild gid={save.guild.id} uid={user.uid} /> : <FindGuild />;

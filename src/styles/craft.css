@@ -1016,3 +1016,23 @@ body:has(.prep-bar) .bg-pill, body:has(.summon-bar) .bg-pill { bottom: calc(var(
 .reduced-motion .camp-glow { animation: none; }
 @media (prefers-reduced-motion: reduce) { .camp-glow { animation: none; } }
 .fd-more { text-align: center; font-size: var(--fs-sm); margin: 6px 0 0; }
+
+/* v1.119.0 — Clan et Amis sans compte : présentation illustrée au lieu d'une ligne perdue dans un écran vide. */
+.op { display: flex; flex-direction: column; gap: 12px; }
+.op-hero { position: relative; height: 210px; border-radius: var(--r-lg); overflow: hidden; border: 1px solid rgba(217, 179, 106, 0.4); background: radial-gradient(120% 90% at 50% 100%, rgba(120, 70, 200, 0.35), rgba(10, 8, 14, 0.95) 70%); }
+.op-enemy { position: absolute; inset: 0; opacity: 0.8; -webkit-mask-image: linear-gradient(180deg, #000 30%, transparent 85%); mask-image: linear-gradient(180deg, #000 30%, transparent 85%); }
+.op-enemy img { object-position: center 20%; }
+.op-team { position: absolute; left: 0; right: 0; bottom: 0; height: 82%; display: flex; justify-content: center; align-items: flex-end; }
+.op-h { position: relative; width: 40%; height: 100%; margin: 0 -8%; -webkit-mask-image: radial-gradient(50% 58% at 50% 50%, #000 42%, transparent 96%); mask-image: radial-gradient(50% 58% at 50% 50%, #000 42%, transparent 96%); }
+.op-h img { object-position: center 15%; }
+.op-h0 { z-index: 2; height: 104%; }
+.op-h1 { order: -1; height: 88%; opacity: 0.92; }
+.op-h2 { height: 88%; opacity: 0.92; }
+.op-hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 55%, rgba(8, 6, 12, 0.95)); pointer-events: none; z-index: 3; }
+.op-title { position: absolute; left: 0; right: 0; bottom: 10px; z-index: 4; margin: 0; text-align: center; font-family: var(--font-title); font-size: var(--fs-xl, 22px); color: #f3dfae; text-shadow: 0 2px 6px #000; }
+.op-perks { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.op-perks li { display: flex; gap: 12px; align-items: center; padding: 10px 12px; border-radius: var(--r-md); border: 1px solid var(--surface-line); background: rgba(14, 10, 20, 0.85); }
+.op-ic { width: 38px; height: 38px; flex-shrink: 0; border-radius: 50%; display: grid; place-items: center; color: #e8c27a; background: radial-gradient(circle at 50% 35%, rgba(232, 194, 122, 0.22), rgba(14, 10, 20, 0.9)); border: 1px solid rgba(232, 194, 122, 0.45); }
+.op-perks b { display: block; font-size: var(--fs-md); }
+.op-perks small { display: block; color: var(--text-dim); font-size: var(--fs-sm); line-height: 1.3; margin-top: 2px; }
+.op-foot { text-align: center; font-size: var(--fs-sm); margin: -4px 0 0; }

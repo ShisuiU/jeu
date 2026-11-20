@@ -567,6 +567,14 @@ Travail sur la branche `claude/keen-faraday-bcryji`, **sans fusion sur `main`** 
 - Cycle 2, suite (03:00 → 03:25 UTC) : icônes de ressources détourées (15 images), croix des fenêtres et paliers d'Événements remis en place (régression du cycle 1), toasts avec icône, boutons inactifs lisibles ; **Démanteler demande une confirmation** ; nom des équipements au Marché ; décimales à la française ; icône peinte « Code promo » (SpriteCook) ; état vide de la Forge avec action ; boutons Fermer en double retirés (7 fenêtres) ; cases d'équipement vides d'un seul style.
 - Arrêt forcé de 03:25 à 07:30 UTC (limite d'utilisation) : le second test « nouveau joueur » et la seconde critique artistique n'ont pas pu aboutir.
 
+## ✅ Version 1.119.0 — Failles, Marché et Camp illustrés
+
+- **Arène : objectif de la saison** sous les adversaires : prochaine ligue, points manquants, barre de progression, récompense de fin de saison actuelle et celle de la ligue visée.
+- **Combats** : les cartes des modes occupent toute la hauteur de l'écran (plus de quart vide en bas sur les grands téléphones) ; illustrations plus visibles. Taille inchangée sur iPhone SE.
+- **Les Failles : vraie carte de chemin**. Les salles ne sont plus un tableau de textes à symboles : chaque route a son icône peinte (épées croisées, crâne d'élite, autel à relique, feu de camp, couronne du Gardien) dans un médaillon à sa couleur, avec un rail de progression à gauche. La route prise à chaque salle est gardée et marquée d'une coche (les autres s'estompent). La salle en cours s'affiche en grandes cartes avec description et récompense ; « Combattre · salle N » juste en dessous. Au repos, le serment et « Entrer dans la faille » passent au-dessus de la carte. Portail animé dans l'en-tête, icône d'autel sur les reliques.
+- **Marché : l'étal d'Orvel le colporteur**, scène peinte (SpriteCook) en tête d'écran avec sa réplique ; le Marché n'est plus une grille perdue au milieu du vide. Bandeau réduit sur les petits écrans pour garder « Renouveler » visible.
+- **Camp des Héritiers : scène peinte** (tentes autour du feu, coffres d'or, élixirs et minerai) à la place de la petite flamme dessinée ; la lueur du feu palpite, plus vite quand le camp est plein.
+
 ## ✅ Version 1.118.0 — Icônes de compétences peintes
 
 - **Icônes de compétences peintes** (4e critique : « pictos au trait qui jurent avec l'art peint ») : 9 icônes peintes par SpriteCook sur une seule planche (frappe, frappes multiples, zone, soin, bouclier, renforcement, affaiblissement, résurrection, temps), découpées et intégrées ; fond teinté par l'affinité et symbole d'effet conservés ; tracé au trait en secours.

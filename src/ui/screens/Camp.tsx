@@ -7,6 +7,7 @@ import { Panel, Screen, fmt } from '../components/common';
 import { RewardView } from '../components/RewardView';
 import { Icon, ResourceIcon } from '../art/Icons';
 import { RESOURCES } from '../../data/resources';
+import campArt from '../../assets/buildings/camp.webp';
 
 // CAMP DES HÉRITIERS — le butin d'absence : il s'accumule jusqu'à 12 h, même jeu fermé.
 export function Camp() {
@@ -28,10 +29,12 @@ export function Camp() {
   const per = (k: keyof typeof rates, digits = 0) => (digits ? rates[k].toFixed(digits).replace('.', ',') : fmt(Math.round(rates[k])));
   return (
     <Screen title="Camp des Héritiers">
-      <div className={`camp-fire ${pct >= 100 ? 'full' : ''}`} aria-hidden><span /><span /><span /></div>
-      <p className="muted" style={{ textAlign: 'center', marginTop: 0 }}>
-        Butin d’absence, jusqu’à <b>{CAMP_MAX_HOURS} h</b>, même jeu fermé.
-      </p>
+      {/* Le camp peint (v1.119.0) : le feu brille plus fort quand le butin est plein. */}
+      <div className={`mk-hero camp-hero ${pct >= 100 ? 'full' : ''}`}>
+        <img src={campArt} alt="" draggable={false} />
+        <span className="camp-glow" aria-hidden />
+        <p>Butin d’absence, jusqu’à <b className="inl">{CAMP_MAX_HOURS} h</b>, même jeu fermé.</p>
+      </div>
       <Panel title="Butin accumulé">
         <div className="progress" style={{ marginBottom: 6 }}><div style={{ width: `${pct}%` }} /></div>
         <div className="row between faint" style={{ marginBottom: 10 }}>

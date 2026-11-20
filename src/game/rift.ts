@@ -22,6 +22,7 @@ export interface RiftState {
   base: number;                 // étage de Tour de référence (difficulté)
   best: number;                 // meilleure salle atteinte cette semaine
   oath?: ChallengeId | null;    // serment pris au départ (v1.97.0) : règle d'équipe, bonus sur le Gardien
+  path?: number[];              // route choisie à chaque salle (v1.119.0, carte du chemin parcouru)
 }
 export const emptyRift = (): RiftState => ({ week: '', status: 'idle', room: 0, nodes: [], current: null, team: [], hp: {}, relics: [], altar: null, base: 5, best: 0 });
 
@@ -56,7 +57,7 @@ export function startRift(s: SaveData, teamUids: string[], now: number, oath = f
   if (!team.length) return { ok: false, reason: 'Ton équipe est vide.' };
   if (oath) { const why = checkChallenge(riftOathOf(r.week), team.map((u) => HERO_BY_ID[s.heroes.find((h) => h.uid === u)!.heroId])); if (why) return { ok: false, reason: `Serment impossible : ${why}` }; }
   r.oath = oath ? riftOathOf(r.week) : null;
-  r.status = 'run'; r.room = 1; r.current = null; r.team = team; r.relics = []; r.altar = null;
+  r.status = 'run'; r.room = 1; r.current = null; r.team = team; r.relics = []; r.altar = null; r.path = [];
   r.hp = Object.fromEntries(team.map((u) => [u, 1]));
   r.base = Math.max(3, Math.min(80, (s.progress.tower?.floor ?? 0) - 8));
   return { ok: true };
@@ -69,6 +70,7 @@ export function chooseNode(s: SaveData, i: number): { ok: boolean; reason?: stri
   const r = s.rift; if (r.status !== 'run' || r.current || r.altar) return { ok: false, reason: 'Choix impossible maintenant.' };
   const kind = r.nodes[r.room - 1]?.[i]; if (!kind) return { ok: false, reason: 'Route inconnue.' };
   r.current = kind;
+  (r.path ??= [])[r.room - 1] = i;
   if (kind === 'rest') { for (const u of r.team) r.hp[u] = r.hp[u] > 0 ? Math.min(1, r.hp[u] + 0.35) : 0.2; advance(s); return { ok: true }; }
   if (kind === 'altar') { r.altar = offer(s); return { ok: true }; }
   return { ok: true, fight: true };

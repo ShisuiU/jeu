@@ -13,6 +13,7 @@ import { GearCard, statText } from '../components/GearCard';
 import { GearStars, SetEmblem } from '../art/SetEmblem';
 import { Icon, ResourceIcon } from '../art/Icons';
 import { GetButton } from '../components/Sources';
+import marketArt from '../../assets/buildings/market.webp';
 
 // MARCHÉ — 6 offres par jour, un achat chacune. On peut renouveler les offres 3 fois par jour (cristaux).
 const PriceTag = ({ o, enough }: { o: MarketOffer; enough: boolean }) => (
@@ -55,6 +56,11 @@ export function Market() {
 
   return (
     <Screen title="Marché">
+      {/* L'étal du colporteur (v1.119.0) : une scène peinte donne un visage au lieu. */}
+      <div className="mk-hero" aria-hidden>
+        <img src={marketArt} alt="" draggable={false} />
+        <p><b>Orvel le colporteur</b>« Une pièce de chaque, voyageur. Demain, d’autres trésors. »</p>
+      </div>
       <Wallet ids={['gold', 'diamonds']} cols={2} />
       <div className="mk-grid">
         {m.offers.map((x, i) => {

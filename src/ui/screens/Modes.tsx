@@ -361,6 +361,23 @@ export function Arena() {
           <div className="faint" style={{ marginTop: 4 }}>{o.heroes.map((h) => HERO_BY_ID[h.heroId].name.split(/[ ,]/)[0]).join(', ')}{o.real && o.uid && <button className="acc-link" style={{ marginLeft: 8 }} onClick={() => setReport({ uid: o.uid!, name: o.name, kind: 'name', where: 'Arène' })}>Signaler</button>}</div>
         </Panel>
       ))}
+      {/* v1.119.0 : un objectif sous les adversaires (le bas de l'écran était vide) — la ligue suivante et ce que rapporte la saison. */}
+      {(() => {
+        const i = ARENA_TIERS.findIndex((x) => x.id === tier.id);
+        const nxt = ARENA_TIERS[i + 1];
+        const from = tier.min, to = nxt?.min ?? from;
+        return (
+          <Panel title="Objectif de la saison" className="ar-goal">
+            {nxt ? <>
+              <div className="row between"><span>Prochaine ligue : <b style={{ color: nxt.color }}>{nxt.name}</b></span><span className="faint">encore {Math.max(0, nxt.min - save.arena.rating)} points</span></div>
+              <div className="progress" style={{ margin: '6px 0 10px' }}><div style={{ width: `${Math.min(100, ((save.arena.rating - from) / Math.max(1, to - from)) * 100)}%` }} /></div>
+            </> : <div className="faint" style={{ marginBottom: 8 }}>Tu es dans la plus haute ligue : tiens bon jusqu’à la fin de la saison.</div>}
+            <div className="faint" style={{ marginBottom: 4 }}>Récompense de fin de saison en ligue {tier.name} :</div>
+            <RewardInline reward={tier.season} />
+            {nxt && <><div className="faint" style={{ margin: '8px 0 4px' }}>En ligue {nxt.name} :</div><RewardInline reward={nxt.season} /></>}
+          </Panel>
+        );
+      })()}
       {leagueOpen && (
         <Modal onClose={() => setLeagueOpen(false)}>
           <h2>Les ligues</h2>

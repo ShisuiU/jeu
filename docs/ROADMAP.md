@@ -570,6 +570,7 @@ Travail sur la branche `claude/keen-faraday-bcryji`, **sans fusion sur `main`** 
 ## 🔧 Version 1.119.0 (en cours, branche)
 
 - **Arène : objectif de la saison** sous les adversaires : prochaine ligue, points manquants, barre de progression, récompense de fin de saison actuelle et celle de la ligue visée.
+- **Combats** : les cartes des modes occupent toute la hauteur de l'écran (plus de quart vide en bas sur les grands téléphones) ; illustrations plus visibles. Taille inchangée sur iPhone SE.
 
 ## ✅ Version 1.118.0 — Icônes de compétences peintes
 

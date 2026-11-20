@@ -1001,3 +1001,10 @@ body:has(.prep-bar) .bg-pill, body:has(.summon-bar) .bg-pill { bottom: calc(var(
 .pc-hero > div:first-child, .pc-hero > img { width: 100%; height: 100%; }
 .pc-hero span { position: absolute; right: 2px; bottom: 2px; font-size: var(--fs-2xs); font-weight: 900; padding: 0 4px; border-radius: var(--r-sm); background: rgba(0,0,0,0.75); color: #fff; }
 .rk-row { cursor: pointer; }
+
+/* v1.119.0 — Combats : les cartes des modes occupent la hauteur de l'écran (plus de quart vide en bas sur les grands téléphones) ;
+   l'illustration se lit mieux. Sur iPhone SE, elles gardent leur taille d'origine. */
+.combat-grid { --cc-h: clamp(118px, calc((100dvh - 300px) / 3), 186px); }
+.combat-list:has(.combat-card.locked) .combat-grid { --cc-h: clamp(118px, calc((100dvh - 372px) / 3), 186px); }
+.combat-card.compact { height: var(--cc-h, 118px); }
+.combat-card.compact .cc-art img { object-position: center 20%; }

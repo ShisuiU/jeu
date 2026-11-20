@@ -43,11 +43,10 @@
 @keyframes targetPulseG { 50% { box-shadow: 0 0 0 3px rgba(123,234,143,0.45), 0 0 18px rgba(123,234,143,0.5); } }
 
 .popup { position: absolute; left: 50%; top: 28%; transform: translateX(-50%); font-weight: 900; font-size: var(--fs-lg); white-space: nowrap; pointer-events: none; text-shadow: 0 2px 4px #000, 0 0 2px #000; animation: popUp 1.1s ease-out forwards; z-index: 5; }
-.popup:nth-of-type(2) { top: 44%; } .popup:nth-of-type(3) { top: 12%; }
 @keyframes popUp { 0% { opacity: 0; transform: translate(-50%, 8px) scale(0.7); } 15% { opacity: 1; transform: translate(-50%, 0) scale(1.15); } 30% { transform: translate(-50%, 0) scale(1); } 100% { opacity: 0; transform: translate(-50%, -34px); } }
 .popup.dmg { color: #fff; }
 .popup.dmg.strong { color: #ffd36b; }
-.popup.dmg.weak { color: #bbb; }
+.popup.dmg.weak { color: #d9d4cc; }
 .popup.dmg.crit { color: #ff5a3c; font-size: var(--fs-2xl); }
 .popup.heal { color: #7bea8f; }
 .popup.shieldp { color: #aad7ff; }

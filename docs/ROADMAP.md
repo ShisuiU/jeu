@@ -571,6 +571,12 @@ Travail sur la branche `claude/keen-faraday-bcryji`, **sans fusion sur `main`** 
 
 - **Donjon des familles : liste allégée**. Seuls s'affichent les étages conquis, l'étage ouvert, les deux suivants et le prochain Gardien (avec son numéro) ; le reste tient en une ligne. L'écran défile tout seul jusqu'à l'étage à jouer. « Sans énergie » n'est plus répété sur chaque ligne verrouillée.
 - **Clan et Amis sans compte : vraie présentation**. Au lieu d'une ligne perdue dans un écran vide : les trois meilleurs héros du joueur en bandeau (devant le boss de clan pour le Clan), trois avantages illustrés (boss de clan et paliers, 30 joueurs, discussion ; énergie offerte, héros en renfort, code ami), puis « Se connecter ou créer un compte ».
+- **Combat, critique ciblée (note 6/10) : premières corrections**
+  - **Chiffres de dégâts** : chaque chiffre a son couloir fixé à sa création (4 positions qui tournent) au lieu de deux systèmes de décalage qui se cumulaient. Mesuré sur le 4-10 en AUTO : 40 chevauchements avant, 2 après. Contour noir sur tous les messages (lisibles sur les décors ocre) ; gris des coups faibles éclairci.
+  - **Coups multiples** : un total cumulé apparaît après le dernier coup (« 4 coups · -1 064 »).
+  - **Barre à 3 cartes** (héros avec ultime) : icône au-dessus, nom en dessous, sans coupure au milieu des mots (« Épin/es » → « Épines ») ; le type se lit à l'anneau de l'icône, la recharge s'affiche en pastille sur l'icône.
+  - **Barre du boss** en haut de l'écran : nom, PV en %, repères d'actes, jauge de Fracture chiffrée (« 76 à briser »), Carapace, état Enragé, et son ultime annoncée en clair au tour d'avant (« ⚠ Au prochain tour : Tempête de sable · brise sa Fracture pour l'annuler »). L'étiquette au-dessus du boss, qui gênait les chiffres, est retirée.
+  - **Messages** : en combat de boss, les notifications passent au-dessus des commandes ; la fiche d'une carte (appui long) met le combat en pause, même en AUTO ; les nouvelles coutures du Codex sont annoncées à la fin du combat ; l'astuce « jauge du Lien pleine » disparaît dès qu'on utilise le Lien.
 
 ## ✅ Version 1.119.0 — Failles, Marché et Camp illustrés
 

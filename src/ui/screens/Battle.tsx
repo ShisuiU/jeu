@@ -548,7 +548,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
           {order.map((id, i) => {
             const u = s.units.find((x) => x.id === id);
             if (!u) return null;
-            return <div key={i} className={`to-item ${u.side}`}>{u.kind === 'hero' ? <HeroArt heroId={u.refId} /> : <EnemyArt enemyId={u.refId} />}</div>;
+            return <div key={i} className={`to-item ${u.side} ${u.isBoss ? 'boss' : ''}`} title={i === 0 ? `Maintenant : ${u.name}` : u.name}>{u.kind === 'hero' ? <HeroArt heroId={u.refId} /> : <EnemyArt enemyId={u.refId} />}</div>;
           })}
         </div>
         {/* BARRE DU BOSS (v1.120.0) : PV et actes, Fracture chiffrée, Carapace, et son ultime annoncée en clair (plus seulement au survol). */}

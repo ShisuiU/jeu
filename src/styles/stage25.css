@@ -90,3 +90,11 @@
 .u-pv { position: absolute; left: 50%; top: 60%; transform: translateX(-50%); z-index: 6; padding: 1px 6px; border-radius: var(--r-pill); font-size: var(--fs-2xs, 10px); font-weight: 800; white-space: nowrap; color: #fff2c8; background: rgba(10, 7, 14, 0.85); box-shadow: 0 0 0 1px rgba(255, 179, 107, 0.6); pointer-events: none; }
 .u-pv.ko { color: #fff; background: #b0203a; box-shadow: 0 0 0 1px #ff9bb0, 0 0 10px rgba(255, 61, 110, 0.6); }
 .reduced-motion .u-ghost { animation: none; }
+
+/* Ordre des tours (v1.120.0) : vignettes plus grandes, celle qui joue détachée des suivantes, le boss cerclé d'or. */
+.turn-order { gap: 5px; }
+.to-item { width: 26px; height: 26px; border-width: 2px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); }
+.to-item:first-child { width: 36px; height: 36px; margin-right: 6px; position: relative; box-shadow: 0 0 0 2px rgba(10, 7, 14, 0.9), 0 0 10px currentColor; }
+.to-item.ally:first-child { color: #6fc3ff; } .to-item.enemy:first-child { color: #ff6b7d; }
+.to-item.boss { border-color: #ffcc66 !important; box-shadow: 0 0 6px rgba(255, 204, 102, 0.7); }
+.to-item:not(:first-child) { opacity: 0.88; }

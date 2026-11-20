@@ -97,6 +97,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
   const [slowmo, setSlowmo] = useState(false);
   const doShake = (k: 'soft' | 'hard') => { if (save.settings.reducedMotion) return; setShake(k); setTimeout(() => setShake(''), k === 'hard' ? 420 : 260); };
   const [ult, setUlt] = useState<{ side: string; kind: 'hero' | 'enemy'; refId: string; skill: string; color: string } | null>(null);
+  const [lienCut, setLienCut] = useState<{ heroes: string[]; name: string; color: string; id: number } | null>(null);
   const [skipFx, setSkipFx] = useState(false);
   const [wave, setWave] = useState<{ side: 'ally' | 'enemy'; color: string; id: number } | null>(null);
   const [result, setResult] = useState<ModeResult | null>(null);
@@ -285,6 +286,12 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
           else if (e.reformed) { addPopup(e.target, 'Carapace reformée', 'shieldp'); addVfx(e.target, 'shieldfx', '#c9b27a'); }
           break;
         case 'lien': {
+          // Mise en scène du Lien (v1.120.0) : toute l'équipe dans une bande, comme un ultime, avant que l'effet tombe.
+          const col = e.power === 'heal' ? '#7bea8f' : e.power === 'guard' ? '#aad7ff' : '#ffd36b';
+          if (speedRef.current < 3 && !useGame.getState().save?.settings.reducedMotion) {
+            setLienCut({ heroes: s.units.filter((u) => u.side === 'ally' && u.alive && u.kind === 'hero').map((u) => u.refId).slice(0, 5), name: LIEN_POWERS[e.power].name, color: col, id: ++popSeq });
+            play('rare'); await wait(950); setLienCut(null);
+          }
           setBanner({ text: `Pouvoir du Lien · ${LIEN_POWERS[e.power].name}`, side: 'ally' });
           for (const a of s.units.filter((u) => u.side === 'ally' && u.alive)) addVfx(a.id, e.power === 'heal' ? 'healfx' : e.power === 'guard' ? 'shieldfx' : 'revivefx', e.power === 'heal' ? '#7bea8f' : e.power === 'guard' ? '#aad7ff' : '#ffd36b');
           play('claim'); pause = true; break;
@@ -585,6 +592,12 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
         <div className={`ult-cut ${ult.side}`} style={{ ['--uc' as string]: ult.color }} aria-hidden>
           <div className="uc-band"><div className="uc-art">{ult.kind === 'hero' ? <HeroArt heroId={ult.refId} kind="full" /> : <EnemyArt enemyId={ult.refId} />}</div></div>
           <div className="uc-name">{ult.skill}</div>
+        </div>
+      )}
+      {lienCut && (
+        <div key={lienCut.id} className="ult-cut ally lien-cut" style={{ ['--uc' as string]: lienCut.color }} aria-hidden>
+          <div className="uc-band"><div className="lc-team">{lienCut.heroes.map((h) => <div key={h} className="lc-h"><HeroArt heroId={h} /></div>)}</div></div>
+          <div className="uc-name"><small>Pouvoir du Lien</small>{lienCut.name}</div>
         </div>
       )}
       {wave && <div key={wave.id} className={`field-wave ${wave.side}`} style={{ ['--vc' as string]: wave.color }} onAnimationEnd={() => setWave(null)} />}

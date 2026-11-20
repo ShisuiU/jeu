@@ -670,7 +670,7 @@ const LIEN_SKILL = { id: 'lien_strike', name: 'Frappe des Héritiers', slot: 'ba
 const NO_MODS = skillMods(LIEN_SKILL, 1);
 export const LIEN_POWERS: Record<LienPower, { name: string; text: string }> = {
   heal: { name: 'Souffle de vie', text: 'Soigne toute l’équipe de 20 % de ses PV et retire les effets néfastes.' },
-  strike: { name: 'Frappe des Héritiers', text: 'Tous tes héros frappent ensemble l’ennemi le plus affaibli (50 % de leur ATQ chacun).' },
+  strike: { name: 'Frappe des Héritiers', text: 'Tous tes héros frappent ensemble le boss, ou l’ennemi le plus affaibli (110 % de leur ATQ chacun).' },
   guard: { name: 'Rempart', text: 'Bouclier de 20 % des PV sur toute l’équipe (2 tours) et +15 % de jauge de tour.' },
 };
 /** Le Lien peut-il agir ? (jauge pleine, au tour d'un héros, deux fois par combat au plus). Ne consomme pas le tour du héros. */
@@ -687,8 +687,9 @@ export function castLien(s: BattleState, power: LienPower): boolean {
     for (const a of allies) {
       const foes = s.units.filter((u) => u.side === 'enemy' && u.alive);
       if (!foes.length) break;
-      const t = [...foes].sort((x, y) => hpPct(x) - hpPct(y))[0];
-      dealDamage(s, a, t, { kind: 'damage', target: 'enemy', mult: 0.5 } as Extract<SkillEffect, { kind: 'damage' }>, NO_MODS, LIEN_SKILL, true);
+      // v1.120.0 : 110 % d'ATQ (au lieu de 50 %), sur le boss d'abord — la jauge remplie doit peser dans le combat.
+      const t = foes.find((u) => u.isBoss) ?? [...foes].sort((x, y) => hpPct(x) - hpPct(y))[0];
+      dealDamage(s, a, t, { kind: 'damage', target: 'enemy', mult: 1.1 } as Extract<SkillEffect, { kind: 'damage' }>, NO_MODS, LIEN_SKILL, true);
     }
   }
   endCheck(s);

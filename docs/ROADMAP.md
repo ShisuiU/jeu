@@ -577,6 +577,7 @@ Travail sur la branche `claude/keen-faraday-bcryji`, **sans fusion sur `main`** 
   - **Barre à 3 cartes** (héros avec ultime) : icône au-dessus, nom en dessous, sans coupure au milieu des mots (« Épin/es » → « Épines ») ; le type se lit à l'anneau de l'icône, la recharge s'affiche en pastille sur l'icône.
   - **Barre du boss** en haut de l'écran : nom, PV en %, repères d'actes, jauge de Fracture chiffrée (« 76 à briser »), Carapace, état Enragé, et son ultime annoncée en clair au tour d'avant (« ⚠ Au prochain tour : Tempête de sable · brise sa Fracture pour l'annuler »). L'étiquette au-dessus du boss, qui gênait les chiffres, est retirée.
   - **Messages** : en combat de boss, les notifications passent au-dessus des commandes ; la fiche d'une carte (appui long) met le combat en pause, même en AUTO ; les nouvelles coutures du Codex sont annoncées à la fin du combat ; l'astuce « jauge du Lien pleine » disparaît dès qu'on utilise le Lien.
+  - **Pouvoir du Lien** : la Frappe des Héritiers passe de 50 % à 110 % de l'ATQ de chaque héros et vise le boss en priorité (elle faisait environ 3 % des PV d'un boss pour une jauge remplie en 18 tours). Nouvelle mise en scène : toute l'équipe dans une bande diagonale avec « Pouvoir du Lien · nom du pouvoir », avant que l'effet tombe (pas en ×3 ni en animations réduites).
 
 ## ✅ Version 1.119.0 — Failles, Marché et Camp illustrés
 

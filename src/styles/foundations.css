@@ -946,3 +946,12 @@ select.prep-team { min-height: 40px; }
 .skills:has(> .skill-card:nth-child(3)) .skill-card .sk-cd { left: calc(50% + 6px); top: 0; }
 /* v1.120.0 — pendant un combat de boss, les notifications passent au-dessus des commandes : la barre du boss reste lisible. */
 body:has(.boss-bar) .toasts { top: auto !important; bottom: calc(var(--sab, 0px) + 84px) !important; }
+/* Mise en scène du Lien (v1.120.0) : l'équipe entière dans la bande, le nom du pouvoir en dessous. */
+.lien-cut .uc-band { animation-duration: 0.95s; }
+.lien-cut .uc-name { animation-duration: 0.95s; font-size: clamp(20px, 6.6vw, 34px); padding: 0 12px; letter-spacing: 0.04em !important; }
+.lien-cut .uc-name small { display: block; font-size: var(--fs-sm); letter-spacing: 0.3em; text-transform: uppercase; opacity: 0.85; margin-bottom: 2px; }
+.lc-team { position: absolute; inset: 0 20%; display: flex; justify-content: center; transform: rotate(9deg); }
+.lc-h { position: relative; flex: 1; max-width: 22%; margin: -6% -2% 0; -webkit-mask-image: radial-gradient(50% 60% at 50% 45%, #000 45%, transparent 98%); mask-image: radial-gradient(50% 60% at 50% 45%, #000 45%, transparent 98%); animation: lcIn 0.95s cubic-bezier(.2,.9,.2,1) both; }
+.lc-h:nth-child(2) { animation-delay: 0.05s; } .lc-h:nth-child(3) { animation-delay: 0.1s; } .lc-h:nth-child(4) { animation-delay: 0.15s; } .lc-h:nth-child(5) { animation-delay: 0.2s; }
+.lc-h img { width: 100%; height: 100%; object-fit: cover; object-position: center 15%; }
+@keyframes lcIn { 0% { transform: translateY(30%); opacity: 0; } 30% { transform: none; opacity: 1; } 100% { transform: translateX(-4%); opacity: 1; } }

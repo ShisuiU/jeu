@@ -82,3 +82,11 @@
 .bb-intent b { color: #fff; }
 @keyframes bbWarn { to { background: rgba(176, 32, 58, 0.75); } }
 .reduced-motion .bb-intent { animation: none; }
+
+/* Prévisualisation tactique (v1.120.0) : la part de PV qui partirait clignote sur la barre, et l'estimation s'affiche sur la carte. */
+.u-hp { position: relative; }
+.u-ghost { position: absolute; top: 0; bottom: 0; background: repeating-linear-gradient(135deg, #fff2c8 0 3px, #ffb36b 3px 6px); animation: uGhost 0.9s ease-in-out infinite alternate; pointer-events: none; }
+@keyframes uGhost { from { opacity: 0.45; } to { opacity: 1; } }
+.u-pv { position: absolute; left: 50%; top: 60%; transform: translateX(-50%); z-index: 6; padding: 1px 6px; border-radius: var(--r-pill); font-size: var(--fs-2xs, 10px); font-weight: 800; white-space: nowrap; color: #fff2c8; background: rgba(10, 7, 14, 0.85); box-shadow: 0 0 0 1px rgba(255, 179, 107, 0.6); pointer-events: none; }
+.u-pv.ko { color: #fff; background: #b0203a; box-shadow: 0 0 0 1px #ff9bb0, 0 0 10px rgba(255, 61, 110, 0.6); }
+.reduced-motion .u-ghost { animation: none; }

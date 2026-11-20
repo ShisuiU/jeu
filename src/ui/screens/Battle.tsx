@@ -6,11 +6,11 @@ import { COUTURE_BY_ID } from '../../data/coutures';
 import { energyMax } from '../../game/energy';
 import { AccountXp } from '../components/AccountXp';
 import { Coach } from '../components/Coach';
-import { useCallback, useEffect, useLayoutEffect, useReducer, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI, type Route } from '../../state/ui';
 import { HERO_BY_ID } from '../../data/heroes';
-import { createBattle, beginTurn, performAction, unitById, availableSkills, targetKind, validTargets,  predictOrder, autoLien, castLien, lienReady, LIEN_POWERS } from '../../game/battle/engine';
+import { createBattle, beginTurn, performAction, unitById, availableSkills, targetKind, validTargets,  predictOrder, autoLien, castLien, lienReady, LIEN_POWERS, previewAction } from '../../game/battle/engine';
 import { LIEN_MAX, LIEN_USES, type LienPower } from '../../game/battle/types';
 import { chooseAction } from '../../game/battle/ai';
 import { StatusIcon } from '../art/StatusIcon';
@@ -443,6 +443,19 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
   const active = s.activeId ? unitById(s, s.activeId) : null;
   const selSkill = active && selected ? active.skills.find((x) => x.id === selected) : undefined;
   const targetable = awaiting && active && selSkill ? new Set(validTargets(s, active, selSkill).map((u) => u.id)) : new Set<string>();
+  // Prévisualisation tactique (v1.120.0) : compétence choisie, chaque ennemi montre la part de PV qu'il perdrait (moyenne de plusieurs tirages).
+  const previewKey = awaiting && active && selSkill ? `${selSkill.id}:${active.id}:${s.actionCount}:${s.wave}` : '';
+  const preview = useMemo(() => {
+    if (!previewKey || !active || !selSkill) return {} as Record<string, { loss: number; ko: number; frac: number }>;
+    try {
+      if (targetKind(selSkill) === 'enemy') {
+        const out: Record<string, { loss: number; ko: number; frac: number }> = {};
+        for (const t of validTargets(s, active, selSkill)) { const p = previewAction(s, { skillId: selSkill.id, targetId: t.id })[t.id]; if (p) out[t.id] = p; }
+        return out;
+      }
+      return targetKind(selSkill) === 'none' ? previewAction(s, { skillId: selSkill.id }) : {};
+    } catch { return {}; }
+  }, [previewKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const act = async (targetId?: string) => {
     if (!awaiting || !active || !selSkill) return;
@@ -504,7 +517,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
 
   const renderUnit = (u: Unit, place?: Place, i = 0) => (
     <UnitView key={u.id} u={u} place={place} order={i} vfx={vfx[u.id]} focus={focusId === u.id && u.alive} active={s.activeId === u.id} acting={acting === u.id} hit={hits.has(u.id)} heavy={heavyHits.has(u.id)}
-      targetable={targetable.has(u.id)} popups={popups[u.id] ?? []} onClick={() => onUnit(u)} onInfo={() => setInfoId(u.id)}
+      targetable={targetable.has(u.id)} preview={preview[u.id]} popups={popups[u.id] ?? []} onClick={() => onUnit(u)} onInfo={() => setInfoId(u.id)}
       edge={awaiting && active && targetable.has(u.id) && u.side !== active.side ? affinityEdge(active.affinity, u.affinity) : undefined} />
   );
 

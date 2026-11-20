@@ -729,3 +729,28 @@ export function predictOrder(s: BattleState, n = 6): string[] {
   return out;
 }
 
+
+/** PRÉVISUALISATION TACTIQUE (v1.120.0) — ce qu'une action ferait, sans la jouer : l'état est copié et l'action rejouée
+ *  plusieurs fois avec d'autres tirages (critiques, variations), puis moyennée. Le tirage réel n'est donc pas dévoilé.
+ *  Renvoie, pour chaque ennemi touché, les PV perdus en moyenne et la part des essais où il tombe. */
+export function previewAction(s: BattleState, action: Action, samples = 6): Record<string, { loss: number; ko: number; frac: number }> {
+  const out: Record<string, { loss: number; ko: number; frac: number }> = {};
+  if (!s.activeId || s.outcome !== 'running') return out;
+  const before = new Map(s.units.map((u) => [u.id, { hp: u.hp, frac: u.flags.fracture ?? 0, side: u.side, alive: u.alive }]));
+  for (let k = 0; k < samples; k++) {
+    const c = structuredClone(s) as BattleState;
+    c.events = [];
+    c.rng = (s.rng ^ Math.imul(k + 1, 2654435761)) >>> 0;
+    performAction(c, action);
+    for (const u of c.units) {
+      const b = before.get(u.id);
+      if (!b || b.side !== 'enemy' || !b.alive) continue;
+      const loss = Math.max(0, b.hp - Math.max(0, u.hp));
+      const frac = Math.max(0, b.frac - (u.flags.fracture ?? 0));
+      if (!loss && !frac && u.alive) continue;
+      const o = (out[u.id] ??= { loss: 0, ko: 0, frac: 0 });
+      o.loss += loss / samples; o.frac += frac / samples; if (!u.alive) o.ko += 1 / samples;
+    }
+  }
+  return out;
+}

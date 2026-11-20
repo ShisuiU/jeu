@@ -20,7 +20,7 @@ export interface Popup { id: number; text: string; cls: string; lane?: number }
 const LANE: [number, number][] = [[0, 0], [-15, -24], [15, -46], [-6, -68]];
 export const shortName = (n: string) => n.replace(/^(Le|La|Les|L’|L')\s*/i, '').split(' ')[0];
 
-export function UnitView({ u, place, order = 0, vfx, focus, active, acting, hit, heavy, targetable, popups, onClick, onInfo, edge }: { u: Unit; place?: Place; order?: number; vfx?: { id: number; cls: string; color: string }; focus?: boolean; active: boolean; acting: boolean; hit: boolean; heavy?: boolean; targetable: boolean; popups: Popup[]; onClick: () => void; onInfo: () => void; edge?: -1 | 0 | 1 }) {
+export function UnitView({ u, place, order = 0, vfx, focus, active, acting, hit, heavy, targetable, preview, popups, onClick, onInfo, edge }: { u: Unit; preview?: { loss: number; ko: number; frac: number }; place?: Place; order?: number; vfx?: { id: number; cls: string; color: string }; focus?: boolean; active: boolean; acting: boolean; hit: boolean; heavy?: boolean; targetable: boolean; popups: Popup[]; onClick: () => void; onInfo: () => void; edge?: -1 | 0 | 1 }) {
   const sh = Math.min(1, shieldOf(u) / u.base.hp);
   // Appui long (0,45 s) : fiche de l'unité ; le toucher simple garde son rôle (cibler).
   const timer = useRef<number | undefined>(undefined);
@@ -45,6 +45,7 @@ export function UnitView({ u, place, order = 0, vfx, focus, active, acting, hit,
       </div>
       <div className="u-bars">
         <div className="u-hp"><div style={{ width: `${hpPct(u) * 100}%` }} />{sh > 0 && <div className="u-sh" style={{ width: `${sh * 100}%` }} />}
+          {preview && preview.loss > 0 && u.alive && (() => { const now = hpPct(u), after = Math.max(0, (u.hp - preview.loss) / u.base.hp); return <div className="u-ghost" style={{ left: `${after * 100}%`, width: `${(now - after) * 100}%` }} />; })()}
           {u.isBoss && u.side === 'enemy' && <><i className={`u-act ${u.flags.phase2 ? 'past' : ''}`} style={{ left: '50%' }} />{u.flags.acts === 3 && <i className={`u-act ${u.flags.act3 ? 'past' : ''}`} style={{ left: '25%' }} />}</>}
         </div>
         {u.flags.fractureMax > 0 && <div className={`u-frac ${u.flags.fractured ? 'broken' : ''}`} title="Fracture"><div style={{ width: `${u.flags.fractured ? 100 : (u.flags.fracture / u.flags.fractureMax) * 100}%` }} /></div>}
@@ -55,6 +56,7 @@ export function UnitView({ u, place, order = 0, vfx, focus, active, acting, hit,
       {u.alive && u.flags.carapaceMax > 0 && <span className={`u-cara ${u.flags.carapace ? '' : 'broken'}`} title="Carapace">{u.flags.carapace || '✕'}</span>}
       {u.alive && u.isBoss && u.flags.enraged > 0 && <span className="u-rage" title="Enragé">ENRAGÉ</span>}
       {focus && <span className="u-focus" aria-label="Cible prioritaire"><svg viewBox="0 0 24 24" width="22" height="22"><circle cx="12" cy="12" r="7" fill="none" stroke="currentColor" strokeWidth="2" /><path d="M12 1v6M12 17v6M1 12h6M17 12h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg></span>}
+      {preview && u.alive && (preview.ko >= 0.5 ? <span className="u-pv ko">K.O.</span> : preview.loss > 0 ? <span className="u-pv">−{Math.round((preview.loss / u.base.hp) * 100)} %{preview.frac >= 1 ? ` · Fracture −${Math.round(preview.frac)}` : ''}</span> : null)}
       {edge === 1 && <span className="u-edge up">▲ +30 %</span>}
       {edge === -1 && <span className="u-edge down">▼ −20 %</span>}
       {vfx && <span key={vfx.id} className={`vfx ${vfx.cls}`} style={{ ['--vc' as string]: vfx.color }}><i /><i /><i /></span>}

@@ -35,6 +35,18 @@ describe('Les Failles (v1.93.0)', () => {
     s.rift.nodes[3] = ['fight']; chooseNode(s, 0);
     expect(riftWaves(s).length).toBeGreaterThan(0);
     applyRiftBattle(s, false, {}); expect(s.rift.status).toBe('lost');
+    // la carte garde la route prise à chaque salle (v1.119.0)
+    expect(s.rift.path).toEqual([0, 0, 0, 0]);
+  });
+  it('le chemin parcouru suit l’option choisie et repart de zéro à chaque traversée', () => {
+    const s = createNewSave(T); s.time.highWater = T; syncRift(s, T);
+    const team = s.teams[0].slots.filter((u): u is string => !!u);
+    startRift(s, team, T);
+    s.rift.nodes[0] = ['fight', 'rest']; chooseNode(s, 1);
+    expect(s.rift.path).toEqual([1]); expect(s.rift.room).toBe(2);
+    const old = { ...s.rift }; delete old.path; s.rift = old; // ancienne sauvegarde sans chemin
+    s.rift.nodes[1] = ['rest', 'rest', 'rest']; expect(chooseNode(s, 2).ok).toBe(true);
+    expect(s.rift.path?.[1]).toBe(2);
   });
   it('les anciennes sauvegardes reçoivent la Faille', () => {
     const old = JSON.parse(JSON.stringify(createNewSave(T))); delete old.rift;

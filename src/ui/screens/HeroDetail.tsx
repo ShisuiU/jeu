@@ -27,8 +27,10 @@ export function HeroDetail({ uid, heroId }: { uid?: string; heroId: string }) {
   const toggleLock = useGame((s) => s.toggleHeroLock);
   const toast = useUI((s) => s.toast);
   const push = useUI((s) => s.push);
-  const d = HERO_BY_ID[heroId];
   const inst = uid ? save.heroes.find((h) => h.uid === uid) : undefined;
+  // Robustesse (v1.121.0) : héros retrouvé par son exemplaire si l'identifiant manque ; sinon retour propre plutôt qu'une erreur.
+  const d = HERO_BY_ID[heroId] ?? (inst ? HERO_BY_ID[inst.heroId] : undefined);
+  if (!d) return <Screen title="Héros"><p className="muted" style={{ textAlign: 'center' }}>Ce héros est introuvable.</p></Screen>;
   const rar = RARITIES[d.rarity];
   const progress = inst ?? { level: 1, rank: rar.startRank, ascension: 0, awaken: 0 };
   const full = inst ? heroTotalStats(save, inst) : null;

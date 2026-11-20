@@ -571,6 +571,7 @@ Travail sur la branche `claude/keen-faraday-bcryji`, **sans fusion sur `main`** 
 
 - **Ordre des tours** plus lisible : vignettes plus grandes, celle qui joue détachée des suivantes, le boss cerclé d'or.
 - **Écran de victoire** : les notifications (nouvelle couture…) s'affichent tout en bas, sans cacher « Victoire » ni les boutons.
+- **Fiche héros plus robuste** : si l'identifiant du héros manque, elle le retrouve par son exemplaire ; un héros introuvable affiche un message au lieu de l'écran d'erreur.
 
 ## ✅ Version 1.120.0 — Combat : prévisualisation tactique, barre du boss, Lien
 

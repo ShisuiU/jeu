@@ -927,3 +927,31 @@ select.prep-team { min-height: 40px; }
   .rift-reveal .row .btn { font-size: var(--fs-xs) !important; padding-left: 4px !important; padding-right: 4px !important; }
   .rift-reveal .again-cost { margin-left: 4px; }
 }
+/* v1.120.0 — tous les messages de combat ont un contour noir : lisibles sur les décors clairs (ocre, neige). */
+.popup { -webkit-text-stroke: 0.7px rgba(0, 0, 0, 0.85); paint-order: stroke fill; }
+.popup.dmg.total { color: #ffe2a8; font-size: var(--fs-md); top: 6%; animation-duration: 1.4s; }
+
+/* v1.120.0 — Barre à 3 cartes (héros avec ultime) : icône au-dessus, nom en dessous, sans coupure au milieu des mots.
+   Le type de carte se lit à l'anneau de l'icône (violet : spéciale, or : ultime) ; la recharge s'affiche sur l'icône. */
+.sk-cd { position: absolute; z-index: 2; width: 18px; height: 18px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 800; color: #fff; background: #8a2a3a; box-shadow: 0 0 0 1.5px #0d0a12; pointer-events: none; }
+.skills .skill-card .sk-cd { left: 26px; top: 4px; }
+.skills:has(> .skill-card:nth-child(3)) .skill-card { flex-direction: column !important; justify-content: center !important; align-items: center !important; gap: 2px; padding: 3px 3px !important; text-align: center; }
+.skills:has(> .skill-card:nth-child(3)) .skill-card .sk-glyph { width: 26px !important; height: 26px !important; }
+.skills:has(> .skill-card:nth-child(3)) .skill-card .sk-glyph-art { width: 21px !important; height: 21px !important; }
+.skills:has(> .skill-card:nth-child(3)) .skill-card .sk-glyph-st { width: 12px; height: 12px; right: -4px; bottom: -3px; }
+.skills:has(> .skill-card:nth-child(3)) .skill-card .sk-glyph-st svg { width: 9px; height: 9px; }
+.skills:has(> .skill-card:nth-child(3)) .skill-card .sk-txt { align-items: center; width: 100%; }
+.skills:has(> .skill-card:nth-child(3)) .skill-card .sk-tag { display: none; }
+.skills:has(> .skill-card:nth-child(3)) .skill-card .sk-name { font-size: var(--fs-2xs, 10px); line-height: 1.1; overflow-wrap: normal; word-break: normal; hyphens: manual; -webkit-line-clamp: 2; max-width: 100%; }
+.skills:has(> .skill-card:nth-child(3)) .skill-card .sk-cd { left: calc(50% + 6px); top: 0; }
+/* v1.120.0 — pendant un combat de boss, les notifications passent au-dessus des commandes : la barre du boss reste lisible. */
+body:has(.boss-bar) .toasts { top: auto !important; bottom: calc(var(--sab, 0px) + 84px) !important; }
+/* Mise en scène du Lien (v1.120.0) : l'équipe entière dans la bande, le nom du pouvoir en dessous. */
+.lien-cut .uc-band { animation-duration: 0.95s; }
+.lien-cut .uc-name { animation-duration: 0.95s; font-size: clamp(20px, 6.6vw, 34px); padding: 0 12px; letter-spacing: 0.04em !important; }
+.lien-cut .uc-name small { display: block; font-size: var(--fs-sm); letter-spacing: 0.3em; text-transform: uppercase; opacity: 0.85; margin-bottom: 2px; }
+.lc-team { position: absolute; inset: 0 20%; display: flex; justify-content: center; transform: rotate(9deg); }
+.lc-h { position: relative; flex: 1; max-width: 22%; margin: -6% -2% 0; -webkit-mask-image: radial-gradient(50% 60% at 50% 45%, #000 45%, transparent 98%); mask-image: radial-gradient(50% 60% at 50% 45%, #000 45%, transparent 98%); animation: lcIn 0.95s cubic-bezier(.2,.9,.2,1) both; }
+.lc-h:nth-child(2) { animation-delay: 0.05s; } .lc-h:nth-child(3) { animation-delay: 0.1s; } .lc-h:nth-child(4) { animation-delay: 0.15s; } .lc-h:nth-child(5) { animation-delay: 0.2s; }
+.lc-h img { width: 100%; height: 100%; object-fit: cover; object-position: center 15%; }
+@keyframes lcIn { 0% { transform: translateY(30%); opacity: 0; } 30% { transform: none; opacity: 1; } 100% { transform: translateX(-4%); opacity: 1; } }

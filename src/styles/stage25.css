@@ -59,3 +59,34 @@
 /* Le bandeau du haut passe par-dessus la scène (fondu transparent) : toute la hauteur sert au terrain. */
 .battle > .battle-top { position: absolute; top: 0; left: 0; right: 0; z-index: 6; background: linear-gradient(180deg, rgba(7,6,11,0.92) 0%, rgba(7,6,11,0.7) 65%, rgba(7,6,11,0)); padding-bottom: 14px; pointer-events: none; }
 .battle > .battle-top button, .battle > .battle-top .turn-order { pointer-events: auto; }
+
+/* Barre du boss (v1.120.0) */
+.boss-bar { margin: 6px 2px 0; padding: 5px 9px 6px; border-radius: var(--r-md); background: rgba(10, 7, 14, 0.82); border: 1px solid color-mix(in srgb, var(--bc) 45%, rgba(255, 255, 255, 0.08)); box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); }
+.boss-bar.rage { border-color: rgba(255, 70, 90, 0.7); box-shadow: 0 0 12px rgba(255, 50, 70, 0.35); }
+.bb-head { display: flex; align-items: center; gap: 5px; font-size: var(--fs-sm); line-height: 1.2; }
+.bb-head b { font-family: var(--font-title); color: #f3dfae; letter-spacing: 0.02em; }
+.bb-rage { font-size: var(--fs-2xs, 10px); font-weight: 800; padding: 1px 5px; border-radius: var(--r-pill); color: #fff; background: #b0203a; text-transform: uppercase; }
+.bb-pct { margin-left: auto; font-weight: 800; font-variant-numeric: tabular-nums; color: #ffb0b0; }
+.bb-hp { position: relative; height: 8px; margin-top: 4px; border-radius: 4px; background: rgba(255, 255, 255, 0.08); overflow: hidden; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.6); }
+.bb-hp > div { height: 100%; background: linear-gradient(90deg, #a51530, #ff4d5e); transition: width 0.35s ease-out; }
+.bb-act { position: absolute; top: -1px; bottom: -1px; width: 2px; margin-left: -1px; background: #ffe2a8; box-shadow: 0 0 4px #ffcc66; }
+.bb-act.past { background: rgba(255, 255, 255, 0.25); box-shadow: none; }
+.bb-sub { display: flex; gap: 12px; margin-top: 4px; font-size: var(--fs-2xs, 10.5px); color: var(--text-dim); }
+.bb-frac { display: inline-flex; align-items: center; gap: 5px; flex: 1; min-width: 0; }
+.bb-frac i { flex: 1; max-width: 110px; height: 4px; border-radius: 2px; background: rgba(255, 255, 255, 0.1); overflow: hidden; }
+.bb-frac i b { display: block; height: 100%; background: linear-gradient(90deg, #d8c27a, #fff2c8); }
+.bb-frac.broken { color: #fff; font-weight: 700; }
+.bb-cara { white-space: nowrap; color: #e8d39a; }
+.bb-cara.broken { color: #ff9b9b; }
+.bb-intent { margin-top: 4px; font-size: var(--fs-xs); color: #ffd0d6; padding: 2px 6px; border-radius: var(--r-sm); background: rgba(176, 32, 58, 0.45); animation: bbWarn 1.2s ease-in-out infinite alternate; }
+.bb-intent b { color: #fff; }
+@keyframes bbWarn { to { background: rgba(176, 32, 58, 0.75); } }
+.reduced-motion .bb-intent { animation: none; }
+
+/* Prévisualisation tactique (v1.120.0) : la part de PV qui partirait clignote sur la barre, et l'estimation s'affiche sur la carte. */
+.u-hp { position: relative; }
+.u-ghost { position: absolute; top: 0; bottom: 0; background: repeating-linear-gradient(135deg, #fff2c8 0 3px, #ffb36b 3px 6px); animation: uGhost 0.9s ease-in-out infinite alternate; pointer-events: none; }
+@keyframes uGhost { from { opacity: 0.45; } to { opacity: 1; } }
+.u-pv { position: absolute; left: 50%; top: 60%; transform: translateX(-50%); z-index: 6; padding: 1px 6px; border-radius: var(--r-pill); font-size: var(--fs-2xs, 10px); font-weight: 800; white-space: nowrap; color: #fff2c8; background: rgba(10, 7, 14, 0.85); box-shadow: 0 0 0 1px rgba(255, 179, 107, 0.6); pointer-events: none; }
+.u-pv.ko { color: #fff; background: #b0203a; box-shadow: 0 0 0 1px #ff9bb0, 0 0 10px rgba(255, 61, 110, 0.6); }
+.reduced-motion .u-ghost { animation: none; }

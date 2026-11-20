@@ -6,6 +6,7 @@ import { HERO_BY_ID } from '../../data/heroes';
 import { FRIENDS_MAX, GIFT_ENERGY, canGift, claimsLeft, giftWaiting, receiveGift } from '../../game/friends';
 import { play } from '../../audio/sfx';
 import { Panel, Screen, fmt } from '../components/common';
+import { OnlinePitch } from '../components/OnlinePitch';
 import { HeroArt } from '../art/HeroArt';
 import { Icon } from '../art/Icons';
 import type { FriendRow } from '../../cloud/friendsCloud';
@@ -21,13 +22,13 @@ const avatar = (id?: string) => (id && HERO_BY_ID[id] ? id : 'torvald');
 
 export function Friends() {
   const user = useAccount((s) => s.user);
-  const push = useUI((s) => s.push);
   if (!user) return (
     <Screen title="Amis">
-      <Panel>
-        <p className="muted" style={{ marginTop: 0 }}>Échangez de l’énergie chaque jour et empruntez le meilleur héros d’un ami en renfort.</p>
-        <button className="btn block" onClick={() => push({ name: 'saves' })}>Se connecter</button>
-      </Panel>
+      <OnlinePitch title="Joue avec tes amis" perks={[
+        { icon: <Icon.energy size={20} />, title: `${GIFT_ENERGY} énergie par cadeau`, text: 'Envoie et reçois de l’énergie chaque jour.' },
+        { icon: <Icon.sword size={20} />, title: 'Héros en renfort', text: 'Emprunte le meilleur héros d’un ami pour un combat difficile.' },
+        { icon: <Icon.heroes size={20} />, title: `Jusqu’à ${FRIENDS_MAX} amis`, text: 'Ajoute-les avec un simple code ami à 8 caractères.' },
+      ]} />
     </Screen>
   );
   return <FriendsBody uid={user.uid} />;

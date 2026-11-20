@@ -6,11 +6,11 @@ import { COUTURE_BY_ID } from '../../data/coutures';
 import { energyMax } from '../../game/energy';
 import { AccountXp } from '../components/AccountXp';
 import { Coach } from '../components/Coach';
-import { useCallback, useEffect, useLayoutEffect, useReducer, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { useGame } from '../../state/store';
 import { useUI, type Route } from '../../state/ui';
 import { HERO_BY_ID } from '../../data/heroes';
-import { createBattle, beginTurn, performAction, unitById, availableSkills, targetKind, validTargets,  predictOrder, autoLien, castLien, lienReady, LIEN_POWERS } from '../../game/battle/engine';
+import { createBattle, beginTurn, performAction, unitById, availableSkills, targetKind, validTargets,  predictOrder, autoLien, castLien, lienReady, LIEN_POWERS, previewAction } from '../../game/battle/engine';
 import { LIEN_MAX, LIEN_USES, type LienPower } from '../../game/battle/types';
 import { chooseAction } from '../../game/battle/ai';
 import { StatusIcon } from '../art/StatusIcon';
@@ -97,6 +97,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
   const [slowmo, setSlowmo] = useState(false);
   const doShake = (k: 'soft' | 'hard') => { if (save.settings.reducedMotion) return; setShake(k); setTimeout(() => setShake(''), k === 'hard' ? 420 : 260); };
   const [ult, setUlt] = useState<{ side: string; kind: 'hero' | 'enemy'; refId: string; skill: string; color: string } | null>(null);
+  const [lienCut, setLienCut] = useState<{ heroes: string[]; name: string; color: string; id: number } | null>(null);
   const [skipFx, setSkipFx] = useState(false);
   const [wave, setWave] = useState<{ side: 'ally' | 'enemy'; color: string; id: number } | null>(null);
   const [result, setResult] = useState<ModeResult | null>(null);
@@ -157,7 +158,10 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
   const finished = useRef(false);
 
   useEffect(() => () => { alive.current = false; paused = false; }, []);
-  useEffect(() => { paused = quit; }, [quit]);
+  useEffect(() => { paused = quit || !!infoId; }, [quit, infoId]); // la fiche d'une carte met le combat en pause (utile en AUTO)
+  // Découvertes du Codex annoncées à la fin du combat, pas au milieu de l'action (v1.120.0).
+  const found = useRef<string[]>([]);
+  useEffect(() => { if (phase !== 'result' || !found.current.length) return; const names = found.current.splice(0); useUI.getState().toast(`Nouvelle couture découverte : ${names.join(', ')} (Codex)`, 'ok'); }, [phase]);
   // Boss dès la première vague : il fait son entrée avant le premier coup.
   useEffect(() => {
     if (phase !== 'fight' || introDone.current || bossWave !== 0) return;
@@ -169,7 +173,8 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
 
   const addPopup = (unitId: string, text: string, cls: string) => {
     const id = ++popSeq;
-    setPopups((p) => ({ ...p, [unitId]: [...(p[unitId] ?? []).slice(-3), { id, text, cls }] }));
+    // Couloir fixé à la création (v1.120.0) : les coups successifs ne se recouvrent plus (4 positions qui tournent).
+    setPopups((p) => { const cur = p[unitId] ?? []; const lane = cur.length ? ((cur[cur.length - 1].lane ?? 0) + 1) % 4 : 0; return { ...p, [unitId]: [...cur.slice(-3), { id, text, cls, lane }] }; });
     setTimeout(() => setPopups((p) => ({ ...p, [unitId]: (p[unitId] ?? []).filter((x) => x.id !== id) })), 1200);
   };
 
@@ -200,8 +205,11 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
     const hit = new Set<string>();
     const heavy = new Set<string>();
     const soundOnce = new Set<string>();
+    // Coups multiples sur une même cible (v1.120.0) : un total cumulé après le dernier coup.
+    const multi = new Map<string, { n: number; sum: number; last: number }>();
+    ev.forEach((x, i) => { if (x.kind !== 'damage') return; const m = multi.get(x.target) ?? { n: 0, sum: 0, last: i }; m.n += 1; m.sum += x.amount; m.last = i; multi.set(x.target, m); });
     let pause = false;
-    for (const e of ev) {
+    for (const [ei, e] of ev.entries()) {
       switch (e.kind) {
         case 'damage': {
           const f = fx && e.source === actorId ? fx : fxFor(e.source);
@@ -210,7 +218,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
           { const t = s.units.find((u) => u.id === e.target); const big = !!t && e.amount > t.base.hp * 0.25; if (e.crit || big) doShake(e.crit && big ? 'hard' : 'soft'); }
           if (!soundOnce.has('hit:' + e.source)) { soundOnce.add('hit:' + e.source); playImpact(f, { crit: ev.some((x) => x.kind === 'damage' && x.source === e.source && x.crit), many: ev.filter((x) => x.kind === 'damage' && x.source === e.source).length > 1 }); }
           if (f.weapon === 'blunt' || e.crit) { heavy.add(e.target); flashLight(center(e.target), f.color, 0.5, 420); }
-          hit.add(e.target); if (e.combo) addPopup(e.target, 'Combo !', 'buff'); if (e.guarded && !soundOnce.has('guard:' + e.target)) { soundOnce.add('guard:' + e.target); addPopup(e.target, 'Garde', 'shieldp'); } addPopup(e.target, `${e.crit ? 'CRIT ' : ''}-${e.amount}${e.strong ? ' ▲' : e.weak ? ' ▼' : ''}`, `dmg ${e.crit ? 'crit' : ''} ${e.strong ? 'strong' : ''} ${e.weak ? 'weak' : ''}`); pause = true; break;
+          hit.add(e.target); if (e.combo) addPopup(e.target, 'Combo !', 'buff'); if (e.guarded && !soundOnce.has('guard:' + e.target)) { soundOnce.add('guard:' + e.target); addPopup(e.target, 'Garde', 'shieldp'); } addPopup(e.target, `${e.crit ? 'CRIT ' : ''}-${e.amount}${e.strong ? ' ▲' : e.weak ? ' ▼' : ''}`, `dmg ${e.crit ? 'crit' : ''} ${e.strong ? 'strong' : ''} ${e.weak ? 'weak' : ''}`); { const m = multi.get(e.target); if (m && m.n >= 3 && m.last === ei) addPopup(e.target, `${m.n} coups · -${m.sum}`, 'dmg total'); } pause = true; break;
         }
         case 'dot': hit.add(e.target); addPopup(e.target, `-${e.amount}`, e.status === 'poison' ? 'poison' : 'burn'); addVfx(e.target, `impact w-none e-${e.status === 'poison' ? 'poison' : 'fire'} small`, e.status === 'poison' ? '#8be04e' : '#ff8a3a'); if (!soundOnce.has('dot' + e.status)) { soundOnce.add('dot' + e.status); playDot(e.status); } pause = true; break;
         case 'heal': if (e.amount > 0) { addPopup(e.target, `+${e.amount}`, 'heal'); { const p = center(e.target); if (p) stage.current?.motes(p, '#7bea8f', 16, 26, 0.06); } addVfx(e.target, 'healfx', '#7bea8f'); if (!soundOnce.has('heal')) { soundOnce.add('heal'); playHeal(); } } pause = true; break;
@@ -251,7 +259,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
           for (const t of s.units.filter((x) => x.side === 'enemy' && x.alive)) addVfx(t.id, 'cursefx', '#cf9dff');
           for (const id of [e.a, e.b]) { const c = center(id); if (c) stage.current?.burst(c, '#cf9dff', 30, 0.45); }
           doShake('hard'); play('rare'); pause = true;
-          if (!useGame.getState().save?.flags[`couture_${e.id}`]) { mutate((d) => { d.flags[`couture_${e.id}`] = true; }); useUI.getState().toast(`Nouvelle couture découverte : ${def?.name} (Codex)`, 'ok'); }
+          if (!useGame.getState().save?.flags[`couture_${e.id}`]) { mutate((d) => { d.flags[`couture_${e.id}`] = true; }); found.current.push(def?.name ?? 'Couture'); }
           break;
         }
         case 'phase': {
@@ -278,6 +286,12 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
           else if (e.reformed) { addPopup(e.target, 'Carapace reformée', 'shieldp'); addVfx(e.target, 'shieldfx', '#c9b27a'); }
           break;
         case 'lien': {
+          // Mise en scène du Lien (v1.120.0) : toute l'équipe dans une bande, comme un ultime, avant que l'effet tombe.
+          const col = e.power === 'heal' ? '#7bea8f' : e.power === 'guard' ? '#aad7ff' : '#ffd36b';
+          if (speedRef.current < 3 && !useGame.getState().save?.settings.reducedMotion) {
+            setLienCut({ heroes: s.units.filter((u) => u.side === 'ally' && u.alive && u.kind === 'hero').map((u) => u.refId).slice(0, 5), name: LIEN_POWERS[e.power].name, color: col, id: ++popSeq });
+            play('rare'); await wait(950); setLienCut(null);
+          }
           setBanner({ text: `Pouvoir du Lien · ${LIEN_POWERS[e.power].name}`, side: 'ally' });
           for (const a of s.units.filter((u) => u.side === 'ally' && u.alive)) addVfx(a.id, e.power === 'heal' ? 'healfx' : e.power === 'guard' ? 'shieldfx' : 'revivefx', e.power === 'heal' ? '#7bea8f' : e.power === 'guard' ? '#aad7ff' : '#ffd36b');
           play('claim'); pause = true; break;
@@ -299,6 +313,8 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
     // Hit-stop (v1.95.0) : sur un coup lourd, la scène se fige un instant, comme dans les jeux d'action.
     if (heavy.size && !useGame.getState().save?.settings.reducedMotion) { const el = battleRef.current; el?.classList.add('hitstop'); await sleep(speedRef.current >= 3 ? 40 : 75); el?.classList.remove('hitstop'); }
     if (pause) await wait(620 / speedRef.current);
+    // Changement d'acte d'un boss (v1.120.0) : un vrai temps d'arrêt, même en ×3, pour lire la bannière.
+    if (ev.some((x) => x.kind === 'phase')) await wait(Math.max(0, 900 - 620 / speedRef.current));
     setHits(new Set());
     setHeavyHits(new Set());
   };
@@ -427,6 +443,19 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
   const active = s.activeId ? unitById(s, s.activeId) : null;
   const selSkill = active && selected ? active.skills.find((x) => x.id === selected) : undefined;
   const targetable = awaiting && active && selSkill ? new Set(validTargets(s, active, selSkill).map((u) => u.id)) : new Set<string>();
+  // Prévisualisation tactique (v1.120.0) : compétence choisie, chaque ennemi montre la part de PV qu'il perdrait (moyenne de plusieurs tirages).
+  const previewKey = awaiting && active && selSkill ? `${selSkill.id}:${active.id}:${s.actionCount}:${s.wave}:${s.lienUsed}` : '';
+  const preview = useMemo(() => {
+    if (!previewKey || !active || !selSkill) return {} as Record<string, { loss: number; ko: number; frac: number }>;
+    try {
+      if (targetKind(selSkill) === 'enemy') {
+        const out: Record<string, { loss: number; ko: number; frac: number }> = {};
+        for (const t of validTargets(s, active, selSkill)) { const p = previewAction(s, { skillId: selSkill.id, targetId: t.id })[t.id]; if (p) out[t.id] = p; }
+        return out;
+      }
+      return targetKind(selSkill) === 'none' ? previewAction(s, { skillId: selSkill.id }) : {};
+    } catch { return {}; }
+  }, [previewKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const act = async (targetId?: string) => {
     if (!awaiting || !active || !selSkill) return;
@@ -451,6 +480,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
   const castPower = async (p: LienPower) => {
     setLienOpen(false);
     if (!awaiting || !castLien(s, p)) return;
+    { const ui = useUI.getState(); for (const t of ui.toasts) if (t.text.startsWith('Ta jauge du Lien')) ui.dismiss(t.id); }
     setAwaiting(false);
     await playEvents(); setBanner(null);
     if (s.outcome !== 'running' || !s.activeId) { void run(); return; }
@@ -487,7 +517,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
 
   const renderUnit = (u: Unit, place?: Place, i = 0) => (
     <UnitView key={u.id} u={u} place={place} order={i} vfx={vfx[u.id]} focus={focusId === u.id && u.alive} active={s.activeId === u.id} acting={acting === u.id} hit={hits.has(u.id)} heavy={heavyHits.has(u.id)}
-      targetable={targetable.has(u.id)} popups={popups[u.id] ?? []} onClick={() => onUnit(u)} onInfo={() => setInfoId(u.id)}
+      targetable={targetable.has(u.id)} preview={preview[u.id]} popups={popups[u.id] ?? []} onClick={() => onUnit(u)} onInfo={() => setInfoId(u.id)}
       edge={awaiting && active && targetable.has(u.id) && u.side !== active.side ? affinityEdge(active.affinity, u.affinity) : undefined} />
   );
 
@@ -521,6 +551,29 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
             return <div key={i} className={`to-item ${u.side}`}>{u.kind === 'hero' ? <HeroArt heroId={u.refId} /> : <EnemyArt enemyId={u.refId} />}</div>;
           })}
         </div>
+        {/* BARRE DU BOSS (v1.120.0) : PV et actes, Fracture chiffrée, Carapace, et son ultime annoncée en clair (plus seulement au survol). */}
+        {(() => {
+          const b = s.units.find((u) => u.isBoss && u.side === 'enemy' && u.alive);
+          if (!b || phase !== 'fight') return null;
+          const ul = b.skills.find((k) => k.slot === 'ultimate');
+          const soon = ul && (b.cooldowns[ul.id] ?? 0) <= 1;
+          const pct = Math.max(0, Math.min(1, b.hp / b.base.hp));
+          return (
+            <div className={`boss-bar ${b.flags.enraged ? 'rage' : ''}`} style={{ ['--bc' as string]: AFFINITIES[b.affinity].color }}>
+              <div className="bb-head"><AffinityIcon id={b.affinity} size={13} /><b>{b.name}</b>{b.flags.enraged > 0 && <span className="bb-rage">Enragé</span>}<span className="bb-pct">{Math.ceil(pct * 100)} %</span></div>
+              <div className="bb-hp"><div style={{ width: `${pct * 100}%` }} />
+                <i className={`bb-act ${b.flags.phase2 ? 'past' : ''}`} style={{ left: '50%' }} />{b.flags.acts === 3 && <i className={`bb-act ${b.flags.act3 ? 'past' : ''}`} style={{ left: '25%' }} />}
+              </div>
+              {(b.flags.fractureMax > 0 || b.flags.carapaceMax > 0) && (
+                <div className="bb-sub">
+                  {b.flags.fractureMax > 0 && <span className={`bb-frac ${b.flags.fractured ? 'broken' : ''}`}>Fracture<i><b style={{ width: `${b.flags.fractured ? 100 : (b.flags.fracture / b.flags.fractureMax) * 100}%` }} /></i>{b.flags.fractured ? 'brisée !' : `${Math.round(b.flags.fracture)} à briser`}</span>}
+                  {b.flags.carapaceMax > 0 && <span className={`bb-cara ${b.flags.carapace ? '' : 'broken'}`}>Carapace {b.flags.carapace ? `${b.flags.carapace}/${b.flags.carapaceMax}` : 'brisée'}</span>}
+                </div>
+              )}
+              {soon && ul && <div className="bb-intent">⚠ Au prochain tour : <b>{ul.name}</b>{b.flags.fractureMax > 0 && !b.flags.fractured ? ' · brise sa Fracture pour l’annuler' : ''}</div>}
+            </div>
+          );
+        })()}
       </div>
 
       {(() => {
@@ -554,6 +607,12 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
         <div className={`ult-cut ${ult.side}`} style={{ ['--uc' as string]: ult.color }} aria-hidden>
           <div className="uc-band"><div className="uc-art">{ult.kind === 'hero' ? <HeroArt heroId={ult.refId} kind="full" /> : <EnemyArt enemyId={ult.refId} />}</div></div>
           <div className="uc-name">{ult.skill}</div>
+        </div>
+      )}
+      {lienCut && (
+        <div key={lienCut.id} className="ult-cut ally lien-cut" style={{ ['--uc' as string]: lienCut.color }} aria-hidden>
+          <div className="uc-band"><div className="lc-team">{lienCut.heroes.map((h) => <div key={h} className="lc-h"><HeroArt heroId={h} /></div>)}</div></div>
+          <div className="uc-name"><small>Pouvoir du Lien</small>{lienCut.name}</div>
         </div>
       )}
       {wave && <div key={wave.id} className={`field-wave ${wave.side}`} style={{ ['--vc' as string]: wave.color }} onAnimationEnd={() => setWave(null)} />}
@@ -613,6 +672,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
                 <button key={sk.id} className={`skill-card ${sk.slot} ${selected === sk.id ? 'sel' : ''}`} disabled={cd > 0}
                   onClick={() => { play('tap'); if (selected === sk.id && targetKind(sk) === 'none') void act(); else setSelected(sk.id); }}>
                   <SkillGlyph sk={sk} color={AFFINITIES[active!.affinity].color} size={30} />
+                  {cd > 0 && <span className="sk-cd" aria-hidden>{cd}</span>}
                   <span className="sk-txt">
                     <span className={`sk-tag ${cd > 0 ? 'cd' : ''}`}>{cd > 0 ? `Recharge ${cd} t.` : SLOT_TAG[sk.slot]}</span>
                     <span className="sk-name">{sk.name}</span>

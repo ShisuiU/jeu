@@ -1,6 +1,6 @@
 import { useGame } from '../../state/store';
 import { useUI } from '../../state/ui';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FACTION_DUNGEONS, FACTION_FLOORS, FACTION_MAX_STARS, FACTION_STAR_MILESTONES, factionReward } from '../../data/factionDungeon';
 import { FACTIONS } from '../../data/factions';
 import { claimFactionMilestone, claimableMilestones, factionBest, factionHeroes, factionOfDay, familyStars, floorStars, milestoneClaimed, nextRotation, totalFactionStars } from '../../game/factionDungeon';
@@ -38,6 +38,10 @@ export function FactionDungeon() {
   };
   const Stars = ({ n, size = 13 }: { n: number; size?: number }) => <span className="sn-stars">{[1, 2, 3].map((k) => <Icon.star key={k} size={size} color={k <= n ? '#ffd36b' : '#3a3442'} />)}</span>;
 
+  // Liste allégée (v1.119.0) : étages conquis, l'étage ouvert, les deux suivants et le prochain Gardien ; le reste en une ligne.
+  const visible = (fl: number) => fl <= best + 3 || (fl % 10 === 0 && fl <= Math.ceil((best + 1) / 10) * 10);
+  useEffect(() => { if (best < 4) return; const t = window.setTimeout(() => document.querySelector('.fd-path .stage-node:not(.cleared):not(.locked)')?.scrollIntoView({ block: 'center', behavior: 'smooth' }), 350); return () => clearTimeout(t); }, [f, best]);
+  const hidden = Array.from({ length: FACTION_FLOORS }, (_, i) => i + 1).filter((fl) => !visible(fl)).length;
   return (
     <Screen title="Donjon des familles">
       <section className="fd-banner" style={{ ['--fc' as string]: fa.colors.glow, ['--fp' as string]: fa.colors.primary }}>
@@ -75,8 +79,8 @@ export function FactionDungeon() {
         {claimable.length > 0 && <span className="badge-dot" />}
       </button>
 
-      <div className="stage-path">
-        {Array.from({ length: FACTION_FLOORS }, (_, i) => i + 1).map((fl) => {
+      <div className="stage-path fd-path">
+        {Array.from({ length: FACTION_FLOORS }, (_, i) => i + 1).filter(visible).map((fl) => {
           const open = fl <= best + 1;
           const done = fl <= best;
           const st = floorStars(save, f, fl);
@@ -86,13 +90,14 @@ export function FactionDungeon() {
               <span className="sn-idx">{fl}</span>
               <div className="grow" style={{ textAlign: 'left', minWidth: 0 }}>
                 <div className="sn-name">{fl % 10 === 0 ? 'Gardien du donjon' : `Étage ${fl}`}</div>
-                <div className="faint">{done ? (st < 3 ? 'Rejouer pour plus d’étoiles' : 'Conquis') : 'Sans énergie'}</div>
+                <div className="faint">{done ? (st < 3 ? 'Rejouer pour plus d’étoiles' : 'Conquis') : open ? 'Sans énergie · 3 étoiles à gagner' : fl % 10 === 0 ? `Étage ${fl} · verrouillé` : 'Verrouillé'}</div>
               </div>
               {done ? <Stars n={st} size={14} /> : open && <span className="row" style={{ gap: 4 }}>{rewardMainIcon(factionReward(fl), 18)}</span>}
               {!open && <Icon.lock size={16} />}
             </button>
           );
         })}
+        {hidden > 0 && <p className="fd-more faint">Encore {hidden} étage{hidden > 1 ? 's' : ''} au-delà · Gardiens aux étages 10, 20 et 30</p>}
       </div>
 
       {showMs && (

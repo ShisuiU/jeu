@@ -64,6 +64,15 @@ export function eff(s: BattleState, u: Unit, stat: StatId): number {
 }
 
 export const hpPct = (u: Unit) => u.hp / u.base.hp;
+/** Paliers d'actes (v1.120.0) : un coup ne franchit qu'un palier à la fois ; il s'arrête juste sous 50 % (Acte II), puis sous 25 % (Dernier acte).
+ *  Chaque acte se voit, même face à une équipe très forte. Seulement avec les mécaniques (pas boss mondial ni boss de clan, notés aux dégâts). */
+function actGate(s: BattleState, t: Unit): number {
+  if (!s.mechanics || !t.isBoss || t.side !== 'enemy') return Infinity;
+  const gate = !t.flags.phase2 ? 0.5 : t.flags.acts === 3 && !t.flags.act3 ? ACT3_HP : 0;
+  if (!gate) return Infinity;
+  const floor = Math.floor(t.base.hp * gate) - 1;
+  return t.hp > floor ? t.hp - floor : Infinity;
+}
 export const shieldOf = (u: Unit) => u.statuses.filter((x) => x.status === 'shield').reduce((a, x) => a + x.value, 0);
 
 // ─── Création ───
@@ -312,7 +321,7 @@ function dealDamage(s: BattleState, source: Unit, target: Unit, effect: Extract<
   // Récap de fin de combat : dégâts réellement encaissés (bouclier compris, sans l'excédent au-delà des PV restants).
   source.flags.dmgDealt = (source.flags.dmgDealt ?? 0) + absorbed + Math.min(hpDmg, Math.max(0, target.hp));
   target.flags.dmgTaken = (target.flags.dmgTaken ?? 0) + absorbed + Math.min(hpDmg, Math.max(0, target.hp));
-  target.hp -= hpDmg;
+  target.hp -= Math.min(hpDmg, actGate(s, target));
   s.events.push({ kind: 'damage', source: source.id, target: target.id, amount: dmg, crit, strong: aff > 1, weak: aff < 1, absorbed, ...(combo ? { combo } : {}) });
   if (target.flags.carapaceMax && !broke && target.flags.carapace > 0) s.events.push({ kind: 'carapace', target: target.id, charges: target.flags.carapace });
   if (broke && target.alive && target.hp > 0) {

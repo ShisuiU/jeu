@@ -313,6 +313,8 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
     // Hit-stop (v1.95.0) : sur un coup lourd, la scène se fige un instant, comme dans les jeux d'action.
     if (heavy.size && !useGame.getState().save?.settings.reducedMotion) { const el = battleRef.current; el?.classList.add('hitstop'); await sleep(speedRef.current >= 3 ? 40 : 75); el?.classList.remove('hitstop'); }
     if (pause) await wait(620 / speedRef.current);
+    // Changement d'acte d'un boss (v1.120.0) : un vrai temps d'arrêt, même en ×3, pour lire la bannière.
+    if (ev.some((x) => x.kind === 'phase')) await wait(Math.max(0, 900 - 620 / speedRef.current));
     setHits(new Set());
     setHeavyHits(new Set());
   };

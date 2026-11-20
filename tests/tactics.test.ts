@@ -135,3 +135,16 @@ describe('Interruption (v1.105.0)', () => {
     expect(after.cooldowns[ult.id]).toBeGreaterThan(1);
   });
 });
+
+describe('Paliers d’actes (v1.120.0)', () => {
+  it('une équipe bien plus forte voit quand même chaque acte : aucun coup ne saute un palier', () => {
+    const team = ['torvald', 'brann', 'corvin', 'elowen', 'aldric'].map((id, i) => unit(id, i, 400));
+    for (const seed of [1, 2, 3, 4, 5]) {
+      const b = runToEnd(createBattle(team, waves(10), { seed, leaderUid: 'torvald' }));
+      const boss = b.units.find((u) => u.isBoss)!;
+      expect(b.outcome).toBe('won');
+      expect(boss.flags.phase2).toBe(1);
+      expect(boss.flags.act3).toBe(1);
+    }
+  });
+});

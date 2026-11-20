@@ -1015,3 +1015,4 @@ body:has(.prep-bar) .bg-pill, body:has(.summon-bar) .bg-pill { bottom: calc(var(
 @keyframes campGlow { 0%, 100% { opacity: 0.55; transform: translate(-50%, -50%) scale(0.92); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.06); } }
 .reduced-motion .camp-glow { animation: none; }
 @media (prefers-reduced-motion: reduce) { .camp-glow { animation: none; } }
+.fd-more { text-align: center; font-size: var(--fs-sm); margin: 6px 0 0; }

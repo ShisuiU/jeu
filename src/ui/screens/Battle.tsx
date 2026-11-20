@@ -444,7 +444,7 @@ export function Battle({ spec, teamId, seed, guest }: { spec: BattleSpec; teamId
   const selSkill = active && selected ? active.skills.find((x) => x.id === selected) : undefined;
   const targetable = awaiting && active && selSkill ? new Set(validTargets(s, active, selSkill).map((u) => u.id)) : new Set<string>();
   // Prévisualisation tactique (v1.120.0) : compétence choisie, chaque ennemi montre la part de PV qu'il perdrait (moyenne de plusieurs tirages).
-  const previewKey = awaiting && active && selSkill ? `${selSkill.id}:${active.id}:${s.actionCount}:${s.wave}` : '';
+  const previewKey = awaiting && active && selSkill ? `${selSkill.id}:${active.id}:${s.actionCount}:${s.wave}:${s.lienUsed}` : '';
   const preview = useMemo(() => {
     if (!previewKey || !active || !selSkill) return {} as Record<string, { loss: number; ko: number; frac: number }>;
     try {
